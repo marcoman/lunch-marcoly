@@ -1,0 +1,25 @@
+# Python virtual environment (repository root)
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Node
+node_modules/
+
+# Java / Maven
+target/
+
+# C++ / native binaries (example-named executables)
+00-reference/**/00-reference
+00-reference/**/00-reference.exe
+
+# Rust
+00-reference/rust/target/
+
+# Go
+00-reference/go/00-reference
+
+# IDE
+.idea/

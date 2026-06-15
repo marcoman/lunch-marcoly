@@ -1,0 +1,10 @@
+{
+  "name": "reference-grid-navigator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "00-reference grid navigator web UI",
+  "main": "00-reference.js",
+  "scripts": {
+    "start": "node 00-reference.js"
+  }
+}

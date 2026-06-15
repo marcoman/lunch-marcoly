@@ -1,0 +1,11 @@
+[package]
+name = "reference-grid-navigator"
+version = "1.0.0"
+edition = "2021"
+
+[[bin]]
+name = "00-reference"
+path = "src/main.rs"
+
+[dependencies]
+crossterm = "0.28"

@@ -1,0 +1,9 @@
+# Python dependencies for all lunch-marcoly examples (Python 3.12+).
+# Use pyenv to install Python — see README.md and .python-version.
+# Install into the repository virtual environment:
+#   pyenv install 3.12
+#   python -m venv .venv
+#   source .venv/bin/activate
+#   pip install -r requirements.txt
+#
+# 00-reference uses only the Python standard library (no packages listed yet).
