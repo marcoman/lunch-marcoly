@@ -29,12 +29,12 @@ def main() -> None:
     sdk_key = os.environ.get("LD_SDK_KEY")
     host_os = detect_host_os()
     if not sdk_key or not username:
-        print(json.dumps(build_flag_response(username, False, False, False, False, host_os)))
+        print(json.dumps(build_flag_response(username, False, False, False, False, host_os), ensure_ascii=False))
         return
     ldclient.set_config(Config(sdk_key, private_attributes=[HOST_OS_ATTR]))
     client = ldclient.get()
     if not client.is_initialized():
-        print(json.dumps(build_flag_response(username, False, False, False, False, host_os)))
+        print(json.dumps(build_flag_response(username, False, False, False, False, host_os), ensure_ascii=False))
         return
     context, host_os = build_evaluation_context(username)
     result = build_flag_response(
@@ -45,7 +45,7 @@ def main() -> None:
         bool(client.variation(FLAG_OS_EMOJI, context, False)),
         host_os,
     )
-    print(json.dumps(result))
+    print(json.dumps(result, ensure_ascii=False))
     client.close()
 
 

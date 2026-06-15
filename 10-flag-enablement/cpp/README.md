@@ -30,11 +30,15 @@ make clean && LDSDK_PREFIX=/path/to/ld-sdk make all
 
 ## Run
 
-From this directory with `.venv` active (when using the Python helper):
+From this directory (the Python helper path is baked in at build time):
 
 ```bash
+source ../../.venv/bin/activate   # or export LD_SDK_KEY and rely on repo .venv auto-detection
+export LD_SDK_KEY="sdk-..."
 ./10-flag-enablement
 ```
+
+The build embeds the path to `.venv/bin/python3` when present. You can also set `PYTHON` explicitly or activate `.venv` (`VIRTUAL_ENV`).
 
 ## What to expect
 

@@ -80,9 +80,11 @@ void enable_raw_mode() {
     raw.c_cc[VMIN] = 0;
     raw.c_cc[VTIME] = 5;
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+    std::cout << "\033[?1049h\033[2J\033[H" << std::flush;
 }
 
 void disable_raw_mode() {
+    std::cout << "\033[?1049l" << std::flush;
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &g_original_termios);
 }
 
@@ -96,8 +98,6 @@ std::string read_username() {
     }
     return name;
 }
-
-constexpr const char* kEol = "\r\n";
 
 std::string cell_line(bool selected, const std::string& color, int line) {
     std::string plain;
@@ -129,13 +129,13 @@ std::string cell_line(bool selected, const std::string& color, int line) {
 }
 
 void write_line(const std::string& line) {
-    std::cout << line << kEol;
+    std::cout << line << "\033[K\r\n";
 }
 
 void render(const std::string& username, int row, int col,
             const std::optional<Position>& previous, int move_count,
             const FlagValues& flags) {
-    std::cout << kBg << "\033[H\033[2J";
+    std::cout << kBg << "\033[2J\033[H" << std::flush;
     const std::string prev_text =
         previous ? format_pos(previous->row, previous->col) : "—";
     const std::string cohort = " " + flags.cohortLabel;
@@ -169,6 +169,7 @@ void render(const std::string& username, int row, int col,
         write_line(mid);
         write_line(bot);
     }
+    std::cout << std::flush;
 }
 
 bool read_direction(int& dr, int& dc) {
