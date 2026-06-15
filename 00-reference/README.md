@@ -6,15 +6,15 @@ The reference example for **lunch-marcoly**: a grid navigator app and template f
 
 ### Application
 
-A username-only login followed by a **3×3 grid navigator**. See [application.md](application.md) for full behavior, colors, and acceptance criteria.
+A username-only login followed by a **3×3 grid navigator**. See [application.md](application.md) for full behavior and acceptance criteria. Selection is **`X` only** — no highlight colors.
 
 ### Repository conventions
 
-How examples are organized — numbering, language directories, web vs console apps, build patterns, and LaunchDarkly env vars. See [project.md](../project.md).
+How examples are organized — numbering, language directories, web vs console apps, and build patterns. See [project.md](../project.md).
 
 ## Prerequisites
 
-No LaunchDarkly account required for this example (v1 has no LaunchDarkly integration).
+No LaunchDarkly account required. This example is **reference-only** — it does not integrate with LaunchDarkly. Feature flags live in [10-flag-enablement](../10-flag-enablement/).
 
 Set up the repository once ([pyenv](https://github.com/pyenv/pyenv) for Python, [nvm](https://github.com/nvm-sh/nvm) for Node, other toolchains) using the [root README](../README.md#building-code).
 

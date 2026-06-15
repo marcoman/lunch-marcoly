@@ -12,8 +12,6 @@ namespace {
 
 constexpr std::array<const char*, 3> kRows = {"t", "m", "b"};
 constexpr std::array<const char*, 3> kCols = {"l", "m", "r"};
-constexpr const char* kGreen = "\033[92m";
-constexpr const char* kReset = "\033[0m";
 
 struct Position {
     int row;
@@ -71,11 +69,11 @@ std::string cell_line(bool selected, int line) {
     if (selected) {
         switch (line) {
             case 0:
-                return std::string(kGreen) + "┏━━━┓" + kReset;
+                return "┏━━━┓";
             case 1:
-                return std::string(kGreen) + "┃ X ┃" + kReset;
+                return "┃ X ┃";
             default:
-                return std::string(kGreen) + "┗━━━┛" + kReset;
+                return "┗━━━┛";
         }
     }
     switch (line) {

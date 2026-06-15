@@ -38,14 +38,13 @@ def read_username(stdscr: curses.window) -> str:
 
 
 def draw_cell(stdscr: curses.window, y: int, x: int, selected: bool) -> None:
-    """Draw one grid cell; selected cells use a green outline and X."""
-    green = curses.color_pair(1) if selected else curses.A_NORMAL
+    """Draw one grid cell; selected cells show X with no color highlight."""
     top = "┏━━━┓" if selected else "┌───┐"
     mid = "┃ X ┃" if selected else "│   │"
     bot = "┗━━━┛" if selected else "└───┘"
-    stdscr.addstr(y, x, top, green)
-    stdscr.addstr(y + 1, x, mid, green)
-    stdscr.addstr(y + 2, x, bot, green)
+    stdscr.addstr(y, x, top)
+    stdscr.addstr(y + 1, x, mid)
+    stdscr.addstr(y + 2, x, bot)
 
 
 def draw_screen(
@@ -105,8 +104,6 @@ def run_grid(stdscr: curses.window, username: str) -> None:
 
 def main(stdscr: curses.window) -> None:
     curses.curs_set(0)
-    curses.start_color()
-    curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
     stdscr.keypad(True)
 
     username = read_username(stdscr)

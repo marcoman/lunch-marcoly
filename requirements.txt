@@ -7,3 +7,4 @@
 #   pip install -r requirements.txt
 #
 # 00-reference uses only the Python standard library (no packages listed yet).
+launchdarkly-server-sdk>=9.0

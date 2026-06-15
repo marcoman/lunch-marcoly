@@ -6,9 +6,6 @@ const readline = require("readline");
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
 
-const GREEN = "\x1b[92m";
-const RESET = "\x1b[0m";
-
 function formatPos(row, col) {
   return `${ROWS[row]}/${COLS[col]}`;
 }
@@ -22,11 +19,7 @@ function tryMove(row, col, dr, dc) {
 
 function drawCell(selected) {
   if (selected) {
-    return [
-      `${GREEN}┏━━━┓${RESET}`,
-      `${GREEN}┃ X ┃${RESET}`,
-      `${GREEN}┗━━━┛${RESET}`,
-    ];
+    return ["┏━━━┓", "┃ X ┃", "┗━━━┛"];
   }
   return ["┌───┐", "│   │", "└───┘"];
 }

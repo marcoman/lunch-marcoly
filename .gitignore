@@ -11,15 +11,14 @@ node_modules/
 # Java / Maven
 target/
 
-# C++ / native binaries (example-named executables)
+# C++ / Go native executables (example-named binaries, no file extension)
 00-reference/**/00-reference
 00-reference/**/00-reference.exe
+10-flag-enablement/**/10-flag-enablement
+10-flag-enablement/**/10-flag-enablement.exe
 
-# Rust
-00-reference/rust/target/
-
-# Go
-00-reference/go/00-reference
+# Rust build output
+**/rust/target/
 
 # IDE
 .idea/

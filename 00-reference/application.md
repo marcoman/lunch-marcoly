@@ -2,7 +2,7 @@
 
 This document defines the behavior of the **00-reference** application — a simple grid navigator used as the canonical example every language implementation must match.
 
-Repository layout, README format, and LaunchDarkly conventions are in [project.md](../project.md).
+Repository layout and README format are in [project.md](../project.md). Feature flag behavior is in [10-flag-enablement/application.md](../10-flag-enablement/application.md).
 
 ## Overview
 
@@ -11,7 +11,7 @@ A two-screen application:
 1. **Login** — collect a username (no password)
 2. **Grid** — navigate a 3×3 grid with keyboard input
 
-All implementations must produce equivalent behavior. Differences are limited to platform-appropriate presentation (terminal colors vs browser styling).
+All implementations must produce equivalent behavior. Differences are limited to platform-appropriate presentation (terminal box drawing vs browser layout). Selection is indicated by **`X` only** — no highlight colors.
 
 ## Login screen
 
@@ -107,27 +107,26 @@ Example at `m/m`:
 
 (Exact borders and spacing may vary by platform; cell contents and selection state must not.)
 
-## Presentation and colors
+## Presentation
 
 ### Console applications
 
-Directories: `python-console/`, `node-console/`, `java-console/`, `cpp/`, `rust/`
+Directories: `python-console/`, `node-console/`, `java-console/`, `cpp/`, `go/`, `rust/`
 
-- Use terminal color when the platform supports it
-- **Selected cell:** green outline/border with an `X` inside
-- **Unselected cells:** default terminal styling (no highlight)
-- Header fields use default terminal styling unless color improves readability
+- **No colors** — do not use ANSI color codes or terminal color pairs for selection
+- **Selected cell:** `X` inside the cell (heavy box characters such as `┏━━━┓` / `┃ X ┃` / `┗━━━┛` are acceptable for layout; they must not be colored)
+- **Unselected cells:** empty (no marker), default terminal styling
+- Header fields use default terminal styling
 
 ### Web applications
 
 Directories: `python/`, `node/`, `java/`
 
 - Default color scheme: **light mode**
-- **Unselected cells:** default (white or near-white) background
-- **Selected cell:** green background consistent with the light-mode palette, with an `X` centered in the cell
-- Header: readable contrast against the page background
-
-Suggested selected-cell green: a medium green visible on white (e.g. `#4caf50` or equivalent). Implementations may tune the exact shade but must keep a clear selected vs unselected distinction in light mode.
+- **No selection colors** — the selected cell is not highlighted with a background or border color
+- **Unselected cells:** default (white or near-white) background, empty
+- **Selected cell:** `X` centered in the cell on the same background as unselected cells
+- Header: readable contrast against the page background (page chrome may use neutral text colors; the grid selection itself has no highlight color)
 
 ## Input mapping
 
@@ -164,8 +163,8 @@ An implementation is correct when:
 4. Boundary keypresses leave the position unchanged and do not update Previous position
 5. Header shows Name, Current position, and Previous position accurately after every change
 6. Selected cell displays `X`; unselected cells do not
-7. Console: selected cell has a green outline
-8. Web: light-mode styling with green background on the selected cell
+7. Console: selected cell has no color highlight — `X` only
+8. Web: selected cell has no background or border color highlight — `X` only on the default cell background
 
 ## Further reading
 

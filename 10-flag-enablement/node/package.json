@@ -1,0 +1,13 @@
+{
+  "name": "flag-enablement-grid-navigator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "10-flag-enablement grid navigator web UI",
+  "main": "10-flag-enablement.js",
+  "scripts": {
+    "start": "node 10-flag-enablement.js"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0"
+  }
+}

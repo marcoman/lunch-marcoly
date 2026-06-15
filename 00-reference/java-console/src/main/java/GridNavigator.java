@@ -7,8 +7,6 @@ import java.util.Scanner;
 public class GridNavigator {
     private static final String[] ROWS = {"t", "m", "b"};
     private static final String[] COLS = {"l", "m", "r"};
-    private static final String GREEN = "\u001B[92m";
-    private static final String RESET = "\u001B[0m";
 
     private static final class Position {
         final int row;
@@ -149,9 +147,9 @@ public class GridNavigator {
     private static String[] drawCell(boolean selected) {
         if (selected) {
             return new String[]{
-                    GREEN + "┏━━━┓" + RESET,
-                    GREEN + "┃ X ┃" + RESET,
-                    GREEN + "┗━━━┛" + RESET
+                    "┏━━━┓",
+                    "┃ X ┃",
+                    "┗━━━┛"
             };
         }
         return new String[]{"┌───┐", "│   │", "└───┘"};

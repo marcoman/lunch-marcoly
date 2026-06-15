@@ -1,0 +1,21 @@
+# Build the 10-flag-enablement console binary locally in this directory.
+TARGET := 10-flag-enablement
+CXX ?= c++
+CXXFLAGS := -std=c++20 -Wall -Wextra
+
+# Optional: link the LaunchDarkly C server SDK when LDSDK_PREFIX is set.
+# See: https://launchdarkly.com/docs/sdk/server-side/c
+ifdef LDSDK_PREFIX
+CXXFLAGS += -DHAS_LAUNCHDARKLY -I$(LDSDK_PREFIX)/include
+LDFLAGS += -L$(LDSDK_PREFIX)/lib -llaunchdarkly-server-sdk -lcurl -lpthread
+endif
+
+.PHONY: all clean
+
+all: $(TARGET)
+
+$(TARGET): main.cpp flags.cpp flags.hpp
+	$(CXX) $(CXXFLAGS) -o $(TARGET) main.cpp flags.cpp $(LDFLAGS)
+
+clean:
+	rm -f $(TARGET)

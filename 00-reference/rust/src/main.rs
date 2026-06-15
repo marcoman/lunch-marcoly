@@ -11,8 +11,6 @@ use std::io::{self, Write};
 
 const ROWS: [&str; 3] = ["t", "m", "b"];
 const COLS: [&str; 3] = ["l", "m", "r"];
-const GREEN: &str = "\x1b[92m";
-const RESET: &str = "\x1b[0m";
 
 struct Position {
     row: i32,
@@ -59,15 +57,13 @@ fn read_username() -> io::Result<String> {
 }
 
 fn cell_line(selected: bool, line: usize) -> String {
-    let (plain, green) = match line {
-        0 => ("┌───┐", "┏━━━┓"),
-        1 => ("│   │", "┃ X ┃"),
-        _ => ("└───┘", "┗━━━┛"),
-    };
-    if selected {
-        format!("{GREEN}{green}{RESET}")
-    } else {
-        plain.to_string()
+    match (selected, line) {
+        (true, 0) => "┏━━━┓".to_string(),
+        (true, 1) => "┃ X ┃".to_string(),
+        (true, _) => "┗━━━┛".to_string(),
+        (false, 0) => "┌───┐".to_string(),
+        (false, 1) => "│   │".to_string(),
+        (_, _) => "└───┘".to_string(),
     }
 }
 

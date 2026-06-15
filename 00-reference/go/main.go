@@ -65,11 +65,11 @@ func drawCell(selected bool, line int) string {
 	if selected {
 		switch line {
 		case 0:
-			return "\033[92m┏━━━┓\033[0m"
+			return "┏━━━┓"
 		case 1:
-			return "\033[92m┃ X ┃\033[0m"
+			return "┃ X ┃"
 		default:
-			return "\033[92m┗━━━┛\033[0m"
+			return "┗━━━┛"
 		}
 	}
 	switch line {

@@ -42,11 +42,9 @@ lunch-marcoly/
 ├── .python-version            # Python version for pyenv (repository-wide)
 ├── .nvmrc                     # Node.js version for nvm (repository-wide)
 ├── .venv/                     # Python virtual environment (local, not committed)
-├── 00-reference/
-│   ├── README.md              # Describes the example across all languages
-│   ├── application.md         # Reference grid navigator behavior (00-reference only)
-│   ├── rest/                  # REST API provisioning (curl, scripts, etc.)
-│   ├── terraform/             # Terraform provisioning
+├── 00-reference/              # Reference grid navigator — no LaunchDarkly
+│   ├── README.md
+│   ├── application.md         # Grid navigator behavior spec (00-reference only)
 │   ├── python/
 │   ├── python-console/
 │   ├── node/
@@ -56,6 +54,12 @@ lunch-marcoly/
 │   ├── cpp/                   # Makefile → ./00-reference
 │   ├── go/
 │   └── rust/
+├── 10-flag-enablement/        # Feature flags for the grid navigator
+│   ├── README.md
+│   ├── application.md         # Flag specification and desired effects
+│   ├── rest/                  # REST API provisioning
+│   ├── terraform/             # Terraform provisioning
+│   └── <language[-console]>/  # Future: flag evaluation implementations
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── rest/
@@ -77,7 +81,8 @@ lunch-marcoly/
 - Prefix with a **two-digit number**: `00-reference`, `01-hello-world`, `02-binary-search`
 - Follow the number with a **kebab-case** name describing the concept
 - Use the next available number when adding a new example (`03`, `04`, …)
-- `00-reference` is reserved for the reference grid navigator app and repository conventions
+- `00-reference` is reserved for the reference grid navigator app and repository conventions. It does **not** include LaunchDarkly integration.
+- `10-flag-enablement` demonstrates feature flag naming, provisioning, and enablement for the grid navigator.
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author
 

@@ -6,7 +6,7 @@ Console application version of the [00-reference grid navigator](../application.
 
 - Python **3.12+** via [pyenv](https://github.com/pyenv/pyenv) (see [root README](../../README.md#python-and-pyenv))
 - Repository virtual environment activated
-- A terminal that supports ANSI colors and curses
+- A terminal that supports curses
 
 From the repository root:
 
@@ -19,7 +19,7 @@ pip install -r requirements.txt
 
 ## Environment variables
 
-None — this example does not use LaunchDarkly yet.
+None.
 
 ## Build
 
@@ -39,5 +39,5 @@ Press `q` to quit the grid screen.
 
 1. Enter a username at the login prompt (empty names are rejected).
 2. The grid screen shows your name, current position (`m/m` initially), and previous position (`—`).
-3. Use arrow keys or WASD to move; the selected cell has a green outline and **X**.
+3. Use arrow keys or WASD to move; the selected cell shows **X** (no color highlight).
 4. Movement stops at grid edges (no wrap-around).

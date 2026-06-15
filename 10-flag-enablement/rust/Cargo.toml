@@ -1,0 +1,12 @@
+[package]
+name = "flag-enablement-grid-navigator"
+version = "1.0.0"
+edition = "2021"
+
+[[bin]]
+name = "10-flag-enablement"
+path = "src/main.rs"
+
+[dependencies]
+crossterm = "0.28"
+launchdarkly-server-sdk = "2.6"
