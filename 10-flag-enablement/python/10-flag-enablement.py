@@ -9,7 +9,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 import ldclient
-from ldclient import Config, Context
+from ldclient import Config
 from ldclient.client import LDClient
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -19,13 +19,20 @@ from highlight_style import (  # noqa: E402
     FLAG_HIGHLIGHT,
     build_flag_response,
 )
+from host_os import (  # noqa: E402
+    FLAG_OS_EMOJI,
+    HOST_OS_ATTR,
+    build_evaluation_context,
+    detect_host_os,
+)
 
 # LaunchDarkly capability: Boolean flag evaluation (server-side SDK)
-# Evaluates grid-navigator flags for the logged-in username before the UI renders.
-# See: https://launchdarkly.com/docs/sdk/features/evaluating
+# Private attribute hostOs is set on the evaluation context for targeting.
+# See: https://launchdarkly.com/docs/sdk/features/private-attributes
 
 ROOT = Path(__file__).parent
 _ld_client: LDClient | None = None
+_host_os = detect_host_os()
 
 
 def init_launchdarkly() -> None:
@@ -35,7 +42,7 @@ def init_launchdarkly() -> None:
     if not sdk_key:
         print("Warning: LD_SDK_KEY not set — flags default to off.", flush=True)
         return
-    ldclient.set_config(Config(sdk_key))
+    ldclient.set_config(Config(sdk_key, private_attributes=[HOST_OS_ATTR]))
     _ld_client = ldclient.get()
     if not _ld_client.is_initialized():
         print("Warning: LaunchDarkly SDK did not initialize — flags default to off.", flush=True)
@@ -44,12 +51,15 @@ def init_launchdarkly() -> None:
 def evaluate_flags(username: str) -> dict[str, object]:
     """Return current flag values and resolved highlight styling for a user context."""
     if _ld_client is None or not _ld_client.is_initialized():
-        return build_flag_response(username, False, False, False)
-    context = Context.create(username)
+        return build_flag_response(username, False, False, False, False, _host_os)
+    context, host_os = build_evaluation_context(username)
     highlight = bool(_ld_client.variation(FLAG_HIGHLIGHT, context, False))
     context_highlight = bool(_ld_client.variation(FLAG_CONTEXT, context, False))
     show_count = bool(_ld_client.variation(FLAG_COUNT, context, False))
-    return build_flag_response(username, highlight, context_highlight, show_count)
+    show_os_emoji = bool(_ld_client.variation(FLAG_OS_EMOJI, context, False))
+    return build_flag_response(
+        username, highlight, context_highlight, show_count, show_os_emoji, host_os
+    )
 
 
 class Handler(SimpleHTTPRequestHandler):

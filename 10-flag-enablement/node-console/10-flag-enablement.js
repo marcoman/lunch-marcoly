@@ -9,12 +9,14 @@ const {
   FLAG_COUNT,
   buildFlagResponse,
 } = require("../highlight-style");
+const { detectHostOs, HOST_OS_ATTR, FLAG_OS_EMOJI } = require("../host-os");
 
-// LaunchDarkly capability: Boolean flag evaluation (server-side SDK)
-// See: https://launchdarkly.com/docs/sdk/features/evaluating
+// LaunchDarkly capability: Boolean flag evaluation + private context attributes
+// See: https://launchdarkly.com/docs/sdk/features/private-attributes
 
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
+const HOST_OS = detectHostOs();
 const ANSI = {
   pink: "\x1b[95m",
   yellow: "\x1b[93m",
@@ -31,7 +33,7 @@ let ldClient = null;
 async function initLaunchDarkly() {
   const sdkKey = process.env.LD_SDK_KEY;
   if (!sdkKey) return;
-  ldClient = LaunchDarkly.init(sdkKey);
+  ldClient = LaunchDarkly.init(sdkKey, { privateAttributes: [HOST_OS_ATTR] });
   try {
     await ldClient.waitForInitialization({ timeout: 5 });
   } catch (_) {
@@ -40,17 +42,29 @@ async function initLaunchDarkly() {
 }
 
 async function evaluateFlags(username) {
-  if (!ldClient) return buildFlagResponse(username, false, false, false);
-  const context = { kind: "user", key: username };
+  if (!ldClient) return buildFlagResponse(username, false, false, false, false, HOST_OS);
+  const context = {
+    kind: "user",
+    key: username,
+    hostOs: HOST_OS,
+    privateAttributes: [HOST_OS_ATTR],
+  };
   const highlightEnabled = await ldClient.variation(FLAG_HIGHLIGHT, context, false);
   const contextHighlight = await ldClient.variation(FLAG_CONTEXT, context, false);
   const showMoveCount = await ldClient.variation(FLAG_COUNT, context, false);
+  const showOsEmoji = await ldClient.variation(FLAG_OS_EMOJI, context, false);
   return buildFlagResponse(
     username,
     Boolean(highlightEnabled),
     Boolean(contextHighlight),
-    Boolean(showMoveCount)
+    Boolean(showMoveCount),
+    Boolean(showOsEmoji),
+    HOST_OS
   );
+}
+
+function displayName(username, osEmoji) {
+  return osEmoji ? `${osEmoji} ${username}` : username;
 }
 
 function formatPos(row, col) {
@@ -82,7 +96,7 @@ function drawCell(selected, color) {
 
 function formatNameLine(username, flags) {
   const color = flags.highlightColor;
-  const namePart = colorize(username, color);
+  const namePart = colorize(displayName(username, flags.osEmoji), color);
   const cohort = colorize(` ${flags.cohortLabel}`, color);
   return `Name: ${namePart}${cohort}${RESET}${BG}`;
 }
@@ -140,7 +154,7 @@ async function runGrid(username) {
   let col = 1;
   let previous = null;
   let moveCount = 0;
-  let flags = buildFlagResponse(username, false, false, false);
+  let flags = buildFlagResponse(username, false, false, false, false, HOST_OS);
 
   readline.emitKeypressEvents(process.stdin);
   if (process.stdin.isTTY) process.stdin.setRawMode(true);

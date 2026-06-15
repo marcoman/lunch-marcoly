@@ -91,7 +91,41 @@ create_flag '{
   }
 }' | jq '{key, name, tags, temporary}'
 
+echo "Creating show-host-os-emoji..."
+create_flag '{
+  "key": "show-host-os-emoji",
+  "name": "Show: host OS emoji",
+  "description": "When enabled, displays an OS emoji before the username. The host OS is sent as a private context attribute (hostOs) for targeting.",
+  "temporary": true,
+  "tags": ["grid-navigator", "show", "header", "private-attributes"],
+  "variations": [
+    {
+      "value": true,
+      "name": "Visible",
+      "description": "Show OS emoji before username"
+    },
+    {
+      "value": false,
+      "name": "Hidden",
+      "description": "No OS emoji (default)"
+    }
+  ],
+  "defaults": {
+    "onVariation": 0,
+    "offVariation": 1
+  }
+}' | jq '{key, name, tags, temporary}'
+
 if [[ -n "${LD_ENVIRONMENT_KEY:-}" ]]; then
+  echo "Setting show-host-os-emoji to OFF in environment ${LD_ENVIRONMENT_KEY}..."
+  api PATCH "/flags/${LD_PROJECT_KEY}/show-host-os-emoji" \
+    -H "Content-Type: application/json; domain-model=launchdarkly.semanticpatch" \
+    -d "{
+      \"environmentKey\": \"${LD_ENVIRONMENT_KEY}\",
+      \"comment\": \"Default: no OS emoji\",
+      \"instructions\": [{\"kind\": \"turnFlagOff\"}]
+    }" | jq ".environments.\"${LD_ENVIRONMENT_KEY}\" | {on, fallthrough, offVariation}"
+
   echo "Setting show-navigation-move-count to OFF in environment ${LD_ENVIRONMENT_KEY}..."
   api PATCH "/flags/${LD_PROJECT_KEY}/show-navigation-move-count" \
     -H "Content-Type: application/json; domain-model=launchdarkly.semanticpatch" \

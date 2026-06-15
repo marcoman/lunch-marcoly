@@ -78,6 +78,16 @@ A temporary **show** flag that controls visibility of a running navigation count
 | **When `true`** | Header displays `Count: N` |
 | **When `false`** | No count is visible in the header |
 
+### 4. Host OS emoji (private attribute)
+
+Shows an OS emoji before the username. The host OS is sent as private context attribute `hostOs` for LaunchDarkly targeting.
+
+| Attribute | Value |
+|-----------|-------|
+| **Key** | `show-host-os-emoji` |
+| **Default (off)** | `false` — no emoji |
+| **When `true`** | 🐧 linux, 🍎 macOS, 🪟 Windows, 😊 other — displayed as `emoji username` |
+
 ## Visual design
 
 Implementations use a **dark background** (web: `#1e1e2e`; console: dark gray ANSI background) so light colors like yellow and dark colors like purple both have sufficient contrast.
@@ -102,7 +112,7 @@ export LD_ACCESS_TOKEN="api-..."       # terraform/ examples
 
 | Approach | Directory | What it creates |
 |----------|-----------|----------------|
-| Terraform | [terraform/](terraform/) | All three flags; all default to **off** in the target environment |
+| Terraform | [terraform/](terraform/) | All four flags; all default to **off** in the target environment |
 | REST API | [rest/](rest/) | Shell scripts demonstrating create, retrieve, update, and delete |
 
 Run provisioning **before** adding language implementations in this folder.
@@ -115,6 +125,7 @@ When implementations evaluate these flags, use the keys exactly as shown:
 configure-grid-selection-green-highlight
 configure-grid-selection-context-highlight
 show-navigation-move-count
+show-host-os-emoji
 ```
 
 ## Language implementations

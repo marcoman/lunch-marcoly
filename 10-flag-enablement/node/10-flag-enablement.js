@@ -11,12 +11,14 @@ const {
   FLAG_COUNT,
   buildFlagResponse,
 } = require("../highlight-style");
+const { detectHostOs, HOST_OS_ATTR, FLAG_OS_EMOJI } = require("../host-os");
 
-// LaunchDarkly capability: Boolean flag evaluation (server-side SDK)
-// See: https://launchdarkly.com/docs/sdk/features/evaluating
+// LaunchDarkly capability: Boolean flag evaluation + private context attributes
+// See: https://launchdarkly.com/docs/sdk/features/private-attributes
 
 const PORT = 8080;
 const ROOT = __dirname;
+const HOST_OS = detectHostOs();
 
 let ldClient = null;
 
@@ -26,7 +28,7 @@ async function initLaunchDarkly() {
     console.warn("Warning: LD_SDK_KEY not set — flags default to off.");
     return;
   }
-  ldClient = LaunchDarkly.init(sdkKey);
+  ldClient = LaunchDarkly.init(sdkKey, { privateAttributes: [HOST_OS_ATTR] });
   try {
     await ldClient.waitForInitialization({ timeout: 5 });
   } catch (err) {
@@ -35,19 +37,31 @@ async function initLaunchDarkly() {
   }
 }
 
+function buildContext(username) {
+  return {
+    kind: "user",
+    key: username,
+    hostOs: HOST_OS,
+    privateAttributes: [HOST_OS_ATTR],
+  };
+}
+
 async function evaluateFlags(username) {
   if (!ldClient) {
-    return buildFlagResponse(username, false, false, false);
+    return buildFlagResponse(username, false, false, false, false, HOST_OS);
   }
-  const context = { kind: "user", key: username };
+  const context = buildContext(username);
   const highlightEnabled = await ldClient.variation(FLAG_HIGHLIGHT, context, false);
   const contextHighlight = await ldClient.variation(FLAG_CONTEXT, context, false);
   const showMoveCount = await ldClient.variation(FLAG_COUNT, context, false);
+  const showOsEmoji = await ldClient.variation(FLAG_OS_EMOJI, context, false);
   return buildFlagResponse(
     username,
     Boolean(highlightEnabled),
     Boolean(contextHighlight),
-    Boolean(showMoveCount)
+    Boolean(showMoveCount),
+    Boolean(showOsEmoji),
+    HOST_OS
   );
 }
 

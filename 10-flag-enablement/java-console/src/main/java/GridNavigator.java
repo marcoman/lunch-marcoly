@@ -158,7 +158,8 @@ public class GridNavigator {
         System.out.flush();
         String prevText = previous == null ? "—" : formatPos(previous.row, previous.col);
         String cohort = " " + flags.cohortLabel();
-        writeLine("Name: " + colorize(username, flags.highlightColor()) + colorize(cohort, flags.highlightColor()) + RESET + BG);
+        String displayName = HostOs.displayName(username, flags.osEmoji());
+        writeLine("Name: " + colorize(displayName, flags.highlightColor()) + colorize(cohort, flags.highlightColor()) + RESET + BG);
         writeLine("Current position: " + formatPos(row, col));
         writeLine("Previous position: " + prevText);
         if (flags.showMoveCount()) {

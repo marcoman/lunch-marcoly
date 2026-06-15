@@ -11,6 +11,7 @@ struct FlagValues {
     bool showMoveCount = false;
     std::string highlightColor = "none";
     std::string cohortLabel;
+    std::string osEmoji;
 };
 
 void init_launchdarkly();

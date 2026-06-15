@@ -69,6 +69,7 @@ Terraform creates two boolean feature flags:
 | `configure-grid-selection-green-highlight` | Configure: grid selection green highlight | Off (`false` — X only, no colors) |
 | `configure-grid-selection-context-highlight` | Configure: grid selection context highlight | Off (`false` — pink when highlight on) |
 | `show-navigation-move-count` | Show: navigation move count | Off (`false` — hidden) |
+| `show-host-os-emoji` | Show: host OS emoji | Off (`false` — no emoji) |
 
 Verify in the LaunchDarkly UI under **Feature flags** for your project, or run:
 

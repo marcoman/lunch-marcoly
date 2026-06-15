@@ -186,6 +186,56 @@ resource "launchdarkly_feature_flag_environment" "configure_grid_selection_conte
     variation = 1
   }
 
+  ]
+}
+
+# Show flag: host OS emoji beside username (uses private hostOs context attribute).
+resource "launchdarkly_feature_flag" "show_host_os_emoji" {
+  project_key = var.project_key
+  key         = "show-host-os-emoji"
+  name        = "Show: host OS emoji"
+  description = "When enabled, displays an OS emoji before the username. The host OS is sent as a private context attribute (hostOs) for targeting."
+  temporary   = true
+
+  variation_type = "boolean"
+
+  variations {
+    value       = true
+    name        = "Visible"
+    description = "Show OS emoji before username (linux penguin, macOS apple, Windows window, other smiley)"
+  }
+
+  variations {
+    value       = false
+    name        = "Hidden"
+    description = "No OS emoji (default)"
+  }
+
+  defaults {
+    on_variation  = 0
+    off_variation = 1
+  }
+
+  tags = [
+    "grid-navigator",
+    "show",
+    "header",
+    "private-attributes",
+    "managed-by-terraform",
+  ]
+}
+
+# Default show-host-os-emoji to OFF in the target environment.
+resource "launchdarkly_feature_flag_environment" "show_host_os_emoji_env" {
+  flag_id = launchdarkly_feature_flag.show_host_os_emoji.id
+  env_key = var.environment_key
+
+  on = false
+
+  fallthrough {
+    variation = 1
+  }
+
   off_variation = 1
 }
 
@@ -195,5 +245,6 @@ output "flag_keys" {
     launchdarkly_feature_flag.configure_grid_selection_green_highlight.key,
     launchdarkly_feature_flag.configure_grid_selection_context_highlight.key,
     launchdarkly_feature_flag.show_navigation_move_count.key,
+    launchdarkly_feature_flag.show_host_os_emoji.key,
   ]
 }

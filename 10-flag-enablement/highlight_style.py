@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from host_os import os_emoji_for
+
 FLAG_HIGHLIGHT = "configure-grid-selection-green-highlight"
 FLAG_CONTEXT = "configure-grid-selection-context-highlight"
 FLAG_COUNT = "show-navigation-move-count"
@@ -69,6 +71,8 @@ def build_flag_response(
     highlight_enabled: bool,
     context_highlight: bool,
     show_move_count: bool,
+    show_os_emoji: bool,
+    host_os: str,
 ) -> dict[str, object]:
     color = resolve_highlight_color(username, highlight_enabled, context_highlight)
     label = format_cohort_label(username, color, context_highlight)
@@ -78,4 +82,5 @@ def build_flag_response(
         "showMoveCount": show_move_count,
         "highlightColor": color,
         "cohortLabel": label,
+        "osEmoji": os_emoji_for(host_os, show_os_emoji),
     }

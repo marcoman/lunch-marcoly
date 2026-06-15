@@ -7,7 +7,7 @@ use crossterm::{
     style::Print,
     terminal::{self, ClearType},
 };
-use launchdarkly_server_sdk::{Client, ConfigBuilder, ContextBuilder};
+use launchdarkly_server_sdk::{AttributeValue, Client, ConfigBuilder, ContextBuilder};
 use std::io::{self, Write};
 use std::sync::Arc;
 use std::time::Duration;
@@ -18,6 +18,8 @@ use std::time::Duration;
 const FLAG_HIGHLIGHT: &str = "configure-grid-selection-green-highlight";
 const FLAG_CONTEXT: &str = "configure-grid-selection-context-highlight";
 const FLAG_COUNT: &str = "show-navigation-move-count";
+const FLAG_OS_EMOJI: &str = "show-host-os-emoji";
+const HOST_OS_ATTR: &str = "hostOs";
 
 const ROWS: [&str; 3] = ["t", "m", "b"];
 const COLS: [&str; 3] = ["l", "m", "r"];
@@ -39,6 +41,7 @@ struct FlagValues {
     show_move_count: bool,
     highlight_color: String,
     cohort_label: String,
+    os_emoji: String,
 }
 
 struct Cohorts {
@@ -49,6 +52,37 @@ struct Cohorts {
 
 struct App {
     client: Option<Arc<Client>>,
+    host_os: String,
+}
+
+fn detect_host_os() -> String {
+    match std::env::consts::OS {
+        "linux" => "linux",
+        "windows" => "windows",
+        "macos" => "macos",
+        _ => "other",
+    }
+    .to_string()
+}
+
+fn os_emoji_for(host_os: &str, show_os_emoji: bool) -> String {
+    if !show_os_emoji {
+        return String::new();
+    }
+    match host_os {
+        "linux" => "🐧".to_string(),
+        "macos" => "🍎".to_string(),
+        "windows" => "🪟".to_string(),
+        _ => "😊".to_string(),
+    }
+}
+
+fn display_name(username: &str, os_emoji: &str) -> String {
+    if os_emoji.is_empty() {
+        username.to_string()
+    } else {
+        format!("{os_emoji} {username}")
+    }
 }
 
 fn parse_cohorts(username: &str) -> Cohorts {
@@ -121,6 +155,8 @@ fn build_flag_response(
     highlight_enabled: bool,
     context_highlight: bool,
     show_move_count: bool,
+    show_os_emoji: bool,
+    host_os: &str,
 ) -> FlagValues {
     let color = resolve_highlight_color(username, highlight_enabled, context_highlight);
     let label = format_cohort_label(username, &color, context_highlight);
@@ -128,6 +164,7 @@ fn build_flag_response(
         show_move_count,
         highlight_color: color,
         cohort_label: label,
+        os_emoji: os_emoji_for(host_os, show_os_emoji),
     }
 }
 
@@ -177,20 +214,36 @@ impl App {
         if std::env::var("LD_SDK_KEY").is_err() {
             eprintln!("Warning: LD_SDK_KEY not set — flags default to off.");
         }
-        Self { client }
+        Self {
+            client,
+            host_os: detect_host_os(),
+        }
     }
 
     fn evaluate_flags(&self, username: &str) -> FlagValues {
         let Some(client) = &self.client else {
-            return build_flag_response(username, false, false, false);
+            return build_flag_response(username, false, false, false, false, &self.host_os);
         };
         let context = ContextBuilder::new(username)
+            .set_value(
+                HOST_OS_ATTR,
+                AttributeValue::String(self.host_os.clone().into()),
+            )
+            .add_private_attribute(HOST_OS_ATTR)
             .build()
             .unwrap_or_else(|_| ContextBuilder::new("anonymous").build().unwrap());
         let highlight = client.bool_variation(&context, FLAG_HIGHLIGHT, false);
         let context_highlight = client.bool_variation(&context, FLAG_CONTEXT, false);
         let show_count = client.bool_variation(&context, FLAG_COUNT, false);
-        build_flag_response(username, highlight, context_highlight, show_count)
+        let show_os_emoji = client.bool_variation(&context, FLAG_OS_EMOJI, false);
+        build_flag_response(
+            username,
+            highlight,
+            context_highlight,
+            show_count,
+            show_os_emoji,
+            &self.host_os,
+        )
     }
 }
 
@@ -287,7 +340,7 @@ fn render(
         y,
         &format!(
             "Name: {}{}",
-            colorize(username, &flags.highlight_color),
+            colorize(&display_name(username, &flags.os_emoji), &flags.highlight_color),
             colorize(&cohort, &flags.highlight_color)
         ),
     )?;

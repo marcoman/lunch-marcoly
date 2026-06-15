@@ -8,13 +8,14 @@ Repository layout and provisioning conventions are in [project.md](../project.md
 
 ## Overview
 
-**10-flag-enablement** extends the reference grid navigator with three boolean feature flags. All flags apply to every language implementation in this folder (web and console).
+**10-flag-enablement** extends the reference grid navigator with four boolean feature flags. All flags apply to every language implementation in this folder (web and console).
 
 | Flag key | Purpose |
 |----------|---------|
 | `configure-grid-selection-green-highlight` | Enable or disable colored highlight on the selected cell |
 | `configure-grid-selection-context-highlight` | Enable context-based highlight colors derived from the login name |
 | `show-navigation-move-count` | Show or hide a navigation counter in the header |
+| `show-host-os-emoji` | Show or hide a host OS emoji before the username (private `hostOs` attribute) |
 
 Flags are provisioned in [terraform/](terraform/) and [rest/](rest/). Application code evaluates them at runtime using the LaunchDarkly SDK for each language.
 
@@ -25,7 +26,7 @@ Flags are provisioned in [terraform/](terraform/) and [rest/](rest/). Applicatio
 | LaunchDarkly | None | Required |
 | Baseline behavior | Full spec | Inherits from 00-reference |
 | Selected cell styling | `X` only — no colors | `X` by default; colored highlight when highlight flag is on |
-| Header Name field | Plain username | Username (and optional cohort label) colored when highlight is on |
+| Header Name field | Plain username | `emoji username` when OS flag on; username colored when highlight is on |
 | Header fields | Name, Current position, Previous position | Same three fields, plus optional Count |
 | Navigation counter | Not present | Controlled by show flag |
 | Screen background | Light (web) / default terminal | Dark background for contrast with light and dark highlight colors |
@@ -245,6 +246,81 @@ The move counter is **application state**, not a flag variation. The flag only c
 
 ---
 
+## Flag 4: Host OS emoji (private attribute)
+
+### Metadata
+
+| Attribute | Value |
+|-----------|-------|
+| **Kind** | Show (temporary) |
+| **Name** | `Show: host OS emoji` |
+| **Key** | `show-host-os-emoji` |
+| **Temporary** | Yes |
+| **Tags** | `grid-navigator`, `show`, `header`, `private-attributes` |
+| **Default variation (off)** | `false` (`Hidden`) |
+| **SDK default when offline** | `false` — no emoji |
+
+### Private context attribute
+
+Each evaluation context includes a **`hostOs`** attribute set from the **host operating system** where the app runs. The attribute is marked **private** so the SDK uses it for targeting but does not send its value back to LaunchDarkly in events.
+
+| Detected OS | `hostOs` value |
+|-------------|----------------|
+| Linux | `linux` |
+| macOS | `macos` |
+| Windows | `windows` |
+| Other | `other` |
+
+Implementations detect OS at runtime (e.g. `platform.system()` in Python, `runtime.GOOS` in Go). See [Private attributes](https://launchdarkly.com/docs/sdk/features/private-attributes) for SDK configuration.
+
+### Variations
+
+| Value | Label | Application behavior |
+|-------|-------|----------------------|
+| `true` | Visible | Display an OS emoji immediately before the username |
+| `false` | Hidden | No emoji (default) |
+
+### Emoji mapping
+
+| `hostOs` | Emoji |
+|----------|-------|
+| `linux` | 🐧 (penguin) |
+| `macos` | 🍎 (apple) |
+| `windows` | 🪟 (window) |
+| `other` | 😊 (smiley) |
+
+### Desired effects
+
+#### When `false` (default)
+
+- Header name line shows the username only (plus cohort label when applicable): `Name: alice (no-color)`
+- No emoji appears
+
+#### When `true`
+
+- Header name line shows **`emoji username`** (no brackets): e.g. `Name: 🍎 alice (no-color)` on macOS
+- Emoji appears **before** the username; cohort label still follows the username
+- Emoji is **not** colored by highlight styling (only the username and cohort label use highlight colors)
+
+Example on Linux with highlight flags on for user `human`:
+
+```text
+Name: 🐧 human (human-yellow)
+```
+
+#### What this flag does not change
+
+- Login screen
+- Grid layout or navigation
+- Highlight colors or cohort labels (see Flags 1 and 2)
+- Move count visibility (see Flag 3)
+
+### Evaluation
+
+Evaluate when rendering the header. The app always attaches private `hostOs` to the LaunchDarkly context; the flag only controls whether the emoji is displayed.
+
+---
+
 ## Visual design: dark background for contrast
 
 Highlight colors include both **light** (yellow) and **dark** (purple, red, blue) tones. Implementations use a **dark screen background** so all cohort colors remain readable:
@@ -294,6 +370,7 @@ Implementations should model at least the 00-reference state **plus**:
 | `showMoveCount` | boolean | From `show-navigation-move-count` |
 | `highlightColor` | string | `none`, `pink`, `yellow`, `red`, `blue`, `green`, or `purple` — derived from flags + username |
 | `cohortLabel` | string | e.g. `(human-beta-green)`, `(pink)`, or `(no-color)` |
+| `osEmoji` | string | OS emoji character or empty string when flag is off |
 
 ```text
 position = { row: "t" | "m" | "b", col: "l" | "m" | "r" }
@@ -311,7 +388,8 @@ Refresh flag values when the LaunchDarkly SDK reports a change (streaming) or on
   "contextHighlight": true,
   "showMoveCount": false,
   "highlightColor": "green",
-  "cohortLabel": "(human-beta-green)"
+  "cohortLabel": "(human-beta-green)",
+  "osEmoji": "🍎"
 }
 ```
 
@@ -349,17 +427,24 @@ An implementation in **10-flag-enablement** is correct when it satisfies all [00
 
 ### Defaults and offline behavior
 
-17. All three flags default to **off** when targeting is off in LaunchDarkly
+17. All four flags default to **off** when targeting is off in LaunchDarkly
 18. When the SDK is unavailable, all flags evaluate to their **off** defaults
+
+### Flag 4 — host OS emoji
+
+19. With the show flag **off**, no emoji appears before the username
+20. With the show flag **on**, the correct emoji appears for the detected host OS
+21. `hostOs` is attached to the evaluation context as a **private attribute**
 
 ### Provisioning alignment
 
-19. Flag keys in code match the keys in [terraform/main.tf](terraform/main.tf) and [rest/](rest/) exactly:
+22. Flag keys in code match the keys in [terraform/main.tf](terraform/main.tf) and [rest/](rest/) exactly:
 
 ```text
 configure-grid-selection-green-highlight
 configure-grid-selection-context-highlight
 show-navigation-move-count
+show-host-os-emoji
 ```
 
 ## Further reading

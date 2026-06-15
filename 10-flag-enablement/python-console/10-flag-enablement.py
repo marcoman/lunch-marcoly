@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 import ldclient
-from ldclient import Config, Context
+from ldclient import Config
 from ldclient.client import LDClient
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -17,9 +17,16 @@ from highlight_style import (  # noqa: E402
     FLAG_HIGHLIGHT,
     build_flag_response,
 )
+from host_os import (  # noqa: E402
+    FLAG_OS_EMOJI,
+    HOST_OS_ATTR,
+    build_evaluation_context,
+    detect_host_os,
+)
 
 # LaunchDarkly capability: Boolean flag evaluation (server-side SDK)
-# See: https://launchdarkly.com/docs/sdk/features/evaluating
+# Private attribute hostOs is set on the evaluation context for targeting.
+# See: https://launchdarkly.com/docs/sdk/features/private-attributes
 
 ROWS = ("t", "m", "b")
 COLS = ("l", "m", "r")
@@ -34,6 +41,7 @@ COLOR_PAIRS = {
 }
 
 _ld_client: LDClient | None = None
+_host_os = detect_host_os()
 
 
 def init_launchdarkly() -> None:
@@ -41,18 +49,28 @@ def init_launchdarkly() -> None:
     sdk_key = os.environ.get("LD_SDK_KEY")
     if not sdk_key:
         return
-    ldclient.set_config(Config(sdk_key))
+    ldclient.set_config(Config(sdk_key, private_attributes=[HOST_OS_ATTR]))
     _ld_client = ldclient.get()
 
 
 def evaluate_flags(username: str) -> dict[str, object]:
     if _ld_client is None or not _ld_client.is_initialized():
-        return build_flag_response(username, False, False, False)
-    context = Context.create(username)
+        return build_flag_response(username, False, False, False, False, _host_os)
+    context, host_os = build_evaluation_context(username)
     highlight = bool(_ld_client.variation(FLAG_HIGHLIGHT, context, False))
     context_highlight = bool(_ld_client.variation(FLAG_CONTEXT, context, False))
     show_count = bool(_ld_client.variation(FLAG_COUNT, context, False))
-    return build_flag_response(username, highlight, context_highlight, show_count)
+    show_os_emoji = bool(_ld_client.variation(FLAG_OS_EMOJI, context, False))
+    return build_flag_response(
+        username, highlight, context_highlight, show_count, show_os_emoji, host_os
+    )
+
+
+def display_name(username: str, flags: dict[str, object]) -> str:
+    emoji = str(flags.get("osEmoji", ""))
+    if emoji:
+        return f"{emoji} {username}"
+    return username
 
 
 def format_pos(row: int, col: int) -> str:
@@ -105,8 +123,9 @@ def draw_name_line(stdscr: curses.window, y: int, username: str, flags: dict) ->
     stdscr.addstr(y, 0, "Name: ")
     color = str(flags["highlightColor"])
     label = str(flags["cohortLabel"])
+    name = display_name(username, flags)
     attr = cell_attr(color) if color != "none" else curses.A_NORMAL
-    stdscr.addstr(y, 6, username, attr)
+    stdscr.addstr(y, 6, name, attr)
     stdscr.addstr(f" {label}", attr)
 
 

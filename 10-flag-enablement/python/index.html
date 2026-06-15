@@ -125,6 +125,7 @@
       showMoveCount: false,
       highlightColor: "none",
       cohortLabel: "",
+      osEmoji: "",
     };
     let flagPollTimer = null;
 
@@ -165,7 +166,8 @@
       const nameEl = document.getElementById("hdr-name");
       const cohortEl = document.getElementById("hdr-cohort");
       const cls = colorClass(flags.highlightColor);
-      nameEl.textContent = username;
+      const prefix = flags.osEmoji ? `${flags.osEmoji} ` : "";
+      nameEl.textContent = prefix + username;
       nameEl.className = cls;
       cohortEl.textContent = flags.cohortLabel ? ` ${flags.cohortLabel}` : "";
       cohortEl.className = cls;
@@ -218,6 +220,7 @@
         showMoveCount: false,
         highlightColor: "none",
         cohortLabel: "",
+        osEmoji: "",
       };
       document.getElementById("login-screen").classList.add("hidden");
       document.getElementById("grid-screen").classList.remove("hidden");

@@ -1,5 +1,7 @@
 /** Resolve grid selection highlight color and cohort label from username context. */
 
+const { osEmojiFor } = require("./host-os");
+
 const FLAG_HIGHLIGHT = "configure-grid-selection-green-highlight";
 const FLAG_CONTEXT = "configure-grid-selection-context-highlight";
 const FLAG_COUNT = "show-navigation-move-count";
@@ -50,7 +52,14 @@ function resolveHighlightColor(username, highlightEnabled, contextHighlight) {
   return "pink";
 }
 
-function buildFlagResponse(username, highlightEnabled, contextHighlight, showMoveCount) {
+function buildFlagResponse(
+  username,
+  highlightEnabled,
+  contextHighlight,
+  showMoveCount,
+  showOsEmoji,
+  hostOs
+) {
   const highlightColor = resolveHighlightColor(
     username,
     highlightEnabled,
@@ -67,6 +76,7 @@ function buildFlagResponse(username, highlightEnabled, contextHighlight, showMov
     showMoveCount,
     highlightColor,
     cohortLabel,
+    osEmoji: osEmojiFor(hostOs, showOsEmoji),
   };
 }
 
@@ -75,5 +85,6 @@ module.exports = {
   FLAG_CONTEXT,
   FLAG_COUNT,
   resolveHighlightColor,
+  formatCohortLabel,
   buildFlagResponse,
 };

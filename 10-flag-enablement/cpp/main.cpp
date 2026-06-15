@@ -29,6 +29,13 @@ std::string ansi_color(const std::string& color) {
     return "";
 }
 
+std::string display_name(const std::string& username, const std::string& os_emoji) {
+    if (os_emoji.empty()) {
+        return username;
+    }
+    return os_emoji + " " + username;
+}
+
 std::string colorize(const std::string& text, const std::string& color) {
     if (color.empty() || color == "none") {
         return text;
@@ -132,7 +139,7 @@ void render(const std::string& username, int row, int col,
     const std::string prev_text =
         previous ? format_pos(previous->row, previous->col) : "—";
     const std::string cohort = " " + flags.cohortLabel;
-    write_line("Name: " + colorize(username, flags.highlightColor) +
+    write_line("Name: " + colorize(display_name(username, flags.osEmoji), flags.highlightColor) +
                colorize(cohort, flags.highlightColor) + kReset + kBg);
     write_line("Current position: " + format_pos(row, col));
     write_line("Previous position: " + prev_text);

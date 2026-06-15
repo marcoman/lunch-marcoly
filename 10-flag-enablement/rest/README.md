@@ -37,7 +37,7 @@ chmod +x *.sh
 ./create-flags.sh
 ```
 
-Creates `configure-grid-selection-green-highlight`, `configure-grid-selection-context-highlight`, and `show-navigation-move-count`. When `LD_ENVIRONMENT_KEY` is set, all three flags are turned **off** in that environment.
+Creates all four grid navigator flags. When `LD_ENVIRONMENT_KEY` is set, all four flags are turned **off** in that environment.
 
 ### Retrieve a flag
 
@@ -45,6 +45,7 @@ Creates `configure-grid-selection-green-highlight`, `configure-grid-selection-co
 ./get-flag.sh show-navigation-move-count
 ./get-flag.sh configure-grid-selection-green-highlight
 ./get-flag.sh configure-grid-selection-context-highlight
+./get-flag.sh show-host-os-emoji
 ```
 
 Equivalent curl:

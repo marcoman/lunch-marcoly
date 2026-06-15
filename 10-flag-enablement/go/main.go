@@ -5,21 +5,26 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
 	"time"
 
 	"github.com/launchdarkly/go-sdk-common/v3/ldcontext"
 	ld "github.com/launchdarkly/go-server-sdk/v7"
+	"github.com/launchdarkly/go-server-sdk/v7/ldcomponents"
 	"golang.org/x/term"
 )
 
-// LaunchDarkly capability: Boolean flag evaluation (server-side SDK)
+// LaunchDarkly capability: Boolean flag evaluation + private context attributes
 // See: https://launchdarkly.com/docs/sdk/features/evaluating
+// See: https://launchdarkly.com/docs/sdk/features/private-attributes
 
 const (
 	flagHighlight = "configure-grid-selection-green-highlight"
 	flagContext   = "configure-grid-selection-context-highlight"
 	flagCount     = "show-navigation-move-count"
+	flagOsEmoji   = "show-host-os-emoji"
+	hostOsAttr    = "hostOs"
 )
 
 var rows = [3]string{"t", "m", "b"}
@@ -29,6 +34,22 @@ const bgANSI = "\033[48;5;236m"
 const resetANSI = "\033[0m"
 
 var ldClient *ld.LDClient
+var hostOS = detectHostOS()
+
+type flagValues struct {
+	highlightEnabled bool
+	contextHighlight bool
+	showMoveCount    bool
+	highlightColor   string
+	cohortLabel      string
+	osEmoji          string
+}
+
+type cohorts struct {
+	human bool
+	robot bool
+	beta  bool
+}
 
 type position struct {
 	row, col int
@@ -39,18 +60,40 @@ type moveResult struct {
 	moved    bool
 }
 
-type flagValues struct {
-	highlightEnabled  bool
-	contextHighlight  bool
-	showMoveCount     bool
-	highlightColor    string
-	cohortLabel       string
+func detectHostOS() string {
+	switch runtime.GOOS {
+	case "linux":
+		return "linux"
+	case "windows":
+		return "windows"
+	case "darwin":
+		return "macos"
+	default:
+		return "other"
+	}
 }
 
-type cohorts struct {
-	human bool
-	robot bool
-	beta  bool
+func osEmojiFor(hostOs string, showOsEmoji bool) string {
+	if !showOsEmoji {
+		return ""
+	}
+	switch hostOs {
+	case "linux":
+		return "🐧"
+	case "macos":
+		return "🍎"
+	case "windows":
+		return "🪟"
+	default:
+		return "😊"
+	}
+}
+
+func displayName(username, osEmoji string) string {
+	if osEmoji == "" {
+		return username
+	}
+	return osEmoji + " " + username
 }
 
 func parseCohorts(username string) cohorts {
@@ -114,7 +157,7 @@ func resolveHighlightColor(username string, highlightEnabled, contextHighlight b
 	}
 }
 
-func buildFlagResponse(username string, highlightEnabled, contextHighlight, showMoveCount bool) flagValues {
+func buildFlagResponse(username string, highlightEnabled, contextHighlight, showMoveCount, showOsEmoji bool, hostOs string) flagValues {
 	color := resolveHighlightColor(username, highlightEnabled, contextHighlight)
 	label := formatCohortLabel(username, color, contextHighlight)
 	return flagValues{
@@ -123,6 +166,7 @@ func buildFlagResponse(username string, highlightEnabled, contextHighlight, show
 		showMoveCount:    showMoveCount,
 		highlightColor:   color,
 		cohortLabel:      label,
+		osEmoji:          osEmojiFor(hostOs, showOsEmoji),
 	}
 }
 
@@ -132,7 +176,10 @@ func initLaunchDarkly() {
 		fmt.Fprintln(os.Stderr, "Warning: LD_SDK_KEY not set — flags default to off.")
 		return
 	}
-	client, err := ld.MakeClient(sdkKey, 5*time.Second)
+	config := ld.Config{
+		Events: ldcomponents.SendEvents().PrivateAttributes(hostOsAttr),
+	}
+	client, err := ld.MakeCustomClient(sdkKey, config, 5*time.Second)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Warning: LaunchDarkly SDK did not initialize — flags default to off.")
 		return
@@ -142,13 +189,17 @@ func initLaunchDarkly() {
 
 func evaluateFlags(username string) flagValues {
 	if ldClient == nil {
-		return buildFlagResponse(username, false, false, false)
+		return buildFlagResponse(username, false, false, false, false, hostOS)
 	}
-	context := ldcontext.NewBuilder(username).Build()
+	context := ldcontext.NewBuilder(username).
+		SetString(hostOsAttr, hostOS).
+		Private(hostOsAttr).
+		Build()
 	highlight, _ := ldClient.BoolVariation(flagHighlight, context, false)
 	contextHighlight, _ := ldClient.BoolVariation(flagContext, context, false)
 	showCount, _ := ldClient.BoolVariation(flagCount, context, false)
-	return buildFlagResponse(username, highlight, contextHighlight, showCount)
+	showOsEmoji, _ := ldClient.BoolVariation(flagOsEmoji, context, false)
+	return buildFlagResponse(username, highlight, contextHighlight, showCount, showOsEmoji, hostOS)
 }
 
 func ansiColor(color string) string {
@@ -262,7 +313,7 @@ func render(username string, row, col int, previous *position, moveCount int, fl
 	}
 
 	cohort := " " + flags.cohortLabel
-	writeLine(&out, fmt.Sprintf("Name: %s%s", colorize(username, flags.highlightColor), colorize(cohort, flags.highlightColor))+resetANSI+bgANSI)
+	writeLine(&out, fmt.Sprintf("Name: %s%s", colorize(displayName(username, flags.osEmoji), flags.highlightColor), colorize(cohort, flags.highlightColor))+resetANSI+bgANSI)
 	writeLine(&out, fmt.Sprintf("Current position: %s", formatPos(row, col)))
 	writeLine(&out, fmt.Sprintf("Previous position: %s", prevText))
 	if flags.showMoveCount {
