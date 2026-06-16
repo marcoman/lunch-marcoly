@@ -37,6 +37,12 @@ struct MoveResult {
     moved: bool,
 }
 
+#[derive(PartialEq, Eq)]
+enum SessionAction {
+    Quit,
+    Logout,
+}
+
 struct FlagValues {
     show_move_count: bool,
     highlight_color: String,
@@ -353,7 +359,7 @@ fn render(
         print_line(out, y, &format!("Count: {move_count}"))?;
     }
     y += 2;
-    print_line(out, y, "Use arrow keys or WASD to move (q to quit).")?;
+    print_line(out, y, "Use arrow keys or WASD to move (L to logout, Q to quit).")?;
     y += 2;
 
     for r in 0..3 {
@@ -394,7 +400,7 @@ fn render(
     Ok(())
 }
 
-fn run_grid(out: &mut impl Write, app: &App, username: &str) -> io::Result<()> {
+fn run_grid(out: &mut impl Write, app: &App, username: &str) -> io::Result<SessionAction> {
     let mut row = 1;
     let mut col = 1;
     let mut previous: Option<Position> = None;
@@ -409,15 +415,19 @@ fn run_grid(out: &mut impl Write, app: &App, username: &str) -> io::Result<()> {
         }
         if let Event::Key(KeyEvent { code, modifiers, .. }) = event::read()? {
             if modifiers.contains(KeyModifiers::CONTROL) {
-                break;
+                return Ok(SessionAction::Quit);
             }
-            let (dr, dc) = match code {
-                KeyCode::Up | KeyCode::Char('w') | KeyCode::Char('W') => (-1, 0),
-                KeyCode::Down | KeyCode::Char('s') | KeyCode::Char('S') => (1, 0),
-                KeyCode::Left | KeyCode::Char('a') | KeyCode::Char('A') => (0, -1),
-                KeyCode::Right | KeyCode::Char('d') | KeyCode::Char('D') => (0, 1),
-                KeyCode::Char('q') | KeyCode::Char('Q') => break,
-                _ => continue,
+            let movement = match code {
+                KeyCode::Char('q') | KeyCode::Char('Q') => return Ok(SessionAction::Quit),
+                KeyCode::Char('l') | KeyCode::Char('L') => return Ok(SessionAction::Logout),
+                KeyCode::Up | KeyCode::Char('w') | KeyCode::Char('W') => Some((-1, 0)),
+                KeyCode::Down | KeyCode::Char('s') | KeyCode::Char('S') => Some((1, 0)),
+                KeyCode::Left | KeyCode::Char('a') | KeyCode::Char('A') => Some((0, -1)),
+                KeyCode::Right | KeyCode::Char('d') | KeyCode::Char('D') => Some((0, 1)),
+                _ => None,
+            };
+            let Some((dr, dc)) = movement else {
+                continue;
             };
             let result = try_move(row, col, dr, dc);
             if result.moved {
@@ -428,19 +438,26 @@ fn run_grid(out: &mut impl Write, app: &App, username: &str) -> io::Result<()> {
             }
         }
     }
-    Ok(())
 }
 
 fn main() -> io::Result<()> {
     let app = App::new();
-    let username = read_username()?;
     let mut stdout = io::stdout();
-    terminal::enable_raw_mode()?;
-    execute!(stdout, Hide)?;
 
-    let result = run_grid(&mut stdout, &app, &username);
+    loop {
+        let username = read_username()?;
+        terminal::enable_raw_mode()?;
+        execute!(stdout, Hide)?;
 
-    execute!(stdout, Show)?;
-    terminal::disable_raw_mode()?;
-    result
+        let action = run_grid(&mut stdout, &app, &username)?;
+
+        execute!(stdout, Show)?;
+        terminal::disable_raw_mode()?;
+
+        if action == SessionAction::Quit {
+            break;
+        }
+    }
+
+    Ok(())
 }

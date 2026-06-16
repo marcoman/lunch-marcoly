@@ -30,7 +30,7 @@ function render(username, row, col, previous) {
   console.log(`Name: ${username}`);
   console.log(`Current position: ${formatPos(row, col)}`);
   console.log(`Previous position: ${prevText}`);
-  console.log("\nUse arrow keys or WASD to move (q to quit).\n");
+  console.log("\nUse arrow keys or WASD to move (L to logout, Q to quit).\n");
 
   // Draw one grid row at a time: 3 cells wide, 3 terminal lines tall per row.
   for (let r = 0; r < 3; r++) {
@@ -72,51 +72,71 @@ function askUsername() {
   });
 }
 
-async function runGrid(username) {
+function runGrid(username) {
   let row = 1;
   let col = 1;
   let previous = null;
 
-  readline.emitKeypressEvents(process.stdin);
-  if (process.stdin.isTTY) process.stdin.setRawMode(true);
-  process.stdin.resume();
+  return new Promise((resolve) => {
+    const onKeypress = (str, key) => {
+      if (key.ctrl && key.name === "c") {
+        cleanup();
+        resolve("quit");
+        return;
+      }
+      let dir = null;
+      if (key.name === "up" || str === "w" || str === "W") dir = "up";
+      else if (key.name === "down" || str === "s" || str === "S") dir = "down";
+      else if (key.name === "left" || str === "a" || str === "A") dir = "left";
+      else if (key.name === "right" || str === "d" || str === "D") dir = "right";
+      else if (str === "q" || str === "Q") dir = "quit";
+      else if (str === "l" || str === "L") dir = "logout";
+      if (dir === "quit" || dir === "logout") {
+        cleanup();
+        resolve(dir);
+        return;
+      }
+      if (!dir) return;
 
-  render(username, row, col, previous);
+      let dr = 0;
+      let dc = 0;
+      if (dir === "up") dr = -1;
+      else if (dir === "down") dr = 1;
+      else if (dir === "left") dc = -1;
+      else if (dir === "right") dc = 1;
 
-  process.stdin.on("keypress", (str, key) => {
-    if (key.ctrl && key.name === "c") {
-      process.stdin.setRawMode(false);
+      const result = tryMove(row, col, dr, dc);
+      if (result.moved) {
+        previous = { row, col };
+        row = result.row;
+        col = result.col;
+      }
+      render(username, row, col, previous);
+    };
+
+    function cleanup() {
+      process.stdin.removeListener("keypress", onKeypress);
+      if (process.stdin.isTTY) process.stdin.setRawMode(false);
       process.stdin.pause();
-      process.exit(0);
     }
-    let dir = null;
-    if (key.name === "up" || str === "w" || str === "W") dir = "up";
-    else if (key.name === "down" || str === "s" || str === "S") dir = "down";
-    else if (key.name === "left" || str === "a" || str === "A") dir = "left";
-    else if (key.name === "right" || str === "d" || str === "D") dir = "right";
-    else if (str === "q" || str === "Q") dir = "quit";
-    if (dir === "quit") {
-      process.stdin.setRawMode(false);
-      process.stdin.pause();
-      process.exit(0);
-    }
-    if (!dir) return;
 
-    let dr = 0;
-    let dc = 0;
-    if (dir === "up") dr = -1;
-    else if (dir === "down") dr = 1;
-    else if (dir === "left") dc = -1;
-    else if (dir === "right") dc = 1;
+    readline.emitKeypressEvents(process.stdin);
+    if (process.stdin.isTTY) process.stdin.setRawMode(true);
+    process.stdin.resume();
+    process.stdin.on("keypress", onKeypress);
 
-    const result = tryMove(row, col, dr, dc);
-    if (result.moved) {
-      previous = { row, col };
-      row = result.row;
-      col = result.col;
-    }
     render(username, row, col, previous);
   });
 }
 
-askUsername().then(runGrid);
+async function main() {
+  while (true) {
+    const username = await askUsername();
+    const action = await runGrid(username);
+    if (action === "quit") {
+      process.exit(0);
+    }
+  }
+}
+
+main();

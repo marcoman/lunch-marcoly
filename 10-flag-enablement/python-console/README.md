@@ -34,4 +34,4 @@ python 10-flag-enablement.py
 2. With both flags off, behavior matches [00-reference](../../00-reference/application.md) (`X` only, no count).
 3. Enable `configure-grid-selection-green-highlight` for a colored outline on the selected cell (pink by default, or cohort colors with the context flag).
 4. Enable `show-navigation-move-count` for `Count: N` in the header.
-5. Flag changes refresh about every 500 ms without moving. Press `q` to quit.
+5. Flag changes refresh about every 500 ms without moving. Press `L` to log out or `Q` to quit.

@@ -27,4 +27,4 @@ cargo build --release
 
 ## What to expect
 
-Same flag behavior as [python-console/README.md](../python-console/README.md). Press `q` to quit.
+Same flag behavior as [python-console/README.md](../python-console/README.md). Press `L` to log out or `Q` to quit.

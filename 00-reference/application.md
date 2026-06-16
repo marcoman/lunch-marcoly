@@ -21,7 +21,7 @@ All implementations must produce equivalent behavior. Differences are limited to
 | Validation | Username must be non-empty before continuing |
 | On submit | Proceed to the grid screen; display the username in the grid header |
 
-The username persists for the session. Re-launching the application returns to the login screen.
+The username persists for the session until logout. Re-launching the application returns to the login screen.
 
 ## Grid screen
 
@@ -68,6 +68,24 @@ The user moves the selection with directional input:
 | `t/r` | Left | `t/m` |
 
 A single move never jumps from one edge to the opposite edge (for example, `t/l` → `t/r` is impossible).
+
+### Session control
+
+While on the grid screen:
+
+| Input | Action |
+|-------|--------|
+| `Q` or `q` | Quit the application |
+| `L` or `l` | Log out — return to the login screen |
+
+**Quit:** the application exits (console) or closes (web; if the browser blocks closing the tab, show that the application has closed).
+
+**Logout:**
+
+- Return to the login screen without exiting
+- Clear the username field
+- Reset grid state: current position `m/m`, previous position `—`
+- The user may log in again with the same or a different username
 
 ### Screen layout
 
@@ -130,10 +148,10 @@ Directories: `python/`, `node/`, `java/`
 
 ## Input mapping
 
-| Platform | Up | Down | Left | Right |
-|----------|----|------|------|-------|
-| Console | ↑ or `w` | ↓ or `s` | ← or `a` | → or `d` |
-| Web | ↑ or `w` | ↓ or `s` | ← or `a` | → or `d` |
+| Platform | Up | Down | Left | Right | Log out | Quit |
+|----------|----|------|------|-------|---------|------|
+| Console | ↑ or `w` | ↓ or `s` | ← or `a` | → or `d` | `L` or `l` | `Q` or `q` |
+| Web | ↑ or `w` | ↓ or `s` | ← or `a` | → or `d` | `L` or `l` | `Q` or `q` |
 
 Implementations may support additional aliases if idiomatic for the platform, but arrow keys and WASD must work.
 
@@ -165,6 +183,8 @@ An implementation is correct when:
 6. Selected cell displays `X`; unselected cells do not
 7. Console: selected cell has no color highlight — `X` only
 8. Web: selected cell has no background or border color highlight — `X` only on the default cell background
+9. `Q` or `q` on the grid screen quits the application
+10. `L` or `l` on the grid screen returns to the login screen with the username field cleared and grid state reset
 
 ## Further reading
 

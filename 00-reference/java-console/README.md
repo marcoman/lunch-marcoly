@@ -28,7 +28,7 @@ From this directory, after a successful build:
 java -jar target/00-reference.jar
 ```
 
-Press `q` to quit the grid screen.
+Press `L` to log out (return to login) or `Q` to quit.
 
 ## What to expect
 

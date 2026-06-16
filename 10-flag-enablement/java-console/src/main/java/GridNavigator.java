@@ -52,17 +52,27 @@ public class GridNavigator {
         }
     }
 
+    private enum GridExit {
+        QUIT,
+        LOGOUT
+    }
+
     public static void main(String[] args) throws Exception {
         FlagEvaluator.init();
         Runtime.getRuntime().addShutdownHook(new Thread(FlagEvaluator::close));
 
         Scanner scanner = new Scanner(System.in);
-        String username = readUsername(scanner);
-        enableRawMode();
         Runtime.getRuntime().addShutdownHook(new Thread(GridNavigator::disableRawMode));
 
-        runGrid(username);
-        disableRawMode();
+        while (true) {
+            String username = readUsername(scanner);
+            enableRawMode();
+            GridExit exit = runGrid(username);
+            disableRawMode();
+            if (exit == GridExit.QUIT) {
+                break;
+            }
+        }
     }
 
     private static String readUsername(Scanner scanner) {
@@ -77,7 +87,7 @@ public class GridNavigator {
         }
     }
 
-    private static void runGrid(String username) throws IOException, InterruptedException {
+    private static GridExit runGrid(String username) throws IOException, InterruptedException {
         int row = 1;
         int col = 1;
         Position previous = null;
@@ -94,7 +104,10 @@ public class GridNavigator {
 
             int key = System.in.read();
             if (key == 'q' || key == 'Q' || key == 3) {
-                break;
+                return GridExit.QUIT;
+            }
+            if (key == 'l' || key == 'L') {
+                return GridExit.LOGOUT;
             }
 
             int dr = 0;
@@ -166,7 +179,7 @@ public class GridNavigator {
             writeLine("Count: " + moveCount);
         }
         writeLine("");
-        writeLine("Use arrow keys or WASD to move (q to quit).");
+        writeLine("Use arrow keys or WASD to move (L to logout, Q to quit).");
         writeLine("");
 
         for (int r = 0; r < 3; r++) {

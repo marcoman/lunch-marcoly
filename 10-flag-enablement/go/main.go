@@ -320,7 +320,7 @@ func render(username string, row, col int, previous *position, moveCount int, fl
 		writeLine(&out, fmt.Sprintf("Count: %d", moveCount))
 	}
 	writeLine(&out, "")
-	writeLine(&out, "Use arrow keys or WASD to move (q to quit).")
+	writeLine(&out, "Use arrow keys or WASD to move (L to logout, Q to quit).")
 	writeLine(&out, "")
 
 	for r := 0; r < 3; r++ {
@@ -345,55 +345,64 @@ func render(username string, row, col int, previous *position, moveCount int, fl
 	fmt.Print(out.String())
 }
 
-func readKeyWithTimeout(reader *bufio.Reader, timeout time.Duration) (dr, dc int, quit, ok, timedOut bool) {
+type sessionAction int
+
+const (
+	actionQuit sessionAction = iota
+	actionLogout
+)
+
+func readKeyWithTimeout(reader *bufio.Reader, timeout time.Duration) (dr, dc int, action sessionAction, endSession, ok, timedOut bool) {
 	if err := os.Stdin.SetReadDeadline(time.Now().Add(timeout)); err != nil {
-		return 0, 0, false, false, true
+		return 0, 0, actionQuit, false, false, true
 	}
 	defer os.Stdin.SetReadDeadline(time.Time{})
 
 	b, err := reader.ReadByte()
 	if err != nil {
 		if ne, ok := err.(interface{ Timeout() bool }); ok && ne.Timeout() {
-			return 0, 0, false, false, true
+			return 0, 0, actionQuit, false, false, true
 		}
-		return 0, 0, true, false, false
+		return 0, 0, actionQuit, true, false, false
 	}
 
 	switch b {
 	case 3, 'q', 'Q':
-		return 0, 0, true, true, false
+		return 0, 0, actionQuit, true, true, false
+	case 'l', 'L':
+		return 0, 0, actionLogout, true, true, false
 	case 'w', 'W':
-		return -1, 0, false, true, false
+		return -1, 0, 0, false, true, false
 	case 's', 'S':
-		return 1, 0, false, true, false
+		return 1, 0, 0, false, true, false
 	case 'a', 'A':
-		return 0, -1, false, true, false
+		return 0, -1, 0, false, true, false
 	case 'd', 'D':
-		return 0, 1, false, true, false
+		return 0, 1, 0, false, true, false
 	case 27:
 		b2, err := reader.ReadByte()
 		if err != nil || b2 != '[' {
-			return 0, 0, false, false, false
+			return 0, 0, 0, false, false, false
 		}
 		b3, err := reader.ReadByte()
 		if err != nil {
-			return 0, 0, false, false, false
+			return 0, 0, 0, false, false, false
 		}
 		switch b3 {
 		case 'A':
-			return -1, 0, false, true, false
+			return -1, 0, 0, false, true, false
 		case 'B':
-			return 1, 0, false, true, false
+			return 1, 0, 0, false, true, false
 		case 'C':
-			return 0, 1, false, true, false
+			return 0, 1, 0, false, true, false
 		case 'D':
-			return 0, -1, false, true, false
+			return 0, -1, 0, false, true, false
 		}
 	}
-	return 0, 0, false, false, false
+	return 0, 0, 0, false, false, false
 }
 
-func runGrid(username string, reader *bufio.Reader) {
+func runGrid(username string, reader *bufio.Reader) sessionAction {
 	row, col := 1, 1
 	var previous *position
 	moveCount := 0
@@ -402,12 +411,12 @@ func runGrid(username string, reader *bufio.Reader) {
 		flags := evaluateFlags(username)
 		render(username, row, col, previous, moveCount, flags)
 
-		dr, dc, quit, ok, timedOut := readKeyWithTimeout(reader, 500*time.Millisecond)
+		dr, dc, action, endSession, ok, timedOut := readKeyWithTimeout(reader, 500*time.Millisecond)
 		if timedOut {
 			continue
 		}
-		if quit {
-			return
+		if endSession {
+			return action
 		}
 		if !ok {
 			continue
@@ -432,19 +441,26 @@ func main() {
 	}()
 
 	reader := bufio.NewReader(os.Stdin)
-	username, err := readUsername(reader)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
 	fd := int(os.Stdin.Fd())
-	oldState, err := term.MakeRaw(fd)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-	defer term.Restore(fd, oldState)
 
-	runGrid(username, reader)
+	for {
+		username, err := readUsername(reader)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+
+		oldState, err := term.MakeRaw(fd)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+
+		action := runGrid(username, reader)
+		term.Restore(fd, oldState)
+
+		if action == actionQuit {
+			break
+		}
+	}
 }

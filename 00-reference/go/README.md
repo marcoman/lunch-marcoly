@@ -26,7 +26,7 @@ From this directory, after a successful build:
 ./00-reference
 ```
 
-Press `q` to quit the grid screen.
+Press `L` to log out (return to login) or `Q` to quit.
 
 ## What to expect
 

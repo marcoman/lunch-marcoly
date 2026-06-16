@@ -147,7 +147,7 @@ void render(const std::string& username, int row, int col,
         write_line("Count: " + std::to_string(move_count));
     }
     write_line("");
-    write_line("Use arrow keys or WASD to move (q to quit).");
+    write_line("Use arrow keys or WASD to move (L to logout, Q to quit).");
     write_line("");
 
     for (int r = 0; r < 3; ++r) {
@@ -172,14 +172,22 @@ void render(const std::string& username, int row, int col,
     std::cout << std::flush;
 }
 
-bool read_direction(int& dr, int& dc) {
+enum class SessionAction { kQuit, kLogout };
+
+bool read_direction(int& dr, int& dc, SessionAction& action) {
     const int key = std::cin.get();
     if (key == std::char_traits<char>::eof()) {
         return true;
     }
     if (key == 'q' || key == 'Q') {
+        action = SessionAction::kQuit;
         return false;
     }
+    if (key == 'l' || key == 'L') {
+        action = SessionAction::kLogout;
+        return false;
+    }
+    action = SessionAction::kQuit;
     if (key == 27) {
         if (std::cin.get() != 91) {
             return true;
@@ -208,7 +216,7 @@ bool read_direction(int& dr, int& dc) {
     return true;
 }
 
-void run_grid(const std::string& username) {
+SessionAction run_grid(const std::string& username) {
     int row = 1;
     int col = 1;
     std::optional<Position> previous;
@@ -231,8 +239,9 @@ void run_grid(const std::string& username) {
 
         int dr = 0;
         int dc = 0;
-        if (!read_direction(dr, dc)) {
-            break;
+        SessionAction action = SessionAction::kQuit;
+        if (!read_direction(dr, dc, action)) {
+            return action;
         }
         if (dr == 0 && dc == 0) {
             continue;
@@ -251,10 +260,15 @@ void run_grid(const std::string& username) {
 
 int main() {
     init_launchdarkly();
-    const std::string username = read_username();
-    enable_raw_mode();
-    run_grid(username);
-    disable_raw_mode();
+    while (true) {
+        const std::string username = read_username();
+        enable_raw_mode();
+        const SessionAction action = run_grid(username);
+        disable_raw_mode();
+        if (action == SessionAction::kQuit) {
+            break;
+        }
+    }
     close_launchdarkly();
     return 0;
 }

@@ -86,6 +86,7 @@ def try_move(row: int, col: int, dr: int, dc: int) -> tuple[int, int, bool]:
 
 
 def read_username(stdscr: curses.window) -> str:
+    stdscr.timeout(-1)
     curses.echo()
     stdscr.clear()
     stdscr.addstr(0, 0, "Login")
@@ -151,7 +152,7 @@ def draw_screen(
         line += 1
         stdscr.addstr(line, 0, f"Count: {move_count}")
     line += 2
-    stdscr.addstr(line, 0, "Use arrow keys or WASD to move (q to quit).")
+    stdscr.addstr(line, 0, "Use arrow keys or WASD to move (L to logout, Q to quit).")
 
     highlight_color = str(flags["highlightColor"])
     cell_color = highlight_color if highlight_color != "none" else "none"
@@ -170,38 +171,44 @@ def draw_screen(
     stdscr.refresh()
 
 
-def run_grid(stdscr: curses.window, username: str) -> None:
+def run_grid(stdscr: curses.window, username: str) -> str:
     row, col = 1, 1
     previous: tuple[int, int] | None = None
     move_count = 0
     stdscr.timeout(500)
 
-    while True:
-        flags = evaluate_flags(username)
-        draw_screen(stdscr, username, row, col, previous, move_count, flags)
-        key = stdscr.getch()
-        if key == -1:
-            continue
+    try:
+        while True:
+            flags = evaluate_flags(username)
+            draw_screen(stdscr, username, row, col, previous, move_count, flags)
+            key = stdscr.getch()
+            if key == -1:
+                continue
 
-        dr = dc = 0
-        if key in (curses.KEY_UP, ord("w"), ord("W")):
-            dr = -1
-        elif key in (curses.KEY_DOWN, ord("s"), ord("S")):
-            dr = 1
-        elif key in (curses.KEY_LEFT, ord("a"), ord("A")):
-            dc = -1
-        elif key in (curses.KEY_RIGHT, ord("d"), ord("D")):
-            dc = 1
-        elif key in (ord("q"), ord("Q")):
-            break
-        else:
-            continue
+            if key in (ord("q"), ord("Q")):
+                return "quit"
+            if key in (ord("l"), ord("L")):
+                return "logout"
 
-        new_row, new_col, moved = try_move(row, col, dr, dc)
-        if moved:
-            previous = (row, col)
-            row, col = new_row, new_col
-            move_count += 1
+            dr = dc = 0
+            if key in (curses.KEY_UP, ord("w"), ord("W")):
+                dr = -1
+            elif key in (curses.KEY_DOWN, ord("s"), ord("S")):
+                dr = 1
+            elif key in (curses.KEY_LEFT, ord("a"), ord("A")):
+                dc = -1
+            elif key in (curses.KEY_RIGHT, ord("d"), ord("D")):
+                dc = 1
+            else:
+                continue
+
+            new_row, new_col, moved = try_move(row, col, dr, dc)
+            if moved:
+                previous = (row, col)
+                row, col = new_row, new_col
+                move_count += 1
+    finally:
+        stdscr.timeout(-1)
 
 
 def init_colors() -> None:
@@ -222,9 +229,11 @@ def main(stdscr: curses.window) -> None:
     stdscr.keypad(True)
 
     init_launchdarkly()
-    username = read_username(stdscr)
     try:
-        run_grid(stdscr, username)
+        while True:
+            username = read_username(stdscr)
+            if run_grid(stdscr, username) == "quit":
+                break
     finally:
         if _ld_client is not None:
             _ld_client.close()

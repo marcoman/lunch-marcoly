@@ -59,7 +59,7 @@ def draw_screen(
     stdscr.addstr(0, 0, f"Name: {username}")
     stdscr.addstr(1, 0, f"Current position: {format_pos(row, col)}")
     stdscr.addstr(2, 0, f"Previous position: {prev_text}")
-    stdscr.addstr(4, 0, "Use arrow keys or WASD to move (q to quit).")
+    stdscr.addstr(4, 0, "Use arrow keys or WASD to move (L to logout, Q to quit).")
 
     base_y, base_x = 6, 2
     cell_w = 6
@@ -74,13 +74,18 @@ def draw_screen(
     stdscr.refresh()
 
 
-def run_grid(stdscr: curses.window, username: str) -> None:
+def run_grid(stdscr: curses.window, username: str) -> str:
     row, col = 1, 1
     previous: tuple[int, int] | None = None
 
     while True:
         draw_screen(stdscr, username, row, col, previous)
         key = stdscr.getch()
+
+        if key in (ord("q"), ord("Q")):
+            return "quit"
+        if key in (ord("l"), ord("L")):
+            return "logout"
 
         dr = dc = 0
         if key in (curses.KEY_UP, ord("w"), ord("W")):
@@ -91,8 +96,6 @@ def run_grid(stdscr: curses.window, username: str) -> None:
             dc = -1
         elif key in (curses.KEY_RIGHT, ord("d"), ord("D")):
             dc = 1
-        elif key in (ord("q"), ord("Q")):
-            break
         else:
             continue
 
@@ -106,8 +109,10 @@ def main(stdscr: curses.window) -> None:
     curses.curs_set(0)
     stdscr.keypad(True)
 
-    username = read_username(stdscr)
-    run_grid(stdscr, username)
+    while True:
+        username = read_username(stdscr)
+        if run_grid(stdscr, username) == "quit":
+            break
 
 
 if __name__ == "__main__":

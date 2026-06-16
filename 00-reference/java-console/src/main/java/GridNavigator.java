@@ -30,15 +30,24 @@ public class GridNavigator {
         }
     }
 
+    private enum GridExit {
+        QUIT,
+        LOGOUT
+    }
+
     public static void main(String[] args) throws Exception {
-        // Read username in canonical mode before switching the terminal to raw input.
         Scanner scanner = new Scanner(System.in);
-        String username = readUsername(scanner);
-        enableRawMode();
         Runtime.getRuntime().addShutdownHook(new Thread(GridNavigator::disableRawMode));
 
-        runGrid(username);
-        disableRawMode();
+        while (true) {
+            String username = readUsername(scanner);
+            enableRawMode();
+            GridExit exit = runGrid(username);
+            disableRawMode();
+            if (exit == GridExit.QUIT) {
+                break;
+            }
+        }
     }
 
     private static String readUsername(Scanner scanner) {
@@ -53,7 +62,7 @@ public class GridNavigator {
         }
     }
 
-    private static void runGrid(String username) throws IOException {
+    private static GridExit runGrid(String username) throws IOException {
         int row = 1;
         int col = 1;
         Position previous = null;
@@ -63,7 +72,10 @@ public class GridNavigator {
         while (true) {
             int key = System.in.read();
             if (key == 'q' || key == 'Q' || key == 3) {
-                break;
+                return GridExit.QUIT;
+            }
+            if (key == 'l' || key == 'L') {
+                return GridExit.LOGOUT;
             }
 
             int dr = 0;
@@ -125,7 +137,7 @@ public class GridNavigator {
         writeLine("Current position: " + formatPos(row, col));
         writeLine("Previous position: " + prevText);
         writeLine("");
-        writeLine("Use arrow keys or WASD to move (q to quit).");
+        writeLine("Use arrow keys or WASD to move (L to logout, Q to quit).");
         writeLine("");
 
         for (int r = 0; r < 3; r++) {
