@@ -1,0 +1,13 @@
+[package]
+name = "flag-variations-grid-navigator"
+version = "1.0.0"
+edition = "2021"
+
+[[bin]]
+name = "11-flag-variations"
+path = "src/main.rs"
+
+[dependencies]
+crossterm = "0.28"
+launchdarkly-server-sdk = "2.6"
+serde_json = "1.0"

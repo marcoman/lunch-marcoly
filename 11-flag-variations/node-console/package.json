@@ -1,0 +1,10 @@
+{
+  "name": "flag-variations-grid-navigator-console",
+  "version": "1.0.0",
+  "private": true,
+  "description": "11-flag-variations grid navigator console app",
+  "main": "11-flag-variations.js",
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0"
+  }
+}

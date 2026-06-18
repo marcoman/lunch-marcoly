@@ -60,6 +60,12 @@ lunch-marcoly/
 │   ├── rest/                  # REST API provisioning
 │   ├── terraform/             # Terraform provisioning
 │   └── <language[-console]>/  # Future: flag evaluation implementations
+├── 11-flag-variations/        # String, number, JSON, and anonymous flag types
+│   ├── README.md
+│   ├── application.md
+│   ├── rest/
+│   ├── terraform/
+│   └── <language[-console]>/
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── rest/
@@ -83,6 +89,7 @@ lunch-marcoly/
 - Use the next available number when adding a new example (`03`, `04`, …)
 - `00-reference` is reserved for the reference grid navigator app and repository conventions. It does **not** include LaunchDarkly integration.
 - `10-flag-enablement` demonstrates feature flag naming, provisioning, and enablement for the grid navigator.
+- `11-flag-variations` demonstrates string, number, JSON, and anonymous-context flag variation types.
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author
 

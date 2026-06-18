@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid Navigator — Flag Variations</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #fafafa;
+      color: #222;
+      max-width: 480px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    h1 { font-size: 1.25rem; margin-bottom: 1rem; }
+    label { display: block; margin-bottom: 0.5rem; }
+    input[type="text"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      box-sizing: border-box;
+    }
+    button { padding: 0.5rem 1rem; cursor: pointer; }
+    .error { color: #c62828; margin-bottom: 0.5rem; }
+    .header { margin-bottom: 1.5rem; line-height: 1.6; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      gap: 6px;
+    }
+    .cell {
+      width: 80px;
+      height: 80px;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      font-size: 1.5rem;
+      user-select: none;
+    }
+    .cell.selected { font-weight: bold; }
+    .hint { margin-top: 1rem; color: #666; font-size: 0.875rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <section id="login-screen">
+    <h1>Login</h1>
+    <label for="username">Username</label>
+    <input id="username" type="text" autocomplete="username" autofocus>
+    <p id="login-error" class="error hidden">Username is required.</p>
+    <button id="login-btn" type="button">Continue</button>
+  </section>
+
+  <section id="grid-screen" class="hidden" tabindex="0">
+    <div class="header">
+      <div>Name: <span id="hdr-name"></span></div>
+      <div>Current position: <span id="hdr-current"></span></div>
+      <div>Previous position: <span id="hdr-previous"></span></div>
+      <div><span id="hdr-count-label">Count</span>: <span id="hdr-count"></span></div>
+      <div>Lucky Number is: <span id="hdr-lucky"></span></div>
+    </div>
+    <div id="grid" class="grid" aria-label="3 by 3 grid"></div>
+    <p class="hint">Use arrow keys or WASD to move. Press L to log out, Q to quit.</p>
+  </section>
+
+  <script>
+    const ROWS = ["t", "m", "b"];
+    const COLS = ["l", "m", "r"];
+
+    let username = "";
+    let row = 1;
+    let col = 1;
+    let previous = null;
+    let moveCount = 0;
+    let flags = {
+      countLabel: "Count",
+      luckyNumber: 0,
+      maxMoves: 100,
+      osEmoji: "",
+    };
+    let flagPollTimer = null;
+
+    function formatPos(r, c) {
+      return `${ROWS[r]}/${COLS[c]}`;
+    }
+
+    async function refreshFlags() {
+      if (!username) return;
+      try {
+        const res = await fetch(
+          `/api/flags?username=${encodeURIComponent(username)}`
+        );
+        if (!res.ok) return;
+        flags = await res.json();
+        renderGrid();
+      } catch (_) {
+        /* keep last-known values */
+      }
+    }
+
+    function tryMove(dr, dc) {
+      if (moveCount >= flags.maxMoves) return false;
+      const nr = Math.max(0, Math.min(2, row + dr));
+      const nc = Math.max(0, Math.min(2, col + dc));
+      if (nr === row && nc === col) return false;
+      previous = { row, col };
+      row = nr;
+      col = nc;
+      moveCount += 1;
+      return true;
+    }
+
+    function renderGrid() {
+      const prefix = flags.osEmoji ? `${flags.osEmoji} ` : "";
+      document.getElementById("hdr-name").textContent = prefix + username;
+      document.getElementById("hdr-current").textContent = formatPos(row, col);
+      document.getElementById("hdr-previous").textContent =
+        previous ? formatPos(previous.row, previous.col) : "—";
+      document.getElementById("hdr-count-label").textContent = flags.countLabel;
+      document.getElementById("hdr-count").textContent = String(moveCount);
+      document.getElementById("hdr-lucky").textContent = String(flags.luckyNumber);
+
+      const grid = document.getElementById("grid");
+      grid.innerHTML = "";
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          const cell = document.createElement("div");
+          cell.className = "cell" + (r === row && c === col ? " selected" : "");
+          cell.textContent = r === row && c === col ? "X" : "";
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    function logout() {
+      username = "";
+      row = 1;
+      col = 1;
+      previous = null;
+      moveCount = 0;
+      flags = { countLabel: "Count", luckyNumber: 0, maxMoves: 100, osEmoji: "" };
+      if (flagPollTimer) clearInterval(flagPollTimer);
+      flagPollTimer = null;
+      document.getElementById("username").value = "";
+      document.getElementById("login-error").classList.add("hidden");
+      document.getElementById("grid-screen").classList.add("hidden");
+      document.getElementById("login-screen").classList.remove("hidden");
+      document.getElementById("username").focus();
+    }
+
+    function quit() {
+      if (flagPollTimer) clearInterval(flagPollTimer);
+      window.close();
+      document.body.innerHTML = "<p>Application closed. You may close this tab.</p>";
+    }
+
+    function startGrid(name) {
+      username = name;
+      row = 1;
+      col = 1;
+      previous = null;
+      moveCount = 0;
+      document.getElementById("login-screen").classList.add("hidden");
+      document.getElementById("grid-screen").classList.remove("hidden");
+      refreshFlags();
+      if (flagPollTimer) clearInterval(flagPollTimer);
+      flagPollTimer = setInterval(refreshFlags, 2000);
+      renderGrid();
+      document.getElementById("grid-screen").focus();
+    }
+
+    document.getElementById("login-btn").addEventListener("click", () => {
+      const name = document.getElementById("username").value.trim();
+      const err = document.getElementById("login-error");
+      if (!name) {
+        err.classList.remove("hidden");
+        return;
+      }
+      err.classList.add("hidden");
+      startGrid(name);
+    });
+
+    document.getElementById("username").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") document.getElementById("login-btn").click();
+    });
+
+    document.getElementById("grid-screen").addEventListener("keydown", (e) => {
+      const key = e.key.toLowerCase();
+      if (key === "q") {
+        e.preventDefault();
+        quit();
+        return;
+      }
+      if (key === "l") {
+        e.preventDefault();
+        logout();
+        return;
+      }
+      if (e.key === "ArrowUp" || key === "w") tryMove(-1, 0);
+      else if (e.key === "ArrowDown" || key === "s") tryMove(1, 0);
+      else if (e.key === "ArrowLeft" || key === "a") tryMove(0, -1);
+      else if (e.key === "ArrowRight" || key === "d") tryMove(0, 1);
+      else return;
+      e.preventDefault();
+      renderGrid();
+    });
+  </script>
+</body>
+</html>

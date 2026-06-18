@@ -1,0 +1,13 @@
+{
+  "name": "flag-variations-grid-navigator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "11-flag-variations grid navigator web UI",
+  "main": "11-flag-variations.js",
+  "scripts": {
+    "start": "node 11-flag-variations.js"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0"
+  }
+}
