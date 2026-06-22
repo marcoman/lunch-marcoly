@@ -69,6 +69,7 @@ lunch-marcoly/
 ├── 99-use-cases/              # Focused LaunchDarkly use-case examples
 │   ├── README.md
 │   └── 01-abcd-test/          # A-B-C-D test on navigation count label
+│   └── 02-segments-by-name/   # Segment targeting from username context
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── rest/
@@ -93,7 +94,7 @@ lunch-marcoly/
 - `00-reference` is reserved for the reference grid navigator app and repository conventions. It does **not** include LaunchDarkly integration.
 - `10-flag-enablement` demonstrates feature flag naming, provisioning, and enablement for the grid navigator.
 - `11-flag-variations` demonstrates string, number, JSON, and anonymous-context flag variation types.
-- `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests).
+- `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting).
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author
 

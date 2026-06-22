@@ -1,0 +1,13 @@
+{
+  "name": "segments-by-name-grid-navigator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "02-segments-by-name grid navigator web UI",
+  "main": "02-segments-by-name.js",
+  "scripts": {
+    "start": "node 02-segments-by-name.js"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0"
+  }
+}

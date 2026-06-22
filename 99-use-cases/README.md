@@ -9,6 +9,7 @@ Each subdirectory demonstrates a specific product pattern (A/B testing, rollouts
 | Directory | Description |
 |-----------|-------------|
 | [01-abcd-test/](01-abcd-test/) | A-B-C-D test on navigation count label (`configure-navigation-count-label`) |
+| [02-segments-by-name/](02-segments-by-name/) | Segment targeting from username-derived context attributes |
 
 ## Conventions
 
