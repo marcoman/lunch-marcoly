@@ -49,6 +49,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 00 | [00-reference](00-reference/) | Grid navigator reference app (all languages, no LaunchDarkly) |
 | 10 | [10-flag-enablement](10-flag-enablement/) | Grid navigator with LaunchDarkly flags (all languages, Terraform + REST) |
 | 11 | [11-flag-variations](11-flag-variations/) | Grid navigator with string, number, JSON, and anonymous flags (all languages) |
+| 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (A-B-C-D test, …) |
 
 ## Building code
 
