@@ -1,0 +1,13 @@
+{
+  "name": "progressive-rollout-grid-navigator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "04-progressive-rollout grid navigator web UI",
+  "main": "04-progressive-rollout.js",
+  "scripts": {
+    "start": "node 04-progressive-rollout.js"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0"
+  }
+}

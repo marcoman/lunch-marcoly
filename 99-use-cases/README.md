@@ -11,6 +11,7 @@ Each subdirectory demonstrates a specific product pattern (A/B testing, rollouts
 | [01-abcd-test/](01-abcd-test/) | A-B-C-D test on navigation count label (`configure-navigation-count-label`) |
 | [02-segments-by-name/](02-segments-by-name/) | Segment targeting from username-derived context attributes |
 | [11-create-eval-flag/](11-create-eval-flag/) | Create and evaluate a single highlight color flag; toggle via UI or curl |
+| [04-progressive-rollout/](04-progressive-rollout/) | Progressive rollout of green highlight over 15 minutes (10→100%) |
 
 ## Conventions
 
