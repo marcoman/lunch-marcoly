@@ -1,4 +1,4 @@
-# REST provisioning — 04-progressive-rollout
+# REST provisioning — 14-progressive-rollout
 
 Shell scripts to create the highlight flag and configure **progressive rollout** percentages via the LaunchDarkly REST API.
 

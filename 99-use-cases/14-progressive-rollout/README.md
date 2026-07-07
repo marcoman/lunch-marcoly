@@ -1,4 +1,4 @@
-# 04-progressive-rollout
+# 14-progressive-rollout
 
 Gradually release a **green grid highlight** using a **progressive rollout** on one LaunchDarkly flag — `configure-grid-selection-green-highlight`.
 
@@ -51,29 +51,29 @@ export LD_ACCESS_TOKEN="api-..."         # terraform/
 cd rest && chmod +x *.sh && ./create-flag.sh && cd ..
 
 # 2. Terminal A — run the monitor (samples every 30s)
-python3 04-progressive-rollout-monitor.py
+python3 14-progressive-rollout-monitor.py
 
 # 3. Terminal B — start the 15-minute progressive rollout
 cd rest && ./start-progressive-rollout.sh
 
 # 4. Terminal C — run the app and try different usernames
-cd python-console && python 04-progressive-rollout.py
+cd python-console && python 14-progressive-rollout.py
 ```
 
 Single evaluation without the interactive grid:
 
 ```bash
-python python-console/04-progressive-rollout.py --evaluate-once rollout-probe-001-00
+python python-console/14-progressive-rollout.py --evaluate-once rollout-probe-001-00
 # {"username": "rollout-probe-001-00", "flagValue": "none", "highlightColor": "none", ...}
 
 ./rest/set-rollout-percent.sh 40
-python python-console/04-progressive-rollout.py --evaluate-once rollout-probe-001-00
+python python-console/14-progressive-rollout.py --evaluate-once rollout-probe-001-00
 # may return green or none depending on bucket
 ```
 
 ## Monitor script
 
-[04-progressive-rollout-monitor.py](04-progressive-rollout-monitor.py) exercises the application and reports what the SDK returns:
+[14-progressive-rollout-monitor.py](14-progressive-rollout-monitor.py) exercises the application and reports what the SDK returns:
 
 - Prints the **start timestamp** when monitoring begins (e.g. `[14:45:34]`)
 - Runs a batch of **20 evaluations** every **30 seconds**
@@ -84,7 +84,7 @@ python python-console/04-progressive-rollout.py --evaluate-once rollout-probe-00
 Example output:
 
 ```text
-Test: 04-progressive-rollout-monitor
+Test: 14-progressive-rollout-monitor
 Flag: configure-grid-selection-green-highlight
 
 Progressive rollout: 15 minutes, 5 equal stages (3 min each)
@@ -99,13 +99,13 @@ Press Ctrl+C to stop.
 ```
 
 ```bash
-python3 04-progressive-rollout-monitor.py
+python3 14-progressive-rollout-monitor.py
 
 # Custom app command (e.g. Go binary)
-python3 04-progressive-rollout-monitor.py --app-cmd ./go/04-progressive-rollout
+python3 14-progressive-rollout-monitor.py --app-cmd ./go/14-progressive-rollout
 
 # Run exactly 5 batches then exit
-python3 04-progressive-rollout-monitor.py --batches 5
+python3 14-progressive-rollout-monitor.py --batches 5
 ```
 
 ## Provisioning
@@ -219,7 +219,7 @@ Rollout uses `none` (no highlight) and `green` (green highlight).
 | Component | Location |
 |-----------|----------|
 | Rollout config + REST helpers | [progressive_rollout_common.py](progressive_rollout_common.py) |
-| Monitor script | [04-progressive-rollout-monitor.py](04-progressive-rollout-monitor.py) |
+| Monitor script | [14-progressive-rollout-monitor.py](14-progressive-rollout-monitor.py) |
 | Evaluation logic | [highlight_eval.py](highlight_eval.py), [highlight-eval.js](highlight-eval.js) |
 | REST scripts | [rest/](rest/) |
 | Terraform | [terraform/](terraform/) |

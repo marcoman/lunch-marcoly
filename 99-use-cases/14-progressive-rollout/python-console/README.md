@@ -1,6 +1,6 @@
 # Python (console)
 
-Create-and-evaluate highlight flag for [04-progressive-rollout](../application.md).
+Create-and-evaluate highlight flag for [14-progressive-rollout](../application.md).
 
 Shared evaluation lives in [`../highlight_eval.py`](../highlight_eval.py).
 
@@ -13,7 +13,7 @@ Shared evaluation lives in [`../highlight_eval.py`](../highlight_eval.py).
 ## Run
 
 ```bash
-python 04-progressive-rollout.py
+python 14-progressive-rollout.py
 ```
 
 With the flag **off** (default after provisioning), the selected cell shows plain `X` and the header label is `(no-color)`.
@@ -21,8 +21,8 @@ With the flag **off** (default after provisioning), the selected cell shows plai
 Single evaluation:
 
 ```bash
-python 04-progressive-rollout.py --evaluate-once alice
-python 04-progressive-rollout.py --evaluate-once alice --verbose
+python 14-progressive-rollout.py --evaluate-once alice
+python 14-progressive-rollout.py --evaluate-once alice --verbose
 ```
 
 The app re-evaluates the flag every 500 ms — toggle the flag in LaunchDarkly while the grid is open to see changes without restarting.

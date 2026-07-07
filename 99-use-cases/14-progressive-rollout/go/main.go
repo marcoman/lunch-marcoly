@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	appBanner        = "04-progressive-rollout[go]"
+	appBanner        = "14-progressive-rollout[go]"
 	flagHighlight    = "configure-grid-selection-green-highlight"
 	defaultHighlight = "none"
 )

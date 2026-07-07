@@ -1,6 +1,6 @@
 # Rust
 
-Console application for [04-progressive-rollout](../application.md).
+Console application for [14-progressive-rollout](../application.md).
 
 ## Build
 
@@ -12,5 +12,5 @@ cargo build --release
 
 ```bash
 cargo run
-./target/release/04-progressive-rollout --evaluate-once alice
+./target/release/14-progressive-rollout --evaluate-once alice
 ```

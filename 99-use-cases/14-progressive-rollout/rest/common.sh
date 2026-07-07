@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared REST helpers for 04-progressive-rollout.
+# Shared REST helpers for 14-progressive-rollout.
 
 set -euo pipefail
 

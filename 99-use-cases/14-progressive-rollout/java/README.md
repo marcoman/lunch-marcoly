@@ -1,6 +1,6 @@
 # Java (web)
 
-Web grid navigator for [04-progressive-rollout](../application.md).
+Web grid navigator for [14-progressive-rollout](../application.md).
 
 ## Prerequisites
 
@@ -16,7 +16,7 @@ Web grid navigator for [04-progressive-rollout](../application.md).
 ## Run
 
 ```bash
-java -jar target/04-progressive-rollout.jar
+java -jar target/14-progressive-rollout.jar
 ```
 
 Open [http://127.0.0.1:8080/](http://127.0.0.1:8080/).
@@ -26,5 +26,5 @@ The page polls the flag every 500 ms — toggle it in LaunchDarkly (UI or curl) 
 Single evaluation:
 
 ```bash
-java -jar target/04-progressive-rollout.jar --evaluate-once alice
+java -jar target/14-progressive-rollout.jar --evaluate-once alice
 ```

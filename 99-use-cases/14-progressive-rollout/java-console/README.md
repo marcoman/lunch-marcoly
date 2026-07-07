@@ -1,6 +1,6 @@
 # Java (console)
 
-Console grid navigator for [04-progressive-rollout](../application.md).
+Console grid navigator for [14-progressive-rollout](../application.md).
 
 ## Prerequisites
 
@@ -17,7 +17,7 @@ Console grid navigator for [04-progressive-rollout](../application.md).
 ## Run
 
 ```bash
-java -jar target/04-progressive-rollout.jar
+java -jar target/14-progressive-rollout.jar
 ```
 
 With the flag **off** (default after provisioning), the selected cell shows plain `X` and the header label is `(no-color)`.
@@ -25,7 +25,7 @@ With the flag **off** (default after provisioning), the selected cell shows plai
 Single evaluation:
 
 ```bash
-java -jar target/04-progressive-rollout.jar --evaluate-once alice
+java -jar target/14-progressive-rollout.jar --evaluate-once alice
 ```
 
 The app re-evaluates the flag every 500 ms — toggle it in LaunchDarkly while the grid is open to see changes without restarting.

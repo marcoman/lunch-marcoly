@@ -4,7 +4,7 @@ version = "1.0.0"
 edition = "2021"
 
 [[bin]]
-name = "04-progressive-rollout"
+name = "14-progressive-rollout"
 path = "src/main.rs"
 
 [dependencies]

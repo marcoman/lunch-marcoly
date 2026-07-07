@@ -22,7 +22,7 @@ from highlight_eval import FLAG_HIGHLIGHT, build_context, evaluate_highlight  # 
 ROWS = ("t", "m", "b")
 COLS = ("l", "m", "r")
 
-APP_BANNER = "04-progressive-rollout[python-console]"
+APP_BANNER = "14-progressive-rollout[python-console]"
 
 COLOR_PAIRS = {
     "yellow": 1,

@@ -1,6 +1,6 @@
 # Node.js (web)
 
-Web grid navigator for [04-progressive-rollout](../application.md).
+Web grid navigator for [14-progressive-rollout](../application.md).
 
 ## Run
 
@@ -13,5 +13,5 @@ npm start
 Open http://localhost:8080/.
 
 ```bash
-node 04-progressive-rollout.js --evaluate-once alice
+node 14-progressive-rollout.js --evaluate-once alice
 ```

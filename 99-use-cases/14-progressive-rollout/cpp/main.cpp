@@ -14,7 +14,7 @@
 namespace {
 
 constexpr std::array<const char*, 3> kRows = {"t", "m", "b"};
-constexpr const char* kAppBanner = "04-progressive-rollout[cpp]";
+constexpr const char* kAppBanner = "14-progressive-rollout[cpp]";
 constexpr std::array<const char*, 3> kCols = {"l", "m", "r"};
 constexpr const char* kBgReset = "\033[48;5;236m";
 constexpr const char* kReset = "\033[0m";

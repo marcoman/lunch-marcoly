@@ -5,7 +5,7 @@
   <artifactId>progressive-rollout-web</artifactId>
   <version>1.0.0</version>
   <build>
-    <finalName>04-progressive-rollout</finalName>
+    <finalName>14-progressive-rollout</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>

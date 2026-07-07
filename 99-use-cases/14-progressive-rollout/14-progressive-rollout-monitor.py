@@ -24,9 +24,9 @@ from progressive_rollout_common import (  # noqa: E402
     try_query_rollout_state,
 )
 
-TEST_NAME = "04-progressive-rollout-monitor"
+TEST_NAME = "14-progressive-rollout-monitor"
 
-DEFAULT_APP = _ROOT / "python-console" / "04-progressive-rollout.py"
+DEFAULT_APP = _ROOT / "python-console" / "14-progressive-rollout.py"
 DEFAULT_INTERVAL = 30
 DEFAULT_BATCH_SIZE = 20
 

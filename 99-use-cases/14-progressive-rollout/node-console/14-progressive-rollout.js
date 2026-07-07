@@ -7,7 +7,7 @@ const { evaluateHighlight } = require("../highlight-eval");
 
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
-const APP_BANNER = "04-progressive-rollout[node-console]";
+const APP_BANNER = "14-progressive-rollout[node-console]";
 const ANSI = {
   yellow: "\x1b[93m",
   red: "\x1b[91m",

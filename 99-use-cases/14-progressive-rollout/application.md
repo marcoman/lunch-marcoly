@@ -1,6 +1,6 @@
 # Progressive Rollout Use Case
 
-This document defines **04-progressive-rollout** under [99-use-cases](../README.md).
+This document defines **14-progressive-rollout** under [99-use-cases](../README.md).
 
 ## Goal
 
@@ -54,11 +54,11 @@ During an active rollout, different usernames may receive `green` or `none` depe
 
 ### Single-evaluation mode
 
-`04-progressive-rollout.py --evaluate-once <username>` prints JSON with `highlightColor`, `flagValue`, and `colorLabel`.
+`14-progressive-rollout.py --evaluate-once <username>` prints JSON with `highlightColor`, `flagValue`, and `colorLabel`.
 
 ### Monitor script
 
-[04-progressive-rollout-monitor.py](04-progressive-rollout-monitor.py) samples 20 evaluations every 30 seconds, queries LaunchDarkly for the current rollout stage, and prints observed green vs none percentages. Use it alongside `./rest/start-progressive-rollout.sh` to watch the rollout in real time.
+[14-progressive-rollout-monitor.py](14-progressive-rollout-monitor.py) samples 20 evaluations every 30 seconds, queries LaunchDarkly for the current rollout stage, and prints observed green vs none percentages. Use it alongside `./rest/start-progressive-rollout.sh` to watch the rollout in real time.
 
 ## Acceptance criteria
 

@@ -17,7 +17,7 @@ const FLAG_HIGHLIGHT: &str = "configure-grid-selection-green-highlight";
 const DEFAULT_HIGHLIGHT: &str = "none";
 
 const ROWS: [&str; 3] = ["t", "m", "b"];
-const APP_BANNER: &str = "04-progressive-rollout[rust]";
+const APP_BANNER: &str = "14-progressive-rollout[rust]";
 
 const COLS: [&str; 3] = ["l", "m", "r"];
 

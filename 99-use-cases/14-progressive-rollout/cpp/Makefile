@@ -1,5 +1,5 @@
-# Build the 04-progressive-rollout console binary locally in this directory.
-TARGET := 04-progressive-rollout
+# Build the 14-progressive-rollout console binary locally in this directory.
+TARGET := 14-progressive-rollout
 CXX ?= c++
 CXXFLAGS := -std=c++20 -Wall -Wextra
 
