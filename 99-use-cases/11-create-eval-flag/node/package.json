@@ -1,0 +1,13 @@
+{
+  "name": "create-eval-flag-grid-navigator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "11-create-eval-flag grid navigator web UI",
+  "main": "11-create-eval-flag.js",
+  "scripts": {
+    "start": "node 11-create-eval-flag.js"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0"
+  }
+}
