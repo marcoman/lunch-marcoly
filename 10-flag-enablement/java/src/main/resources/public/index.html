@@ -32,6 +32,8 @@
       border: 1px solid #666;
     }
     .error { color: #ef5350; margin-bottom: 0.5rem; }
+    .app-banner { font-size: 0.875rem; color: #666; margin-bottom: 0.5rem; }
+    body.highlight-on .app-banner { color: #aaa; }
     .header { margin-bottom: 1.5rem; line-height: 1.6; }
     .grid {
       display: grid;
@@ -92,6 +94,7 @@
 </head>
 <body>
   <section id="login-screen">
+    <div class="app-banner">10-flag-enablement[java]</div>
     <h1>Login</h1>
     <label for="username">Username</label>
     <input id="username" type="text" autocomplete="username" autofocus>
@@ -101,6 +104,7 @@
 
   <section id="grid-screen" class="hidden" tabindex="0">
     <div class="header">
+      <div class="app-banner">10-flag-enablement[java]</div>
       <div>Name: <span id="hdr-name"></span><span id="hdr-cohort"></span></div>
       <div>Current position: <span id="hdr-current"></span></div>
       <div>Previous position: <span id="hdr-previous"></span></div>

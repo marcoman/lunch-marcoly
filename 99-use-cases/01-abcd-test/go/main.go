@@ -22,6 +22,8 @@ const (
 )
 
 var rows = [3]string{"t", "m", "b"}
+const appBanner = "01-abcd-test[go]"
+
 var cols = [3]string{"l", "m", "r"}
 
 var ldClient *ld.LDClient
@@ -85,6 +87,7 @@ func clamp(v, lo, hi int) int {
 }
 
 func readUsername(reader *bufio.Reader) (string, error) {
+	fmt.Println(appBanner)
 	fmt.Println("Login\n")
 	for {
 		fmt.Print("Username: ")
@@ -135,6 +138,7 @@ func render(username string, row, col int, previous *position, moveCount int, co
 		prevText = formatPos(previous.row, previous.col)
 	}
 
+	writeLine(&out, appBanner)
 	writeLine(&out, fmt.Sprintf("Name: %s", username))
 	writeLine(&out, fmt.Sprintf("Current position: %s", formatPos(row, col)))
 	writeLine(&out, fmt.Sprintf("Previous position: %s", prevText))

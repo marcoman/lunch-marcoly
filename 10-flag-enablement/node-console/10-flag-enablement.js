@@ -16,6 +16,7 @@ const { detectHostOs, HOST_OS_ATTR, FLAG_OS_EMOJI } = require("../host-os");
 
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
+const APP_BANNER = "10-flag-enablement[node-console]";
 const HOST_OS = detectHostOs();
 const ANSI = {
   pink: "\x1b[95m",
@@ -103,6 +104,7 @@ function formatNameLine(username, flags) {
 
 function render(username, row, col, previous, moveCount, flags) {
   process.stdout.write(`${BG}\x1b[2J\x1b[H`);
+  console.log(APP_BANNER);
   const prevText = previous ? formatPos(previous.row, previous.col) : "—";
   console.log(formatNameLine(username, flags));
   console.log(`Current position: ${formatPos(row, col)}`);
@@ -144,6 +146,7 @@ function askUsername() {
         resolve(name);
       });
     };
+    console.log(APP_BANNER);
     console.log("Login\n");
     prompt();
   });

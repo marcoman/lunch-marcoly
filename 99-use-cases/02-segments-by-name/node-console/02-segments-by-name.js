@@ -10,6 +10,7 @@ const { evaluateHighlight } = require("../segment-style");
 
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
+const APP_BANNER = "02-segments-by-name[node-console]";
 const ANSI = {
   yellow: "\x1b[93m",
   red: "\x1b[91m",
@@ -69,6 +70,7 @@ function formatNameLine(username, flags) {
 
 function render(username, row, col, previous, flags) {
   process.stdout.write(`${BG}\x1b[2J\x1b[H`);
+  console.log(APP_BANNER);
   const prevText = previous ? formatPos(previous.row, previous.col) : "—";
   console.log(formatNameLine(username, flags));
   console.log(`Current position: ${formatPos(row, col)}`);
@@ -107,6 +109,7 @@ function askUsername() {
         resolve(name);
       });
     };
+    console.log(APP_BANNER);
     console.log("Login\n");
     prompt();
   });

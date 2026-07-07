@@ -18,6 +18,8 @@ from highlight_eval import FLAG_HIGHLIGHT, build_context, evaluate_highlight  # 
 ROWS = ("t", "m", "b")
 COLS = ("l", "m", "r")
 
+APP_BANNER = "11-create-eval-flag[python-console]"
+
 COLOR_PAIRS = {
     "yellow": 1,
     "red": 2,
@@ -68,15 +70,16 @@ def read_username(stdscr: curses.window) -> str:
     stdscr.timeout(-1)
     curses.echo()
     stdscr.clear()
-    stdscr.addstr(0, 0, "Login")
-    stdscr.addstr(2, 0, "Username: ")
+    stdscr.addstr(0, 0, APP_BANNER)
+    stdscr.addstr(2, 0, "Login")
+    stdscr.addstr(4, 0, "Username: ")
     stdscr.refresh()
     while True:
-        username = stdscr.getstr(2, 10, 40).decode("utf-8").strip()
+        username = stdscr.getstr(4, 10, 40).decode("utf-8").strip()
         if username:
             curses.noecho()
             return username
-        stdscr.addstr(4, 0, "Username is required. Try again.")
+        stdscr.addstr(6, 0, "Username is required. Try again.")
         stdscr.clrtoeol()
         stdscr.refresh()
 
@@ -120,6 +123,8 @@ def draw_screen(
     stdscr.bkgd(" ", curses.color_pair(6))
     prev_text = format_pos(*previous) if previous else "—"
     line = 0
+    stdscr.addstr(line, 0, APP_BANNER)
+    line += 1
     draw_name_line(stdscr, line, username, flags)
     line += 1
     stdscr.addstr(line, 0, f"Flag value: {flags['flagValue']}")

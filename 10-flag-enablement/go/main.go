@@ -28,6 +28,8 @@ const (
 )
 
 var rows = [3]string{"t", "m", "b"}
+const appBanner = "10-flag-enablement[go]"
+
 var cols = [3]string{"l", "m", "r"}
 
 const bgANSI = "\033[48;5;236m"
@@ -256,6 +258,7 @@ func clamp(v, lo, hi int) int {
 }
 
 func readUsername(reader *bufio.Reader) (string, error) {
+	fmt.Println(appBanner)
 	fmt.Println("Login\n")
 	for {
 		fmt.Print("Username: ")
@@ -313,6 +316,7 @@ func render(username string, row, col int, previous *position, moveCount int, fl
 	}
 
 	cohort := " " + flags.cohortLabel
+	writeLine(&out, appBanner)
 	writeLine(&out, fmt.Sprintf("Name: %s%s", colorize(displayName(username, flags.osEmoji), flags.highlightColor), colorize(cohort, flags.highlightColor))+resetANSI+bgANSI)
 	writeLine(&out, fmt.Sprintf("Current position: %s", formatPos(row, col)))
 	writeLine(&out, fmt.Sprintf("Previous position: %s", prevText))

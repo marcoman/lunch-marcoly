@@ -7,6 +7,7 @@ const { evaluateHighlight } = require("../highlight-eval");
 
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
+const APP_BANNER = "11-create-eval-flag[node-console]";
 const ANSI = {
   yellow: "\x1b[93m",
   red: "\x1b[91m",
@@ -70,6 +71,7 @@ function formatNameLine(username, flags) {
 
 function render(username, row, col, previous, flags) {
   process.stdout.write(`${BG}\x1b[2J\x1b[H`);
+  console.log(APP_BANNER);
   const prevText = previous ? formatPos(previous.row, previous.col) : "—";
   console.log(formatNameLine(username, flags));
   console.log(`Flag value: ${flags.flagValue}`);
@@ -110,6 +112,7 @@ function askUsername() {
         resolve(name);
       });
     };
+    console.log(APP_BANNER);
     console.log("Login\n");
     prompt();
   });

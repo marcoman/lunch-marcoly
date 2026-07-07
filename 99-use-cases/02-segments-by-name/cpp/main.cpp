@@ -14,6 +14,7 @@
 namespace {
 
 constexpr std::array<const char*, 3> kRows = {"t", "m", "b"};
+constexpr const char* kAppBanner = "02-segments-by-name[cpp]";
 constexpr std::array<const char*, 3> kCols = {"l", "m", "r"};
 constexpr const char* kBgReset = "\033[48;5;236m";
 constexpr const char* kReset = "\033[0m";
@@ -80,7 +81,7 @@ void disable_raw_mode() {
 }
 
 std::string read_username() {
-    std::cout << "Login\n\nUsername: ";
+    std::cout << kAppBanner << "\n\nLogin\n\nUsername: ";
     std::string name;
     std::getline(std::cin, name);
     while (name.empty()) {
@@ -131,6 +132,7 @@ void render(const std::string& username, int row, int col,
     const std::string name_line =
         "Name: " + colorize(username, flags.highlightColor) +
         colorize(" " + flags.segmentLabel, flags.highlightColor) + kReset + kBgReset;
+    write_line(kAppBanner);
     write_line(name_line);
     write_line("Current position: " + format_pos(row, col));
     write_line("Previous position: " + prev_text);

@@ -22,6 +22,8 @@ const FLAG_OS_EMOJI: &str = "show-host-os-emoji";
 const HOST_OS_ATTR: &str = "hostOs";
 
 const ROWS: [&str; 3] = ["t", "m", "b"];
+const APP_BANNER: &str = "10-flag-enablement[rust]";
+
 const COLS: [&str; 3] = ["l", "m", "r"];
 const BG: &str = "\x1b[48;5;236m";
 const RESET: &str = "\x1b[0m";
@@ -282,6 +284,7 @@ fn try_move(row: i32, col: i32, dr: i32, dc: i32) -> MoveResult {
 }
 
 fn read_username() -> io::Result<String> {
+    println!("{APP_BANNER}");
     println!("Login\n");
     loop {
         print!("Username: ");
@@ -341,6 +344,8 @@ fn render(
     let cohort = format!(" {}", flags.cohort_label);
 
     let mut y = 0u16;
+    print_line(out, y, APP_BANNER)?;
+    y += 1;
     print_line(
         out,
         y,

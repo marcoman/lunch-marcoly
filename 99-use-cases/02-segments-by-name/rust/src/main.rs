@@ -20,6 +20,8 @@ const FLAG_HIGHLIGHT: &str = "configure-grid-selection-green-highlight";
 const DEFAULT_HIGHLIGHT: &str = "none";
 
 const ROWS: [&str; 3] = ["t", "m", "b"];
+const APP_BANNER: &str = "02-segments-by-name[rust]";
+
 const COLS: [&str; 3] = ["l", "m", "r"];
 
 const SEGMENT_GENERIC: &str = "generic";
@@ -250,6 +252,7 @@ fn try_move(row: i32, col: i32, dr: i32, dc: i32) -> MoveResult {
 }
 
 fn read_username() -> io::Result<String> {
+    println!("{APP_BANNER}");
     println!("Login\n");
     loop {
         print!("Username: ");
@@ -313,6 +316,8 @@ fn render(
     let name_line = format!("Name: {} {}", username, flags.segment_label);
 
     let mut y = 0u16;
+    print_colored_line(out, y, APP_BANNER, None)?;
+    y += 1;
     print_colored_line(out, y, &name_line, highlight)?;
     y += 1;
     print_colored_line(out, y, &format!("Current position: {}", format_pos(row, col)), None)?;

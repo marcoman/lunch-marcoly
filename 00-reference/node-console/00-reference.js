@@ -5,6 +5,7 @@ const readline = require("readline");
 
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
+const APP_BANNER = "00-reference[node-console]";
 
 function formatPos(row, col) {
   return `${ROWS[row]}/${COLS[col]}`;
@@ -26,6 +27,7 @@ function drawCell(selected) {
 
 function render(username, row, col, previous) {
   console.clear();
+  console.log(APP_BANNER);
   const prevText = previous ? formatPos(previous.row, previous.col) : "—";
   console.log(`Name: ${username}`);
   console.log(`Current position: ${formatPos(row, col)}`);
@@ -67,6 +69,7 @@ function askUsername() {
         resolve(name);
       });
     };
+    console.log(APP_BANNER);
     console.log("Login\n");
     prompt();
   });

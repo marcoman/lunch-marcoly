@@ -15,6 +15,7 @@
 namespace {
 
 constexpr std::array<const char*, 3> kRows = {"t", "m", "b"};
+constexpr const char* kAppBanner = "10-flag-enablement[cpp]";
 constexpr std::array<const char*, 3> kCols = {"l", "m", "r"};
 constexpr const char* kBg = "\033[48;5;236m";
 constexpr const char* kReset = "\033[0m";
@@ -89,7 +90,7 @@ void disable_raw_mode() {
 }
 
 std::string read_username() {
-    std::cout << "Login\n\nUsername: ";
+    std::cout << kAppBanner << "\n\nLogin\n\nUsername: ";
     std::string name;
     std::getline(std::cin, name);
     while (name.empty()) {
@@ -139,6 +140,7 @@ void render(const std::string& username, int row, int col,
     const std::string prev_text =
         previous ? format_pos(previous->row, previous->col) : "—";
     const std::string cohort = " " + flags.cohortLabel;
+    write_line(kAppBanner);
     write_line("Name: " + colorize(display_name(username, flags.osEmoji), flags.highlightColor) +
                colorize(cohort, flags.highlightColor) + kReset + kBg);
     write_line("Current position: " + format_pos(row, col));

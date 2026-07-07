@@ -11,6 +11,8 @@ from abcd_eval import close_client, evaluate_count_label, init_client
 ROWS = ("t", "m", "b")
 COLS = ("l", "m", "r")
 
+APP_BANNER = "01-abcd-test[python-console]"
+
 
 def format_pos(row: int, col: int) -> str:
     return f"{ROWS[row]}/{COLS[col]}"
@@ -28,15 +30,16 @@ def read_username(stdscr: curses.window) -> str:
     stdscr.timeout(-1)
     curses.echo()
     stdscr.clear()
-    stdscr.addstr(0, 0, "Login")
-    stdscr.addstr(2, 0, "Username: ")
+    stdscr.addstr(0, 0, APP_BANNER)
+    stdscr.addstr(2, 0, "Login")
+    stdscr.addstr(4, 0, "Username: ")
     stdscr.refresh()
     while True:
-        username = stdscr.getstr(2, 10, 40).decode("utf-8").strip()
+        username = stdscr.getstr(4, 10, 40).decode("utf-8").strip()
         if username:
             curses.noecho()
             return username
-        stdscr.addstr(4, 0, "Username is required. Try again.")
+        stdscr.addstr(6, 0, "Username is required. Try again.")
         stdscr.clrtoeol()
         stdscr.refresh()
 
@@ -61,13 +64,14 @@ def draw_screen(
 ) -> None:
     stdscr.clear()
     prev_text = format_pos(*previous) if previous else "—"
-    stdscr.addstr(0, 0, f"Name: {username}")
-    stdscr.addstr(1, 0, f"Current position: {format_pos(row, col)}")
-    stdscr.addstr(2, 0, f"Previous position: {prev_text}")
-    stdscr.addstr(3, 0, f"{count_label}: {move_count}")
-    stdscr.addstr(5, 0, "Use arrow keys or WASD to move (L to logout, Q to quit).")
+    stdscr.addstr(0, 0, APP_BANNER)
+    stdscr.addstr(1, 0, f"Name: {username}")
+    stdscr.addstr(2, 0, f"Current position: {format_pos(row, col)}")
+    stdscr.addstr(3, 0, f"Previous position: {prev_text}")
+    stdscr.addstr(4, 0, f"{count_label}: {move_count}")
+    stdscr.addstr(6, 0, "Use arrow keys or WASD to move (L to logout, Q to quit).")
 
-    base_y, base_x = 7, 2
+    base_y, base_x = 8, 2
     cell_w = 6
     for r in range(3):
         for c in range(3):

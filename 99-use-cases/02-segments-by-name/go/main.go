@@ -18,6 +18,7 @@ import (
 // See: https://launchdarkly.com/docs/home/flags/segments
 
 const (
+	appBanner        = "02-segments-by-name[go]"
 	flagHighlight    = "configure-grid-selection-green-highlight"
 	defaultHighlight = "none"
 )
@@ -247,6 +248,7 @@ func clamp(v, lo, hi int) int {
 }
 
 func readUsername(reader *bufio.Reader) (string, error) {
+	fmt.Println(appBanner)
 	fmt.Println("Login\n")
 	for {
 		fmt.Print("Username: ")
@@ -303,6 +305,7 @@ func render(username string, row, col int, previous *position, flags flagValues)
 		prevText = formatPos(previous.row, previous.col)
 	}
 
+	writeLine(&out, appBanner)
 	nameLine := fmt.Sprintf(
 		"Name: %s%s",
 		colorize(username, flags.highlightColor),

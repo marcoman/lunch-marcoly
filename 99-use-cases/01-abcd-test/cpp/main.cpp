@@ -14,6 +14,7 @@
 namespace {
 
 constexpr std::array<const char*, 3> kRows = {"t", "m", "b"};
+constexpr const char* kAppBanner = "01-abcd-test[cpp]";
 constexpr std::array<const char*, 3> kCols = {"l", "m", "r"};
 
 struct Position {
@@ -58,7 +59,7 @@ void disable_raw_mode() {
 }
 
 std::string read_username() {
-    std::cout << "Login\n\nUsername: ";
+    std::cout << kAppBanner << "\n\nLogin\n\nUsername: ";
     std::string name;
     std::getline(std::cin, name);
     while (name.empty()) {
@@ -99,6 +100,7 @@ void render(const std::string& username, int row, int col,
     std::cout << "\033[2J\033[H" << std::flush;
     const std::string prev_text =
         previous ? format_pos(previous->row, previous->col) : "—";
+    write_line(kAppBanner);
     write_line("Name: " + username);
     write_line("Current position: " + format_pos(row, col));
     write_line("Previous position: " + prev_text);

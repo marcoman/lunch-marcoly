@@ -10,6 +10,8 @@ use crossterm::{
 use std::io::{self, Write};
 
 const ROWS: [&str; 3] = ["t", "m", "b"];
+const APP_BANNER: &str = "00-reference[rust]";
+
 const COLS: [&str; 3] = ["l", "m", "r"];
 
 struct Position {
@@ -48,6 +50,7 @@ fn try_move(row: i32, col: i32, dr: i32, dc: i32) -> MoveResult {
 }
 
 fn read_username() -> io::Result<String> {
+    println!("{APP_BANNER}");
     println!("Login\n");
     loop {
         print!("Username: ");
@@ -92,6 +95,8 @@ fn render(
         .unwrap_or_else(|| "—".to_string());
 
     let mut y = 0u16;
+    print_line(out, y, APP_BANNER)?;
+    y += 1;
     print_line(out, y, &format!("Name: {username}"))?;
     y += 1;
     print_line(out, y, &format!("Current position: {}", format_pos(row, col)))?;

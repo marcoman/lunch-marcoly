@@ -7,6 +7,7 @@ import java.util.Scanner;
 public class GridNavigator {
     private static final String[] ROWS = {"t", "m", "b"};
     private static final String[] COLS = {"l", "m", "r"};
+    private static final String APP_BANNER = "11-create-eval-flag[java-console]";
     private static final String BG = "\u001B[48;5;236m";
     private static final String RESET = "\u001B[0m";
 
@@ -95,6 +96,7 @@ public class GridNavigator {
     }
 
     private static String readUsername(Scanner scanner) {
+        System.out.println(APP_BANNER);
         System.out.println("Login\n");
         while (true) {
             System.out.print("Username: ");
@@ -185,6 +187,7 @@ public class GridNavigator {
     ) {
         System.out.print(BG + "\033[H\033[2J");
         System.out.flush();
+        writeLine(APP_BANNER);
         String prevText = previous == null ? "—" : formatPos(previous.row, previous.col);
         String label = " " + flags.colorLabel();
         writeLine(

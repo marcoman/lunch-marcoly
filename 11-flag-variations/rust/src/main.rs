@@ -28,6 +28,8 @@ const DEFAULT_LUCKY_NUMBER: i64 = 0;
 const DEFAULT_MAX_MOVES: i32 = 100;
 
 const ROWS: [&str; 3] = ["t", "m", "b"];
+const APP_BANNER: &str = "11-flag-variations[rust]";
+
 const COLS: [&str; 3] = ["l", "m", "r"];
 const BG: &str = "\x1b[48;5;236m";
 
@@ -217,6 +219,7 @@ fn try_move(row: i32, col: i32, dr: i32, dc: i32) -> MoveResult {
 }
 
 fn read_username() -> io::Result<String> {
+    println!("{APP_BANNER}");
     println!("Login\n");
     loop {
         print!("Username: ");
@@ -269,6 +272,8 @@ fn render(
         .unwrap_or_else(|| "—".to_string());
 
     let mut y = 0u16;
+    print_line(out, y, APP_BANNER)?;
+    y += 1;
     print_line(
         out,
         y,

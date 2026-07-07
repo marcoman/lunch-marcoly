@@ -7,6 +7,7 @@ import java.util.Scanner;
 public class GridNavigator {
     private static final String[] ROWS = {"t", "m", "b"};
     private static final String[] COLS = {"l", "m", "r"};
+    private static final String APP_BANNER = "00-reference[java-console]";
 
     private static final class Position {
         final int row;
@@ -51,6 +52,7 @@ public class GridNavigator {
     }
 
     private static String readUsername(Scanner scanner) {
+        System.out.println(APP_BANNER);
         System.out.println("Login\n");
         while (true) {
             System.out.print("Username: ");
@@ -133,6 +135,7 @@ public class GridNavigator {
         System.out.print("\033[H\033[2J");
         System.out.flush();
         String prevText = previous == null ? "—" : formatPos(previous.row, previous.col);
+        writeLine(APP_BANNER);
         writeLine("Name: " + username);
         writeLine("Current position: " + formatPos(row, col));
         writeLine("Previous position: " + prevText);

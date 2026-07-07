@@ -12,6 +12,7 @@ const { detectHostOs, HOST_OS_ATTR } = require("../host-os");
 
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
+const APP_BANNER = "11-flag-variations[node-console]";
 const HOST_OS = detectHostOs();
 const BG = "\x1b[48;5;236m";
 
@@ -57,6 +58,7 @@ function drawCell(selected) {
 
 function render(username, row, col, previous, moveCount, flags) {
   process.stdout.write(`${BG}\x1b[2J\x1b[H`);
+  console.log(APP_BANNER);
   const prevText = previous ? formatPos(previous.row, previous.col) : "—";
   console.log(`Name: ${displayName(username, flags)}`);
   console.log(`Current position: ${formatPos(row, col)}`);
@@ -96,6 +98,7 @@ function askUsername() {
         resolve(name);
       });
     };
+    console.log(APP_BANNER);
     console.log("Login\n");
     prompt();
   });
