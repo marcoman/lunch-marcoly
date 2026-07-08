@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # Run the 15-minute progressive rollout schedule via REST percentage updates.
 #
-# In this example, we have a progressive rollout over 15 minutes in five equal
-# stages: 10%, 20%, 40%, 60%, and 100% of users receive the green highlight.
+# NOTE: This simulates progressive stage timing only. Each stage is a manual
+# percentage rollout via semantic patch — not a LaunchDarkly UI progressive rollout.
+# For a true UI progressive rollout, use configure-progressive-rollout.sh and
+# complete setup in LaunchDarkly (Default rule → Progressive rollout).
 
 set -euo pipefail
 
@@ -10,8 +12,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=common.sh
 source "${SCRIPT_DIR}/common.sh"
 
-STAGE_SECONDS="${STAGE_SECONDS:-180}"
-PERCENTAGES=(10 20 40 60 100)
+STAGE_SECONDS="${STAGE_SECONDS:-${DEFAULT_STAGE_SECONDS}}"
+PERCENTAGES=("${ROLLOUT_PERCENTAGES[@]}")
 
 echo "Progressive rollout schedule for ${FLAG_KEY}:"
 echo "  Duration: 15 minutes (${STAGE_SECONDS}s per stage)"

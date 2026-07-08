@@ -7,6 +7,10 @@ set -euo pipefail
 : "${LD_API_VERSION:=20240415}"
 
 FLAG_KEY="configure-grid-selection-green-highlight"
+BASELINE_COLOR="none"
+ROLLOUT_COLOR="green"
+ROLLOUT_PERCENTAGES=(10 20 40 60 100)
+DEFAULT_STAGE_SECONDS=180
 
 if [[ -z "${LD_API_ACCESS_TOKEN:-}" ]]; then
   echo "error: LD_API_ACCESS_TOKEN is required" >&2

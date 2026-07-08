@@ -46,6 +46,8 @@ export LD_ACCESS_TOKEN="api-..."         # terraform/
 
 ## Quick start
 
+**True progressive rollout (LaunchDarkly UI — auto-advances stages):**
+
 ```bash
 # 1. Create the flag (off by default)
 cd rest && chmod +x *.sh && ./create-flag.sh && cd ..
@@ -53,12 +55,22 @@ cd rest && chmod +x *.sh && ./create-flag.sh && cd ..
 # 2. Terminal A — run the monitor (samples every 30s)
 python3 14-progressive-rollout-monitor.py
 
-# 3. Terminal B — start the 15-minute progressive rollout
-cd rest && ./start-progressive-rollout.sh
+# 3. Terminal B — prepare targeting JSON and complete rollout in the UI
+cd rest && ./configure-progressive-rollout.sh
+# Default rule → Progressive rollout in LaunchDarkly (see below)
+./get-progressive-rollout.sh   # verify progressiveRollout / progressiveRolloutConfig
 
 # 4. Terminal C — run the app and try different usernames
 cd python-console && python 14-progressive-rollout.py
 ```
+
+**Simulate stage timing via REST (manual percentage updates — not a UI progressive rollout):**
+
+```bash
+cd rest && ./start-progressive-rollout.sh   # 10→20→40→60→100%, 3 min each
+```
+
+LaunchDarkly's public REST API does **not** start progressive rollouts programmatically — `progressiveRolloutConfig` is ignored on semantic patch. The monitor detects the difference: `progressive stage N` (UI) vs `simulated stage N — REST percentage`.
 
 Single evaluation without the interactive grid:
 
@@ -78,7 +90,8 @@ python python-console/14-progressive-rollout.py --evaluate-once rollout-probe-00
 - Prints the **start timestamp** when monitoring begins (e.g. `[14:45:34]`)
 - Runs a batch of **20 evaluations** every **30 seconds**
 - Each batch line includes **elapsed time** since start (e.g. `[14:45:54 - 00m20s]`)
-- Queries LaunchDarkly for the **current rollout stage** (configured green %) via REST
+- Queries LaunchDarkly for the **current rollout stage** via REST
+- Distinguishes **UI progressive rollout** (`progressiveRollout`), **REST-simulated** percentage stages, and **guarded rollout** (`measuredRollout` — wrong use case)
 - Shows an **inline countdown** between batches to conserve terminal space
 
 Example output:
@@ -94,8 +107,11 @@ Monitoring every 30s — 20 evaluations per batch (green highlight vs none).
 Press Ctrl+C to stop.
 [14:45:34]
 
-[14:45:37 - 00m03s] batch   1: green=2, none=18, observed 10% (stage 1, target 10%, configured 10%)
-[14:46:07 - 00m33s] batch   2: green=4, none=16, observed 20% (stage 2, target 20%, configured 20%)
+[14:45:37 - 00m03s] batch   1: green=2, none=18, observed 10% (progressive stage 1, target 10%, current 10%)
+[14:46:07 - 00m33s] batch   2: green=4, none=16, observed 20% (progressive stage 2, target 20%, current 20%)
+
+# When using ./start-progressive-rollout.sh instead:
+[14:45:37 - 00m03s] batch   1: green=2, none=18, observed 10% (simulated stage 1, target 10%, configured 10% — REST percentage, not UI progressive)
 ```
 
 ```bash
@@ -117,9 +133,26 @@ python3 14-progressive-rollout-monitor.py --batches 5
 
 Both create the string flag with variations `none`, `green`, and other colors, and leave the flag **off** in the target environment.
 
-## Start the rollout in the LaunchDarkly UI
+## Configure progressive rollout in the LaunchDarkly UI
 
-These steps mirror what the REST scripts do programmatically.
+LaunchDarkly's public REST API does **not** start progressive rollouts programmatically. Use `./configure-progressive-rollout.sh` to prepare the flag and emit targeting JSON — then finish in the UI:
+
+```bash
+cd rest && ./configure-progressive-rollout.sh
+./get-progressive-rollout.sh   # verify progressive-rollout state
+```
+
+The script turns the flag on with off variation `none` and writes `progressive-rollout-targeting.json` for the JSON targeting editor. Complete the progressive rollout in the UI:
+
+| Setting | Value |
+|---------|-------|
+| From | `none` (no highlight — fallback for users not yet in rollout) |
+| To | `green` |
+| Context kind | `user` |
+| Duration | 15 minutes (5 stages × 3 minutes) |
+| Stages | 10%, 20%, 40%, 60%, 100% |
+
+Or configure manually in the UI:
 
 1. Open your project in [LaunchDarkly](https://app.launchdarkly.com).
 2. Go to **Flags** → **`configure-grid-selection-green-highlight`**.
@@ -133,13 +166,17 @@ These steps mirror what the REST scripts do programmatically.
    - **Custom duration:** 15 minutes
    - **5 stages:** 10%, 20%, 40%, 60%, 100%
 7. **Save** targeting changes.
-8. Watch the monitor script or log in with different usernames as the percentage increases.
+8. Watch the monitor script or log in with different usernames as LaunchDarkly auto-advances the percentage.
+
+The monitor and `./get-progressive-rollout.sh` detect an active UI progressive rollout via `fallthrough.rollout.experimentAllocation.type == "progressiveRollout"` or `fallthrough.progressiveRolloutConfig`.
 
 To stop early: click **Stop** on the progressive rollout and choose which variation all traffic should receive (`none` or `green`).
 
-## Start the rollout with curl (REST API)
+> **Not guarded rollout:** If the monitor reports `guarded rollout detected`, you configured [15-guarded-rollout](../15-guarded-rollout/) (`measuredRollout`) instead of progressive rollout.
 
-The [rest/](rest/) scripts wrap these calls.
+## REST scripts (simulation and inspection)
+
+The [rest/](rest/) scripts inspect rollout state and can **simulate** stage timing with manual percentage updates. Use `configure-progressive-rollout.sh` to prepare for a UI progressive rollout, or `start-progressive-rollout.sh` to step through percentages without LaunchDarkly auto-advance.
 
 Set shared variables:
 
@@ -151,13 +188,20 @@ export LD_ENVIRONMENT_KEY="production"
 # export LD_API_ACCESS_TOKEN="api-..."
 ```
 
-### Run the full 15-minute schedule automatically
+### Prepare progressive rollout (targeting JSON)
+
+```bash
+./rest/configure-progressive-rollout.sh
+./rest/get-progressive-rollout.sh
+```
+
+### Simulate percentage stages (not a UI progressive rollout)
 
 ```bash
 ./rest/start-progressive-rollout.sh
 ```
 
-This turns the flag on and advances through 10% → 20% → 40% → 60% → 100%, waiting 3 minutes between stages.
+This turns the flag on and advances through 10% → 20% → 40% → 60% → 100%, waiting 3 minutes between stages. LaunchDarkly does **not** auto-advance these stages — the script updates `rolloutWeights` manually.
 
 ### Set a specific rollout percentage
 

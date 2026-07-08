@@ -11,5 +11,6 @@ fetch_flag | jq --arg env "${LD_ENVIRONMENT_KEY}" '{
   key: .key,
   on: .environments[$env].on,
   offVariation: .variations[.environments[$env].offVariation].value,
+  allocationType: (.environments[$env].fallthrough.rollout.experimentAllocation.type // null),
   fallthrough: .environments[$env].fallthrough
 }'

@@ -136,6 +136,72 @@ def _variation_values(flag: dict) -> list[str]:
     return [str(v.get("value", "")).lower() for v in flag.get("variations", [])]
 
 
+def _rollout_allocation_type(fallthrough: dict) -> str | None:
+    rollout = fallthrough.get("rollout")
+    if not isinstance(rollout, dict):
+        return None
+    experiment = rollout.get("experimentAllocation", {})
+    if not isinstance(experiment, dict):
+        return None
+    rollout_type = experiment.get("type")
+    return str(rollout_type) if rollout_type else None
+
+
+def _is_measured_rollout(fallthrough: dict) -> bool:
+    """Guarded rollouts in the UI use experimentAllocation.type measuredRollout."""
+    return _rollout_allocation_type(fallthrough) == "measuredRollout"
+
+
+def _is_progressive_rollout_ui(fallthrough: dict) -> bool:
+    """True when the UI has an active or configured progressive rollout on this rule."""
+    if _rollout_allocation_type(fallthrough) == "progressiveRollout":
+        return True
+    return isinstance(fallthrough.get("progressiveRolloutConfig"), dict)
+
+
+def _green_variation_index(flag: dict) -> int | None:
+    values = _variation_values(flag)
+    for i, value in enumerate(values):
+        if value == ROLLOUT_COLOR:
+            return i
+    return None
+
+
+def _green_percent_from_rollout(
+    flag: dict,
+    rollout: dict,
+    *,
+    tracked_only: bool,
+) -> float | None:
+    green_idx = _green_variation_index(flag)
+    if green_idx is None:
+        return None
+
+    green_percent = 0.0
+    found = False
+    for entry in rollout.get("variations", []):
+        if entry.get("variation") != green_idx:
+            continue
+        if tracked_only and entry.get("_untracked") is True:
+            continue
+        weight = entry.get("weight", 0)
+        if isinstance(weight, (int, float)):
+            green_percent += weight / 1000.0
+            found = True
+    return green_percent if found else None
+
+
+def _stage_targets_from_progressive_config(config: dict) -> list[int]:
+    targets: list[int] = []
+    for step in config.get("steps", []):
+        if not isinstance(step, dict):
+            continue
+        weight = step.get("rolloutWeight")
+        if isinstance(weight, (int, float)):
+            targets.append(int(round(weight / 1000.0 if weight > 100 else weight)))
+    return targets or ROLLOUT_PERCENTAGES
+
+
 def _green_percent_from_fallthrough(flag: dict, fallthrough: dict) -> float | None:
     """Return configured green traffic % from fallthrough, or None if not parseable."""
     values = _variation_values(flag)
@@ -157,26 +223,23 @@ def _green_percent_from_fallthrough(flag: dict, fallthrough: dict) -> float | No
     if not isinstance(rollout, dict):
         return None
 
-    green_percent = 0.0
-    for entry in rollout.get("variations", []):
-        idx = entry.get("variation")
-        weight = entry.get("weight", 0)
-        if not isinstance(idx, int) or idx >= len(values):
-            continue
-        if values[idx] == ROLLOUT_COLOR:
-            green_percent += weight / 1000.0
-    return green_percent
+    tracked_only = _is_measured_rollout(fallthrough) or _is_progressive_rollout_ui(fallthrough)
+    return _green_percent_from_rollout(flag, rollout, tracked_only=tracked_only)
 
 
-def match_rollout_stage(green_percent: float) -> tuple[int, int]:
+def match_rollout_stage(
+    green_percent: float,
+    stage_targets: list[int] | None = None,
+) -> tuple[int, int]:
     """Map a configured green % to the nearest stage (number, target %)."""
+    targets = stage_targets or ROLLOUT_PERCENTAGES
     if green_percent <= 0:
         return 0, 0
-    for stage, target in enumerate(ROLLOUT_PERCENTAGES, start=1):
+    for stage, target in enumerate(targets, start=1):
         if abs(green_percent - target) < 0.5:
             return stage, target
     nearest = min(
-        enumerate(ROLLOUT_PERCENTAGES, start=1),
+        enumerate(targets, start=1),
         key=lambda item: abs(green_percent - item[1]),
     )
     return nearest[0], nearest[1]
@@ -191,6 +254,8 @@ def query_rollout_state() -> dict[str, object]:
     if not env.get("on"):
         return {
             "on": False,
+            "rolloutType": "off",
+            "allocationType": None,
             "greenPercent": 0.0,
             "stage": 0,
             "stageTarget": 0,
@@ -198,19 +263,68 @@ def query_rollout_state() -> dict[str, object]:
         }
 
     fallthrough = env.get("fallthrough", {})
+    allocation_type = _rollout_allocation_type(fallthrough)
+    stage_targets = ROLLOUT_PERCENTAGES
+    progressive_config = fallthrough.get("progressiveRolloutConfig")
+    if isinstance(progressive_config, dict):
+        stage_targets = _stage_targets_from_progressive_config(progressive_config)
+
+    if _is_measured_rollout(fallthrough):
+        green_percent = _green_percent_from_fallthrough(flag, fallthrough)
+        stage, target = (
+            match_rollout_stage(green_percent, stage_targets)
+            if green_percent is not None
+            else (None, None)
+        )
+        return {
+            "on": True,
+            "rolloutType": "guarded",
+            "allocationType": allocation_type,
+            "greenPercent": green_percent,
+            "stage": stage,
+            "stageTarget": target,
+            "source": "api",
+        }
+
+    if _is_progressive_rollout_ui(fallthrough):
+        green_percent = _green_percent_from_fallthrough(flag, fallthrough)
+        stage, target = (
+            match_rollout_stage(green_percent, stage_targets)
+            if green_percent is not None
+            else (None, None)
+        )
+        return {
+            "on": True,
+            "rolloutType": "progressive",
+            "allocationType": allocation_type,
+            "greenPercent": green_percent,
+            "stage": stage,
+            "stageTarget": target,
+            "source": "api",
+        }
+
     green_percent = _green_percent_from_fallthrough(flag, fallthrough)
     if green_percent is None:
         return {
             "on": True,
+            "rolloutType": "unknown",
+            "allocationType": allocation_type,
             "greenPercent": None,
             "stage": None,
             "stageTarget": None,
             "source": "api",
         }
 
-    stage, target = match_rollout_stage(green_percent)
+    if "rollout" in fallthrough:
+        rollout_type = "percentage"
+    else:
+        rollout_type = "fixed"
+
+    stage, target = match_rollout_stage(green_percent, stage_targets)
     return {
         "on": True,
+        "rolloutType": rollout_type,
+        "allocationType": allocation_type,
         "greenPercent": green_percent,
         "stage": stage,
         "stageTarget": target,

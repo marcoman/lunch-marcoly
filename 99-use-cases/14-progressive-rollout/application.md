@@ -58,12 +58,18 @@ During an active rollout, different usernames may receive `green` or `none` depe
 
 ### Monitor script
 
-[14-progressive-rollout-monitor.py](14-progressive-rollout-monitor.py) samples 20 evaluations every 30 seconds, queries LaunchDarkly for the current rollout stage, and prints observed green vs none percentages. Use it alongside `./rest/start-progressive-rollout.sh` to watch the rollout in real time.
+[14-progressive-rollout-monitor.py](14-progressive-rollout-monitor.py) samples 20 evaluations every 30 seconds, queries LaunchDarkly for the current rollout stage, and prints observed green vs none percentages.
+
+- With a **UI progressive rollout**, LaunchDarkly auto-advances stages; the monitor reports `progressive stage N`.
+- With **`./rest/start-progressive-rollout.sh`**, stages are simulated via REST percentage updates; the monitor reports `simulated stage N — REST percentage`.
+- If a **guarded rollout** (`measuredRollout`) is active, the monitor warns to use [15-guarded-rollout](../15-guarded-rollout/) instead.
 
 ## Acceptance criteria
 
 - [ ] Provisioning creates the string flag and leaves it **off**
-- [ ] `./rest/start-progressive-rollout.sh` advances through 10/20/40/60/100% over 15 minutes
+- [ ] `./rest/configure-progressive-rollout.sh` prepares the flag and emits targeting JSON for a UI progressive rollout
+- [ ] `./rest/get-progressive-rollout.sh` detects `progressiveRollout` / `progressiveRolloutConfig` (and warns on `measuredRollout`)
+- [ ] `./rest/start-progressive-rollout.sh` advances through 10/20/40/60/100% over 15 minutes (simulated percentages)
 - [ ] `./rest/set-rollout-percent.sh 40` sets a 40% green / 60% none fallthrough rollout
 - [ ] Monitor script reports batch results with inline countdown between runs
 - [ ] Console app shows green highlight for users in the green bucket

@@ -86,9 +86,37 @@ def format_stage_hint(state: dict[str, object] | None) -> str:
         return " (stage: set LD_API_ACCESS_TOKEN to query LaunchDarkly)"
     if not state.get("on"):
         return " (stage 0: flag off, target 0%)"
+
+    rollout_type = state.get("rolloutType")
     stage = state.get("stage")
     target = state.get("stageTarget")
     configured = state.get("greenPercent")
+
+    if rollout_type == "guarded":
+        return " (guarded rollout detected — use 15-guarded-rollout, not progressive)"
+
+    if rollout_type == "progressive":
+        if stage is None or target is None:
+            return " (progressive rollout active)"
+        configured_hint = ""
+        if configured is not None:
+            configured_hint = f", current {configured:.0f}%"
+        return f" (progressive stage {stage}, target {target}%{configured_hint})"
+
+    if rollout_type == "percentage":
+        if stage is None or target is None:
+            return " (simulated percentage rollout via REST)"
+        configured_hint = ""
+        if configured is not None:
+            configured_hint = f", configured {configured:.0f}%"
+        return (
+            f" (simulated stage {stage}, target {target}%{configured_hint}"
+            " — REST percentage, not UI progressive)"
+        )
+
+    if rollout_type == "fixed" and configured == 0:
+        return " (flag on, fixed none — no rollout)"
+
     if stage is None or target is None:
         return " (stage: unknown fallthrough)"
     configured_hint = ""

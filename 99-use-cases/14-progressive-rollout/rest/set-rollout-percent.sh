@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # Set the fallthrough percentage rollout: green vs none.
+#
+# This creates a manual percentage rollout (plain rollout weights). It does not
+# start a LaunchDarkly UI progressive rollout. Use configure-progressive-rollout.sh
+# + the UI for that, or start-progressive-rollout.sh to simulate stage timing.
 
 set -euo pipefail
 
