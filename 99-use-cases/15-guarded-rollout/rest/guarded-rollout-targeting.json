@@ -1,0 +1,49 @@
+{
+  "on": true,
+  "offVariation": 0,
+  "fallthrough": {
+    "guardedRolloutConfig": {
+      "randomizationUnit": "user",
+      "controlVariation": 0,
+      "endVariation": 4,
+      "stages": [
+        {
+          "rolloutWeight": 10000,
+          "monitoringWindowMilliseconds": 180000
+        },
+        {
+          "rolloutWeight": 20000,
+          "monitoringWindowMilliseconds": 180000
+        },
+        {
+          "rolloutWeight": 30000,
+          "monitoringWindowMilliseconds": 180000
+        },
+        {
+          "rolloutWeight": 50000,
+          "monitoringWindowMilliseconds": 180000
+        }
+      ],
+      "metrics": [
+        {
+          "metricKey": "grid-nav-latency",
+          "onRegression": {
+            "rollback": true
+          }
+        },
+        {
+          "metricKey": "grid-highlight-error-rate",
+          "onRegression": {
+            "rollback": true
+          }
+        },
+        {
+          "metricKey": "grid-nav-movement",
+          "onRegression": {
+            "rollback": true
+          }
+        }
+      ]
+    }
+  }
+}
