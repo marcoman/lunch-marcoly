@@ -4,6 +4,7 @@
 // See: https://launchdarkly.com/docs/home/observability/context-kinds
 
 const FLAG_HIGHLIGHT = "configure-grid-selection-green-highlight";
+const FLAG_VIP = "VIP";
 
 const COLOR_NAMES = new Set(["yellow", "red", "blue", "green", "purple"]);
 
@@ -58,6 +59,7 @@ function buildSegmentContext(username) {
   const context = {
     kind: "user",
     key: username,
+    name: username,
     segmentType: info.segmentType,
   };
 
@@ -76,6 +78,7 @@ function buildSegmentContext(username) {
 
 module.exports = {
   FLAG_HIGHLIGHT,
+  FLAG_VIP,
   COLOR_NAMES,
   SEGMENT_GENERIC,
   SEGMENT_NAMED_COLOR,

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from segment_context import (
     FLAG_HIGHLIGHT,
+    FLAG_VIP,
     SEGMENT_GENERIC,
     SEGMENT_HUMAN,
     SEGMENT_HUMAN_BETA,
@@ -25,6 +26,8 @@ SEGMENT_HIGHLIGHT_COLORS = {
     SEGMENT_HUMAN_BETA: "green",
     SEGMENT_ROBOT_BETA: "purple",
 }
+
+VIP_BADGE = "**VIP**"
 
 
 def color_label_name(highlight_color: str) -> str:
@@ -70,19 +73,23 @@ def resolve_variation_color(raw: object, info: SegmentInfo) -> str:
     return "none"
 
 
-def build_flag_response(username: str, highlight_color: str, info: SegmentInfo) -> dict[str, object]:
+def build_flag_response(
+    username: str, highlight_color: str, info: SegmentInfo, *, vip: bool = False
+) -> dict[str, object]:
     color = normalize_highlight_color(highlight_color)
     return {
         "highlightColor": color,
         "segmentLabel": format_segment_label(info, color),
         "segmentType": info.segment_type,
+        "vip": bool(vip),
     }
 
 
 def evaluate_highlight(client, username: str) -> dict[str, object]:
     context, info = build_segment_context(username)
     if client is None or not client.is_initialized():
-        return build_flag_response(username, "none", info)
+        return build_flag_response(username, "none", info, vip=False)
     raw = client.variation(FLAG_HIGHLIGHT, context, "none")
     color = resolve_variation_color(raw, info)
-    return build_flag_response(username, color, info)
+    vip = bool(client.variation(FLAG_VIP, context, False))
+    return build_flag_response(username, color, info, vip=vip)

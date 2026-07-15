@@ -4,9 +4,10 @@ LaunchDarkly **segments** driven by **context attributes** parsed from the login
 
 ## What this demonstrates
 
-- **Context attributes** the application supplies (`segmentType`, `namedColor`, `userKind`, `beta`, `generic`)
+- **Context attributes** the application supplies (`name`, `segmentType`, `namedColor`, `userKind`, `beta`, `generic`)
 - **Rule-based segments** that match those attributes
 - **Segment-targeted flag** — `configure-grid-selection-green-highlight` returns a highlight **color** variation
+- **VIP boolean flag** — when on, users whose `name` contains `vip` (any case) show `**VIP**` next to the username
 - [00-reference](../../00-reference/) grid navigator with colored selection when flagged on
 
 See [application.md](application.md) for context rules, segment types, and acceptance criteria.
@@ -30,11 +31,14 @@ Username → application builds LD context → segment match → flag variation 
 
 ```text
 configure-grid-selection-green-highlight
+VIP
 ```
 
-String variations: `none`, `yellow`, `red`, `blue`, `green`, `purple`.
+Highlight string variations: `none`, `yellow`, `red`, `blue`, `green`, `purple`.
 
-> This use case provisions the flag as **string** for segment targeting. [10-flag-enablement](../../10-flag-enablement/) uses the same key as **boolean** — use a dedicated environment if both exist.
+VIP boolean variations: `true` / `false` (default **off** / `false`). Turn the VIP flag **on** in LaunchDarkly to show the badge for usernames containing `vip`.
+
+> This use case provisions the highlight flag as **string** for segment targeting. [10-flag-enablement](../../10-flag-enablement/) uses the same key as **boolean** — use a dedicated environment if both exist.
 
 ## Prerequisites
 
@@ -72,6 +76,7 @@ Example usernames:
 | `alice` | Robot (5 letters) | red |
 | `beta` | Human + beta | green |
 | `abeta` | Robot + beta | purple |
+| `alicevip` | Robot + VIP segment | red + `**VIP**` when `VIP` is on |
 
 ## Language implementations
 

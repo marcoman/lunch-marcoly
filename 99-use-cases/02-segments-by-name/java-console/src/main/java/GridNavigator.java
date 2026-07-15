@@ -169,10 +169,12 @@ public class GridNavigator {
         System.out.flush();
         writeLine(APP_BANNER);
         String prevText = previous == null ? "—" : formatPos(previous.row, previous.col);
+        String vip = flags.vip() ? colorize(" " + SegmentStyle.VIP_BADGE, flags.highlightColor()) : "";
         String label = " " + flags.segmentLabel();
         writeLine(
                 "Name: "
                         + colorize(username, flags.highlightColor())
+                        + vip
                         + colorize(label, flags.highlightColor())
                         + RESET
                         + BG);

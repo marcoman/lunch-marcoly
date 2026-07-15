@@ -60,7 +60,9 @@ public final class SegmentContext {
 
     static LDContext buildContext(String username) {
         SegmentInfo info = resolveSegmentInfo(username);
-        var builder = LDContext.builder(username).set("segmentType", info.segmentType());
+        var builder = LDContext.builder(username)
+                .set("name", username)
+                .set("segmentType", info.segmentType());
 
         if (SEGMENT_GENERIC.equals(info.segmentType())) {
             builder.set("generic", true);

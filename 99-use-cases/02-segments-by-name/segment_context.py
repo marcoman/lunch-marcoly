@@ -10,6 +10,7 @@ from ldclient import Context
 # See: https://launchdarkly.com/docs/home/observability/context-kinds
 
 FLAG_HIGHLIGHT = "configure-grid-selection-green-highlight"
+FLAG_VIP = "VIP"
 
 COLOR_NAMES = frozenset({"yellow", "red", "blue", "green", "purple"})
 
@@ -67,7 +68,11 @@ def resolve_segment_info(username: str) -> SegmentInfo:
 def build_segment_context(username: str) -> tuple[Context, SegmentInfo]:
     """Return an LD user context with attributes segments match on."""
     info = resolve_segment_info(username)
-    builder = Context.builder(username).set("segmentType", info.segment_type)
+    builder = (
+        Context.builder(username)
+        .set("name", username)
+        .set("segmentType", info.segment_type)
+    )
 
     if info.segment_type == SEGMENT_GENERIC:
         builder.set("generic", True)

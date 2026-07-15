@@ -1,6 +1,6 @@
 # Terraform — segments by name
 
-Provisions segments, string highlight flag, and segment-based targeting for [02-segments-by-name](../application.md).
+Provisions segments, string highlight flag, VIP boolean flag, and segment-based targeting for [02-segments-by-name](../application.md).
 
 ## Prerequisites
 
@@ -24,9 +24,12 @@ terraform apply \
   -var="environment_key=${LD_ENVIRONMENT_KEY}"
 ```
 
-Flag is **on** with segment targeting after apply. Default fallthrough is `none`.
+Highlight flag is **on** with segment targeting after apply. Default fallthrough is `none`.
+
+VIP flag is **off** (`false`) after apply. Turn it **on** in LaunchDarkly to show `**VIP**` for usernames whose `name` contains `vip`.
 
 ## Resources
 
-- 7 rule-based segments (`seg-by-name-*`)
+- 8 rule-based segments (`seg-by-name-*`, including `seg-by-name-vip`)
 - `configure-grid-selection-green-highlight` as a **string** flag (6 color variations + `none`)
+- `VIP` as a **boolean** flag (default `false`)

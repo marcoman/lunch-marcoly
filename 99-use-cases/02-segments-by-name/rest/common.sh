@@ -93,6 +93,7 @@ ensure_segment() {
   local name="$2"
   local attribute="$3"
   local values_json="$4"
+  local op="${5:-in}"
   local segment_json rule_count patch_body
 
   if segment_json="$(api GET "/segments/${LD_PROJECT_KEY}/${LD_ENVIRONMENT_KEY}/${key}" 2>/dev/null || true)"; then
@@ -103,7 +104,26 @@ ensure_segment() {
         return 0
       fi
       echo "  ${key} (adding rules)"
-      patch_body="$(segment_rule_patch "${key}" "${attribute}" "${values_json}")"
+      patch_body="$(jq -n \
+        --arg env "${LD_ENVIRONMENT_KEY}" \
+        --arg attr "${attribute}" \
+        --arg op "${op}" \
+        --argjson vals "${values_json}" \
+        '{
+          environmentKey: $env,
+          comment: "Ensure segment targeting rule",
+          instructions: [{
+            kind: "addRule",
+            description: "Match on context attribute",
+            clauses: [{
+              contextKind: "user",
+              attribute: $attr,
+              op: $op,
+              values: $vals,
+              negate: false
+            }]
+          }]
+        }')"
       api PATCH "/segments/${LD_PROJECT_KEY}/${LD_ENVIRONMENT_KEY}/${key}" \
         -H "Content-Type: application/json; domain-model=launchdarkly.semanticpatch" \
         -d "${patch_body}" >/dev/null
@@ -122,7 +142,7 @@ ensure_segment() {
         \"clauses\": [{
           \"contextKind\": \"user\",
           \"attribute\": \"${attribute}\",
-          \"op\": \"in\",
+          \"op\": \"${op}\",
           \"values\": ${values_json},
           \"negate\": false
         }]

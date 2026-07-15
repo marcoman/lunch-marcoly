@@ -109,6 +109,8 @@ def draw_name_line(stdscr: curses.window, y: int, username: str, flags: dict) ->
     label = str(flags["segmentLabel"])
     attr = cell_attr(color) if color != "none" else curses.A_NORMAL
     stdscr.addstr(y, 6, username, attr)
+    if flags.get("vip"):
+        stdscr.addstr(" **VIP**", attr)
     stdscr.addstr(f" {label}", attr)
 
 

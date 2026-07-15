@@ -147,6 +147,23 @@ resource "launchdarkly_segment" "robot_beta" {
   }
 }
 
+resource "launchdarkly_segment" "vip" {
+  project_key = var.project_key
+  env_key     = var.environment_key
+  key         = "seg-by-name-vip"
+  name        = "By name: VIP"
+  description = "Username (name attribute) contains vip case-insensitively"
+  tags        = ["grid-navigator", "use-case", "segments-by-name"]
+
+  rules {
+    clauses {
+      attribute = "name"
+      op        = "matches"
+      values    = ["(?i).*vip.*"]
+    }
+  }
+}
+
 resource "launchdarkly_feature_flag" "configure_grid_selection_green_highlight" {
   project_key = var.project_key
   key         = "configure-grid-selection-green-highlight"
@@ -288,8 +305,71 @@ resource "launchdarkly_feature_flag_environment" "highlight_env" {
   }
 }
 
+# Boolean VIP badge flag — default off (false). When on, VIP segment receives true.
+resource "launchdarkly_feature_flag" "vip" {
+  project_key = var.project_key
+  key         = "VIP"
+  name        = "VIP"
+  description = "When enabled, show **VIP** next to the username for users whose name contains vip (case-insensitive)."
+  temporary   = false
+
+  variation_type = "boolean"
+
+  variations {
+    value       = true
+    name        = "VIP"
+    description = "Show **VIP** badge next to username"
+  }
+
+  variations {
+    value       = false
+    name        = "Not VIP"
+    description = "No VIP badge (default)"
+  }
+
+  defaults {
+    on_variation  = 0
+    off_variation = 1
+  }
+
+  tags = [
+    "grid-navigator",
+    "use-case",
+    "segments-by-name",
+    "vip",
+    "boolean",
+    "managed-by-terraform",
+  ]
+}
+
+resource "launchdarkly_feature_flag_environment" "vip_env" {
+  flag_id = launchdarkly_feature_flag.vip.id
+  env_key = var.environment_key
+
+  on            = false
+  off_variation = 1
+
+  rules {
+    description = "Name contains vip"
+    clauses {
+      attribute = "segmentMatch"
+      op        = "segmentMatch"
+      values    = [launchdarkly_segment.vip.key]
+    }
+    variation = 0
+  }
+
+  fallthrough {
+    variation = 1
+  }
+}
+
 output "flag_key" {
   value = launchdarkly_feature_flag.configure_grid_selection_green_highlight.key
+}
+
+output "vip_flag_key" {
+  value = launchdarkly_feature_flag.vip.key
 }
 
 output "segment_keys" {
@@ -301,6 +381,7 @@ output "segment_keys" {
       launchdarkly_segment.robot.key,
       launchdarkly_segment.human_beta.key,
       launchdarkly_segment.robot_beta.key,
+      launchdarkly_segment.vip.key,
     ],
   )
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Create segments and string highlight flag for segments-by-name use case.
+# Create segments, string highlight flag, and VIP boolean flag for segments-by-name.
 
 set -euo pipefail
 
@@ -8,6 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/common.sh"
 
 FLAG_KEY="configure-grid-selection-green-highlight"
+VIP_FLAG_KEY="VIP"
 
 variation_id() {
   local flag_json="$1"
@@ -122,8 +123,75 @@ ensure_segment "seg-by-name-human" "By name: human" "segmentType" '["human"]'
 ensure_segment "seg-by-name-robot" "By name: robot" "segmentType" '["robot"]'
 ensure_segment "seg-by-name-human-beta" "By name: human + beta" "segmentType" '["human-beta"]'
 ensure_segment "seg-by-name-robot-beta" "By name: robot + beta" "segmentType" '["robot-beta"]'
+ensure_segment "seg-by-name-vip" "By name: VIP" "name" '["(?i).*vip.*"]' "matches"
+
+ensure_boolean_vip_flag() {
+  local existing
+  if existing="$(api GET "/flags/${LD_PROJECT_KEY}/${VIP_FLAG_KEY}" 2>/dev/null || true)"; then
+    if echo "${existing}" | jq -e '.key' >/dev/null 2>&1; then
+      echo "Boolean flag ${VIP_FLAG_KEY} already exists."
+      return 0
+    fi
+  fi
+
+  echo "Creating ${VIP_FLAG_KEY} (boolean)..."
+  api POST "/flags/${LD_PROJECT_KEY}" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "key": "VIP",
+      "name": "VIP",
+      "description": "When enabled, show **VIP** next to the username for users whose name contains vip (case-insensitive).",
+      "temporary": false,
+      "tags": ["grid-navigator", "use-case", "segments-by-name", "vip", "boolean"],
+      "variations": [
+        {"value": true, "name": "VIP", "description": "Show **VIP** badge"},
+        {"value": false, "name": "Not VIP", "description": "No VIP badge (default)"}
+      ],
+      "defaults": {"onVariation": 0, "offVariation": 1}
+    }' | jq '{key, name, variations: [.variations[] | {value, _id}]}'
+}
+
+configure_vip_targeting() {
+  echo "Configuring VIP targeting (flag OFF by default)..."
+  local flag_json
+  flag_json="$(api GET "/flags/${LD_PROJECT_KEY}/${VIP_FLAG_KEY}")"
+
+  local vid_true vid_false
+  vid_true="$(echo "${flag_json}" | jq -r '.variations[] | select(.value == true) | ._id' | head -1)"
+  vid_false="$(echo "${flag_json}" | jq -r '.variations[] | select(.value == false) | ._id' | head -1)"
+
+  if [[ -z "${vid_true}" || -z "${vid_false}" ]]; then
+    echo "error: could not read VIP variation IDs" >&2
+    exit 1
+  fi
+
+  local patch_body
+  patch_body="$(jq -n \
+    --arg env "${LD_ENVIRONMENT_KEY}" \
+    --arg on_id "${vid_true}" \
+    --arg off_id "${vid_false}" \
+    '{
+      environmentKey: $env,
+      comment: "VIP segment targeting",
+      instructions: [
+        {kind: "turnFlagOff"},
+        {kind: "replaceRules", rules: [
+          {description: "Name contains vip", variationId: $on_id, clauses: [{contextKind: "user", attribute: "segmentMatch", op: "segmentMatch", values: ["seg-by-name-vip"]}]}
+        ]},
+        {kind: "updateFallthroughVariationOrRollout", variationId: $off_id},
+        {kind: "updateOffVariation", variationId: $off_id}
+      ]
+    }')"
+
+  api PATCH "/flags/${LD_PROJECT_KEY}/${VIP_FLAG_KEY}" \
+    -H "Content-Type: application/json; domain-model=launchdarkly.semanticpatch" \
+    -d "${patch_body}" | jq ".environments.\"${LD_ENVIRONMENT_KEY}\" | {on, rules: (.rules | length), fallthrough}"
+}
 
 ensure_string_flag
 configure_targeting
+
+ensure_boolean_vip_flag
+configure_vip_targeting
 
 echo "Done."

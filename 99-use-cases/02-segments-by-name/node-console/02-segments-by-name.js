@@ -64,8 +64,9 @@ function drawCell(selected, color) {
 function formatNameLine(username, flags) {
   const color = flags.highlightColor;
   const namePart = colorize(username, color);
+  const vipPart = flags.vip ? colorize(" **VIP**", color) : "";
   const label = colorize(` ${flags.segmentLabel}`, color);
-  return `Name: ${namePart}${label}${RESET}${BG}`;
+  return `Name: ${namePart}${vipPart}${label}${RESET}${BG}`;
 }
 
 function render(username, row, col, previous, flags) {
@@ -119,7 +120,7 @@ function runGrid(username) {
   let row = 1;
   let col = 1;
   let previous = null;
-  let flags = { highlightColor: "none", segmentLabel: "", segmentType: "" };
+  let flags = { highlightColor: "none", segmentLabel: "", segmentType: "", vip: false };
 
   return new Promise((resolve) => {
     const onKeypress = async (str, key) => {

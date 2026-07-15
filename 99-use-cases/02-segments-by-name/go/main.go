@@ -20,7 +20,9 @@ import (
 const (
 	appBanner        = "02-segments-by-name[go]"
 	flagHighlight    = "configure-grid-selection-green-highlight"
+	flagVIP          = "VIP"
 	defaultHighlight = "none"
+	vipBadge         = "**VIP**"
 )
 
 var (
@@ -52,6 +54,7 @@ type flagValues struct {
 	highlightColor string
 	segmentLabel   string
 	segmentType    string
+	vip            bool
 }
 
 type position struct {
@@ -121,7 +124,9 @@ func resolveSegmentInfo(username string) segmentInfo {
 
 func buildSegmentContext(username string) (ldcontext.Context, segmentInfo) {
 	info := resolveSegmentInfo(username)
-	builder := ldcontext.NewBuilder(username).SetString("segmentType", info.segmentType)
+	builder := ldcontext.NewBuilder(username).
+		SetString("name", username).
+		SetString("segmentType", info.segmentType)
 
 	switch info.segmentType {
 	case segmentGeneric:
@@ -172,23 +177,25 @@ func normalizeHighlightColor(raw interface{}) string {
 	return "none"
 }
 
-func buildFlagResponse(highlightColor string, info segmentInfo) flagValues {
+func buildFlagResponse(highlightColor string, info segmentInfo, vip bool) flagValues {
 	color := normalizeHighlightColor(highlightColor)
 	return flagValues{
 		highlightColor: color,
 		segmentLabel:   formatSegmentLabel(info, color),
 		segmentType:    info.segmentType,
+		vip:            vip,
 	}
 }
 
 func evaluateHighlight(username string) flagValues {
 	_, info := buildSegmentContext(username)
 	if ldClient == nil {
-		return buildFlagResponse(defaultHighlight, info)
+		return buildFlagResponse(defaultHighlight, info, false)
 	}
 	context, _ := buildSegmentContext(username)
 	raw, _ := ldClient.StringVariation(flagHighlight, context, defaultHighlight)
-	return buildFlagResponse(raw, info)
+	vip, _ := ldClient.BoolVariation(flagVIP, context, false)
+	return buildFlagResponse(raw, info, vip)
 }
 
 func ansiColor(color string) string {
@@ -306,9 +313,14 @@ func render(username string, row, col int, previous *position, flags flagValues)
 	}
 
 	writeLine(&out, appBanner)
+	vipPart := ""
+	if flags.vip {
+		vipPart = colorize(" "+vipBadge, flags.highlightColor)
+	}
 	nameLine := fmt.Sprintf(
-		"Name: %s%s",
+		"Name: %s%s%s",
 		colorize(username, flags.highlightColor),
+		vipPart,
 		colorize(" "+flags.segmentLabel, flags.highlightColor),
 	)
 	writeLine(&out, nameLine+reset+bgReset)

@@ -46,6 +46,8 @@ The application builds a **user** context (`key` = login username) with attribut
 | 3 | Odd number of letters in username | `userKind=robot` | (continues) |
 | 4 | Username contains `beta` (case-insensitive) | `beta=true` | Combined with step 3 |
 
+Every context also includes **`name`** = login username (used by the VIP segment).
+
 Color names: `yellow`, `red`, `blue`, `green`, `purple` (exact match, case-insensitive).
 
 Letter count includes **alphabetic characters only** (`str.isalpha()`).
@@ -70,9 +72,24 @@ Highlight colors for composite types (when flag targeting is provisioned):
 | `human-beta` | `green` |
 | `robot-beta` | `purple` |
 
+## VIP flag
+
+| Key | `VIP` |
+|-----|-------|
+| Type | **Boolean** |
+| Default (off) | `false` — no VIP badge |
+
+When the **VIP** flag is **on**, contexts whose `name` attribute contains `vip` (case-insensitive) match segment `seg-by-name-vip` and receive `true`. The header then shows `**VIP**` next to the username:
+
+```text
+Name: alicevip **VIP** (robot-red)
+```
+
+When the flag is **off**, or the username does not contain `vip`, evaluation returns `false` and no badge is shown.
+
 ## Segments
 
-Seven rule-based segments (provisioned in [terraform/](terraform/) and [rest/](rest/)):
+Eight rule-based segments (provisioned in [terraform/](terraform/) and [rest/](rest/)):
 
 | Segment key | Matches |
 |-------------|---------|
@@ -82,17 +99,19 @@ Seven rule-based segments (provisioned in [terraform/](terraform/) and [rest/](r
 | `seg-by-name-robot` | `segmentType` is `robot` |
 | `seg-by-name-human-beta` | `segmentType` is `human-beta` |
 | `seg-by-name-robot-beta` | `segmentType` is `robot-beta` |
+| `seg-by-name-vip` | `name` contains `vip` (case-insensitive) |
 
-Flag targeting rules (first match wins) map each segment to its highlight variation.
+Highlight flag targeting rules (first match wins) map each color segment to its highlight variation. The VIP flag targets `seg-by-name-vip` with the `true` variation.
 
 ## Application behavior
 
 1. User logs in with a username
-2. Application builds LaunchDarkly context per rules above
+2. Application builds LaunchDarkly context per rules above (including `name`)
 3. Evaluate `configure-grid-selection-green-highlight` for that context
-4. Header shows **`Name: {username} ({segment-label})`** with highlight color when not `none`
-5. Selected grid cell uses the same highlight color
-6. Standard 00-reference navigation, logout (`L`), quit (`Q`)
+4. Evaluate `VIP` for that context
+5. Header shows `Name: {username} [**VIP**] ({segment-label})` — `**VIP**` only when the VIP flag is on and the user is in the VIP segment
+6. Selected grid cell uses the highlight color
+7. Standard 00-reference navigation, logout (`L`), quit (`Q`)
 
 ### Segment label format
 
@@ -115,3 +134,6 @@ Flag targeting rules (first match wins) map each segment to its highlight variat
 5. With flag **on**, `beta` substring adds beta segment (human-beta or robot-beta)
 6. Context attributes match segment rules; application does not apply colors outside flag evaluation
 7. Application matches 00-reference grid behavior aside from highlight and segment label
+8. `VIP` flag defaults to **off** (`false`); no `**VIP**` badge
+9. With `VIP` **on**, usernames containing `vip` (any case) show `**VIP**` next to the name; others do not
+10. Context includes `name` = username for VIP segment matching

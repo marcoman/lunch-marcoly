@@ -99,7 +99,7 @@
   <section id="grid-screen" class="hidden" tabindex="0">
     <div class="header">
       <div class="app-banner">02-segments-by-name[java]</div>
-      <div>Name: <span id="hdr-name"></span><span id="hdr-label"></span></div>
+      <div>Name: <span id="hdr-name"></span><span id="hdr-vip"></span><span id="hdr-label"></span></div>
       <div>Current position: <span id="hdr-current"></span></div>
       <div>Previous position: <span id="hdr-previous"></span></div>
     </div>
@@ -119,6 +119,7 @@
       highlightColor: "none",
       segmentLabel: "",
       segmentType: "",
+      vip: false,
     };
     let flagPollTimer = null;
 
@@ -156,10 +157,13 @@
 
     function renderNameLine() {
       const nameEl = document.getElementById("hdr-name");
+      const vipEl = document.getElementById("hdr-vip");
       const labelEl = document.getElementById("hdr-label");
       const cls = colorClass(flags.highlightColor);
       nameEl.textContent = username;
       nameEl.className = cls;
+      vipEl.textContent = flags.vip ? " **VIP**" : "";
+      vipEl.className = cls;
       labelEl.textContent = flags.segmentLabel ? ` ${flags.segmentLabel}` : "";
       labelEl.className = cls;
     }
@@ -196,7 +200,7 @@
       row = 1;
       col = 1;
       previous = null;
-      flags = { highlightColor: "none", segmentLabel: "", segmentType: "" };
+      flags = { highlightColor: "none", segmentLabel: "", segmentType: "", vip: false };
       if (flagPollTimer) clearInterval(flagPollTimer);
       flagPollTimer = null;
 
@@ -218,7 +222,7 @@
       row = 1;
       col = 1;
       previous = null;
-      flags = { highlightColor: "none", segmentLabel: "", segmentType: "" };
+      flags = { highlightColor: "none", segmentLabel: "", segmentType: "", vip: false };
 
       document.getElementById("login-screen").classList.add("hidden");
       document.getElementById("grid-screen").classList.remove("hidden");

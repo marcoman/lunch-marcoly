@@ -115,7 +115,7 @@
   <section id="grid-screen" class="hidden" tabindex="0">
     <div class="header">
       <div class="app-banner">02-segments-by-name[node]</div>
-      <div>Name: <span id="hdr-name"></span><span id="hdr-segment"></span></div>
+      <div>Name: <span id="hdr-name"></span><span id="hdr-vip"></span><span id="hdr-segment"></span></div>
       <div>Current position: <span id="hdr-current"></span></div>
       <div>Previous position: <span id="hdr-previous"></span></div>
     </div>
@@ -135,6 +135,7 @@
       highlightColor: "none",
       segmentLabel: "",
       segmentType: "",
+      vip: false,
     };
 
     function formatPos(r, c) {
@@ -177,10 +178,13 @@
 
     function renderNameLine() {
       const nameEl = document.getElementById("hdr-name");
+      const vipEl = document.getElementById("hdr-vip");
       const segmentEl = document.getElementById("hdr-segment");
       const cls = colorClass(highlight.highlightColor);
       nameEl.textContent = username;
       nameEl.className = cls;
+      vipEl.textContent = highlight.vip ? " **VIP**" : "";
+      vipEl.className = cls;
       segmentEl.textContent = highlight.segmentLabel ? ` ${highlight.segmentLabel}` : "";
       segmentEl.className = cls;
     }
@@ -217,7 +221,7 @@
       row = 1;
       col = 1;
       previous = null;
-      highlight = { highlightColor: "none", segmentLabel: "", segmentType: "" };
+      highlight = { highlightColor: "none", segmentLabel: "", segmentType: "", vip: false };
       document.body.classList.remove("highlight-on");
       document.getElementById("username").value = "";
       document.getElementById("login-error").classList.add("hidden");
@@ -236,7 +240,7 @@
       row = 1;
       col = 1;
       previous = null;
-      highlight = { highlightColor: "none", segmentLabel: "", segmentType: "" };
+      highlight = { highlightColor: "none", segmentLabel: "", segmentType: "", vip: false };
       document.getElementById("login-screen").classList.add("hidden");
       document.getElementById("grid-screen").classList.remove("hidden");
       renderGrid();

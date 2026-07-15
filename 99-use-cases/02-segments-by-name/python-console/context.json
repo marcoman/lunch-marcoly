@@ -1,0 +1,20 @@
+{
+  "kind": "multi",
+  "user": {
+    "key": "alice",
+    "name": "alice",
+    "segmentType": "robot",
+    "userKind": "robot",
+    "beta": false,
+    "tier": "diamond"
+  },
+  "device": {
+    "key": "console-terminal-1",
+    "platform": "macos",
+    "terminal": true
+  },
+  "favorite-color": {
+    "key": "purple",
+    "color": "purple"
+  }
+}

@@ -1,6 +1,6 @@
 # REST API provisioning
 
-Creates segments, string highlight flag, and segment targeting for [02-segments-by-name](../application.md).
+Creates segments, string highlight flag, VIP boolean flag, and segment targeting for [02-segments-by-name](../application.md).
 
 ## Environment variables
 
@@ -19,6 +19,8 @@ chmod +x *.sh
 ```
 
 **Note:** This use case defines `configure-grid-selection-green-highlight` as a **string** flag. If you already provisioned it as boolean from [10-flag-enablement](../../../10-flag-enablement/), `create-all.sh` replaces it automatically.
+
+`create-all.sh` also creates the **`VIP`** boolean flag (default **off** / `false`) with targeting for segment `seg-by-name-vip` (`name` contains `vip`, case-insensitive).
 
 `create-all.sh` ensures each segment has a targeting rule. If segments already exist but have empty rules (a common symptom: every user gets `highlightColor: "none"` with reason `FALLTHROUGH`), re-run the script to add the rules.
 

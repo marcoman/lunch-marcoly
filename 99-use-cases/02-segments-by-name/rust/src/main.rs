@@ -17,7 +17,9 @@ use std::time::Duration;
 // See: https://launchdarkly.com/docs/home/flags/segments
 
 const FLAG_HIGHLIGHT: &str = "configure-grid-selection-green-highlight";
+const FLAG_VIP: &str = "VIP";
 const DEFAULT_HIGHLIGHT: &str = "none";
+const VIP_BADGE: &str = "**VIP**";
 
 const ROWS: [&str; 3] = ["t", "m", "b"];
 const APP_BANNER: &str = "02-segments-by-name[rust]";
@@ -40,6 +42,7 @@ struct FlagValues {
     highlight_color: String,
     segment_label: String,
     segment_type: String,
+    vip: bool,
 }
 
 struct Position {
@@ -90,7 +93,7 @@ impl App {
     fn evaluate_highlight(&self, username: &str) -> FlagValues {
         let info = resolve_segment_info(username);
         let Some(client) = &self.client else {
-            return build_flag_response(DEFAULT_HIGHLIGHT, &info);
+            return build_flag_response(DEFAULT_HIGHLIGHT, &info, false);
         };
         let context = build_segment_context(username, &info);
         let raw = client.str_variation(
@@ -98,7 +101,8 @@ impl App {
             FLAG_HIGHLIGHT,
             DEFAULT_HIGHLIGHT.to_string(),
         );
-        build_flag_response(&raw, &info)
+        let vip = client.bool_variation(&context, FLAG_VIP, false);
+        build_flag_response(&raw, &info, vip)
     }
 }
 
@@ -159,6 +163,7 @@ fn resolve_segment_info(username: &str) -> SegmentInfo {
 
 fn build_segment_context(username: &str, info: &SegmentInfo) -> launchdarkly_server_sdk::Context {
     let mut builder = ContextBuilder::new(username);
+    builder.set_string("name", username.to_string());
     builder.set_string("segmentType", info.segment_type.clone());
 
     match info.segment_type.as_str() {
@@ -213,12 +218,13 @@ fn normalize_highlight_color(raw: &str) -> String {
     }
 }
 
-fn build_flag_response(highlight_color: &str, info: &SegmentInfo) -> FlagValues {
+fn build_flag_response(highlight_color: &str, info: &SegmentInfo, vip: bool) -> FlagValues {
     let color = normalize_highlight_color(highlight_color);
     FlagValues {
         highlight_color: color.clone(),
         segment_label: format_segment_label(info, &color),
         segment_type: info.segment_type.clone(),
+        vip,
     }
 }
 
@@ -313,7 +319,12 @@ fn render(
         .unwrap_or_else(|| "—".to_string());
 
     let highlight = term_color(&flags.highlight_color);
-    let name_line = format!("Name: {} {}", username, flags.segment_label);
+    let vip_part = if flags.vip {
+        format!(" {VIP_BADGE}")
+    } else {
+        String::new()
+    };
+    let name_line = format!("Name: {}{} {}", username, vip_part, flags.segment_label);
 
     let mut y = 0u16;
     print_colored_line(out, y, APP_BANNER, None)?;

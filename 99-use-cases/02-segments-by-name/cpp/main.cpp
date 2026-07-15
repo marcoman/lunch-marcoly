@@ -129,8 +129,10 @@ void render(const std::string& username, int row, int col,
     std::cout << "\033[2J\033[H" << kBgReset << std::flush;
     const std::string prev_text =
         previous ? format_pos(previous->row, previous->col) : "—";
+    const std::string vip_part =
+        flags.vip ? colorize(" **VIP**", flags.highlightColor) : "";
     const std::string name_line =
-        "Name: " + colorize(username, flags.highlightColor) +
+        "Name: " + colorize(username, flags.highlightColor) + vip_part +
         colorize(" " + flags.segmentLabel, flags.highlightColor) + kReset + kBgReset;
     write_line(kAppBanner);
     write_line(name_line);

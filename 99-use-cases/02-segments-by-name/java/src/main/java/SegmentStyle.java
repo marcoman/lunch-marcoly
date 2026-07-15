@@ -10,6 +10,8 @@ import java.util.Set;
  */
 public final class SegmentStyle {
     static final String FLAG_HIGHLIGHT = "configure-grid-selection-green-highlight";
+    static final String FLAG_VIP = "VIP";
+    static final String VIP_BADGE = "**VIP**";
 
     private static final Set<String> VALID_COLORS =
             Set.of("yellow", "red", "blue", "green", "purple");
@@ -19,9 +21,9 @@ public final class SegmentStyle {
     private SegmentStyle() {
     }
 
-    record FlagValues(String highlightColor, String segmentLabel, String segmentType) {
+    record FlagValues(String highlightColor, String segmentLabel, String segmentType, boolean vip) {
         static FlagValues fromSegment(SegmentContext.SegmentInfo info) {
-            return buildResponse("none", info);
+            return buildResponse("none", info, false);
         }
     }
 
@@ -58,11 +60,12 @@ public final class SegmentStyle {
     static FlagValues evaluate(String username) {
         SegmentContext.SegmentInfo info = SegmentContext.resolveSegmentInfo(username);
         if (client == null || username == null || username.isBlank()) {
-            return buildResponse("none", info);
+            return buildResponse("none", info, false);
         }
-        String raw = client.stringVariation(
-                FLAG_HIGHLIGHT, SegmentContext.buildContext(username), "none");
-        return buildResponse(normalizeHighlightColor(raw), info);
+        var context = SegmentContext.buildContext(username);
+        String raw = client.stringVariation(FLAG_HIGHLIGHT, context, "none");
+        boolean vip = client.boolVariation(FLAG_VIP, context, false);
+        return buildResponse(normalizeHighlightColor(raw), info, vip);
     }
 
     static String colorLabelName(String highlightColor) {
@@ -87,10 +90,12 @@ public final class SegmentStyle {
         return VALID_COLORS.contains(color) ? color : "none";
     }
 
-    private static FlagValues buildResponse(String highlightColor, SegmentContext.SegmentInfo info) {
+    private static FlagValues buildResponse(
+            String highlightColor, SegmentContext.SegmentInfo info, boolean vip) {
         return new FlagValues(
                 highlightColor,
                 formatSegmentLabel(info, highlightColor),
-                info.segmentType());
+                info.segmentType(),
+                vip);
     }
 }

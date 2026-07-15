@@ -2,6 +2,7 @@
 
 const {
   FLAG_HIGHLIGHT,
+  FLAG_VIP,
   SEGMENT_GENERIC,
   SEGMENT_HUMAN,
   SEGMENT_HUMAN_BETA,
@@ -15,6 +16,7 @@ const {
 // See: https://launchdarkly.com/docs/home/flags/segments
 
 const VALID_COLORS = new Set(["yellow", "red", "blue", "green", "purple"]);
+const VIP_BADGE = "**VIP**";
 
 function colorLabelName(highlightColor) {
   return highlightColor === "none" ? "no-color" : highlightColor;
@@ -72,27 +74,31 @@ function resolveVariationColor(raw, info) {
   return "none";
 }
 
-function buildFlagResponse(username, highlightColor, info) {
+function buildFlagResponse(username, highlightColor, info, vip = false) {
   const color = normalizeHighlightColor(highlightColor);
   return {
     highlightColor: color,
     segmentLabel: formatSegmentLabel(info, color),
     segmentType: info.segmentType,
+    vip: Boolean(vip),
   };
 }
 
 async function evaluateHighlight(client, username) {
   const { context, info } = buildSegmentContext(username);
   if (!client) {
-    return buildFlagResponse(username, "none", info);
+    return buildFlagResponse(username, "none", info, false);
   }
   const raw = await client.variation(FLAG_HIGHLIGHT, context, "none");
   const color = resolveVariationColor(raw, info);
-  return buildFlagResponse(username, color, info);
+  const vip = Boolean(await client.variation(FLAG_VIP, context, false));
+  return buildFlagResponse(username, color, info, vip);
 }
 
 module.exports = {
   FLAG_HIGHLIGHT,
+  FLAG_VIP,
+  VIP_BADGE,
   VALID_COLORS,
   colorLabelName,
   formatSegmentLabel,

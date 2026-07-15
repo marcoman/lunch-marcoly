@@ -17,6 +17,7 @@ namespace {
 
 #if defined(HAS_LAUNCHDARKLY)
 constexpr const char* kFlagHighlight = "configure-grid-selection-green-highlight";
+constexpr const char* kFlagVIP = "VIP";
 LDClient* g_client = nullptr;
 #endif
 
@@ -86,7 +87,8 @@ std::string escape_json(const std::string& value) {
 
 std::string build_context_json(const std::string& username, const SegmentInfo& info) {
     std::ostringstream json;
-    json << "{\"kind\":\"user\",\"key\":\"" << escape_json(username) << "\",\"segmentType\":\""
+    json << "{\"kind\":\"user\",\"key\":\"" << escape_json(username) << "\",\"name\":\""
+         << escape_json(username) << "\",\"segmentType\":\""
          << escape_json(info.segmentType) << "\"";
 
     if (info.segmentType == "generic") {
@@ -134,17 +136,18 @@ std::string format_segment_label(const SegmentInfo& info, const std::string& hig
     return "(" + color_name + ")";
 }
 
-FlagValues build_response(const std::string& highlight_color, const SegmentInfo& info) {
+FlagValues build_response(const std::string& highlight_color, const SegmentInfo& info, bool vip) {
     const std::string color = normalize_highlight_color(highlight_color);
     FlagValues values;
     values.highlightColor = color;
     values.segmentLabel = format_segment_label(info, color);
     values.segmentType = info.segmentType;
+    values.vip = vip;
     return values;
 }
 
 FlagValues defaults(const std::string& username) {
-    return build_response("none", resolve_segment_info(username));
+    return build_response("none", resolve_segment_info(username), false);
 }
 
 std::string python_executable() {
@@ -238,6 +241,23 @@ std::string json_string(const std::string& json, const std::string& key) {
     return decode_json_string_value(json.substr(value_start, end - value_start));
 }
 
+bool json_bool(const std::string& json, const std::string& key) {
+    const std::string spaced_marker = "\"" + key + "\": ";
+    const std::string compact_marker = "\"" + key + "\":";
+    std::size_t start = json.find(spaced_marker);
+    std::size_t value_start = 0;
+    if (start != std::string::npos) {
+        value_start = start + spaced_marker.size();
+    } else {
+        start = json.find(compact_marker);
+        if (start == std::string::npos) {
+            return false;
+        }
+        value_start = start + compact_marker.size();
+    }
+    return json.compare(value_start, 4, "true") == 0;
+}
+
 #if !defined(HAS_LAUNCHDARKLY)
 FlagValues evaluate_via_python(const std::string& username) {
     if (std::getenv("LD_SDK_KEY") == nullptr) {
@@ -271,6 +291,7 @@ FlagValues evaluate_via_python(const std::string& username) {
     values.highlightColor = json_string(output, "highlightColor");
     values.segmentLabel = json_string(output, "segmentLabel");
     values.segmentType = json_string(output, "segmentType");
+    values.vip = json_bool(output, "vip");
     if (values.highlightColor.empty()) {
         values.highlightColor = "none";
     }
@@ -322,8 +343,9 @@ FlagValues evaluate_flags(const std::string& username) {
         return defaults(username);
     }
     const char* raw = LDStringVariation(g_client, kFlagHighlight, context, "none");
+    const bool vip = LDBoolVariation(g_client, kFlagVIP, context, false);
     LDJSONFree(context);
-    return build_response(raw != nullptr ? raw : "none", info);
+    return build_response(raw != nullptr ? raw : "none", info, vip);
 #else
     return evaluate_via_python(username);
 #endif

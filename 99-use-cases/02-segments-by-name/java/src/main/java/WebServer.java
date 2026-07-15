@@ -89,7 +89,9 @@ public class WebServer {
                 + escapeJson(flags.segmentLabel())
                 + "\",\"segmentType\":\""
                 + escapeJson(flags.segmentType())
-                + "\"}";
+                + "\",\"vip\":"
+                + flags.vip()
+                + "}";
     }
 
     private static String escapeJson(String value) {

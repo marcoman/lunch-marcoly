@@ -9,6 +9,7 @@ struct FlagValues {
     std::string highlightColor = "none";
     std::string segmentLabel;
     std::string segmentType;
+    bool vip = false;
 };
 
 void init_launchdarkly();
