@@ -288,7 +288,7 @@ fn render(
     y += 1;
     print_line(out, y, &format!("Lucky Number is: {}", flags.lucky_number))?;
     y += 2;
-    print_line(out, y, "Use arrow keys or WASD to move (L to logout, Q to quit).")?;
+    print_line(out, y, "Use WASD or arrow keys to move (L to logout, Q to quit).")?;
     y += 2;
 
     for r in 0..3 {

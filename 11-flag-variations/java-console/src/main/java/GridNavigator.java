@@ -163,7 +163,7 @@ public class GridNavigator {
         writeLine(flags.countLabel() + ": " + moveCount);
         writeLine("Lucky Number is: " + flags.luckyNumber());
         writeLine("");
-        writeLine("Use arrow keys or WASD to move (L to logout, Q to quit).");
+        writeLine("Use WASD or arrow keys to move (L to logout, Q to quit).");
         writeLine("");
 
         for (int r = 0; r < 3; r++) {
