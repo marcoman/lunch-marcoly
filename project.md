@@ -2,7 +2,7 @@
 
 This document defines the structure, conventions, and standards for **lunch-marcoly** — a collection of small, self-contained programming examples, each implemented across multiple languages.
 
-For the reference grid navigator application behavior, see [00-reference-code/application.md](00-reference-code/application.md).
+For the reference grid navigator application behavior, see [00-reference-code/application.md](00-reference-code/application.md). For the reference agent UI, see [01-reference-agent/application.md](01-reference-agent/application.md).
 
 ## Purpose
 
@@ -54,6 +54,10 @@ lunch-marcoly/
 │   ├── cpp/                   # Makefile → ./00-reference-code
 │   ├── go/
 │   └── rust/
+├── 01-reference-agent/             # Reference persona agent — config/env LLM only
+│   ├── README.md
+│   ├── application.md         # Agent UI behavior spec
+│   └── python/                # Web UI first; console planned next
 ├── 10-flag-enablement/        # Feature flags for the grid navigator
 │   ├── README.md
 │   ├── application.md         # Flag specification and desired effects
@@ -93,6 +97,7 @@ lunch-marcoly/
 - Follow the number with a **kebab-case** name describing the concept
 - Use the next available number when adding a new example (`03`, `04`, …)
 - `00-reference-code` is reserved for the reference grid navigator app and repository conventions. It does **not** include LaunchDarkly integration.
+- `01-reference-agent` is reserved for the reference persona / LLM agent UI. It uses config and environment variables only; LaunchDarkly AgentControl arrives in later examples.
 - `10-flag-enablement` demonstrates feature flag naming, provisioning, and enablement for the grid navigator.
 - `11-flag-variations` demonstrates string, number, JSON, and anonymous-context flag variation types.
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive and guarded rollouts).

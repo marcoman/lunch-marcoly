@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reference Agent</title>
+  <!--
+    UI for 01-reference-agent (Python web).
+
+    Layout (left → right on wide screens):
+      • Persona / Input / Response
+      • Provider+model / Metrics / Status
+
+    Controls:
+      Previous / Next  — cycle personas (wrap) and auto-generate
+      Refresh          — re-run the current persona with the same canned input
+  -->
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --ink: #1c1a16;
+      --muted: #6b645a;
+      --panel: #fffdf8;
+      --line: #d9d0c3;
+      --accent: #2f5d50;
+      --danger: #8b2e2e;
+      --ok: #2f5d50;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, #efe6d6 0%, transparent 40%),
+        linear-gradient(180deg, #f7f3eb 0%, #ebe4d8 100%);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+    .wrap {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+    }
+    .app-banner {
+      font-size: 0.85rem;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+      margin-bottom: 0.75rem;
+    }
+    h1 {
+      font-family: "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+      font-size: 2rem;
+      font-weight: 600;
+      margin: 0 0 0.35rem;
+    }
+    .subtitle {
+      color: var(--muted);
+      margin: 0 0 1.25rem;
+    }
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+    button {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+      padding: 0.55rem 0.9rem;
+      border-radius: 0.4rem;
+      cursor: pointer;
+      font: inherit;
+    }
+    button:hover:not(:disabled) { border-color: var(--accent); }
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    button.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 800px) {
+      .grid { grid-template-columns: 1.2fr 0.8fr; }
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+      padding: 1rem 1.1rem;
+    }
+    .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+    .value {
+      white-space: pre-wrap;
+      line-height: 1.5;
+      min-height: 1.5rem;
+    }
+    #response {
+      min-height: 10rem;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 0.95rem;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.65rem 1rem;
+      font-size: 0.95rem;
+    }
+    .metrics div span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    #status {
+      min-height: 3rem;
+      color: var(--muted);
+    }
+    #status.error { color: var(--danger); }
+    #status.ok { color: var(--ok); }
+    .persona-name {
+      font-size: 1.35rem;
+      font-weight: 600;
+    }
+    .profile {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="app-banner" id="app-banner">01-reference-agent[python]</div>
+    <h1>Reference Agent</h1>
+    <p class="subtitle">Choose a persona, stream a response, inspect provider metrics.</p>
+
+    <div class="nav">
+      <button id="btn-prev" type="button">← Previous</button>
+      <button id="btn-next" type="button">Next →</button>
+      <button id="btn-refresh" class="primary" type="button">Refresh</button>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <div class="label">Persona</div>
+        <div class="persona-name" id="persona-name">—</div>
+        <div class="profile" id="persona-profile">—</div>
+
+        <div class="label" style="margin-top:1rem">Input</div>
+        <div class="value" id="input">—</div>
+
+        <div class="label" style="margin-top:1rem">Response</div>
+        <div class="value" id="response"></div>
+      </div>
+
+      <div>
+        <div class="panel" style="margin-bottom:1rem">
+          <div class="label">Provider / model</div>
+          <div class="value" id="provider-model">—</div>
+        </div>
+        <div class="panel" style="margin-bottom:1rem">
+          <div class="label">Metrics</div>
+          <div class="metrics" id="metrics">
+            <div><span>latency_ms</span><strong id="m-latency">—</strong></div>
+            <div><span>ttft_ms</span><strong id="m-ttft">—</strong></div>
+            <div><span>prompt_tokens</span><strong id="m-prompt">—</strong></div>
+            <div><span>completion_tokens</span><strong id="m-completion">—</strong></div>
+            <div><span>total_tokens</span><strong id="m-total">—</strong></div>
+            <div><span>finish_reason</span><strong id="m-finish">—</strong></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="label">Status</div>
+          <div id="status">Loading…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /*
+     * Client flow
+     * -----------
+     * 1. boot()        → GET /api/bootstrap (personas, canned input, provider)
+     * 2. generate()    → GET /api/generate?personaId=… as SSE
+     * 3. handleEvent() → apply meta / token / metrics / error / done
+     *
+     * Previous / Next change `index` (wrap) then call generate().
+     * Refresh keeps the same index and re-calls generate().
+     *
+     * While streaming, buttons are disabled (`busy`). Starting a new generate
+     * aborts any in-flight fetch via AbortController.
+     */
+
+    let personas = [];
+    let index = 0;
+    let busy = false;
+    let abortController = null;
+
+    const els = {
+      banner: document.getElementById("app-banner"),
+      name: document.getElementById("persona-name"),
+      profile: document.getElementById("persona-profile"),
+      input: document.getElementById("input"),
+      response: document.getElementById("response"),
+      providerModel: document.getElementById("provider-model"),
+      status: document.getElementById("status"),
+      prev: document.getElementById("btn-prev"),
+      next: document.getElementById("btn-next"),
+      refresh: document.getElementById("btn-refresh"),
+      latency: document.getElementById("m-latency"),
+      ttft: document.getElementById("m-ttft"),
+      prompt: document.getElementById("m-prompt"),
+      completion: document.getElementById("m-completion"),
+      total: document.getElementById("m-total"),
+      finish: document.getElementById("m-finish"),
+    };
+
+    function setBusy(value) {
+      busy = value;
+      els.prev.disabled = value;
+      els.next.disabled = value;
+      els.refresh.disabled = value;
+    }
+
+    function setStatus(text, kind) {
+      els.status.textContent = text;
+      els.status.className = kind || "";
+    }
+
+    function clearMetrics() {
+      for (const key of ["latency", "ttft", "prompt", "completion", "total", "finish"]) {
+        els[key].textContent = "—";
+      }
+    }
+
+    function renderPersona() {
+      const p = personas[index];
+      els.name.textContent = p.name;
+      els.profile.textContent = `Profile: ${p.profile}`;
+    }
+
+    function fmt(value) {
+      return value === null || value === undefined || value === "" ? "—" : String(value);
+    }
+
+    /**
+     * Open an SSE generate stream and feed events into handleEvent().
+     * The server writes `data: {json}\n\n` chunks; we split on blank lines.
+     */
+    async function generate() {
+      if (!personas.length) return;
+      if (abortController) abortController.abort();
+      abortController = new AbortController();
+
+      const persona = personas[index];
+      renderPersona();
+      els.response.textContent = "";
+      clearMetrics();
+      setBusy(true);
+      setStatus("Generating…");
+
+      try {
+        const res = await fetch(
+          `/api/generate?personaId=${encodeURIComponent(persona.id)}`,
+          { signal: abortController.signal }
+        );
+        if (!res.ok || !res.body) {
+          throw new Error(`Generate failed (${res.status})`);
+        }
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          // SSE frames are separated by a blank line (\n\n).
+          const parts = buffer.split("\n\n");
+          buffer = parts.pop() || "";
+          for (const part of parts) {
+            const line = part.trim();
+            if (!line.startsWith("data:")) continue;
+            const payload = JSON.parse(line.slice(5).trim());
+            handleEvent(payload);
+          }
+        }
+      } catch (err) {
+        if (err.name === "AbortError") return;
+        setStatus(String(err.message || err), "error");
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    /** Apply one server event to the panels. */
+    function handleEvent(event) {
+      if (event.type === "meta") {
+        // First event: confirm input + provider/model for this run.
+        els.input.textContent = event.input;
+        els.providerModel.textContent = `${event.provider} / ${event.model}`;
+        return;
+      }
+      if (event.type === "token") {
+        els.response.textContent += event.text;
+        return;
+      }
+      if (event.type === "metrics") {
+        const m = event.metrics || {};
+        els.latency.textContent = fmt(m.latency_ms);
+        els.ttft.textContent = fmt(m.ttft_ms);
+        els.prompt.textContent = fmt(m.prompt_tokens);
+        els.completion.textContent = fmt(m.completion_tokens);
+        els.total.textContent = fmt(m.total_tokens);
+        els.finish.textContent = fmt(m.finish_reason);
+        return;
+      }
+      if (event.type === "error") {
+        setStatus(event.message || "Generation error", "error");
+        return;
+      }
+      if (event.type === "done") {
+        if (!els.status.classList.contains("error")) {
+          setStatus("Complete", "ok");
+        }
+      }
+    }
+
+    els.prev.addEventListener("click", () => {
+      if (busy) return;
+      index = (index - 1 + personas.length) % personas.length;
+      generate();
+    });
+    els.next.addEventListener("click", () => {
+      if (busy) return;
+      index = (index + 1) % personas.length;
+      generate();
+    });
+    els.refresh.addEventListener("click", () => {
+      if (busy) return;
+      generate();
+    });
+
+    /** Load personas / defaults, then kick off the first generation. */
+    async function boot() {
+      const res = await fetch("/api/bootstrap");
+      const data = await res.json();
+      personas = data.personas || [];
+      els.banner.textContent = data.appBanner || els.banner.textContent;
+      els.input.textContent = data.input || "";
+      els.providerModel.textContent = `${data.provider} / ${data.model}`;
+      index = 0;
+      await generate();
+    }
+
+    boot().catch((err) => setStatus(String(err), "error"));
+  </script>
+</body>
+</html>
