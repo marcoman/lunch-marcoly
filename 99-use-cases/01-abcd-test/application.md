@@ -6,7 +6,7 @@ This document defines the **01-abcd-test** use case under [99-use-cases](../READ
 
 Demonstrate an **A-B-C-D test** using LaunchDarkly: four string variations of `configure-navigation-count-label` are served in controlled proportions when the flag is **on**. When the flag is **off**, all users see the default label `Count`.
 
-Baseline grid navigator behavior is defined in [00-reference/application.md](../../00-reference/application.md).
+Baseline grid navigator behavior is defined in [00-reference-code/application.md](../../00-reference-code/application.md).
 
 ## Flag
 
@@ -39,7 +39,7 @@ The console application embeds the LaunchDarkly server SDK:
 1. User logs in with a username (context key)
 2. On grid load, evaluate `configure-navigation-count-label` for that user
 3. Header displays **`{label}: N`** where `label` is the flag variation and `N` is successful move count
-4. Standard 00-reference navigation, logout (`L`), and quit (`Q`)
+4. Standard 00-reference-code navigation, logout (`L`), and quit (`Q`)
 
 ### Single-evaluation mode
 
@@ -101,4 +101,4 @@ Total                  1000
 2. With flag **on** and equal rollout, four variation labels appear across distinct user contexts
 3. Experiment utility runs `experiment-count` trials and prints variation counts
 4. `--experiment-allocation` updates LaunchDarkly fallthrough weights before trials
-5. Application matches 00-reference grid behavior aside from the count label line
+5. Application matches 00-reference-code grid behavior aside from the count label line

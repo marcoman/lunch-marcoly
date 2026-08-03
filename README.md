@@ -10,7 +10,7 @@ lunch-marcoly/
 ├── .python-version          # Python version for pyenv (repository-wide)
 ├── .nvmrc                   # Node.js version for nvm (repository-wide)
 ├── .venv/                   # Python virtual environment (local)
-├── 00-reference/
+├── 00-reference-code/
 │   ├── README.md
 │   ├── python/              # web application
 │   ├── python-console/
@@ -46,14 +46,14 @@ Each example may include implementations in any of these languages. Python, Node
 
 | # | Directory | Description |
 |---|-----------|-------------|
-| 00 | [00-reference](00-reference/) | Grid navigator reference app (all languages, no LaunchDarkly) |
+| 00 | [00-reference-code](00-reference-code/) | Grid navigator reference app (all languages, no LaunchDarkly) |
 | 10 | [10-flag-enablement](10-flag-enablement/) | Grid navigator with LaunchDarkly flags (all languages, Terraform + REST) |
 | 11 | [11-flag-variations](11-flag-variations/) | Grid navigator with string, number, JSON, and anonymous flags (all languages) |
 | 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (A-B-C-D test, segments, …) |
 
 ## Building code
 
-Each implementation **builds locally** in its language folder. Runnable artifacts are named after the **example directory** (e.g. `00-reference.py`, `./00-reference`, `target/00-reference.jar`).
+Each implementation **builds locally** in its language folder. Runnable artifacts are named after the **example directory** (e.g. `00-reference-code.py`, `./00-reference-code`, `target/00-reference-code.jar`).
 
 Full conventions are in [project.md](project.md#building-and-running). Summary:
 
@@ -108,12 +108,12 @@ Run `nvm use` whenever you open a new shell before working on Node examples.
 
 | Language | Build | Run (artifact name varies by example) |
 |----------|-------|---------------------------------------|
-| Python | *(no compile step)* | `python 00-reference.py` |
-| Node.js | `npm install` *(when deps exist)* | `node 00-reference.js` |
-| Java | `./mvnw clean install` | `java -jar target/00-reference.jar` |
-| C++ | `make clean && make all` | `./00-reference` |
-| Go | `go build -o 00-reference .` | `./00-reference` |
-| Rust | `cargo build --release` | `./target/release/00-reference` |
+| Python | *(no compile step)* | `python 00-reference-code.py` |
+| Node.js | `npm install` *(when deps exist)* | `node 00-reference-code.js` |
+| Java | `./mvnw clean install` | `java -jar target/00-reference-code.jar` |
+| C++ | `make clean && make all` | `./00-reference-code` |
+| Go | `go build -o 00-reference-code .` | `./00-reference-code` |
+| Rust | `cargo build --release` | `./target/release/00-reference-code` |
 
 Each language folder's `README.md` lists the exact **Build** and **Run** commands for that implementation.
 
@@ -121,7 +121,7 @@ Each language folder's `README.md` lists the exact **Build** and **Run** command
 
 1. Clone the repository.
 2. Set up Python with [pyenv](#python-and-pyenv) and other toolchains as needed (see [Building code](#building-code)).
-3. Open an example (e.g. [00-reference](00-reference/)).
+3. Open an example (e.g. [00-reference-code](00-reference-code/)).
 4. Open a language subdirectory and follow its `README.md`.
 
 ## Project Conventions

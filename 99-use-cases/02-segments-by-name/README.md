@@ -8,7 +8,7 @@ LaunchDarkly **segments** driven by **context attributes** parsed from the login
 - **Rule-based segments** that match those attributes
 - **Segment-targeted flag** — `configure-grid-selection-green-highlight` returns a highlight **color** variation
 - **VIP boolean flag** — when on, users whose `name` contains `vip` (any case) show `**VIP**` next to the username
-- [00-reference](../../00-reference/) grid navigator with colored selection when flagged on
+- [00-reference-code](../../00-reference-code/) grid navigator with colored selection when flagged on
 
 See [application.md](application.md) for context rules, segment types, and acceptance criteria.
 
@@ -103,6 +103,6 @@ Shared modules: [`segment_context.py`](segment_context.py) / [`segment-context.j
 
 ## Related examples
 
-- [00-reference](../../00-reference/) — baseline grid
+- [00-reference-code](../../00-reference-code/) — baseline grid
 - [10-flag-enablement](../../10-flag-enablement/) — boolean highlight + app-side cohort parsing
 - [01-abcd-test](../01-abcd-test/) — percentage rollout A/B/C/D test

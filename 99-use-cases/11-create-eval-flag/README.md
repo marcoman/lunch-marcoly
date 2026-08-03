@@ -106,7 +106,7 @@ These steps mirror what the REST scripts do programmatically.
 
 1. Flip the toggle to **Off**.
 2. **Save**.
-3. The app returns to plain `X` with `(no-color)` — matching [00-reference](../00-reference/) styling.
+3. The app returns to plain `X` with `(no-color)` — matching [00-reference-code](../00-reference-code/) styling.
 
 When a flag is **off**, LaunchDarkly serves the **off variation** (`none`) to every context. The on-rule fallthrough is ignored.
 

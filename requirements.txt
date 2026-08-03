@@ -6,5 +6,5 @@
 #   source .venv/bin/activate
 #   pip install -r requirements.txt
 #
-# 00-reference uses only the Python standard library (no packages listed yet).
+# 00-reference-code uses only the Python standard library (no packages listed yet).
 launchdarkly-server-sdk>=9.0

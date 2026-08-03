@@ -6,7 +6,7 @@ This document defines **02-segments-by-name** under [99-use-cases](../README.md)
 
 Demonstrate **LaunchDarkly segments** driven by **context attributes** the application supplies at login. Selection highlight color comes from the `configure-grid-selection-green-highlight` flag, targeted by segment membership rather than application-side color rules.
 
-Baseline grid navigator behavior is defined in [00-reference/application.md](../../00-reference/application.md).
+Baseline grid navigator behavior is defined in [00-reference-code/application.md](../../00-reference-code/application.md).
 
 ## Flag
 
@@ -19,7 +19,7 @@ Reuses the highlight flag key from [10-flag-enablement](../../10-flag-enablement
 
 | Variation | Application behavior |
 |-----------|----------------------|
-| `none` | Selected cell and username match 00-reference (`X` only, no colors) |
+| `none` | Selected cell and username match 00-reference-code (`X` only, no colors) |
 | `yellow` | Yellow highlight |
 | `red` | Red highlight |
 | `blue` | Blue highlight |
@@ -111,7 +111,7 @@ Highlight flag targeting rules (first match wins) map each color segment to its 
 4. Evaluate `VIP` for that context
 5. Header shows `Name: {username} [**VIP**] ({segment-label})` — `**VIP**` only when the VIP flag is on and the user is in the VIP segment
 6. Selected grid cell uses the highlight color
-7. Standard 00-reference navigation, logout (`L`), quit (`Q`)
+7. Standard 00-reference-code navigation, logout (`L`), quit (`Q`)
 
 ### Segment label format
 
@@ -127,13 +127,13 @@ Highlight flag targeting rules (first match wins) map each color segment to its 
 
 ## Acceptance criteria
 
-1. Flag defaults to **off**; no highlight colors (00-reference styling)
+1. Flag defaults to **off**; no highlight colors (00-reference-code styling)
 2. With flag **on**, `generic` receives `none` variation
 3. With flag **on**, color-name usernames receive matching color variation
 4. With flag **on**, even/odd letter rules assign human/robot segments with correct colors
 5. With flag **on**, `beta` substring adds beta segment (human-beta or robot-beta)
 6. Context attributes match segment rules; application does not apply colors outside flag evaluation
-7. Application matches 00-reference grid behavior aside from highlight and segment label
+7. Application matches 00-reference-code grid behavior aside from highlight and segment label
 8. `VIP` flag defaults to **off** (`false`); no `**VIP**` badge
 9. With `VIP` **on**, usernames containing `vip` (any case) show `**VIP**` next to the name; others do not
 10. Context includes `name` = username for VIP segment matching

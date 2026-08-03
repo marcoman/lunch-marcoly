@@ -8,7 +8,7 @@ Release a **green grid highlight** to production gradually using a **progressive
 
 > In this example, we have a progressive rollout over **15 minutes** in **five equal stages**: **10%**, **20%**, **40%**, **60%**, and **100%** of users receive the green highlight. Each stage lasts **3 minutes**.
 
-Baseline grid navigator behavior is defined in [00-reference/application.md](../../00-reference/application.md).
+Baseline grid navigator behavior is defined in [00-reference-code/application.md](../../00-reference-code/application.md).
 
 ## Flag
 

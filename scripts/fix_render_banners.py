@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 APP_DIRS = [
-    ROOT / "00-reference",
+    ROOT / "00-reference-code",
     ROOT / "10-flag-enablement",
     ROOT / "11-flag-variations",
     ROOT / "99-use-cases" / "01-abcd-test",

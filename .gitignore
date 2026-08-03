@@ -12,8 +12,8 @@ node_modules/
 target/
 
 # C++ / Go native executables (example-named binaries, no file extension)
-00-reference/**/00-reference
-00-reference/**/00-reference.exe
+00-reference-code/**/00-reference-code
+00-reference-code/**/00-reference-code.exe
 10-flag-enablement/**/10-flag-enablement
 10-flag-enablement/**/10-flag-enablement.exe
 

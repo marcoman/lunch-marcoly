@@ -2,7 +2,7 @@
 
 This document defines the structure, conventions, and standards for **lunch-marcoly** — a collection of small, self-contained programming examples, each implemented across multiple languages.
 
-For the reference grid navigator application behavior, see [00-reference/application.md](00-reference/application.md).
+For the reference grid navigator application behavior, see [00-reference-code/application.md](00-reference-code/application.md).
 
 ## Purpose
 
@@ -42,16 +42,16 @@ lunch-marcoly/
 ├── .python-version            # Python version for pyenv (repository-wide)
 ├── .nvmrc                     # Node.js version for nvm (repository-wide)
 ├── .venv/                     # Python virtual environment (local, not committed)
-├── 00-reference/              # Reference grid navigator — no LaunchDarkly
+├── 00-reference-code/              # Reference grid navigator — no LaunchDarkly
 │   ├── README.md
-│   ├── application.md         # Grid navigator behavior spec (00-reference only)
+│   ├── application.md         # Grid navigator behavior spec (00-reference-code only)
 │   ├── python/
 │   ├── python-console/
 │   ├── node/
 │   ├── node-console/
 │   ├── java/
 │   ├── java-console/
-│   ├── cpp/                   # Makefile → ./00-reference
+│   ├── cpp/                   # Makefile → ./00-reference-code
 │   ├── go/
 │   └── rust/
 ├── 10-flag-enablement/        # Feature flags for the grid navigator
@@ -89,10 +89,10 @@ lunch-marcoly/
 
 ### Example directories (top level)
 
-- Prefix with a **two-digit number**: `00-reference`, `01-hello-world`, `02-binary-search`
+- Prefix with a **two-digit number**: `00-reference-code`, `01-hello-world`, `02-binary-search`
 - Follow the number with a **kebab-case** name describing the concept
 - Use the next available number when adding a new example (`03`, `04`, …)
-- `00-reference` is reserved for the reference grid navigator app and repository conventions. It does **not** include LaunchDarkly integration.
+- `00-reference-code` is reserved for the reference grid navigator app and repository conventions. It does **not** include LaunchDarkly integration.
 - `10-flag-enablement` demonstrates feature flag naming, provisioning, and enablement for the grid navigator.
 - `11-flag-variations` demonstrates string, number, JSON, and anonymous-context flag variation types.
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive and guarded rollouts).
@@ -113,14 +113,14 @@ Follow the idiomatic naming style of each language:
 
 | Language | Directory | File naming              | Example              |
 |----------|-----------|--------------------------|----------------------|
-| Python   | `python/`, `python-console/` | `{example-name}.py` | `00-reference.py` |
-| Node.js  | `node/`, `node-console/` | `{example-name}.js` | `00-reference.js` |
+| Python   | `python/`, `python-console/` | `{example-name}.py` | `00-reference-code.py` |
+| Node.js  | `node/`, `node-console/` | `{example-name}.js` | `00-reference-code.js` |
 | Java     | `java/`, `java-console/` | PascalCase (classes) | `WebServer.java` |
-| C++      | `cpp/`    | `main.cpp` + Makefile | binary `00-reference` |
-| Go       | `go/`     | `main.go` | binary `00-reference` |
-| Rust     | `rust/`   | `src/main.rs` | binary `00-reference` |
+| C++      | `cpp/`    | `main.cpp` + Makefile | binary `00-reference-code` |
+| Go       | `go/`     | `main.go` | binary `00-reference-code` |
+| Rust     | `rust/`   | `src/main.rs` | binary `00-reference-code` |
 
-The **runnable artifact name** matches the **example directory name** (e.g. `00-reference`, `01-hello-world`). Language READMEs document the exact build and run commands for that folder.
+The **runnable artifact name** matches the **example directory name** (e.g. `00-reference-code`, `01-hello-world`). Language READMEs document the exact build and run commands for that folder.
 
 ### README files
 
@@ -136,7 +136,7 @@ Each language subdirectory **must** include its own `README.md` with:
 1. **Prerequisites** — language version, tools, dependencies (see [Requirements](#language-and-tooling))
 2. **Environment variables** — which `LD_*` variables the implementation needs
 3. **Build** — exact commands to compile or prepare the application in that folder (see [Building and running](#building-and-running))
-4. **Run** — exact command to start the application, citing the executable or script name (e.g. `./00-reference`, `python3 00-reference.py`)
+4. **Run** — exact command to start the application, citing the executable or script name (e.g. `./00-reference-code`, `python3 00-reference-code.py`)
 5. **What to expect** — output or behavior description (terminal output for console apps; UI behavior and URL for web apps)
 
 Each `rest/` and `terraform/` folder **must** include a `README.md` with:
@@ -159,7 +159,7 @@ A minimal example with one web implementation:
 │   └── README.md
 └── python/                   # Web application
     ├── README.md
-    └── 00-reference.py
+    └── 00-reference-code.py
 ```
 
 A fuller example with web, console, and native implementations:
@@ -174,14 +174,14 @@ A fuller example with web, console, and native implementations:
 │   └── main.tf
 ├── python/                   # Web application
 │   ├── README.md
-│   └── 00-reference.py
+│   └── 00-reference-code.py
 ├── python-console/           # Console alternative
 │   ├── README.md
-│   └── 00-reference.py
+│   └── 00-reference-code.py
 ├── node/
 │   ├── README.md
 │   ├── package.json
-│   └── 00-reference.js
+│   └── 00-reference-code.js
 └── rust/                     # Console application
     ├── README.md
     ├── Cargo.toml
@@ -219,7 +219,7 @@ The runnable artifact uses the **example directory name**:
 
 | Example folder | Python script | Node script | C++ / Go binary | Rust binary | Java JAR |
 |----------------|---------------|-------------|-----------------|-------------|----------|
-| `00-reference` | `00-reference.py` | `00-reference.js` | `./00-reference` | `./target/release/00-reference` | `target/00-reference.jar` |
+| `00-reference-code` | `00-reference-code.py` | `00-reference-code.js` | `./00-reference-code` | `./target/release/00-reference-code` | `target/00-reference-code.jar` |
 | `01-hello-world` | `01-hello-world.py` | `01-hello-world.js` | `./01-hello-world` | `./target/release/01-hello-world` | `target/01-hello-world.jar` |
 
 ### Python
@@ -242,7 +242,7 @@ pip install -r requirements.txt
 - **Run:** from the language folder, with pyenv and the virtual environment active:
 
 ```bash
-python 00-reference.py
+python 00-reference-code.py
 ```
 
 Language READMEs cite the exact script name.
@@ -268,7 +268,7 @@ npm install
 - **Run:**
 
 ```bash
-node 00-reference.js
+node 00-reference-code.js
 # or
 npm start
 ```
@@ -285,7 +285,7 @@ npm start
 - **Run:** JAR name matches the example directory:
 
 ```bash
-java -jar target/00-reference.jar
+java -jar target/00-reference-code.jar
 ```
 
 Prefer `./mvnw` over a system-wide `mvn` install for consistency.
@@ -302,7 +302,7 @@ make all
 - **Run:** binary name matches the example directory:
 
 ```bash
-./00-reference
+./00-reference-code
 ```
 
 ### Go
@@ -310,13 +310,13 @@ make all
 - **Build:** from the `go/` folder:
 
 ```bash
-go build -o 00-reference .
+go build -o 00-reference-code .
 ```
 
 - **Run:**
 
 ```bash
-./00-reference
+./00-reference-code
 ```
 
 ### Rust
@@ -330,7 +330,7 @@ cargo build --release
 - **Run:**
 
 ```bash
-./target/release/00-reference
+./target/release/00-reference-code
 ```
 
 The Cargo `[bin]` name matches the example directory.
