@@ -260,7 +260,7 @@ func render(username string, row, col int, previous *position, moveCount int, fl
 	writeLine(&out, fmt.Sprintf("%s: %d", flags.countLabel, moveCount))
 	writeLine(&out, fmt.Sprintf("Lucky Number is: %d", flags.luckyNumber))
 	writeLine(&out, "")
-	writeLine(&out, "Use arrow keys or WASD to move (L to logout, Q to quit).")
+	writeLine(&out, "Use WASD or arrow keys to move (L to logout, Q to quit).")
 	writeLine(&out, "")
 
 	for r := 0; r < 3; r++ {

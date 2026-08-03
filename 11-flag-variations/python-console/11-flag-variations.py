@@ -102,7 +102,7 @@ def draw_screen(
     line += 1
     stdscr.addstr(line, 0, f"Lucky Number is: {flags['luckyNumber']}")
     line += 2
-    stdscr.addstr(line, 0, "Use arrow keys or WASD to move (L to logout, Q to quit).")
+    stdscr.addstr(line, 0, "Use WASD or arrow keys to move (L to logout, Q to quit).")
 
     base_y, base_x = line + 2, 2
     cell_w = 6

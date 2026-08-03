@@ -49,6 +49,8 @@ resource "launchdarkly_segment" "generic" {
   key         = "seg-by-name-generic"
   name        = "By name: generic"
   description = "Username is exactly generic"
+  # Standard rule-based segment (not a big/list segment — those cannot use targeting rules).
+  unbounded   = false
   tags        = ["grid-navigator", "use-case", "segments-by-name"]
 
   rules {
@@ -68,6 +70,7 @@ resource "launchdarkly_segment" "named_color" {
   key         = "seg-by-name-color-${each.key}"
   name        = "By name: color ${each.key}"
   description = "Username is exactly the color name ${each.key}"
+  unbounded   = false
   tags        = ["grid-navigator", "use-case", "segments-by-name"]
 
   rules {
@@ -85,6 +88,7 @@ resource "launchdarkly_segment" "human" {
   key         = "seg-by-name-human"
   name        = "By name: human"
   description = "Even letter count, not generic or color name"
+  unbounded   = false
   tags        = ["grid-navigator", "use-case", "segments-by-name"]
 
   rules {
@@ -102,6 +106,7 @@ resource "launchdarkly_segment" "robot" {
   key         = "seg-by-name-robot"
   name        = "By name: robot"
   description = "Odd letter count, not generic or color name"
+  unbounded   = false
   tags        = ["grid-navigator", "use-case", "segments-by-name"]
 
   rules {
@@ -119,6 +124,7 @@ resource "launchdarkly_segment" "human_beta" {
   key         = "seg-by-name-human-beta"
   name        = "By name: human + beta"
   description = "Even letter count with beta in username"
+  unbounded   = false
   tags        = ["grid-navigator", "use-case", "segments-by-name"]
 
   rules {
@@ -136,6 +142,7 @@ resource "launchdarkly_segment" "robot_beta" {
   key         = "seg-by-name-robot-beta"
   name        = "By name: robot + beta"
   description = "Odd letter count with beta in username"
+  unbounded   = false
   tags        = ["grid-navigator", "use-case", "segments-by-name"]
 
   rules {
@@ -153,6 +160,8 @@ resource "launchdarkly_segment" "vip" {
   key         = "seg-by-name-vip"
   name        = "By name: VIP"
   description = "Username (name attribute) contains vip case-insensitively"
+  # Must be a standard rule-based segment. Big segments (unbounded=true) cannot use rules.
+  unbounded   = false
   tags        = ["grid-navigator", "use-case", "segments-by-name"]
 
   rules {

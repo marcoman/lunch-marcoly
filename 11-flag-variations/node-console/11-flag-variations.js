@@ -65,7 +65,7 @@ function render(username, row, col, previous, moveCount, flags) {
   console.log(`Previous position: ${prevText}`);
   console.log(`${flags.countLabel}: ${moveCount}`);
   console.log(`Lucky Number is: ${flags.luckyNumber}`);
-  console.log("\nUse arrow keys or WASD to move (L to logout, Q to quit).\n");
+  console.log("\nUse WASD or arrow keys to move (L to logout, Q to quit).\n");
 
   for (let r = 0; r < 3; r++) {
     const topLine = [];

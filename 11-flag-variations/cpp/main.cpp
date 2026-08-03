@@ -115,7 +115,7 @@ void render(const std::string& username, int row, int col,
     write_line(flags.countLabel + ": " + std::to_string(move_count));
     write_line("Lucky Number is: " + std::to_string(flags.luckyNumber));
     write_line("");
-    write_line("Use arrow keys or WASD to move (L to logout, Q to quit).");
+    write_line("Use WASD or arrow keys to move (L to logout, Q to quit).");
     write_line("");
 
     for (int r = 0; r < 3; ++r) {
