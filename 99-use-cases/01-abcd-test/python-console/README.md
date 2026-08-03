@@ -59,5 +59,5 @@ Defaults: 1000 trials, 1 ms delay, equal 25/25/25/25 allocation.
 
 ## What to expect
 
-- Interactive app: 00-reference grid with `{label}: N` in the header
+- Interactive app: 00-reference-code grid with `{label}: N` in the header
 - Experiment: table of variation labels vs. observed counts

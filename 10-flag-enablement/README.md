@@ -4,14 +4,14 @@ Feature flag naming, provisioning, and enablement for the **lunch-marcoly** grid
 
 ## What this demonstrates
 
-This example is the **only** place LaunchDarkly is used in the repository. The [00-reference](../00-reference/) app is reference-only — it has no LaunchDarkly integration and serves as the baseline behavior described in [application.md](../00-reference/application.md) (`X` only, no colors).
+This example is the **only** place LaunchDarkly is used in the repository. The [00-reference-code](../00-reference-code/) app is reference-only — it has no LaunchDarkly integration and serves as the baseline behavior described in [application.md](../00-reference-code/application.md) (`X` only, no colors).
 
 Here you define three boolean feature flags that extend the grid navigator. See [application.md](application.md) for the full flag specification and desired effects. Provision flags with:
 
 - **Terraform** ([terraform/](terraform/))
 - **REST API** scripts ([rest/](rest/))
 
-Future language implementations that evaluate these flags also belong in this folder (not in `00-reference`).
+Future language implementations that evaluate these flags also belong in this folder (not in `00-reference-code`).
 
 ## Recommended flags
 
@@ -21,7 +21,7 @@ Naming follows the **action: subject** pattern from the [flag conventions guide]
 
 ### 1. Selection highlight on selected cell
 
-00-reference uses **`X` only** with no colors. This flag **enables** colored highlight when turned on (default **pink**).
+00-reference-code uses **`X` only** with no colors. This flag **enables** colored highlight when turned on (default **pink**).
 
 | Attribute | Value |
 |-----------|-------|
@@ -31,9 +31,9 @@ Naming follows the **action: subject** pattern from the [flag conventions guide]
 | **Interpretation** | Enable colored highlight on the selected grid cell |
 | **Temporary** | No |
 | **Tags** | `grid-navigator`, `configure`, `ui` |
-| **Default (off)** | `false` — `X` only, no colors (matches 00-reference) |
+| **Default (off)** | `false` — `X` only, no colors (matches 00-reference-code) |
 | **When `true`** | Pink highlight by default; username colored to match |
-| **When `false`** | `X` only — same as [00-reference/application.md](../00-reference/application.md) |
+| **When `false`** | `X` only — same as [00-reference-code/application.md](../00-reference-code/application.md) |
 
 **Variation labels**
 
@@ -150,4 +150,4 @@ All implementations require `LD_SDK_KEY` and provisioned flags. See each languag
 - [Using the LaunchDarkly REST API](https://launchdarkly.com/docs/guides/api/rest-api)
 - [Managing flags with Terraform](https://launchdarkly.com/docs/guides/infrastructure/terraform)
 - [application.md](application.md) — flag specification and desired effects
-- [00-reference/application.md](../00-reference/application.md) — baseline grid navigator behavior
+- [00-reference-code/application.md](../00-reference-code/application.md) — baseline grid navigator behavior

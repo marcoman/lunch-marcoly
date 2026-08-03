@@ -8,7 +8,7 @@ Release a **green grid highlight** to production gradually using a **guarded rol
 
 > In this example, we have a guarded rollout over **12 minutes** in **four equal stages**: **10%**, **20%**, **30%**, and **50%** of users receive the green highlight. Each stage lasts **3 minutes**.
 
-Baseline grid navigator behavior is defined in [00-reference/application.md](../../00-reference/application.md).
+Baseline grid navigator behavior is defined in [00-reference-code/application.md](../../00-reference-code/application.md).
 
 ## Flag
 
@@ -55,7 +55,7 @@ After [terraform/](terraform/) or [rest/](rest/) provisioning:
 4. When flag serves **`green`**:
    - Each navigation waits a random **0–1000 ms** before updating the display
    - **5%** of navigations may show an incorrect highlight color on the selected cell
-5. Standard 00-reference navigation, logout (`L`), quit (`Q`)
+5. Standard 00-reference-code navigation, logout (`L`), quit (`Q`)
 6. Re-evaluates the flag every 500 ms in console apps
 
 ### Exercise mode (test harness)

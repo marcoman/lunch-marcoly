@@ -2,7 +2,7 @@
 
 A-B-C-D test on the navigation count label using LaunchDarkly percentage rollout.
 
-This use case extends the [00-reference](../../00-reference/) grid navigator with a single multivariate string flag and an experiment utility that measures how often each variation is served across many user contexts.
+This use case extends the [00-reference-code](../../00-reference-code/) grid navigator with a single multivariate string flag and an experiment utility that measures how often each variation is served across many user contexts.
 
 See [application.md](application.md) for the full specification and acceptance criteria.
 
@@ -187,7 +187,7 @@ Shared modules at this directory root:
 
 ## Related examples
 
-- [00-reference](../../00-reference/) — baseline grid navigator without flags
+- [00-reference-code](../../00-reference-code/) — baseline grid navigator without flags
 - [11-flag-variations](../../11-flag-variations/) — same string flag among other variation types
 - [LaunchDarkly: Multivariate flags](https://launchdarkly.com/docs/sdk/features/flag-types)
 - [LaunchDarkly: Percentage rollouts](https://launchdarkly.com/docs/home/flags/rollouts)

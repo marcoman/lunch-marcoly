@@ -2,7 +2,7 @@
 
 This document defines the feature flags and their **desired effects** for the **11-flag-variations** example.
 
-Baseline grid navigator behavior (login, grid layout, navigation, header fields, session control, and selection styling) is defined in [00-reference/application.md](../00-reference/application.md). Implementations in this folder start from that baseline and add LaunchDarkly flag evaluation demonstrating **four variation types**: anonymous context, string, number, and JSON.
+Baseline grid navigator behavior (login, grid layout, navigation, header fields, session control, and selection styling) is defined in [00-reference-code/application.md](../00-reference-code/application.md). Implementations in this folder start from that baseline and add LaunchDarkly flag evaluation demonstrating **four variation types**: anonymous context, string, number, and JSON.
 
 Repository layout and provisioning conventions are in [project.md](../project.md).
 
@@ -21,16 +21,16 @@ Flags are provisioned in [terraform/](terraform/) and [rest/](rest/). Applicatio
 
 ## Relationship to other examples
 
-| Aspect | 00-reference | 10-flag-enablement | 11-flag-variations |
+| Aspect | 00-reference-code | 10-flag-enablement | 11-flag-variations |
 |--------|--------------|--------------------|--------------------|
 | LaunchDarkly | None | Boolean flags + private attributes | String, number, JSON, anonymous context |
-| Baseline behavior | Full spec | Inherits from 00-reference | Inherits from 00-reference |
-| Selected cell styling | `X` only | Optional colored highlight | `X` only (matches 00-reference) |
+| Baseline behavior | Full spec | Inherits from 00-reference-code | Inherits from 00-reference-code |
+| Selected cell styling | `X` only | Optional colored highlight | `X` only (matches 00-reference-code) |
 | Move count | Not present | Boolean show/hide + `Count: N` | Always visible as `{label}: N` (string label) |
 | Header extras | Name, Current, Previous | Cohort label, optional count, optional emoji | Lucky number, optional anonymous OS emoji |
 | Move limit | None | None | JSON `maxMoves` caps successful moves |
 
-When a flag uses its **default variation**, behavior must match [00-reference/application.md](../00-reference/application.md) for the aspect that flag controls (except the move counter is always shown with the default label `Count`).
+When a flag uses its **default variation**, behavior must match [00-reference-code/application.md](../00-reference-code/application.md) for the aspect that flag controls (except the move counter is always shown with the default label `Count`).
 
 ## Flag naming
 
@@ -195,7 +195,7 @@ A **JSON** flag that limits how many successful navigation moves are allowed per
 - Parse `maxMoves` from the JSON variation (integer ≥ 0)
 - **Standard users** (default): **100** total successful moves allowed per grid session
 - When `moveCount >= maxMoves`, further navigation keypresses that would change position are **ignored** (position unchanged, `N` unchanged, previous unchanged)
-- Boundary keypresses at the edge continue to be ignored as in 00-reference (they never increment `N`)
+- Boundary keypresses at the edge continue to be ignored as in 00-reference-code (they never increment `N`)
 - The counter still displays `{label}: N` showing how many moves have been used
 - Logout resets `moveCount` to `0`; the limit is re-evaluated on next login
 
@@ -213,7 +213,7 @@ Lucky Number is: 0
 
 ## State model
 
-Implementations should model at least the 00-reference state **plus**:
+Implementations should model at least the 00-reference-code state **plus**:
 
 | State | Type | Notes |
 |-------|------|-------|
@@ -244,7 +244,7 @@ Refresh flag values when the LaunchDarkly SDK reports a change (streaming) or on
 
 ## Acceptance criteria
 
-An implementation in **11-flag-variations** is correct when it satisfies all [00-reference acceptance criteria](../00-reference/application.md#acceptance-criteria) **and**:
+An implementation in **11-flag-variations** is correct when it satisfies all [00-reference-code acceptance criteria](../00-reference-code/application.md#acceptance-criteria) **and**:
 
 ### Flag 1 — anonymous OS emoji
 
@@ -283,7 +283,7 @@ configure-max-navigation-moves
 ## Further reading
 
 - [README.md](README.md) — example overview and provisioning links
-- [00-reference/application.md](../00-reference/application.md) — baseline grid navigator behavior
+- [00-reference-code/application.md](../00-reference-code/application.md) — baseline grid navigator behavior
 - [10-flag-enablement/application.md](../10-flag-enablement/application.md) — boolean flags and host OS emoji reference
 - [Flag conventions](https://launchdarkly.com/docs/guides/flags/flag-conventions) — naming and tagging guidance
 - [Multivariate flags](https://launchdarkly.com/docs/sdk/features/flag-types) — string, number, and JSON variation types

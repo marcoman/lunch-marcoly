@@ -38,4 +38,4 @@ python 01-abcd-test-experiment.py --interactive
 
 ## What to expect
 
-Same as [python-console/01-abcd-test.py](../python-console/01-abcd-test.py): 00-reference grid with `{label}: N` in the header. Press `L` to log out or `Q` to quit.
+Same as [python-console/01-abcd-test.py](../python-console/01-abcd-test.py): 00-reference-code grid with `{label}: N` in the header. Press `L` to log out or `Q` to quit.

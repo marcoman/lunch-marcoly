@@ -42,4 +42,4 @@ python 01-abcd-test-experiment.py --interactive
 
 ## What to expect
 
-Same as [python-console/01-abcd-test.py](../python-console/01-abcd-test.py): 00-reference grid with `{label}: N` in the header, where the label comes from `configure-navigation-count-label`.
+Same as [python-console/01-abcd-test.py](../python-console/01-abcd-test.py): 00-reference-code grid with `{label}: N` in the header, where the label comes from `configure-navigation-count-label`.

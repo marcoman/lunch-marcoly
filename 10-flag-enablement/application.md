@@ -2,7 +2,7 @@
 
 This document defines the feature flags and their **desired effects** for the **10-flag-enablement** example.
 
-Baseline grid navigator behavior (login, grid layout, navigation, header fields, and selection styling) is defined in [00-reference/application.md](../00-reference/application.md). Implementations in this folder start from that baseline and add LaunchDarkly flag evaluation on top.
+Baseline grid navigator behavior (login, grid layout, navigation, header fields, and selection styling) is defined in [00-reference-code/application.md](../00-reference-code/application.md). Implementations in this folder start from that baseline and add LaunchDarkly flag evaluation on top.
 
 Repository layout and provisioning conventions are in [project.md](../project.md).
 
@@ -19,19 +19,19 @@ Repository layout and provisioning conventions are in [project.md](../project.md
 
 Flags are provisioned in [terraform/](terraform/) and [rest/](rest/). Application code evaluates them at runtime using the LaunchDarkly SDK for each language.
 
-## Relationship to 00-reference
+## Relationship to 00-reference-code
 
-| Aspect | 00-reference | 10-flag-enablement |
+| Aspect | 00-reference-code | 10-flag-enablement |
 |--------|--------------|-------------------|
 | LaunchDarkly | None | Required |
-| Baseline behavior | Full spec | Inherits from 00-reference |
+| Baseline behavior | Full spec | Inherits from 00-reference-code |
 | Selected cell styling | `X` only — no colors | `X` by default; colored highlight when highlight flag is on |
 | Header Name field | Plain username | `emoji username` when OS flag on; username colored when highlight is on |
 | Header fields | Name, Current position, Previous position | Same three fields, plus optional Count |
 | Navigation counter | Not present | Controlled by show flag |
 | Screen background | Light (web) / default terminal | Dark background for contrast with light and dark highlight colors |
 
-When a flag is **off** (default), behavior must match [00-reference/application.md](../00-reference/application.md) for the aspect that flag controls.
+When a flag is **off** (default), behavior must match [00-reference-code/application.md](../00-reference-code/application.md) for the aspect that flag controls.
 
 ## Flag naming
 
@@ -53,20 +53,20 @@ The first highlight flag retains the historical key `configure-grid-selection-gr
 | **Temporary** | No — long-lived styling configuration |
 | **Tags** | `grid-navigator`, `configure`, `ui` |
 | **Default variation (off)** | `false` (`X only`) |
-| **SDK default when offline** | `false` — match 00-reference (`X` only, no colors) |
+| **SDK default when offline** | `false` — match 00-reference-code (`X` only, no colors) |
 
 ### Variations
 
 | Value | Label | Application behavior |
 |-------|-------|----------------------|
 | `true` | Highlight enabled | Selected cell shows **`X` with a colored highlight** — background (web) or colored outline (console) |
-| `false` | X only | Selected cell shows **`X` only** — no colors; same as [00-reference/application.md](../00-reference/application.md#presentation) |
+| `false` | X only | Selected cell shows **`X` only** — no colors; same as [00-reference-code/application.md](../00-reference-code/application.md#presentation) |
 
 ### Desired effects
 
 #### When `false` (default, flag off)
 
-Behavior matches 00-reference exactly:
+Behavior matches 00-reference-code exactly:
 
 - **Web:** selected cell uses the same styling as unselected cells (dark theme); `X` is centered in the cell
 - **Console:** selected cell uses default terminal styling on the dark screen background; `X` is visible in the cell
@@ -171,7 +171,7 @@ When the highlight flag is **off**, no colors appear on the username or selectio
 #### When `false` (default)
 
 - With highlight flag on: pink selection highlight; username in pink; no `(cohort)` label
-- With highlight flag off: matches 00-reference
+- With highlight flag off: matches 00-reference-code
 
 #### When `true`
 
@@ -210,7 +210,7 @@ Evaluate on each render together with Flag 1. Cohort parsing is **application lo
 
 #### When `false` (default, flag off)
 
-- The header shows only the three fields from 00-reference: **Name**, **Current position**, **Previous position** (plus optional cohort label when highlight flags dictate)
+- The header shows only the three fields from 00-reference-code: **Name**, **Current position**, **Previous position** (plus optional cohort label when highlight flags dictate)
 - No count label, value, or placeholder appears in the header
 
 #### When `true` (flag on)
@@ -352,7 +352,7 @@ All three flags are independent. Key combinations:
 
 | Highlight | Context | Count | Result |
 |-----------|---------|-------|--------|
-| off | * | off | `(no-color)` label; 00-reference cell styling |
+| off | * | off | `(no-color)` label; 00-reference-code cell styling |
 | off | * | on | `(no-color)` label; `Count: N` in header |
 | on | off | off | Pink highlight + `X`; label `(pink)` |
 | on | on | off | Cohort-based colors; label like `(human-yellow)` |
@@ -360,7 +360,7 @@ All three flags are independent. Key combinations:
 
 ## State model
 
-Implementations should model at least the 00-reference state **plus**:
+Implementations should model at least the 00-reference-code state **plus**:
 
 | State | Type | Notes |
 |-------|------|-------|
@@ -395,11 +395,11 @@ Refresh flag values when the LaunchDarkly SDK reports a change (streaming) or on
 
 ## Acceptance criteria
 
-An implementation in **10-flag-enablement** is correct when it satisfies all [00-reference acceptance criteria](../00-reference/application.md#acceptance-criteria) **and**:
+An implementation in **10-flag-enablement** is correct when it satisfies all [00-reference-code acceptance criteria](../00-reference-code/application.md#acceptance-criteria) **and**:
 
 ### Flag 1 — selection highlight
 
-1. With the highlight flag **off**, selected cell styling matches 00-reference (`X` only, no colors)
+1. With the highlight flag **off**, selected cell styling matches 00-reference-code (`X` only, no colors)
 2. With the highlight flag **on** and context flag **off**, selected cell and username use **pink**
 3. Unselected cells are never highlighted regardless of flag state
 4. Toggling the flag updates styling without requiring a navigation move
@@ -450,6 +450,6 @@ show-host-os-emoji
 ## Further reading
 
 - [README.md](README.md) — example overview and provisioning links
-- [00-reference/application.md](../00-reference/application.md) — baseline grid navigator behavior
+- [00-reference-code/application.md](../00-reference-code/application.md) — baseline grid navigator behavior
 - [Flag conventions](https://launchdarkly.com/docs/guides/flags/flag-conventions) — naming and tagging guidance
 - [project.md](../project.md) — repository conventions and environment variables

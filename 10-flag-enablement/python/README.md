@@ -47,7 +47,7 @@ Open [http://127.0.0.1:8080/](http://127.0.0.1:8080/) in a browser. Press Ctrl+C
 ## What to expect
 
 1. Enter a username on the login screen (empty names are rejected).
-2. The grid matches [00-reference](../../00-reference/application.md) when both flags are off (`X` only, no count).
+2. The grid matches [00-reference-code](../../00-reference-code/application.md) when both flags are off (`X` only, no count).
 3. Turn on `configure-grid-selection-green-highlight` for a pink highlight on the selected cell (or enable `configure-grid-selection-context-highlight` for cohort-based colors).
 4. Turn on `show-navigation-move-count` to display `Count: N` in the header (starts at 0, increments on each move).
 5. Flag changes appear within ~2 seconds without navigating.

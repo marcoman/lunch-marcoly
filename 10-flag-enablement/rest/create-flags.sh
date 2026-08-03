@@ -32,7 +32,7 @@ create_flag '{
     {
       "value": false,
       "name": "X only",
-      "description": "Selected cell shows X with no colors (matches 00-reference)"
+      "description": "Selected cell shows X with no colors (matches 00-reference-code)"
     }
   ],
   "defaults": {

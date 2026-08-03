@@ -4,7 +4,7 @@ LaunchDarkly **flag variation types** for the **lunch-marcoly** grid navigator.
 
 ## What this demonstrates
 
-This example extends the [00-reference](../00-reference/) grid navigator with four flags — one per multivariate type (plus anonymous context for the boolean flag):
+This example extends the [00-reference-code](../00-reference-code/) grid navigator with four flags — one per multivariate type (plus anonymous context for the boolean flag):
 
 | Flag | Type | Effect |
 |------|------|--------|
@@ -66,6 +66,6 @@ configure-max-navigation-moves
 ## Further reading
 
 - [application.md](application.md) — flag specification and acceptance criteria
-- [00-reference/application.md](../00-reference/application.md) — baseline grid navigator
+- [00-reference-code/application.md](../00-reference-code/application.md) — baseline grid navigator
 - [10-flag-enablement/application.md](../10-flag-enablement/application.md) — boolean flags and host OS reference
 - [Multivariate flags](https://launchdarkly.com/docs/sdk/features/flag-types)

@@ -60,7 +60,7 @@ resource "launchdarkly_feature_flag" "configure_grid_selection_green_highlight" 
   variations {
     value       = false
     name        = "X only"
-    description = "Selected cell shows X with no colors (matches 00-reference)"
+    description = "Selected cell shows X with no colors (matches 00-reference-code)"
   }
 
   defaults {
