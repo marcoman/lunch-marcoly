@@ -137,6 +137,7 @@ ensure_segment() {
     -d "{
       \"key\": \"${key}\",
       \"name\": \"${name}\",
+      \"unbounded\": false,
       \"tags\": [\"grid-navigator\", \"use-case\", \"segments-by-name\"],
       \"rules\": [{
         \"clauses\": [{
