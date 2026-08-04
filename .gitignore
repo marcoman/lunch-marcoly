@@ -22,3 +22,6 @@ target/
 
 # IDE
 .idea/
+
+# Local Yahoo Finance story cache (01-reference-agent)
+01-reference-agent/python/stories_cache.json

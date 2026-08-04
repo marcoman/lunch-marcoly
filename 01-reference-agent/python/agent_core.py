@@ -13,16 +13,16 @@ Logical layers, top to bottom:
 
   1. Data          Personas, shared canned input, profile instructions
   2. Config        Resolve provider mode + model labels from env vars
-  3. Prompting     Build chat messages (system = profile, user = canned input)
+  3. Prompting     Build chat messages (system = profile, user = stories)
   4. Generation    generate_stream() — the main orchestration loop
   5. Providers     Stub (default), Ollama (local), Bedrock (AWS cloud)
+  6. News          yahoo_news.py — Yahoo Finance headlines for two tickers
 
 Request / response contract used by the web server
 --------------------------------------------------
-generate_stream(persona) yields a sequence of event dicts. The HTTP layer
-wraps each dict as an SSE `data:` line. Event types:
+generate_stream(persona, ticker_results=None) yields event dicts:
 
-  meta     — once at start: persona, input, provider, model, mode
+  meta     — once at start: persona, input, provider, model, mode, stories
   token    — zero or more times: streamed text fragments
   error    — optional: human-readable failure for the Status panel
   metrics  — once near the end: latency, tokens, finish_reason, …
@@ -30,15 +30,16 @@ wraps each dict as an SSE `data:` line. Event types:
 
 UI flow (browser)
 -----------------
-  load page → GET /api/bootstrap → pick persona index 0
-           → GET /api/generate?personaId=… (SSE)
-           → Previous/Next/Refresh repeat generate with the same canned input
+  load page → GET /api/bootstrap
+           → user sets tickers → GET /api/stories (Get Stories)
+           → GET /api/generate?personaId=&ticker1=&ticker2= (SSE)
+           → Previous/Next/Refresh re-generate using current tickers
+             (server re-fetches latest headlines for the LLM)
 
 Profile vs input
 ----------------
-  * The canned USER message is identical for every persona.
-  * Only the SYSTEM / instruction text changes (conservative / neutral /
-    risk-taker). That is how Charlie, Nancy, and Toby differ in v1.
+  * The USER message is built from the two tickers' latest headlines.
+  * Only the SYSTEM / instruction text changes by persona.
 """
 
 from __future__ import annotations
@@ -49,30 +50,38 @@ import time
 import urllib.error
 import urllib.request
 from dataclasses import asdict, dataclass
-from typing import Iterator
+from typing import Any, Iterator
+
+from yahoo_news import format_stories_for_prompt
 
 # ---------------------------------------------------------------------------
 # 1. Data — fixed demo content
 # ---------------------------------------------------------------------------
 
-# Shared user prompt for every persona (v1 has exactly one canned input).
-CANNED_INPUT = "Should we launch the new feature to all customers this week?"
+# Fallback user prompt when no stories have been loaded yet.
+CANNED_INPUT = (
+    "No ticker stories loaded yet. Ask the user to click Get Stories, "
+    "then produce a brief placeholder note that you are waiting for headlines."
+)
 
 # System-style instructions keyed by profile type.
 # These are NOT LaunchDarkly-controlled in the reference app; later examples
 # may replace this map with AgentControl / AI Config variations.
 PROFILE_INSTRUCTIONS = {
     "conservative": (
-        "You are Conservative Charlie. Prefer caution, gradual rollout, "
-        "risk mitigation, and clear rollback plans. Be measured and skeptical of haste."
+        "You are Conservative Charlie, a cautious market analyst writing short "
+        "report prose. Prefer caution, risk flags, and measured language. "
+        "Base claims only on the supplied headlines."
     ),
     "neutral": (
-        "You are Neutral Nancy. Weigh pros and cons evenly. Be balanced, practical, "
-        "and avoid extreme recommendations."
+        "You are Neutral Nancy, a balanced market analyst writing short report "
+        "prose. Weigh both sides evenly and stay practical. "
+        "Base claims only on the supplied headlines."
     ),
     "risk-taker": (
-        "You are Thoughtless Toby. Favor speed and bold launches. Minimize process "
-        "overhead and push for shipping quickly. Be enthusiastic and underweight risk."
+        "You are Thoughtless Toby, an aggressive market commentator writing "
+        "short report prose. Favor bold opportunity language and speed. "
+        "Base claims only on the supplied headlines."
     ),
 }
 
@@ -248,16 +257,25 @@ def model_label(mode: str) -> str:
 # 3. Prompting
 # ---------------------------------------------------------------------------
 
-def build_messages(persona: Persona) -> list[dict[str, str]]:
+def build_user_input(ticker_results: list[dict[str, Any]] | None) -> str:
+    """Build the user message from Yahoo headlines (or a waiting placeholder)."""
+    if not ticker_results:
+        return CANNED_INPUT
+    return format_stories_for_prompt(ticker_results)
+
+
+def build_messages(
+    persona: Persona, ticker_results: list[dict[str, Any]] | None = None
+) -> list[dict[str, str]]:
     """Build the chat transcript sent to real LLM providers.
 
     system  ← profile instructions (varies by persona)
-    user    ← CANNED_INPUT (same for everyone in v1)
+    user    ← story-based briefing prompt (same story set for every persona)
     """
     system = PROFILE_INSTRUCTIONS[persona.profile]
     return [
         {"role": "system", "content": system},
-        {"role": "user", "content": CANNED_INPUT},
+        {"role": "user", "content": build_user_input(ticker_results)},
     ]
 
 
@@ -278,10 +296,15 @@ def persona_by_id(persona_id: str) -> Persona | None:
     return None
 
 
-def _fill_token_estimates(persona: Persona, completion_text: str, metrics: Metrics) -> None:
+def _fill_token_estimates(
+    persona: Persona,
+    completion_text: str,
+    metrics: Metrics,
+    user_input: str,
+) -> None:
     """Populate token metrics from character-length estimates."""
     metrics.prompt_tokens = estimate_tokens(
-        PROFILE_INSTRUCTIONS[persona.profile] + CANNED_INPUT
+        PROFILE_INSTRUCTIONS[persona.profile] + user_input
     )
     metrics.completion_tokens = estimate_tokens(completion_text)
     metrics.total_tokens = (metrics.prompt_tokens or 0) + (metrics.completion_tokens or 0)
@@ -291,11 +314,14 @@ def _fill_token_estimates(persona: Persona, completion_text: str, metrics: Metri
 # 4. Generation — main orchestration (what the HTTP handler consumes)
 # ---------------------------------------------------------------------------
 
-def generate_stream(persona: Persona) -> Iterator[dict[str, object]]:
+def generate_stream(
+    persona: Persona,
+    ticker_results: list[dict[str, Any]] | None = None,
+) -> Iterator[dict[str, object]]:
     """Run one generation and yield UI events in order.
 
     Steps:
-      1. Emit meta (so the UI can paint input / provider / model immediately).
+      1. Emit meta (persona, input text, provider/model, stories snapshot).
       2. Stream tokens from the selected provider.
       3. On failure, emit error (Status panel) but still finish cleanly.
       4. Emit metrics, then done.
@@ -303,15 +329,17 @@ def generate_stream(persona: Persona) -> Iterator[dict[str, object]]:
     mode = resolve_mode()
     provider = provider_label(mode)
     model = model_label(mode)
+    user_input = build_user_input(ticker_results)
 
     # Step 1 — describe the run up front.
     yield {
         "type": "meta",
         "persona": asdict(persona),
-        "input": CANNED_INPUT,
+        "input": user_input,
         "provider": provider,
         "model": model,
         "mode": mode,
+        "stories": ticker_results or [],
     }
 
     started = time.perf_counter()
@@ -320,11 +348,15 @@ def generate_stream(persona: Persona) -> Iterator[dict[str, object]]:
     # Step 2 / 3 — call the provider and stream tokens (or surface an error).
     try:
         if mode == "stub":
-            yield from _generate_stub(persona, started, metrics)
+            yield from _generate_stub(persona, started, metrics, user_input, ticker_results)
         elif mode == "ollama":
-            yield from _generate_ollama(persona, model, started, metrics)
+            yield from _generate_ollama(
+                persona, model, started, metrics, ticker_results, user_input
+            )
         elif mode == "bedrock":
-            yield from _generate_bedrock(persona, model, started, metrics)
+            yield from _generate_bedrock(
+                persona, model, started, metrics, ticker_results, user_input
+            )
         else:
             # Direct Anthropic Messages API is reserved for a later pass.
             yield {
@@ -347,41 +379,53 @@ def generate_stream(persona: Persona) -> Iterator[dict[str, object]]:
 
 
 def _generate_stub(
-    persona: Persona, started: float, metrics: Metrics
+    persona: Persona,
+    started: float,
+    metrics: Metrics,
+    user_input: str,
+    ticker_results: list[dict[str, Any]] | None,
 ) -> Iterator[dict[str, object]]:
     """Stub provider: stream boilerplate chunks (default-no-llm)."""
-    text = _stub_response(persona)
+    text = _stub_response(persona, ticker_results)
     first = True
     for chunk in _chunk_text(text, size=12):
         if first:
-            # Time to first token = first chunk leaving this generator.
             metrics.ttft_ms = int((time.perf_counter() - started) * 1000)
             first = False
         yield {"type": "token", "text": chunk}
-        # Small delay so the browser visibly streams (matches real LLMs).
         time.sleep(0.02)
     metrics.finish_reason = "stop"
-    _fill_token_estimates(persona, text, metrics)
+    _fill_token_estimates(persona, text, metrics, user_input)
 
 
 def _generate_ollama(
-    persona: Persona, model: str, started: float, metrics: Metrics
+    persona: Persona,
+    model: str,
+    started: float,
+    metrics: Metrics,
+    ticker_results: list[dict[str, Any]] | None,
+    user_input: str,
 ) -> Iterator[dict[str, object]]:
     """Ollama provider: forward streamed tokens from the local server."""
     text_parts: list[str] = []
     first = True
-    for chunk in _ollama_stream(persona, model):
+    for chunk in _ollama_stream(persona, model, ticker_results):
         if first:
             metrics.ttft_ms = int((time.perf_counter() - started) * 1000)
             first = False
         text_parts.append(chunk)
         yield {"type": "token", "text": chunk}
     metrics.finish_reason = "stop"
-    _fill_token_estimates(persona, "".join(text_parts), metrics)
+    _fill_token_estimates(persona, "".join(text_parts), metrics, user_input)
 
 
 def _generate_bedrock(
-    persona: Persona, model: str, started: float, metrics: Metrics
+    persona: Persona,
+    model: str,
+    started: float,
+    metrics: Metrics,
+    ticker_results: list[dict[str, Any]] | None,
+    user_input: str,
 ) -> Iterator[dict[str, object]]:
     """Bedrock provider: stream tokens via ConverseStream.
 
@@ -392,7 +436,7 @@ def _generate_bedrock(
     """
     text_parts: list[str] = []
     first = True
-    for chunk in _bedrock_stream(persona, model, metrics):
+    for chunk in _bedrock_stream(persona, model, metrics, ticker_results):
         if first:
             metrics.ttft_ms = int((time.perf_counter() - started) * 1000)
             first = False
@@ -400,28 +444,46 @@ def _generate_bedrock(
         yield {"type": "token", "text": chunk}
     if not metrics.finish_reason:
         metrics.finish_reason = "stop"
-    # Prefer provider usage; estimate only when Bedrock omitted it.
     if metrics.prompt_tokens is None or metrics.completion_tokens is None:
-        _fill_token_estimates(persona, "".join(text_parts), metrics)
+        _fill_token_estimates(persona, "".join(text_parts), metrics, user_input)
 
 
 # ---------------------------------------------------------------------------
 # 5. Providers (helpers)
 # ---------------------------------------------------------------------------
 
-def _stub_response(persona: Persona) -> str:
+def _stub_response(
+    persona: Persona, ticker_results: list[dict[str, Any]] | None
+) -> str:
     """Boilerplate text for AGENT_LLM_MODE=stub (default-no-llm).
 
-    Includes persona + profile so it is obvious the UI wiring works when
-    flipping Previous / Next without a real model.
+    Includes persona + story titles so UI wiring is obvious without a real model.
     """
-    return (
-        f"[stub / default-no-llm]\n"
-        f"Persona: {persona.name} ({persona.profile})\n\n"
-        f"Regarding: {CANNED_INPUT}\n\n"
-        f"As a {persona.profile} advisor, here is a boilerplate recommendation for UI testing. "
-        f"Switch AGENT_LLM_MODE to ollama or bedrock for a real model response."
+    lines = [
+        "[stub / default-no-llm]",
+        f"Persona: {persona.name} ({persona.profile})",
+        "",
+        "Headline briefing (stub):",
+    ]
+    if not ticker_results:
+        lines.append("- (no stories loaded — click Get Stories)")
+    else:
+        for block in ticker_results:
+            ticker = block.get("ticker") or "?"
+            lines.append(f"- {ticker}:")
+            stories = block.get("stories") or []
+            if not stories:
+                lines.append("  (no stories)")
+            for story in stories:
+                lines.append(f"  • {story.get('title') or '(untitled)'}")
+    lines.extend(
+        [
+            "",
+            f"As a {persona.profile} analyst, this is boilerplate report text for UI testing. "
+            "Switch AGENT_LLM_MODE to ollama or bedrock for a real model response.",
+        ]
     )
+    return "\n".join(lines)
 
 
 def _chunk_text(text: str, size: int = 12) -> Iterator[str]:
@@ -430,7 +492,11 @@ def _chunk_text(text: str, size: int = 12) -> Iterator[str]:
         yield text[i : i + size]
 
 
-def _ollama_stream(persona: Persona, model: str) -> Iterator[str]:
+def _ollama_stream(
+    persona: Persona,
+    model: str,
+    ticker_results: list[dict[str, Any]] | None,
+) -> Iterator[str]:
     """Stream tokens from a local Ollama /api/chat endpoint.
 
     Requires:
@@ -444,7 +510,7 @@ def _ollama_stream(persona: Persona, model: str) -> Iterator[str]:
     payload = {
         "model": model,
         "stream": True,
-        "messages": build_messages(persona),
+        "messages": build_messages(persona, ticker_results),
     }
     req = urllib.request.Request(
         url,
@@ -490,7 +556,10 @@ def _map_bedrock_stop_reason(stop_reason: str | None) -> str:
 
 
 def _bedrock_stream(
-    persona: Persona, model: str, metrics: Metrics
+    persona: Persona,
+    model: str,
+    metrics: Metrics,
+    ticker_results: list[dict[str, Any]] | None,
 ) -> Iterator[str]:
     """Stream tokens from Amazon Bedrock Runtime ConverseStream.
 
@@ -502,15 +571,9 @@ def _bedrock_stream(
       AGENT_BEDROCK_MODEL_ID (defaults to Nova Lite)
       boto3 installed into the repository .venv
 
-    SSO sessions expire; re-run `aws sso login --profile Administrator`
-    when Bedrock calls start failing with token errors.
-
-    Shell exports of AWS_ACCESS_KEY_ID etc. are ignored for Bedrock so the
-    named SSO profile always wins.
-
     Prompt shape:
       system=[{text: profile instructions}]
-      messages=[{role: user, content: [{text: canned input}]}]
+      messages=[{role: user, content: [{text: story briefing}]}]
 
     Event handling:
       contentBlockDelta → yield text delta (UI streaming)
@@ -537,14 +600,22 @@ def _bedrock_stream(
             "defines [profile Administrator]."
         ) from exc
 
-    system_text = PROFILE_INSTRUCTIONS[persona.profile]
+    messages = build_messages(persona, ticker_results)
+    system_text = next(
+        (m["content"] for m in messages if m["role"] == "system"),
+        PROFILE_INSTRUCTIONS[persona.profile],
+    )
+    user_text = next(
+        (m["content"] for m in messages if m["role"] == "user"),
+        build_user_input(ticker_results),
+    )
     request = {
         "modelId": model,
         "system": [{"text": system_text}],
         "messages": [
             {
                 "role": "user",
-                "content": [{"text": CANNED_INPUT}],
+                "content": [{"text": user_text}],
             }
         ],
         "inferenceConfig": {

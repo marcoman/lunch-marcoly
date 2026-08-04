@@ -8,9 +8,9 @@ Repository layout and README format are in [project.md](../project.md). Later va
 
 A **single-screen** application (no login):
 
-1. Select a **persona** from a fixed list (Previous / Next)
-2. Show the shared **canned user input**
-3. **Generate** an AI response (automatic on persona change; Refresh re-runs)
+1. Enter two **tickers** and click **Get Stories** (Yahoo Finance headlines)
+2. Select a **persona** from a fixed list (Previous / Next)
+3. **Generate** an AI briefing from those headlines (Refresh re-runs with latest stories)
 4. Stream the response into the UI
 5. Show **provider**, **model**, and **LLM metrics**
 6. Show errors and safety messages in a **status** panel
@@ -27,40 +27,37 @@ Fixed ordered list (wraps on Previous / Next):
 | 1 | Neutral Nancy | `neutral` |
 | 2 | Thoughtless Toby | `risk-taker` |
 
-- The **canned user prompt is shared** across personas.
-- Profile type drives response style (system / instruction text), not a different user message in v1.
-- Selecting a persona (including landing on the first persona at load) **starts generation automatically**.
+- The **user prompt is built from the two tickers' latest headlines** (shared across personas).
+- Profile type drives response style (system / instruction text).
+- **Get Stories** loads headlines and then generates. Previous / Next / Refresh regenerate using the current ticker fields (server re-fetches latest headlines).
 
-## Shared canned input (v1)
+## Shared input (story-based)
 
-One shared user message for all personas (placeholder until product copy is finalized):
-
-```text
-Should we launch the new feature to all customers this week?
-```
-
-Later versions may add multiple canned inputs; v1 has exactly one.
+The user message is assembled from Yahoo Finance headlines for two tickers (defaults `NVDA` and `SPCX`), two stories each. Personas write short report-style prose from those titles.
 
 ## Controls
 
 | Control | Behavior |
 |---------|----------|
-| **Previous** | Move to the previous persona (wrap). Show that persona’s name. Auto-generate. |
-| **Next** | Move to the next persona (wrap). Show that persona’s name. Auto-generate. |
-| **Refresh** | Re-run generation for the **current** persona and the same canned input. |
+| **Get Stories** | Fetch the latest 2 headlines per ticker; update story panels; then generate. |
+| **Previous** | Move to the previous persona (wrap). Auto-generate with latest headlines. |
+| **Next** | Move to the next persona (wrap). Auto-generate with latest headlines. |
+| **Refresh** | Re-fetch latest headlines for the current tickers and re-run generation. |
 
-While a generation is in flight, controls should be disabled or ignore duplicate clicks until the stream completes or fails.
+While a generation (or story fetch) is in flight, controls should be disabled or ignore duplicate clicks until the stream completes or fails.
 
 ## Primary presentation
 
 | Region | Content |
 |--------|---------|
+| Tickers | Two text inputs + Get Stories |
+| Story panels | Ticker name + titles (and publisher) for each ticker |
 | Persona | Current display name (and optionally profile type) |
-| Input | The shared canned user message |
+| Input | The story-derived user prompt sent to the model |
 | Response | Streamed model output (append tokens as they arrive) |
-| Provider / model | e.g. `stub` / `default-no-llm`, or `ollama` / `llama3.1:8b` |
+| Provider / model | e.g. `stub` / `default-no-llm`, or `bedrock` / Nova Lite |
 | Metrics | Industry-standard LLM metrics (see below) |
-| Status | Idle, generating, success, or error / safety messages |
+| Status | Idle, fetching, generating, success, or error / safety messages |
 
 ## LLM modes
 

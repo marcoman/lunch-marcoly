@@ -7,13 +7,18 @@
   <!--
     UI for 01-reference-agent (Python web).
 
-    Layout (left → right on wide screens):
-      • Persona / Input / Response
-      • Provider+model / Metrics / Status
+    Flow:
+      1. Enter two tickers
+      2. Get Stories → Yahoo Finance headlines into the two story panels
+      3. Choose user (Previous/Next)
+      4. Generate AI Report → LLM briefing from loaded headlines
 
-    Controls:
-      Previous / Next  — cycle personas (wrap) and auto-generate
-      Refresh          — re-run the current persona with the same canned input
+    Layout:
+      • Tickers + Get Stories
+      • Two story panels (ticker name + titles)
+      • User panel: Previous User | name | Next user
+      • Generate AI Report + Input / Response
+      • Provider+model / Metrics / Status
   -->
   <style>
     :root {
@@ -37,9 +42,10 @@
       min-height: 100vh;
     }
     .wrap {
-      max-width: 920px;
+      /* Standard desktop content width: 1280px (common laptop / Tailwind max-w-7xl). */
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 1.5rem 1rem 3rem;
+      padding: 1.5rem 1.25rem 3rem;
     }
     .app-banner {
       font-size: 0.85rem;
@@ -61,7 +67,52 @@
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1rem;
+      align-items: center;
+    }
+    .persona-panel {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1rem;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .persona-panel .persona-meta {
+      text-align: center;
+      min-width: 12rem;
+      flex: 1 1 14rem;
+    }
+    .persona-panel .persona-nav {
+      display: contents;
+    }
+    .ticker-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: end;
+      margin-bottom: 1rem;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .field label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+    .field input {
+      font: inherit;
+      padding: 0.55rem 0.7rem;
+      border: 1px solid var(--line);
+      border-radius: 0.4rem;
+      background: var(--panel);
+      color: var(--ink);
+      min-width: 7rem;
+      text-transform: uppercase;
     }
     button {
       border: 1px solid var(--line);
@@ -81,6 +132,15 @@
       background: var(--accent);
       color: #fff;
       border-color: var(--accent);
+    }
+    .stories-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr;
+      margin-bottom: 1rem;
+    }
+    @media (min-width: 700px) {
+      .stories-grid { grid-template-columns: 1fr 1fr; }
     }
     .grid {
       display: grid;
@@ -108,6 +168,38 @@
       line-height: 1.5;
       min-height: 1.5rem;
     }
+    .ticker-heading {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+    }
+    .ticker-sub {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 0.65rem;
+    }
+    .story-list {
+      margin: 0;
+      padding-left: 1.1rem;
+      line-height: 1.45;
+    }
+    .story-list li {
+      margin-bottom: 0.45rem;
+    }
+    .story-list a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .story-list a:hover { text-decoration: underline; }
+    .story-pub {
+      display: block;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    .empty-stories {
+      color: var(--muted);
+      font-style: italic;
+    }
     #response {
       min-height: 10rem;
       font-family: "IBM Plex Mono", ui-monospace, monospace;
@@ -132,6 +224,14 @@
     }
     #status.error { color: var(--danger); }
     #status.ok { color: var(--ok); }
+    #status.busy {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .status-panel.busy {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
     .persona-name {
       font-size: 1.35rem;
       font-weight: 600;
@@ -146,21 +246,52 @@
   <div class="wrap">
     <div class="app-banner" id="app-banner">01-reference-agent[python]</div>
     <h1>Reference Agent</h1>
-    <p class="subtitle">Choose a persona, stream a response, inspect provider metrics.</p>
+    <p class="subtitle">Pull ticker headlines, then stream a persona briefing.</p>
+
+    <div class="ticker-row">
+      <div class="field">
+        <label for="ticker1">Ticker 1</label>
+        <input id="ticker1" type="text" value="NVDA" maxlength="12" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="ticker2">Ticker 2</label>
+        <input id="ticker2" type="text" value="SPCX" maxlength="12" autocomplete="off" />
+      </div>
+      <button id="btn-stories" class="primary" type="button">Get Stories</button>
+    </div>
+
+    <div class="stories-grid">
+      <div class="panel" id="panel-story-1">
+        <div class="label">Stories — ticker 1</div>
+        <div class="ticker-heading" id="story1-heading">—</div>
+        <div class="ticker-sub" id="story1-name"></div>
+        <div id="story1-list" class="empty-stories">Click Get Stories to load headlines.</div>
+      </div>
+      <div class="panel" id="panel-story-2">
+        <div class="label">Stories — ticker 2</div>
+        <div class="ticker-heading" id="story2-heading">—</div>
+        <div class="ticker-sub" id="story2-name"></div>
+        <div id="story2-list" class="empty-stories">Click Get Stories to load headlines.</div>
+      </div>
+    </div>
+
+    <div class="panel persona-panel">
+      <button id="btn-prev" type="button">← Previous User</button>
+      <div class="persona-meta">
+        <div class="label">User</div>
+        <div class="persona-name" id="persona-name">—</div>
+        <div class="profile" id="persona-profile">—</div>
+      </div>
+      <button id="btn-next" type="button">Next user →</button>
+    </div>
 
     <div class="nav">
-      <button id="btn-prev" type="button">← Previous</button>
-      <button id="btn-next" type="button">Next →</button>
-      <button id="btn-refresh" class="primary" type="button">Refresh</button>
+      <button id="btn-refresh" class="primary" type="button">Generate AI Report</button>
     </div>
 
     <div class="grid">
       <div class="panel">
-        <div class="label">Persona</div>
-        <div class="persona-name" id="persona-name">—</div>
-        <div class="profile" id="persona-profile">—</div>
-
-        <div class="label" style="margin-top:1rem">Input</div>
+        <div class="label" style="margin-top:0">Input</div>
         <div class="value" id="input">—</div>
 
         <div class="label" style="margin-top:1rem">Response</div>
@@ -183,7 +314,7 @@
             <div><span>finish_reason</span><strong id="m-finish">—</strong></div>
           </div>
         </div>
-        <div class="panel">
+        <div class="panel status-panel" id="status-panel">
           <div class="label">Status</div>
           <div id="status">Loading…</div>
         </div>
@@ -195,29 +326,39 @@
     /*
      * Client flow
      * -----------
-     * 1. boot()        → GET /api/bootstrap (personas, canned input, provider)
-     * 2. generate()    → GET /api/generate?personaId=… as SSE
-     * 3. handleEvent() → apply meta / token / metrics / error / done
+     * 1. boot()         → GET /api/bootstrap (+ restore saved story titles)
+     * 2. getStories()   → GET /api/stories  (Yahoo only; no LLM)
+     * 3. selectUser()   → Previous/Next User (UI only; no fetch, no LLM)
+     * 4. generate()     → POST /api/generate with current stories (SSE)
      *
-     * Previous / Next change `index` (wrap) then call generate().
-     * Refresh keeps the same index and re-calls generate().
-     *
-     * While streaming, buttons are disabled (`busy`). Starting a new generate
-     * aborts any in-flight fetch via AbortController.
+     * Generate AI Report is the only action that runs the LLM.
      */
+
+    const STORAGE_KEY = "reference-agent-stories-v1";
 
     let personas = [];
     let index = 0;
     let busy = false;
     let abortController = null;
+    let latestStories = [];
 
     const els = {
       banner: document.getElementById("app-banner"),
+      ticker1: document.getElementById("ticker1"),
+      ticker2: document.getElementById("ticker2"),
+      stories: document.getElementById("btn-stories"),
+      story1Heading: document.getElementById("story1-heading"),
+      story1Name: document.getElementById("story1-name"),
+      story1List: document.getElementById("story1-list"),
+      story2Heading: document.getElementById("story2-heading"),
+      story2Name: document.getElementById("story2-name"),
+      story2List: document.getElementById("story2-list"),
       name: document.getElementById("persona-name"),
       profile: document.getElementById("persona-profile"),
       input: document.getElementById("input"),
       response: document.getElementById("response"),
       providerModel: document.getElementById("provider-model"),
+      statusPanel: document.getElementById("status-panel"),
       status: document.getElementById("status"),
       prev: document.getElementById("btn-prev"),
       next: document.getElementById("btn-next"),
@@ -232,9 +373,14 @@
 
     function setBusy(value) {
       busy = value;
-      els.prev.disabled = value;
-      els.next.disabled = value;
+      // Keep Previous/Next usable for browsing users; only lock fetch/generate.
       els.refresh.disabled = value;
+      els.stories.disabled = value;
+      els.ticker1.disabled = value;
+      els.ticker2.disabled = value;
+      if (els.statusPanel) {
+        els.statusPanel.classList.toggle("busy", value);
+      }
     }
 
     function setStatus(text, kind) {
@@ -254,16 +400,147 @@
       els.profile.textContent = `Profile: ${p.profile}`;
     }
 
+    function selectUser(nextIndex) {
+      index = nextIndex;
+      renderPersona();
+      els.response.textContent = "";
+      clearMetrics();
+      els.input.textContent = "—";
+      setStatus(
+        `Selected ${personas[index].name}. Press Generate AI Report when ready.`,
+        ""
+      );
+    }
+
     function fmt(value) {
       return value === null || value === undefined || value === "" ? "—" : String(value);
     }
 
-    /**
-     * Open an SSE generate stream and feed events into handleEvent().
-     * The server writes `data: {json}\n\n` chunks; we split on blank lines.
-     */
+    function currentTickers() {
+      return {
+        ticker1: (els.ticker1.value || "NVDA").trim().toUpperCase(),
+        ticker2: (els.ticker2.value || "SPCX").trim().toUpperCase(),
+      };
+    }
+
+    function hasUsableStories() {
+      return (latestStories || []).some((b) => (b.stories || []).length > 0);
+    }
+
+    function saveStoriesLocally(ticker1, ticker2, tickerBlocks) {
+      const usable = (tickerBlocks || []).filter((b) => (b.stories || []).length > 0);
+      if (usable.length < 2) return;
+      const payload = {
+        ticker1,
+        ticker2,
+        tickers: tickerBlocks,
+        savedAt: new Date().toISOString(),
+      };
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch (_) {}
+    }
+
+    function loadStoriesLocally() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (!data || !Array.isArray(data.tickers) || data.tickers.length < 2) return null;
+        return data;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function renderStoryPanel(block, headingEl, nameEl, listEl) {
+      const ticker = (block && block.ticker) || "—";
+      const name = (block && block.name) || "";
+      headingEl.textContent = ticker;
+      let sub = name && name !== ticker ? name : "";
+      if (block && block.from_cache) {
+        sub = sub ? `${sub} · cached` : "cached";
+      }
+      nameEl.textContent = sub;
+
+      const stories = (block && block.stories) || [];
+      if (!stories.length) {
+        const msg = (block && block.error) || "No stories available.";
+        listEl.className = "empty-stories";
+        listEl.textContent = msg;
+        return;
+      }
+
+      const ul = document.createElement("ol");
+      ul.className = "story-list";
+      for (const story of stories) {
+        const li = document.createElement("li");
+        li.appendChild(document.createTextNode(story.title || "(untitled)"));
+        if (story.publisher) {
+          const pub = document.createElement("span");
+          pub.className = "story-pub";
+          pub.textContent = story.publisher;
+          li.appendChild(pub);
+        }
+        ul.appendChild(li);
+      }
+      listEl.className = "";
+      listEl.replaceChildren(ul);
+    }
+
+    function renderStories(tickerBlocks, options = {}) {
+      latestStories = tickerBlocks || [];
+      renderStoryPanel(
+        latestStories[0],
+        els.story1Heading,
+        els.story1Name,
+        els.story1List
+      );
+      renderStoryPanel(
+        latestStories[1],
+        els.story2Heading,
+        els.story2Name,
+        els.story2List
+      );
+      if (options.persist) {
+        const { ticker1, ticker2 } = currentTickers();
+        saveStoriesLocally(ticker1, ticker2, latestStories);
+      }
+    }
+
+    async function getStories() {
+      const { ticker1, ticker2 } = currentTickers();
+      setBusy(true);
+      setStatus(`Fetching Yahoo Finance stories for ${ticker1} and ${ticker2}…`, "busy");
+      try {
+        const res = await fetch(
+          `/api/stories?ticker1=${encodeURIComponent(ticker1)}&ticker2=${encodeURIComponent(ticker2)}`
+        );
+        if (!res.ok) throw new Error(`Stories request failed (${res.status})`);
+        const data = await res.json();
+        renderStories(data.tickers || [], { persist: true });
+        const notes = [];
+        if (data.errors && data.errors.length) notes.push(data.errors.join(" · "));
+        const cached = (data.tickers || []).some((b) => b.from_cache);
+        if (cached) notes.push("Used saved headlines where live Yahoo fetch failed.");
+        if (notes.length) {
+          setStatus(notes.join(" "), "error");
+        } else {
+          setStatus("Stories loaded. Press Generate AI Report when ready.", "ok");
+        }
+      } catch (err) {
+        setStatus(String(err.message || err), "error");
+      } finally {
+        setBusy(false);
+      }
+    }
+
     async function generate() {
       if (!personas.length) return;
+      if (!hasUsableStories()) {
+        setStatus("Load stories first (Get Stories), then press Generate AI Report.", "error");
+        return;
+      }
       if (abortController) abortController.abort();
       abortController = new AbortController();
 
@@ -272,13 +549,21 @@
       els.response.textContent = "";
       clearMetrics();
       setBusy(true);
-      setStatus("Generating…");
+      setStatus(
+        `Generating AI report for ${persona.name}… (streaming response)`,
+        "busy"
+      );
 
       try {
-        const res = await fetch(
-          `/api/generate?personaId=${encodeURIComponent(persona.id)}`,
-          { signal: abortController.signal }
-        );
+        const res = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            personaId: persona.id,
+            stories: latestStories,
+          }),
+          signal: abortController.signal,
+        });
         if (!res.ok || !res.body) {
           throw new Error(`Generate failed (${res.status})`);
         }
@@ -286,18 +571,22 @@
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let buffer = "";
+        let sawToken = false;
 
         while (true) {
           const { value, done } = await reader.read();
           if (done) break;
           buffer += decoder.decode(value, { stream: true });
-          // SSE frames are separated by a blank line (\n\n).
           const parts = buffer.split("\n\n");
           buffer = parts.pop() || "";
           for (const part of parts) {
             const line = part.trim();
             if (!line.startsWith("data:")) continue;
             const payload = JSON.parse(line.slice(5).trim());
+            if (payload.type === "token" && !sawToken) {
+              sawToken = true;
+              setStatus(`Streaming AI report for ${persona.name}…`, "busy");
+            }
             handleEvent(payload);
           }
         }
@@ -309,10 +598,8 @@
       }
     }
 
-    /** Apply one server event to the panels. */
     function handleEvent(event) {
       if (event.type === "meta") {
-        // First event: confirm input + provider/model for this run.
         els.input.textContent = event.input;
         els.providerModel.textContent = `${event.provider} / ${event.model}`;
         return;
@@ -337,36 +624,58 @@
       }
       if (event.type === "done") {
         if (!els.status.classList.contains("error")) {
-          setStatus("Complete", "ok");
+          setStatus(`AI report complete for ${personas[index].name}.`, "ok");
         }
       }
     }
 
+    els.stories.addEventListener("click", () => {
+      if (busy) return;
+      getStories();
+    });
     els.prev.addEventListener("click", () => {
       if (busy) return;
-      index = (index - 1 + personas.length) % personas.length;
-      generate();
+      selectUser((index - 1 + personas.length) % personas.length);
     });
     els.next.addEventListener("click", () => {
       if (busy) return;
-      index = (index + 1) % personas.length;
-      generate();
+      selectUser((index + 1) % personas.length);
     });
     els.refresh.addEventListener("click", () => {
       if (busy) return;
       generate();
     });
 
-    /** Load personas / defaults, then kick off the first generation. */
     async function boot() {
       const res = await fetch("/api/bootstrap");
+      if (!res.ok) throw new Error(`Bootstrap failed (${res.status})`);
       const data = await res.json();
       personas = data.personas || [];
       els.banner.textContent = data.appBanner || els.banner.textContent;
-      els.input.textContent = data.input || "";
       els.providerModel.textContent = `${data.provider} / ${data.model}`;
+
+      const local = loadStoriesLocally();
+      const cached = data.cachedStories || null;
+      const restored = local || cached;
+
+      if (data.defaultTickers) {
+        els.ticker1.value = (restored && restored.ticker1) || data.defaultTickers.ticker1 || "NVDA";
+        els.ticker2.value = (restored && restored.ticker2) || data.defaultTickers.ticker2 || "SPCX";
+      }
+
       index = 0;
-      await generate();
+      renderPersona();
+
+      if (restored && restored.tickers && restored.tickers.length >= 2) {
+        renderStories(restored.tickers, { persist: true });
+        const source = local ? "browser" : "server";
+        setStatus(
+          `Loaded saved story titles (${source}). Press Generate AI Report when ready.`,
+          "ok"
+        );
+      } else {
+        setStatus("Enter tickers and click Get Stories.", "");
+      }
     }
 
     boot().catch((err) => setStatus(String(err), "error"));

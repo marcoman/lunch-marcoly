@@ -7,20 +7,21 @@ Web application for [01-reference-agent](../application.md).
 Read the files in this order; each layer has a single job:
 
 ```
-index.html                 Browser UI + SSE client
+index.html                 Browser UI + SSE client + ticker/story panels
         │
-        ▼  GET /api/bootstrap , GET /api/generate (SSE)
+        ▼  GET /api/bootstrap , /api/stories , /api/generate (SSE)
 01-reference-agent.py      Thin HTTP adapter (stdlib ThreadingHTTPServer)
         │
-        ▼  generate_stream(persona)
-agent_core.py              Personas, prompts, providers, metrics
+        ├─ yahoo_news.py   Yahoo Finance headlines (2 tickers × 2 stories)
+        └─ agent_core.py   Personas, prompts, providers, metrics
 ```
 
 | File | Role |
 |------|------|
-| `agent_core.py` | Domain logic: personas, canned input, profile instructions, stub/Ollama/Bedrock providers, event stream. No HTTP. |
-| `01-reference-agent.py` | HTTP only: static page, bootstrap JSON, SSE bridge to `generate_stream()`. |
-| `index.html` | Single screen: persona nav, input/response, provider, metrics, status. |
+| `yahoo_news.py` | Fetch latest headlines for two tickers from Yahoo Finance. |
+| `agent_core.py` | Domain logic: personas, story-based prompts, stub/Ollama/Bedrock providers, event stream. No HTTP. |
+| `01-reference-agent.py` | HTTP only: static page, bootstrap JSON, stories API, SSE bridge. |
+| `index.html` | Tickers, Get Stories, story panels, persona nav, response, metrics, status. |
 
 ### Request flow (one generation)
 
