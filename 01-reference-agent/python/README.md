@@ -19,6 +19,7 @@ index.html                 Browser UI + SSE client + ticker/story panels
 | File | Role |
 |------|------|
 | `yahoo_news.py` | Fetch latest headlines for two tickers from Yahoo Finance. |
+| `../prompts/system_prompt.txt` | Shared system prompt (loaded at generate time). |
 | `agent_core.py` | Domain logic: personas, story-based prompts, stub/Ollama/Bedrock providers, event stream. No HTTP. |
 | `01-reference-agent.py` | HTTP only: static page, bootstrap JSON, stories API, SSE bridge. |
 | `index.html` | Tickers, Get Stories, story panels, persona nav, response, metrics, status. |
@@ -57,7 +58,7 @@ Activate `.venv` whenever you work on this example.
 |----------|---------|-------|
 | `AGENT_LLM_MODE` | `stub` | `stub`, `ollama`, or `bedrock` |
 | `OLLAMA_HOST` | `http://127.0.0.1:11434` | Local Ollama |
-| `OLLAMA_MODEL` | `llama3.1:8b` | Model tag |
+| `OLLAMA_MODEL` | `llama3.2:3b` | Model tag |
 | `AWS_PROFILE` | `Administrator` | SSO profile in `~/.aws/config` (`aws sso login --profile Administrator`) |
 | `AWS_REGION` | `us-east-1` | Also accepts `AWS_DEFAULT_REGION` |
 | `AGENT_BEDROCK_MODEL_ID` | `us.amazon.nova-lite-v1:0` | Default report model (Nova Lite) |
@@ -93,7 +94,7 @@ Open [http://127.0.0.1:8090/](http://127.0.0.1:8090/). Press Ctrl+C to stop.
 Optional Ollama:
 
 ```bash
-AGENT_LLM_MODE=ollama OLLAMA_MODEL=llama3.1:8b python 01-reference-agent.py
+AGENT_LLM_MODE=ollama OLLAMA_MODEL=llama3.2:3b python 01-reference-agent.py
 ```
 
 Optional Bedrock:

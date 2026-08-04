@@ -13,7 +13,9 @@ Logical layers, top to bottom:
 
   1. Data          Personas, shared canned input, profile instructions
   2. Config        Resolve provider mode + model labels from env vars
-  3. Prompting     Build chat messages (system = profile, user = stories)
+  3. Prompting     Build chat messages (system = prompts/system_prompt.txt,
+                   user = stories). Personas are UI labels for now; LaunchDarkly
+                   will vary prompts later.
   4. Generation    generate_stream() — the main orchestration loop
   5. Providers     Stub (default), Ollama (local), Bedrock (AWS cloud)
   6. News          yahoo_news.py — Yahoo Finance headlines for two tickers
@@ -50,6 +52,7 @@ import time
 import urllib.error
 import urllib.request
 from dataclasses import asdict, dataclass
+from pathlib import Path
 from typing import Any, Iterator
 
 from yahoo_news import format_stories_for_prompt
@@ -58,32 +61,40 @@ from yahoo_news import format_stories_for_prompt
 # 1. Data — fixed demo content
 # ---------------------------------------------------------------------------
 
+# Prompt files live next to the example (language-agnostic), not under python/.
+EXAMPLE_ROOT = Path(__file__).resolve().parent.parent
+SYSTEM_PROMPT_PATH = EXAMPLE_ROOT / "prompts" / "system_prompt.txt"
+
 # Fallback user prompt when no stories have been loaded yet.
 CANNED_INPUT = (
     "No ticker stories loaded yet. Ask the user to click Get Stories, "
     "then produce a brief placeholder note that you are waiting for headlines."
 )
 
-# System-style instructions keyed by profile type.
-# These are NOT LaunchDarkly-controlled in the reference app; later examples
-# may replace this map with AgentControl / AI Config variations.
+# Personas remain selectable in the UI. System instructions currently come from
+# prompts/system_prompt.txt for everyone; LaunchDarkly will vary prompts later.
 PROFILE_INSTRUCTIONS = {
-    "conservative": (
-        "You are Conservative Charlie, a cautious market analyst writing short "
-        "report prose. Prefer caution, risk flags, and measured language. "
-        "Base claims only on the supplied headlines."
-    ),
-    "neutral": (
-        "You are Neutral Nancy, a balanced market analyst writing short report "
-        "prose. Weigh both sides evenly and stay practical. "
-        "Base claims only on the supplied headlines."
-    ),
-    "risk-taker": (
-        "You are Thoughtless Toby, an aggressive market commentator writing "
-        "short report prose. Favor bold opportunity language and speed. "
-        "Base claims only on the supplied headlines."
-    ),
+    "conservative": "",
+    "neutral": "",
+    "risk-taker": "",
 }
+
+
+def load_system_prompt() -> str:
+    """Read the shared system prompt from the repository prompt file.
+
+    Re-reads on each call so prompt edits apply without restarting the server
+    during local iteration.
+    """
+    try:
+        text = SYSTEM_PROMPT_PATH.read_text(encoding="utf-8").strip()
+    except OSError as exc:
+        raise RuntimeError(
+            f"Could not read system prompt at {SYSTEM_PROMPT_PATH}: {exc}"
+        ) from exc
+    if not text:
+        raise RuntimeError(f"System prompt file is empty: {SYSTEM_PROMPT_PATH}")
+    return text
 
 
 @dataclass(frozen=True)
@@ -92,7 +103,8 @@ class Persona:
 
     id       Stable machine key (used in URLs / APIs).
     name     Human-readable label shown in the UI.
-    profile  conservative | neutral | risk-taker — selects instructions.
+    profile  conservative | neutral | risk-taker — reserved for later
+             LaunchDarkly prompt variations (system prompt is shared today).
     """
 
     id: str
@@ -242,7 +254,7 @@ def model_label(mode: str) -> str:
     if mode == "stub":
         return "default-no-llm"
     if mode == "ollama":
-        return os.environ.get("OLLAMA_MODEL", "llama3.1:8b").strip() or "llama3.1:8b"
+        return os.environ.get("OLLAMA_MODEL", "llama3.2:3b").strip() or "llama3.2:3b"
     if mode == "bedrock":
         return (
             os.environ.get("AGENT_BEDROCK_MODEL_ID", "").strip()
@@ -269,12 +281,15 @@ def build_messages(
 ) -> list[dict[str, str]]:
     """Build the chat transcript sent to real LLM providers.
 
-    system  ← profile instructions (varies by persona)
+    system  ← prompts/system_prompt.txt (shared; LaunchDarkly later)
     user    ← story-based briefing prompt (same story set for every persona)
+
+    `persona` is accepted so the call sites stay stable when LD starts
+    varying prompts per user profile.
     """
-    system = PROFILE_INSTRUCTIONS[persona.profile]
+    _ = persona  # reserved for future per-persona / LD prompt selection
     return [
-        {"role": "system", "content": system},
+        {"role": "system", "content": load_system_prompt()},
         {"role": "user", "content": build_user_input(ticker_results)},
     ]
 
@@ -303,9 +318,8 @@ def _fill_token_estimates(
     user_input: str,
 ) -> None:
     """Populate token metrics from character-length estimates."""
-    metrics.prompt_tokens = estimate_tokens(
-        PROFILE_INSTRUCTIONS[persona.profile] + user_input
-    )
+    _ = persona
+    metrics.prompt_tokens = estimate_tokens(load_system_prompt() + user_input)
     metrics.completion_tokens = estimate_tokens(completion_text)
     metrics.total_tokens = (metrics.prompt_tokens or 0) + (metrics.completion_tokens or 0)
 
@@ -603,7 +617,7 @@ def _bedrock_stream(
     messages = build_messages(persona, ticker_results)
     system_text = next(
         (m["content"] for m in messages if m["role"] == "system"),
-        PROFILE_INSTRUCTIONS[persona.profile],
+        load_system_prompt(),
     )
     user_text = next(
         (m["content"] for m in messages if m["role"] == "user"),

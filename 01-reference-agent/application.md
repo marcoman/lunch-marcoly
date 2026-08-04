@@ -126,7 +126,7 @@ The status panel shows:
 | Variable | Default | Purpose |
 |----------|---------|---------|
 | `OLLAMA_HOST` | `http://127.0.0.1:11434` | Ollama base URL |
-| `OLLAMA_MODEL` | `llama3.1:8b` | Model tag (7B/8B/14B-class tags are fine) |
+| `OLLAMA_MODEL` | `llama3.2:3b` | Model tag (small/fast default; larger tags are fine) |
 
 ### AWS Bedrock
 

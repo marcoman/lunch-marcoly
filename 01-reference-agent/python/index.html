@@ -17,8 +17,9 @@
       • Tickers + Get Stories
       • Two story panels (ticker name + titles)
       • User panel: Previous User | name | Next user
-      • Generate AI Report + Input / Response
-      • Provider+model / Metrics / Status
+      • Generate AI Report
+      • Prompt | Response (side-by-side)
+      • Provider/model · Metrics · Status (below)
   -->
   <style>
     :root {
@@ -146,15 +147,27 @@
       display: grid;
       gap: 1rem;
       grid-template-columns: 1fr;
+      margin-bottom: 1rem;
     }
-    @media (min-width: 800px) {
-      .grid { grid-template-columns: 1.2fr 0.8fr; }
+    @media (min-width: 900px) {
+      .grid.io-grid { grid-template-columns: 1fr 1fr; }
+      .grid.meta-grid { grid-template-columns: 1fr 1.2fr 1fr; }
     }
     .panel {
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 0.75rem;
       padding: 1rem 1.1rem;
+    }
+    .panel.io-panel {
+      min-height: 16rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .panel.io-panel .value {
+      flex: 1 1 auto;
+      overflow: auto;
+      max-height: 28rem;
     }
     .label {
       font-size: 0.75rem;
@@ -289,35 +302,36 @@
       <button id="btn-refresh" class="primary" type="button">Generate AI Report</button>
     </div>
 
-    <div class="grid">
-      <div class="panel">
-        <div class="label" style="margin-top:0">Input</div>
+    <div class="grid io-grid">
+      <div class="panel io-panel">
+        <div class="label">Prompt</div>
         <div class="value" id="input">—</div>
-
-        <div class="label" style="margin-top:1rem">Response</div>
+      </div>
+      <div class="panel io-panel">
+        <div class="label">Response</div>
         <div class="value" id="response"></div>
       </div>
+    </div>
 
-      <div>
-        <div class="panel" style="margin-bottom:1rem">
-          <div class="label">Provider / model</div>
-          <div class="value" id="provider-model">—</div>
+    <div class="grid meta-grid">
+      <div class="panel">
+        <div class="label">Provider / model</div>
+        <div class="value" id="provider-model">—</div>
+      </div>
+      <div class="panel">
+        <div class="label">Metrics</div>
+        <div class="metrics" id="metrics">
+          <div><span>latency_ms</span><strong id="m-latency">—</strong></div>
+          <div><span>ttft_ms</span><strong id="m-ttft">—</strong></div>
+          <div><span>prompt_tokens</span><strong id="m-prompt">—</strong></div>
+          <div><span>completion_tokens</span><strong id="m-completion">—</strong></div>
+          <div><span>total_tokens</span><strong id="m-total">—</strong></div>
+          <div><span>finish_reason</span><strong id="m-finish">—</strong></div>
         </div>
-        <div class="panel" style="margin-bottom:1rem">
-          <div class="label">Metrics</div>
-          <div class="metrics" id="metrics">
-            <div><span>latency_ms</span><strong id="m-latency">—</strong></div>
-            <div><span>ttft_ms</span><strong id="m-ttft">—</strong></div>
-            <div><span>prompt_tokens</span><strong id="m-prompt">—</strong></div>
-            <div><span>completion_tokens</span><strong id="m-completion">—</strong></div>
-            <div><span>total_tokens</span><strong id="m-total">—</strong></div>
-            <div><span>finish_reason</span><strong id="m-finish">—</strong></div>
-          </div>
-        </div>
-        <div class="panel status-panel" id="status-panel">
-          <div class="label">Status</div>
-          <div id="status">Loading…</div>
-        </div>
+      </div>
+      <div class="panel status-panel" id="status-panel">
+        <div class="label">Status</div>
+        <div id="status">Loading…</div>
       </div>
     </div>
   </div>

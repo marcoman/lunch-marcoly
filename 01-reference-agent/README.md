@@ -39,7 +39,7 @@ See [application.md](application.md) for the full behavior specification.
 |----------|---------|-------|
 | `AGENT_LLM_MODE` | `stub` | `stub` \| `ollama` \| `bedrock` \| `anthropic` |
 | `OLLAMA_HOST` | `http://127.0.0.1:11434` | Local Ollama |
-| `OLLAMA_MODEL` | `llama3.1:8b` | Model tag |
+| `OLLAMA_MODEL` | `llama3.2:3b` | Model tag |
 | `AWS_PROFILE` | `Administrator` | Recommended Bedrock auth (AWS SSO profile) |
 | `AWS_REGION` | `us-east-1` | Bedrock region |
 | `AGENT_BEDROCK_MODEL_ID` | Nova Lite id | e.g. Haiku 4.5 or Qwen3 32B |
