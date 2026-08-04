@@ -133,15 +133,37 @@ The status panel shows:
 
 ### AWS Bedrock
 
-Use standard AWS credential env vars:
+**Recommended:** AWS IAM Identity Center (SSO) with profile `Administrator`
+in `~/.aws/config`.
+
+```bash
+aws sso login --profile Administrator
+export AWS_PROFILE=Administrator   # optional; this is the app default
+export AWS_REGION=us-east-1
+export AGENT_LLM_MODE=bedrock
+```
+
+The Python Bedrock path intentionally uses the named profile even if
+`AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_SESSION_TOKEN` are set in
+the shell (e.g. from `~/.zshrc`), so the SSO profile wins for this demo.
 
 | Variable | Purpose |
 |----------|---------|
-| `AWS_ACCESS_KEY_ID` | Access key |
-| `AWS_SECRET_ACCESS_KEY` | Secret key |
-| `AWS_SESSION_TOKEN` | Optional session token |
-| `AWS_REGION` or `AWS_DEFAULT_REGION` | Region (e.g. `us-east-1`) |
-| `AGENT_BEDROCK_MODEL_ID` | Bedrock model id |
+| `AWS_PROFILE` | Named profile (default `Administrator`) |
+| `AWS_REGION` or `AWS_DEFAULT_REGION` | Region (default `us-east-1` if unset) |
+| `AGENT_BEDROCK_MODEL_ID` | Bedrock model id (default `us.amazon.nova-lite-v1:0`) |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_SESSION_TOKEN` | Not used by this demo's Bedrock path (profile is forced) |
+
+Recommended report / prose models:
+
+| Model | Id |
+|-------|----|
+| Nova Lite (default) | `us.amazon.nova-lite-v1:0` |
+| Claude Haiku 4.5 | `us.anthropic.claude-haiku-4-5-20251001-v1:0` |
+| Qwen3 32B | `qwen.qwen3-32b-v1:0` |
+
+These are general text models and are appropriate for report generation.
+Prefer them over coding-specialized Qwen Coder variants.
 
 ### Anthropic
 

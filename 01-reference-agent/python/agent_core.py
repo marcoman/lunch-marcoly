@@ -15,7 +15,7 @@ Logical layers, top to bottom:
   2. Config        Resolve provider mode + model labels from env vars
   3. Prompting     Build chat messages (system = profile, user = canned input)
   4. Generation    generate_stream() — the main orchestration loop
-  5. Providers     Stub (default) and Ollama (optional local LLM)
+  5. Providers     Stub (default), Ollama (local), Bedrock (AWS cloud)
 
 Request / response contract used by the web server
 --------------------------------------------------
@@ -121,16 +121,93 @@ class Metrics:
 # 2. Config — environment-driven provider selection (no LaunchDarkly here)
 # ---------------------------------------------------------------------------
 
+# Sensible Bedrock defaults when env vars are incomplete.
+# Override with AGENT_BEDROCK_MODEL_ID / AGENT_LLM_MODEL, AWS_REGION, AWS_PROFILE.
+#
+# Recommended text/report models (verified with Administrator profile):
+#   us.amazon.nova-lite-v1:0                         — Nova Lite
+#   us.anthropic.claude-haiku-4-5-20251001-v1:0      — Claude Haiku 4.5
+#   qwen.qwen3-32b-v1:0                              — Qwen3 32B (general, not Coder)
+DEFAULT_BEDROCK_MODEL_ID = "us.amazon.nova-lite-v1:0"
+DEFAULT_AWS_REGION = "us-east-1"
+# Named profile in ~/.aws/credentials (includes aws_session_token for STS).
+DEFAULT_AWS_PROFILE = "Administrator"
+
+# Curated ids for prose / report generation (not coding-specialized).
+REPORT_MODEL_IDS = (
+    "us.amazon.nova-lite-v1:0",
+    "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "qwen.qwen3-32b-v1:0",
+)
+
+
 def resolve_mode() -> str:
     """Return AGENT_LLM_MODE, defaulting to stub for zero-credential demos.
 
-    Supported today: stub, ollama.
-    Reserved for later wiring: bedrock, anthropic.
+    Supported today: stub, ollama, bedrock.
+    Reserved for later wiring: anthropic (direct Messages API).
     """
     mode = os.environ.get("AGENT_LLM_MODE", "stub").strip().lower()
     if mode in {"stub", "ollama", "bedrock", "anthropic"}:
         return mode
     return "stub"
+
+
+def resolve_aws_region() -> str:
+    """Region for the Bedrock Runtime client.
+
+    Precedence: AWS_REGION → AWS_DEFAULT_REGION → us-east-1.
+    """
+    return (
+        os.environ.get("AWS_REGION", "").strip()
+        or os.environ.get("AWS_DEFAULT_REGION", "").strip()
+        or DEFAULT_AWS_REGION
+    )
+
+
+def resolve_aws_profile() -> str:
+    """AWS shared-config / SSO profile used for Bedrock.
+
+    Precedence: AWS_PROFILE → DEFAULT_AWS_PROFILE ("Administrator").
+
+    Expected local setup:
+      aws sso login --profile Administrator
+      # profile defined in ~/.aws/config under [profile Administrator]
+    """
+    return os.environ.get("AWS_PROFILE", "").strip() or DEFAULT_AWS_PROFILE
+
+
+def _bedrock_runtime_client(region: str):
+    """Return a bedrock-runtime client authenticated via the named profile.
+
+    Ambient AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_SESSION_TOKEN from
+    the shell (e.g. ~/.zshrc) normally override AWS_PROFILE. For this demo we
+    temporarily clear those so the SSO profile in ~/.aws/config is used.
+    """
+    import boto3
+
+    profile = resolve_aws_profile()
+    cleared: dict[str, str] = {}
+    for key in (
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "AWS_SESSION_TOKEN",
+        "AWS_SECURITY_TOKEN",
+    ):
+        if key in os.environ:
+            cleared[key] = os.environ.pop(key)
+
+    previous_profile = os.environ.get("AWS_PROFILE")
+    os.environ["AWS_PROFILE"] = profile
+    try:
+        session = boto3.Session(profile_name=profile, region_name=region)
+        return session.client("bedrock-runtime")
+    finally:
+        os.environ.update(cleared)
+        if previous_profile is None:
+            os.environ.pop("AWS_PROFILE", None)
+        else:
+            os.environ["AWS_PROFILE"] = previous_profile
 
 
 def provider_label(mode: str) -> str:
@@ -158,7 +235,10 @@ def model_label(mode: str) -> str:
     if mode == "ollama":
         return os.environ.get("OLLAMA_MODEL", "llama3.1:8b").strip() or "llama3.1:8b"
     if mode == "bedrock":
-        return os.environ.get("AGENT_BEDROCK_MODEL_ID", "").strip() or "(unset)"
+        return (
+            os.environ.get("AGENT_BEDROCK_MODEL_ID", "").strip()
+            or DEFAULT_BEDROCK_MODEL_ID
+        )
     if mode == "anthropic":
         return os.environ.get("ANTHROPIC_MODEL", "claude-3-haiku-20240307").strip()
     return "(unknown)"
@@ -243,13 +323,15 @@ def generate_stream(persona: Persona) -> Iterator[dict[str, object]]:
             yield from _generate_stub(persona, started, metrics)
         elif mode == "ollama":
             yield from _generate_ollama(persona, model, started, metrics)
+        elif mode == "bedrock":
+            yield from _generate_bedrock(persona, model, started, metrics)
         else:
-            # Bedrock / Anthropic are reserved: show a clear Status message.
+            # Direct Anthropic Messages API is reserved for a later pass.
             yield {
                 "type": "error",
                 "message": (
                     f"Mode '{mode}' is configured but not implemented in this reference yet. "
-                    "Use AGENT_LLM_MODE=stub or ollama."
+                    "Use AGENT_LLM_MODE=stub, ollama, or bedrock."
                 ),
             }
             metrics.finish_reason = "error"
@@ -298,6 +380,31 @@ def _generate_ollama(
     _fill_token_estimates(persona, "".join(text_parts), metrics)
 
 
+def _generate_bedrock(
+    persona: Persona, model: str, started: float, metrics: Metrics
+) -> Iterator[dict[str, object]]:
+    """Bedrock provider: stream tokens via ConverseStream.
+
+    Credentials come from AWS SSO via AWS_PROFILE (default: Administrator).
+    Run `aws sso login --profile Administrator` when the session expires.
+    Shell exports of AWS_ACCESS_KEY_ID / SECRET / SESSION_TOKEN are ignored
+    for Bedrock so the named SSO profile wins.
+    """
+    text_parts: list[str] = []
+    first = True
+    for chunk in _bedrock_stream(persona, model, metrics):
+        if first:
+            metrics.ttft_ms = int((time.perf_counter() - started) * 1000)
+            first = False
+        text_parts.append(chunk)
+        yield {"type": "token", "text": chunk}
+    if not metrics.finish_reason:
+        metrics.finish_reason = "stop"
+    # Prefer provider usage; estimate only when Bedrock omitted it.
+    if metrics.prompt_tokens is None or metrics.completion_tokens is None:
+        _fill_token_estimates(persona, "".join(text_parts), metrics)
+
+
 # ---------------------------------------------------------------------------
 # 5. Providers (helpers)
 # ---------------------------------------------------------------------------
@@ -313,7 +420,7 @@ def _stub_response(persona: Persona) -> str:
         f"Persona: {persona.name} ({persona.profile})\n\n"
         f"Regarding: {CANNED_INPUT}\n\n"
         f"As a {persona.profile} advisor, here is a boilerplate recommendation for UI testing. "
-        f"Switch AGENT_LLM_MODE to ollama (or a cloud provider) for a real model response."
+        f"Switch AGENT_LLM_MODE to ollama or bedrock for a real model response."
     )
 
 
@@ -364,4 +471,135 @@ def _ollama_stream(persona: Persona, model: str) -> Iterator[str]:
         raise RuntimeError(
             f"Ollama request failed ({host}): {exc}. "
             "Is Ollama running, and is OLLAMA_MODEL pulled?"
+        ) from exc
+
+
+def _map_bedrock_stop_reason(stop_reason: str | None) -> str:
+    """Map Bedrock Converse stopReason values to our Metrics.finish_reason."""
+    if not stop_reason:
+        return "stop"
+    mapping = {
+        "end_turn": "stop",
+        "stop_sequence": "stop",
+        "max_tokens": "length",
+        "content_filtered": "content_filtered",
+        "guardrail_intervened": "content_filtered",
+        "tool_use": "tool_use",
+    }
+    return mapping.get(stop_reason, stop_reason)
+
+
+def _bedrock_stream(
+    persona: Persona, model: str, metrics: Metrics
+) -> Iterator[str]:
+    """Stream tokens from Amazon Bedrock Runtime ConverseStream.
+
+    Requires (typical local setup):
+      aws sso login --profile Administrator
+      ~/.aws/config with [profile Administrator] (SSO session)
+      AWS_PROFILE            (defaults to Administrator)
+      AWS_REGION             (defaults to us-east-1)
+      AGENT_BEDROCK_MODEL_ID (defaults to Nova Lite)
+      boto3 installed into the repository .venv
+
+    SSO sessions expire; re-run `aws sso login --profile Administrator`
+    when Bedrock calls start failing with token errors.
+
+    Shell exports of AWS_ACCESS_KEY_ID etc. are ignored for Bedrock so the
+    named SSO profile always wins.
+
+    Prompt shape:
+      system=[{text: profile instructions}]
+      messages=[{role: user, content: [{text: canned input}]}]
+
+    Event handling:
+      contentBlockDelta → yield text delta (UI streaming)
+      metadata          → fill real token usage when present
+      messageStop       → finish_reason
+    """
+    try:
+        from botocore.exceptions import BotoCoreError, ClientError
+    except ImportError as exc:
+        raise RuntimeError(
+            "boto3 is required for AGENT_LLM_MODE=bedrock. "
+            "From the repository root: source .venv/bin/activate && "
+            "pip install -r requirements.txt"
+        ) from exc
+
+    region = resolve_aws_region()
+    profile = resolve_aws_profile()
+    try:
+        client = _bedrock_runtime_client(region)
+    except Exception as exc:  # noqa: BLE001 — surface profile/config errors in Status
+        raise RuntimeError(
+            f"Could not create Bedrock client (profile={profile}, region={region}): {exc}. "
+            "Confirm `aws sso login --profile Administrator` and that ~/.aws/config "
+            "defines [profile Administrator]."
+        ) from exc
+
+    system_text = PROFILE_INSTRUCTIONS[persona.profile]
+    request = {
+        "modelId": model,
+        "system": [{"text": system_text}],
+        "messages": [
+            {
+                "role": "user",
+                "content": [{"text": CANNED_INPUT}],
+            }
+        ],
+        "inferenceConfig": {
+            "maxTokens": 1024,
+            "temperature": 0.5,
+        },
+    }
+
+    try:
+        response = client.converse_stream(**request)
+    except (BotoCoreError, ClientError) as exc:
+        raise RuntimeError(
+            f"Bedrock ConverseStream failed "
+            f"(profile={profile}, region={region}, model={model}): {exc}. "
+            "Credentials may be valid while IAM still denies bedrock:InvokeModel / "
+            "InvokeModelWithResponseStream — ask an admin to grant invoke on the "
+            "model or inference-profile ARN for the SSO Administrator role."
+        ) from exc
+
+    stream = response.get("stream")
+    if stream is None:
+        raise RuntimeError("Bedrock response did not include a stream.")
+
+    try:
+        for event in stream:
+            if "contentBlockDelta" in event:
+                delta = event["contentBlockDelta"].get("delta") or {}
+                text = delta.get("text") or ""
+                if text:
+                    yield text
+            elif "metadata" in event:
+                usage = event["metadata"].get("usage") or {}
+                if "inputTokens" in usage:
+                    metrics.prompt_tokens = int(usage["inputTokens"])
+                if "outputTokens" in usage:
+                    metrics.completion_tokens = int(usage["outputTokens"])
+                if "totalTokens" in usage:
+                    metrics.total_tokens = int(usage["totalTokens"])
+                elif metrics.prompt_tokens is not None and metrics.completion_tokens is not None:
+                    metrics.total_tokens = metrics.prompt_tokens + metrics.completion_tokens
+            elif "messageStop" in event:
+                metrics.finish_reason = _map_bedrock_stop_reason(
+                    event["messageStop"].get("stopReason")
+                )
+            elif "internalServerException" in event:
+                raise RuntimeError(event["internalServerException"].get("message") or event)
+            elif "modelStreamErrorException" in event:
+                raise RuntimeError(event["modelStreamErrorException"].get("message") or event)
+            elif "validationException" in event:
+                raise RuntimeError(event["validationException"].get("message") or event)
+            elif "throttlingException" in event:
+                raise RuntimeError(event["throttlingException"].get("message") or event)
+            elif "serviceUnavailableException" in event:
+                raise RuntimeError(event["serviceUnavailableException"].get("message") or event)
+    except (BotoCoreError, ClientError) as exc:
+        raise RuntimeError(
+            f"Bedrock stream interrupted (profile={profile}, region={region}, model={model}): {exc}"
         ) from exc

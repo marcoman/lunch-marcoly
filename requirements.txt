@@ -6,6 +6,8 @@
 #   source .venv/bin/activate
 #   pip install -r requirements.txt
 #
-# 00-reference-code and 01-reference-agent (stub/ollama) use the Python standard library.
-# Extra packages below support LaunchDarkly examples in other directories.
+# 00-reference-code and 01-reference-agent stub/ollama modes use the stdlib only.
+# boto3 is required for AGENT_LLM_MODE=bedrock (01-reference-agent).
+# launchdarkly-server-sdk supports LaunchDarkly examples in other directories.
+boto3>=1.35
 launchdarkly-server-sdk>=9.0
