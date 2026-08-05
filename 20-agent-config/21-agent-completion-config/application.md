@@ -1,8 +1,9 @@
 # Agent completion config — application specification
 
-This document defines **12-agent-completion-config**: the equity briefing agent from [01-reference-agent](../01-reference-agent/application.md), with LaunchDarkly **AgentControl** supplying the **model**, **system prompt**, and **user prompt** at generate time.
+This document defines **21-agent-completion-config**: the equity briefing agent from [01-reference-agent](../../01-reference-agent/application.md), with LaunchDarkly **AgentControl** supplying the **model**, **system prompt**, and **user prompt** at generate time.
 
-Repository conventions: [project.md](../project.md).  
+Repository conventions: [project.md](../../project.md).  
+Series setup: [20-agent-config README](../README.md).  
 Human-oriented overview: [README.md](README.md).
 
 ## Goal
@@ -36,7 +37,7 @@ This example uses **completion mode** (single-step messages + model), not multi-
 
 ## What changes vs 01
 
-| Concern | 01-reference-agent | 12-agent-completion-config |
+| Concern | 01-reference-agent | 21-agent-completion-config |
 |---------|--------------------|----------------------------|
 | System instructions | File `prompts/system_prompt.txt` | AgentControl **system** message on the served variation |
 | User content | Built only in application code | AgentControl **user** message (may include template variables; app may still inject headline text per variation design) |
@@ -136,6 +137,7 @@ Exact AI SDK package names and init snippets live in each language README when i
 
 ## Related
 
-- [01-reference-agent/application.md](../01-reference-agent/application.md) — baseline without LaunchDarkly
-- [11-flag-variations](../11-flag-variations/) — classic feature-flag variation types (grid navigator)
+- [20-agent-config README](../README.md) — shared Ollama / AWS / LaunchDarkly setup
+- [01-reference-agent/application.md](../../01-reference-agent/application.md) — baseline without LaunchDarkly
+- [11-flag-variations](../../11-flag-variations/) — classic feature-flag variation types (grid navigator)
 - [AgentControl quickstart](https://launchdarkly.com/docs/home/agentcontrol/quickstart)
