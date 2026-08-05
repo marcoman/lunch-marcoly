@@ -43,7 +43,7 @@ AGENT_LLM_MODE=ollama  model=llama3.2:3b                         Name: Conservat
 | `o` | Fetch Yahoo stories |
 | `s` | Status |
 | `g` | Generate AI report |
-| `m` | Cycle LLM mode (`stub` → `ollama` → `bedrock`) |
+| `m` | Cycle LLM mode (`stub` → `ollama` → `bedrock`; Bedrock generate is Python-only) |
 | `q` | Quit |
 | `n` | Next user |
 | arrows / PgUp / PgDn | Scroll output |

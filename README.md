@@ -20,7 +20,10 @@ lunch-marcoly/
 ├── 01-reference-agent/
 │   ├── README.md
 │   ├── application.md
-│   └── python/              # agent UI (stub / Ollama)
+│   ├── prompts/ · stories/  # shared system prompt + headline cache
+│   ├── python/ · node/ · java/                 # web apps
+│   ├── python-console/ · node-console/ · java-console/
+│   └── go/ · rust/ · cpp/                      # console-only languages
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -32,7 +35,7 @@ Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control
 
 ## Languages
 
-Each example may include implementations in any of these languages. Python, Node.js, and Java default to **web applications** with a browser UI. Rust and C++ are **console applications**. Optional `-console` variants exist for Python, Node.js, and Java when a terminal-based version is also needed.
+Each example may include implementations in any of these languages. Python, Node.js, and Java default to **web applications** with a browser UI. Go, Rust, and C++ are **console applications**. Optional `-console` variants exist for Python, Node.js, and Java when a terminal-based version is also needed.
 
 | Language | Directory | Application type |
 |----------|-----------|------------------|

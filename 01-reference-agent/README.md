@@ -220,6 +220,8 @@ make all
 
 Same hotkeys as the Python console (`t o s g m q n`). See language READMEs under each console folder.
 
+If `AGENT_LLM_MODE` is unset and Ollama is reachable, consoles default to **ollama** (web apps still default to **stub**). `(m)ode` cycles `stub` → `ollama` → `bedrock`; Bedrock generate is implemented only in Python — other languages show a clear “not wired” error.
+
 ## Run with local Ollama (recommended for real text)
 
 ```bash
@@ -268,11 +270,13 @@ Details: [application.md — AWS Bedrock](application.md#aws-bedrock).
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `AGENT_LLM_MODE` | `stub` | `stub` \| `ollama` \| `bedrock` \| `anthropic` |
+| `AGENT_LLM_MODE` | `stub` (web); consoles auto-`ollama` if daemon up | `stub` \| `ollama` \| `bedrock` \| `anthropic` |
+| `AGENT_LLM_MODEL` | *(mode-specific)* | Optional model override |
 | `OLLAMA_HOST` | `http://127.0.0.1:11434` | Local Ollama base URL |
 | `OLLAMA_MODEL` | `llama3.2:3b` | Ollama model tag |
-| `AWS_PROFILE` | `Administrator` | Bedrock SSO profile |
-| `AWS_REGION` | `us-east-1` | Bedrock region |
-| `AGENT_BEDROCK_MODEL_ID` | Nova Lite id | Bedrock model / inference profile |
+| `AWS_PROFILE` | `Administrator` | Bedrock SSO profile (Python) |
+| `AWS_REGION` | `us-east-1` | Bedrock region (Python) |
+| `AGENT_BEDROCK_MODEL_ID` | Nova Lite id | Bedrock model / inference profile (Python) |
+| `PORT` | `8090` | HTTP listen port (Node / Java web) |
 
 Full table: [application.md](application.md#configuration-environment-variables).

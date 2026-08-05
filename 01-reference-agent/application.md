@@ -108,7 +108,7 @@ Provider is selected by environment (not LaunchDarkly in this reference).
 
 | Mode (`AGENT_LLM_MODE`) | Behavior |
 |---------------------------|----------|
-| `stub` (default) | No network LLM call. Streams boilerplate for UI testing (`default-no-llm`). |
+| `stub` (web default) | No network LLM call. Streams boilerplate for UI testing (`default-no-llm`). |
 | `ollama` | Local Ollama server (default model `llama3.2:3b`). |
 | `bedrock` | AWS Bedrock ConverseStream. |
 | `anthropic` | Reserved for later. |
@@ -155,8 +155,9 @@ The status panel shows:
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `AGENT_LLM_MODE` | `stub` | `stub` \| `ollama` \| `bedrock` \| `anthropic` |
+| `AGENT_LLM_MODE` | `stub` (web apps); consoles auto-select `ollama` when unset and the daemon is reachable | `stub` \| `ollama` \| `bedrock` \| `anthropic` |
 | `AGENT_LLM_MODEL` | *(mode-specific)* | Override model id / name when applicable |
+| `PORT` | `8090` | HTTP listen port for Node / Java web apps (Python web is fixed at 8090) |
 
 ### Ollama
 
@@ -218,10 +219,10 @@ Same conventions as [00-reference-code](../00-reference-code/):
 
 1. App loads to a single screen with user **Conservative Charlie** (no mandatory auto-generate).
 2. Previous / Next cycle Charlie → Nancy → Toby → Charlie without calling the LLM.
-3. Default `AGENT_LLM_MODE=stub` works with **no API keys**.
-4. Get Stories fills two headline panels (live or cache fallback).
+3. `AGENT_LLM_MODE=stub` works with **no API keys** (web default; consoles may auto-select `ollama` when reachable — force stub with `AGENT_LLM_MODE=stub`).
+4. Get Stories fills two headline panels / console story output (live or cache fallback).
 5. Generate AI Report streams into Response using `prompts/system_prompt.txt` + on-screen stories.
-6. Prompt and Response are separate side-by-side panels; provider, metrics, and status are below.
+6. Web: Prompt and Response are separate side-by-side panels; provider, metrics, and status are below. Consoles: equivalent chrome + scrollable output.
 7. Provider and model are visible.
 8. Metrics panel shows the v1 fields (or `—`).
 9. Errors and in-progress work appear in the status panel.

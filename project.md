@@ -26,7 +26,7 @@ Supported languages and application types:
 
 **Web applications** (`python/`, `node/`, `java/`) include a graphical component served in the browser. Each README should document how to start the local server and which URL to open.
 
-**Console applications** (`python-console/`, `node-console/`, `java-console/`, `cpp/`, `rust/`) run in the terminal with text-based input and output.
+**Console applications** (`python-console/`, `node-console/`, `java-console/`, `go/`, `cpp/`, `rust/`) run in the terminal with text-based input and output.
 
 Use the default language directory when adding a web implementation. Add the `-console` variant only when an example also needs a terminal-based version of the same concept in that language.
 
@@ -110,7 +110,7 @@ lunch-marcoly/
 
 - Use the fixed directory names from the table above
 - Web implementations: `python/`, `node/`, `java/`
-- Console implementations: `python-console/`, `node-console/`, `java-console/`, `cpp/`, `rust/`
+- Console implementations: `python-console/`, `node-console/`, `java-console/`, `go/`, `cpp/`, `rust/`
 - Only create a language folder when that implementation exists
 - Do not nest `-console` folders inside their web counterparts — each is a sibling directory at the example root
 
@@ -228,6 +228,8 @@ The runnable artifact uses the **example directory name**:
 |----------------|---------------|-------------|-----------------|-------------|----------|
 | `00-reference-code` | `00-reference-code.py` | `00-reference-code.js` | `./00-reference-code` | `./target/release/00-reference-code` | `target/00-reference-code.jar` |
 | `01-hello-world` | `01-hello-world.py` | `01-hello-world.js` | `./01-hello-world` | `./target/release/01-hello-world` | `target/01-hello-world.jar` |
+
+Java **console** folders may use a `-console` JAR suffix when the web twin already owns `{example}.jar` (e.g. `01-reference-agent/java-console` → `target/01-reference-agent-console.jar`). Language READMEs document the exact name.
 
 ### Python
 
