@@ -54,10 +54,12 @@ lunch-marcoly/
 │   ├── cpp/                   # Makefile → ./00-reference-code
 │   ├── go/
 │   └── rust/
-├── 01-reference-agent/             # Reference agent UI — Python + Node + Java web (config/env LLM)
+├── 01-reference-agent/             # Reference agent UI — web + console (config/env LLM)
 │   ├── README.md
 │   ├── application.md         # Agent UI behavior spec
-│   └── python/                # Web UI first; console planned next
+│   ├── python/ · node/ · java/          # Web apps
+│   ├── python-console/ · node-console/ · java-console/
+│   └── go/ · rust/ · cpp/     # Console-only languages
 ├── 10-flag-enablement/        # Feature flags for the grid navigator
 │   ├── README.md
 │   ├── application.md         # Flag specification and desired effects

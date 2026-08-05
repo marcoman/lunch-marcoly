@@ -112,7 +112,7 @@ AGENT_LLM_MODE=ollama npm start
 |------|------|
 | `01-reference-agent.js` | HTTP + SSE |
 | `agentCore.js` | Personas, prompt, stub / Ollama |
-| `yahooNews.js` | Yahoo Finance + `stories_cache.json` |
+| `yahooNews.js` | Yahoo Finance + shared [`../stories/stories_cache.json`](../stories/stories_cache.json) |
 | `index.html` | Browser UI |
 | `../prompts/system_prompt.txt` | Shared system prompt |
 

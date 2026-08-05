@@ -22,7 +22,7 @@ Request map
   GET /api/bootstrap    → personas, default tickers, cached stories, provider/model
   GET /api/stories      → latest 2 headlines for ticker1 + ticker2
                           query: ticker1=NVDA&ticker2=SPCX
-                          (falls back to stories_cache.json on Yahoo errors)
+                          (falls back to ../stories/stories_cache.json on Yahoo errors)
   POST /api/generate    → text/event-stream of generation events
                           JSON body: { personaId, stories }
                           Uses the stories already shown in the UI (no Yahoo re-fetch)

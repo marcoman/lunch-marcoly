@@ -41,8 +41,21 @@ function loadSystemPrompt() {
   return text;
 }
 
+let modeOverride = null;
+
+function setModeOverride(mode) {
+  if (mode == null || mode === "") {
+    modeOverride = null;
+    return;
+  }
+  const cleaned = String(mode).trim().toLowerCase();
+  modeOverride = ["stub", "ollama", "bedrock", "anthropic"].includes(cleaned)
+    ? cleaned
+    : "stub";
+}
+
 function resolveMode() {
-  const mode = String(process.env.AGENT_LLM_MODE || "stub")
+  const mode = String(modeOverride || process.env.AGENT_LLM_MODE || "stub")
     .trim()
     .toLowerCase();
   if (["stub", "ollama", "bedrock", "anthropic"].includes(mode)) return mode;
@@ -320,6 +333,7 @@ module.exports = {
   DEFAULT_BEDROCK_MODEL_ID,
   loadSystemPrompt,
   resolveMode,
+  setModeOverride,
   resolveAwsRegion,
   resolveAwsProfile,
   providerLabel,

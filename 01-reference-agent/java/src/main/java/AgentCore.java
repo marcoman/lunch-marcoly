@@ -53,8 +53,24 @@ public final class AgentCore {
         return null;
     }
 
+    private static volatile String modeOverride = null;
+
+    /** Runtime mode override for console (m)ode cycling; null clears. */
+    public static void setModeOverride(String mode) {
+        if (mode == null || mode.isBlank()) {
+            modeOverride = null;
+            return;
+        }
+        String cleaned = mode.trim().toLowerCase();
+        modeOverride = List.of("stub", "ollama", "bedrock", "anthropic").contains(cleaned)
+                ? cleaned
+                : "stub";
+    }
+
     public static String resolveMode() {
-        String mode = env("AGENT_LLM_MODE", "stub").trim().toLowerCase();
+        String mode = (modeOverride != null ? modeOverride : env("AGENT_LLM_MODE", "stub"))
+                .trim()
+                .toLowerCase();
         if (List.of("stub", "ollama", "bedrock", "anthropic").contains(mode)) {
             return mode;
         }

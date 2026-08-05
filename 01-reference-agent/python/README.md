@@ -244,7 +244,7 @@ flowchart TB
 |------|------|
 | [`index.html`](index.html) | UI: tickers, stories, users, Prompt / Response, metrics, status |
 | [`01-reference-agent.py`](01-reference-agent.py) | HTTP only: static page, `/api/bootstrap`, `/api/stories`, `POST /api/generate` (SSE) |
-| [`yahoo_news.py`](yahoo_news.py) | Yahoo Finance fetch + `stories_cache.json` fallback |
+| [`yahoo_news.py`](yahoo_news.py) | Yahoo Finance fetch + shared [`../stories/stories_cache.json`](../stories/stories_cache.json) |
 | [`agent_core.py`](agent_core.py) | Personas, prompt assembly, stub/Ollama/Bedrock streaming, metrics |
 | [`../prompts/system_prompt.txt`](../prompts/system_prompt.txt) | System prompt for the equity analyst persona |
 

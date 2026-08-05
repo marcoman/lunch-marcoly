@@ -75,7 +75,7 @@ AGENT_LLM_MODE=stub  model=default-no-llm                         Name: Conserva
 | 1 | `AGENT_LLM_MODE` + `model` | User name |
 | 2 | Workflow commands + mode + quit | Next user |
 
-Successful Yahoo fetches are persisted in [`../python/stories_cache.json`](../python/stories_cache.json) (shared with the web app). The console restores the last cached pair on startup when available.
+Successful Yahoo fetches are persisted in [`../stories/stories_cache.json`](../stories/stories_cache.json) (shared by all languages). The console restores the last cached pair on startup when available.
 
 | Key | Action |
 |-----|--------|

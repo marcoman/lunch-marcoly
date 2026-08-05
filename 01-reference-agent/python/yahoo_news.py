@@ -5,7 +5,9 @@ Uses Yahoo's unofficial public search JSON endpoints (no API key). Several
 host/query variants are tried because Yahoo rate-limits and occasionally
 returns 404 for a given query shape.
 
-Successful fetches are written to stories_cache.json beside this module so:
+Successful fetches are written to the shared example cache
+(../stories/stories_cache.json) so all language apps can reuse the same
+headlines:
   * a later 404/429 can fall back to the last good headlines
   * the UI can restore titles on application start
 
@@ -36,7 +38,9 @@ from pathlib import Path
 from typing import Any
 
 HERE = Path(__file__).resolve().parent
-CACHE_PATH = HERE / "stories_cache.json"
+EXAMPLE_ROOT = HERE.parent
+STORIES_DIR = EXAMPLE_ROOT / "stories"
+CACHE_PATH = STORIES_DIR / "stories_cache.json"
 
 YAHOO_SEARCH_HOSTS = (
     "https://query1.finance.yahoo.com/v1/finance/search",
@@ -79,9 +83,10 @@ def load_cache() -> dict[str, Any]:
 
 
 def save_cache(cache: dict[str, Any]) -> None:
-    """Persist the story cache next to this module."""
+    """Persist the shared story cache under 01-reference-agent/stories/."""
     cache = dict(cache)
     cache["updated_at"] = _now_iso()
+    STORIES_DIR.mkdir(parents=True, exist_ok=True)
     CACHE_PATH.write_text(
         json.dumps(cache, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",

@@ -14,6 +14,11 @@ target/
 # C++ / Go native executables (example-named binaries, no file extension)
 00-reference-code/**/00-reference-code
 00-reference-code/**/00-reference-code.exe
+01-reference-agent/go/01-reference-agent
+01-reference-agent/go/01-reference-agent.exe
+01-reference-agent/cpp/01-reference-agent
+01-reference-agent/cpp/01-reference-agent.exe
+01-reference-agent/cpp/third_party/
 10-flag-enablement/**/10-flag-enablement
 10-flag-enablement/**/10-flag-enablement.exe
 
@@ -24,6 +29,10 @@ target/
 .idea/
 
 # Local Yahoo Finance story cache (01-reference-agent)
+# Shared Yahoo headline cache (all 01-reference-agent languages)
+01-reference-agent/stories/stories_cache.json
+# Legacy per-language cache paths (if any remain locally)
 01-reference-agent/python/stories_cache.json
 01-reference-agent/node/stories_cache.json
 01-reference-agent/java/stories_cache.json
+01-reference-agent/java-console/stories_cache.json

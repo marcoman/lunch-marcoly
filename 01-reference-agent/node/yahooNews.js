@@ -2,7 +2,8 @@
  * yahooNews.js — fetch recent Yahoo Finance news titles for tickers.
  *
  * Uses Yahoo's unofficial public search JSON endpoints (no API key).
- * Successful fetches are written to stories_cache.json beside this module.
+ * Successful fetches are written to the shared example cache:
+ *   ../stories/stories_cache.json
  */
 
 "use strict";
@@ -10,7 +11,9 @@
 const fs = require("fs");
 const path = require("path");
 
-const CACHE_PATH = path.join(__dirname, "stories_cache.json");
+const EXAMPLE_ROOT = path.resolve(__dirname, "..");
+const STORIES_DIR = path.join(EXAMPLE_ROOT, "stories");
+const CACHE_PATH = path.join(STORIES_DIR, "stories_cache.json");
 
 const YAHOO_SEARCH_HOSTS = [
   "https://query1.finance.yahoo.com/v1/finance/search",
@@ -59,6 +62,7 @@ function loadCache() {
 
 function saveCache(cache) {
   const next = { ...cache, updated_at: nowIso() };
+  fs.mkdirSync(STORIES_DIR, { recursive: true });
   fs.writeFileSync(CACHE_PATH, `${JSON.stringify(next, null, 2)}\n`, "utf8");
 }
 

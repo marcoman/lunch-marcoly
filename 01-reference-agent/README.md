@@ -8,11 +8,17 @@ You do **not** need a LaunchDarkly account to run this example. It is the **base
 |-----|---------|
 | **This README** | What it is, architecture, and how to run |
 | [python/README.md](python/README.md) | OS-specific setup (macOS, Linux, Windows, WSL) and Python details |
-| [python-console/README.md](python-console/README.md) | Python console Q&A commands |
+| [python-console/README.md](python-console/README.md) | Python curses console |
+| [node-console/README.md](node-console/README.md) | Node.js terminal console |
+| [java-console/README.md](java-console/README.md) | Java terminal console |
+| [go/README.md](go/README.md) | Go terminal console |
+| [rust/README.md](rust/README.md) | Rust terminal console |
+| [cpp/README.md](cpp/README.md) | C++ terminal console |
 | [node/README.md](node/README.md) | Node.js / npm web app setup (macOS, Linux, Windows, WSL) |
 | [java/README.md](java/README.md) | Java / Maven web app setup (macOS, Linux, Windows, WSL) |
 | [application.md](application.md) | Full behavior specification |
 | [prompts/system_prompt.txt](prompts/system_prompt.txt) | The system prompt sent to the LLM |
+| [stories/](stories/) | Shared Yahoo headline cache (`stories_cache.json`, gitignored) |
 
 ## What you will see
 
@@ -185,6 +191,35 @@ python 01-reference-agent.py
 
 Then use the on-screen hotkeys: `o` (stories) → `g` (generate) → `q` (quit). See [python-console/README.md](python-console/README.md).
 
+## Quick start — Node / Java / Go / Rust / C++ console
+
+```bash
+# Node
+cd 01-reference-agent/node-console && npm start
+
+# Java
+cd 01-reference-agent/java-console
+./mvnw clean package
+java -jar target/01-reference-agent-console.jar
+
+# Go
+cd 01-reference-agent/go
+go build -o 01-reference-agent .
+./01-reference-agent
+
+# Rust
+cd 01-reference-agent/rust
+cargo build --release
+./target/release/01-reference-agent
+
+# C++
+cd 01-reference-agent/cpp
+make all
+./01-reference-agent
+```
+
+Same hotkeys as the Python console (`t o s g m q n`). See language READMEs under each console folder.
+
 ## Run with local Ollama (recommended for real text)
 
 ```bash
@@ -223,9 +258,11 @@ Details: [application.md — AWS Bedrock](application.md#aws-bedrock).
 | Node.js | [node/](node/) | Web | Available (`stub` / `ollama`) |
 | Java | [java/](java/) | Web | Available (`stub` / `ollama`) |
 | Python | [python-console/](python-console/) | Console | Available (`stub` / `ollama` / `bedrock`) |
-| Node.js | [node-console/](node-console/) | Console | Planned |
-| Java | [java-console/](java-console/) | Console | Planned |
-| Go / Rust | — | — | Later |
+| Node.js | [node-console/](node-console/) | Console | Available (`stub` / `ollama`) |
+| Java | [java-console/](java-console/) | Console | Available (`stub` / `ollama`) |
+| Go | [go/](go/) | Console | Available (`stub` / `ollama`) |
+| Rust | [rust/](rust/) | Console | Available (`stub` / `ollama`) |
+| C++ | [cpp/](cpp/) | Console | Available (`stub` / `ollama`) |
 
 ## Environment variables (summary)
 

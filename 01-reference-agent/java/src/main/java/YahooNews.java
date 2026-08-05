@@ -22,13 +22,13 @@ import java.util.Map;
 
 /**
  * Fetch recent Yahoo Finance news titles for tickers (no API key).
- * Successful fetches are written to stories_cache.json beside the working directory.
+ * Successful fetches are written to the shared example cache:
+ *   01-reference-agent/stories/stories_cache.json
  */
 public final class YahooNews {
     public static final String DEFAULT_TICKER_1 = "NVDA";
     public static final String DEFAULT_TICKER_2 = "SPCX";
 
-    private static final Path CACHE_PATH = Path.of("stories_cache.json");
     private static final String[] YAHOO_SEARCH_HOSTS = {
             "https://query1.finance.yahoo.com/v1/finance/search",
             "https://query2.finance.yahoo.com/v1/finance/search"
@@ -43,6 +43,29 @@ public final class YahooNews {
             .build();
 
     private YahooNews() {
+    }
+
+    /** Locate 01-reference-agent/ by finding prompts/system_prompt.txt. */
+    private static Path exampleRoot() {
+        Path cwd = Path.of("").toAbsolutePath().normalize();
+        List<Path> candidates = List.of(
+                cwd,
+                cwd.getParent() == null ? cwd : cwd.getParent(),
+                cwd.resolve("01-reference-agent"),
+                cwd.resolve("..").normalize(),
+                cwd.resolve("../..").normalize()
+        );
+        for (Path candidate : candidates) {
+            if (candidate != null
+                    && Files.isRegularFile(candidate.resolve("prompts").resolve("system_prompt.txt"))) {
+                return candidate;
+            }
+        }
+        return cwd.resolve("..").normalize();
+    }
+
+    private static Path cachePath() {
+        return exampleRoot().resolve("stories").resolve("stories_cache.json");
     }
 
     public static String normalizeTicker(String raw) {
@@ -380,11 +403,12 @@ public final class YahooNews {
     }
 
     private static JsonObject loadCache() {
-        if (!Files.isRegularFile(CACHE_PATH)) {
+        Path path = cachePath();
+        if (!Files.isRegularFile(path)) {
             return emptyCache();
         }
         try {
-            JsonElement parsed = JsonParser.parseString(Files.readString(CACHE_PATH));
+            JsonElement parsed = JsonParser.parseString(Files.readString(path));
             if (!parsed.isJsonObject()) {
                 return emptyCache();
             }
@@ -407,7 +431,9 @@ public final class YahooNews {
     private static void saveCache(JsonObject cache) {
         cache.addProperty("updated_at", nowIso());
         try {
-            Files.writeString(CACHE_PATH, GSON.toJson(cache) + "\n", StandardCharsets.UTF_8);
+            Path path = cachePath();
+            Files.createDirectories(path.getParent());
+            Files.writeString(path, GSON.toJson(cache) + "\n", StandardCharsets.UTF_8);
         } catch (IOException ignored) {
             // Cache is best-effort for demos.
         }

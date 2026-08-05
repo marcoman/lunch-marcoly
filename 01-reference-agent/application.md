@@ -3,7 +3,7 @@
 This document defines the behavior of **01-reference-agent**: a single-screen demo that builds an AI equity briefing from Yahoo Finance headlines.
 
 Repository conventions: [project.md](../project.md).  
-Human-oriented setup: [README.md](README.md), [python/README.md](python/README.md), [python-console/README.md](python-console/README.md), [node/README.md](node/README.md), and [java/README.md](java/README.md).
+Human-oriented setup: [README.md](README.md) and the language READMEs under `python/`, `python-console/`, `node/`, `node-console/`, `java/`, `java-console/`, `go/`, `rust/`, and `cpp/`.
 
 ## LaunchDarkly note (for newcomers)
 
@@ -24,7 +24,7 @@ All language implementations must produce equivalent behavior. Differences are l
 
 ### Console interaction
 
-The [Python console](python-console/) uses a **curses UI** instead of web panels:
+The consoles ([Python](python-console/), [Node](node-console/), [Java](java-console/), [Go](go/), [Rust](rust/), [C++](cpp/)) use a **terminal UI** instead of web panels:
 
 - Fixed chrome at the top:
   - Row 0: app banner (left), tickers with story counts (right) — e.g. `Tickers: NVDA (2 stories) SPCX (0 stories)`
@@ -32,8 +32,8 @@ The [Python console](python-console/) uses a **curses UI** instead of web panels
   - Row 2: workflow hotkeys on the left (`(t)ickers st(o)ries (s)tatus (g)enerate report (m)ode (q)uit`), `(n)ext user` on the right
 - Scrollable output pane below for headlines, prompt, streamed report, and metrics
 - Same domain steps as the web app: set tickers → fetch headlines → select user → generate report from loaded stories
-- Shared modules: [`python/agent_core.py`](python/agent_core.py), [`python/yahoo_news.py`](python/yahoo_news.py), [`prompts/system_prompt.txt`](prompts/system_prompt.txt)
-- Story titles are persisted on disk in `python/stories_cache.json` (shared web/console); console restores the last pair on startup when present
+- Shared domain modules per language (`python/`, `node/`, `java/`; Go/Rust/C++ consoles are self-contained in `go/` / `rust/` / `cpp/`) plus [`prompts/system_prompt.txt`](prompts/system_prompt.txt)
+- Story titles are persisted in the shared [`stories/stories_cache.json`](stories/stories_cache.json) (all languages); consoles restore the last pair on startup when present
 
 ## Architecture summary
 
@@ -197,7 +197,6 @@ Recommended report models: Nova Lite, Claude Haiku 4.5, Qwen3 32B (see README). 
 
 - Login / multi-screen flows
 - LaunchDarkly AgentControl / AI Config (deferred to later examples)
-- C++ implementation (optional; may be omitted)
 
 ## Language matrix
 
@@ -209,11 +208,11 @@ Same conventions as [00-reference-code](../00-reference-code/):
 | Node.js web | Available (`stub` / `ollama`) |
 | Java web | Available (`stub` / `ollama`) |
 | Python console | Available (`stub` / `ollama` / `bedrock`) |
-| Node.js console | Later |
-| Java console | Later |
-| Go console | Later |
-| Rust console | Later (HTTP/REST to providers) |
-| C++ | Likely omitted |
+| Node.js console | Available (`stub` / `ollama`) |
+| Java console | Available (`stub` / `ollama`) |
+| Go console | Available (`stub` / `ollama`) |
+| Rust console | Available (`stub` / `ollama`) |
+| C++ console | Available (`stub` / `ollama`) |
 
 ## Acceptance criteria
 

@@ -63,7 +63,7 @@ Produces a shaded JAR: `target/01-reference-agent.jar`.
 
 ## Run
 
-Run from **this directory** so `../prompts/system_prompt.txt` and `stories_cache.json` resolve correctly:
+Run from **this directory** so `../prompts/system_prompt.txt` and the shared stories cache resolve correctly:
 
 ```bash
 java -jar target/01-reference-agent.jar
@@ -104,7 +104,7 @@ AGENT_LLM_MODE=ollama java -jar target/01-reference-agent.jar
 |------|------|
 | `src/main/java/WebServer.java` | HTTP + SSE |
 | `src/main/java/AgentCore.java` | Personas, prompt, stub / Ollama |
-| `src/main/java/YahooNews.java` | Yahoo Finance + `stories_cache.json` |
+| `src/main/java/YahooNews.java` | Yahoo Finance + shared [`../stories/stories_cache.json`](../stories/stories_cache.json) |
 | `src/main/resources/public/index.html` | Browser UI |
 | `../prompts/system_prompt.txt` | Shared system prompt |
 
