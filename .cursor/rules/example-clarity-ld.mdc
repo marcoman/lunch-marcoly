@@ -1,0 +1,43 @@
+---
+description: Concise LaunchDarkly examples — prelude docs and LD documentation links
+alwaysApply: true
+---
+
+# Example clarity (lunch-marcoly)
+
+A major **goal** is concise, clear examples that teach one idea well.
+
+## Preludes on functions and methods
+
+- Prefer short, well-documented preludes (docstrings / block comments) on public functions and methods.
+- **Emphasize** preludes where LaunchDarkly will be inserted or is already wired — name the LD surface the reader should notice (flag evaluation, context, AI Config, etc.).
+- Keep preludes instructional, not essay-length: what this does, why LD belongs here, what to look at next.
+
+```text
+✅ GOOD — points at the LD insertion site
+# Evaluate the feature flag before choosing the nav label.
+# LaunchDarkly: boolean flag variation — see docs link at call site.
+
+❌ BAD — silence at the LD boundary, or a novel above every helper
+```
+
+## Instrumenting with LaunchDarkly
+
+When adding or documenting LD instrumentation in code or READMEs:
+
+1. **Link** to the official LaunchDarkly documentation for that topic.
+2. Include **keywords** that name the capability (e.g. *feature flags*, *boolean variations*, *contexts*, *segments*, *AI Config*, *Experimentation*, *Guarded rollout*).
+3. Prefer one sharp link + keywords over a dump of unrelated docs.
+
+Example shape (adapt URL to the current LD docs page for the topic):
+
+```text
+# Feature flags — boolean variation
+# https://docs.launchdarkly.com/home/flags/boolean
+```
+
+## Scope vs noise
+
+- Document the LD-relevant path thoroughly; leave trivial getters/formatters lightly commented.
+- Match existing language idioms (Python docstrings, JSDoc, Go doc comments, etc.).
+- Do not paste secrets, SDK keys, or project-specific dashboard URLs into shared examples.

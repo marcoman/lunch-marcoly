@@ -72,6 +72,12 @@ lunch-marcoly/
 │   ├── rest/
 │   ├── terraform/
 │   └── <language[-console]>/
+├── 12-agent-completion-config/  # AgentControl: model + system/user prompts at runtime
+│   ├── README.md
+│   ├── application.md
+│   ├── rest/                  # Planned
+│   ├── terraform/             # Planned
+│   └── <language[-console]>/  # Planned (Python first)
 ├── 99-use-cases/              # Focused LaunchDarkly use-case examples
 │   ├── README.md
 │   └── 01-abcd-test/          # A-B-C-D test on navigation count label
@@ -99,7 +105,8 @@ lunch-marcoly/
 - Follow the number with a **kebab-case** name describing the concept
 - Use the next available number when adding a new example (`03`, `04`, …)
 - `00-reference-code` is reserved for the reference grid navigator app and repository conventions. It does **not** include LaunchDarkly integration.
-- `01-reference-agent` is the baseline news → prompt → LLM agent UI (config/env and a prompt file only). LaunchDarkly AgentControl / AI Config arrives in later examples.
+- `01-reference-agent` is the baseline news → prompt → LLM agent UI (config/env and a prompt file only).
+- `12-agent-completion-config` adds LaunchDarkly **AgentControl** (completion config): runtime **model**, **system prompt**, and **user prompt** on that same agent shape.
 - `10-flag-enablement` demonstrates feature flag naming, provisioning, and enablement for the grid navigator.
 - `11-flag-variations` demonstrates string, number, JSON, and anonymous-context flag variation types.
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive and guarded rollouts).

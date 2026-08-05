@@ -9,7 +9,7 @@ Human-oriented setup: [README.md](README.md) and the language READMEs under `pyt
 
 This reference uses **files and environment variables only**. It does **not** call LaunchDarkly.
 
-That is intentional: you can learn the product flow (news → prompt → model → UI) before layering LaunchDarkly AI Config / AgentControl in later examples. Those later examples will swap *where* the system prompt and model choice come from—not the overall screen layout.
+That is intentional: you can learn the product flow (news → prompt → model → UI) before layering LaunchDarkly. [12-agent-completion-config](../12-agent-completion-config/) swaps *where* the system prompt, user prompt, and model choice come from via **AgentControl** (completion config)—not the overall screen layout.
 
 ## Overview
 
@@ -197,7 +197,7 @@ Recommended report models: Nova Lite, Claude Haiku 4.5, Qwen3 32B (see README). 
 ## Out of scope (this reference)
 
 - Login / multi-screen flows
-- LaunchDarkly AgentControl / AI Config (deferred to later examples)
+- LaunchDarkly AgentControl / AI Config — see [12-agent-completion-config](../12-agent-completion-config/)
 
 ## Language matrix
 
@@ -230,4 +230,4 @@ Same conventions as [00-reference-code](../00-reference-code/):
 ## Related
 
 - [00-reference-code/application.md](../00-reference-code/application.md) — grid navigator reference (no LLM)
-- Later: LaunchDarkly AgentControl / AI Config variations of this agent UI
+- [12-agent-completion-config](../12-agent-completion-config/) — AgentControl completion config (model + system/user prompts)

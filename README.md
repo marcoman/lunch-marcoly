@@ -57,6 +57,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 01 | [01-reference-agent](01-reference-agent/) | News headlines → AI equity briefing (all supported languages; LaunchDarkly comes in later examples) |
 | 10 | [10-flag-enablement](10-flag-enablement/) | Grid navigator with LaunchDarkly flags (all languages, Terraform + REST) |
 | 11 | [11-flag-variations](11-flag-variations/) | Grid navigator with string, number, JSON, and anonymous flags (all languages) |
+| 12 | [12-agent-completion-config](12-agent-completion-config/) | AgentControl completion config: runtime model + system/user prompts on the equity briefing agent |
 | 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (A-B-C-D test, segments, …) |
 
 ## Building code
