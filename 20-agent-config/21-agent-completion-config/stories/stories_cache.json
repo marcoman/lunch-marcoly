@@ -1,0 +1,45 @@
+{
+  "updated_at": "2026-08-06T12:08:42+00:00",
+  "tickers": {
+    "NVDA": {
+      "name": "NVIDIA Corporation",
+      "stories": [
+        {
+          "title": "NVIDIA (NVDA) Following Its AI Deal Run Looks Undervalued To Some Investors",
+          "publisher": "Simply Wall St.",
+          "link": "",
+          "uuid": ""
+        },
+        {
+          "title": "Should You Buy Nvidia Stock Before Aug. 26? Here's What History Suggests.",
+          "publisher": "Motley Fool",
+          "link": "",
+          "uuid": ""
+        }
+      ],
+      "cached_at": "2026-08-04T19:25:40+00:00"
+    },
+    "SPCX": {
+      "name": "Space Exploration Technologies",
+      "stories": [
+        {
+          "title": "Space Exploration Technologies (SPCX) Heads Into First Earnings, Is It Still Overvalued?",
+          "publisher": "Simply Wall St.",
+          "link": "",
+          "uuid": ""
+        },
+        {
+          "title": "Will Elon Musk's Bullish Starlink Bet Help SPCX Recover?",
+          "publisher": "Benzinga",
+          "link": "",
+          "uuid": ""
+        }
+      ],
+      "cached_at": "2026-08-04T19:25:40+00:00"
+    }
+  },
+  "last_pair": {
+    "ticker1": "NVDA",
+    "ticker2": "SPCX"
+  }
+}

@@ -46,6 +46,9 @@ This example uses **completion mode** (single-step messages + model), not multi-
 
 ## Recommended AgentControl config
 
+**REST scripts (preferred):** [rest/README.md](rest/README.md).  
+**UI checklist (copy-paste messages, targeting, smoke-check):** [PROVISIONING.md](PROVISIONING.md).
+
 Naming follows LaunchDarkly resource style: clear name, kebab-case **key**.
 
 | Attribute | Value |
@@ -54,26 +57,19 @@ Naming follows LaunchDarkly resource style: clear name, kebab-case **key**.
 | **Key** | `equity-briefing-completion` |
 | **Mode** | Completion |
 | **Purpose** | Serve model + system/user messages for the equity briefing generate step |
+| **SDK call** | AI SDK `completion_config` (not agent mode) |
 
-### Default variation (baseline analyst)
+### Variations (summary)
 
-| Field | Suggested value |
-|-------|-----------------|
-| **Variation name** | `baseline-analyst` |
-| **Model** | Match a provider the learner can run (e.g. Ollama tag or a small cloud model documented in the language README) |
-| **System message** | Equity research analyst instructions (equivalent spirit to 01’s `system_prompt.txt`) |
-| **User message** | Instructions to brief from the supplied headlines; include a placeholder or variable for the formatted story block |
+| Variation | Role |
+|-----------|------|
+| `baseline-analyst` | Default; analyst voice aligned with 01’s `system_prompt.txt` |
+| `concise-skeptic` | Shorter skeptical voice (Conservative Charlie via name targeting) |
+| `reckless-hype` | No caution, fabricates freely, sweeping claims, defunct-company tips (Thoughtless Toby) |
 
-### Optional second variation (for “change without deploy”)
+Both message sets use a **user** message that includes the variable `{{ stories }}`. The app passes the formatted headline block as `stories` when calling `completion_config`. Full message text: [PROVISIONING.md](PROVISIONING.md) · [rest/messages/](rest/messages/).
 
-| Field | Suggested value |
-|-------|-----------------|
-| **Variation name** | `concise-skeptic` |
-| **Model** | Same or alternate model |
-| **System message** | Shorter, more skeptical analyst voice |
-| **User message** | Ask for a tighter comparison and explicit uncertainty |
-
-Targeting the second variation (or editing the default) should visibly change the streamed report without rebuilding the app.
+Targeting the second/third variation (or editing the default) should visibly change the streamed report without rebuilding the app.
 
 ## Application generate path
 
@@ -94,7 +90,7 @@ flowchart LR
 3. Read from the result:
    - **Model** name (and provider as exposed by the SDK)
    - **Messages** with roles `system` and `user` (and any other roles the variation defines)
-4. Ensure headline content is available to the model as specified by the variation (via message template variables and/or appending structured story text in code—language README must state which).
+4. Ensure headline content is available to the model by passing `{"stories": <formatted headlines>}` into `completion_config` so `{{ stories }}` in the user message is substituted ([customizing configs](https://launchdarkly.com/docs/sdk/features/agentcontrol-config)).
 5. Call the LLM with that model and message list; stream tokens to the UI.
 6. Surface the **served** provider/model in the status chrome (not only the old `AGENT_LLM_MODE` env).
 7. On LD or provider failure: show a clear status error; optional **fallback** config (stub or local file) may be documented per language for classroom use.
@@ -132,8 +128,9 @@ Exact AI SDK package names and init snippets live in each language README when i
 2. Generate uses LaunchDarkly AgentControl for **model**, **system** message, and **user** message (completion config).
 3. Editing the config variation in LaunchDarkly changes generate behavior without redeploying the example binary/app.
 4. Provider/model shown in the UI reflects the **served** variation.
-5. Missing `LD_SDK_KEY` or config errors are visible in status (no silent fallback to 01 file prompts unless an explicit fallback mode is documented and labeled).
-6. README links to AgentControl docs with the keywords above.
+5. Missing `LD_SDK_KEY` or a **disabled** AgentControl config falls back to the in-code **baseline-analyst** prompts (same text as `rest/messages/baseline-*.txt`), clearly labeled in the UI (e.g. `code baseline`).
+6. README and [PROVISIONING.md](PROVISIONING.md) link to AgentControl docs with the keywords above.
+7. Provisioned config matches [PROVISIONING.md](PROVISIONING.md) (key, completion mode, `{{ stories }}`, default → `baseline-analyst`).
 
 ## Related
 

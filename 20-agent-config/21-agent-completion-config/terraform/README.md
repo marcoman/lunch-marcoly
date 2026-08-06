@@ -1,9 +1,13 @@
 # Terraform provisioning
 
-Provisioning for the AgentControl completion config (`equity-briefing-completion`) will live here.
+Status: **Planned**.
 
-Status: **Planned** — define resources once the LaunchDarkly Terraform provider supports the AgentControl config shape used in [application.md](../application.md), or document UI-first setup until then.
+Until Terraform covers this AgentControl shape, use the REST scripts:
 
-Until this lands, create the config in the LaunchDarkly UI using the checklist in [application.md](../application.md#recommended-agentcontrol-config).
+→ **[rest/README.md](../rest/README.md)** — `./create-config.sh`
+
+UI fallback: [PROVISIONING.md](../PROVISIONING.md)
+
+Config key: `equity-briefing-completion` · mode: **Completion** · default variation: `baseline-analyst`
 
 Docs: [AgentControl](https://launchdarkly.com/docs/home/agentcontrol) · [Quickstart](https://launchdarkly.com/docs/home/agentcontrol/quickstart)

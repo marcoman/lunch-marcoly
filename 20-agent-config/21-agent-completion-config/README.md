@@ -59,22 +59,33 @@ Reuse the shared mental model from [01-reference-agent/README.md](../../01-refer
 
 | Approach | Directory | Status |
 |----------|-----------|--------|
-| UI / docs checklist | [application.md](application.md) | Spec ready |
+| **REST / scripts** (preferred) | [rest/](rest/) | Ready — `./create-config.sh` |
+| UI checklist | [PROVISIONING.md](PROVISIONING.md) | Ready — dashboard fallback |
+| Spec / acceptance | [application.md](application.md) | Ready |
 | Terraform | [terraform/](terraform/) | Planned |
-| REST / scripts | [rest/](rest/) | Planned |
+
+```bash
+export LD_API_ACCESS_TOKEN="api-..."
+export LD_PROJECT_KEY="lunch-marcoly"
+export LD_ENVIRONMENT_KEY="test"
+
+cd rest && chmod +x *.sh && ./create-config.sh
+```
 
 ## Language implementations
 
 | Language | Directory | Type | Status |
 |----------|-----------|------|--------|
-| Python | `python/` | Web | Planned |
+| Python | [`python/`](python/) | Web | Ready — http://127.0.0.1:8210/ |
 | Python | `python-console/` | Console | Planned |
 | Node.js / Java / Go / Rust / C++ | — | — | Later |
 
-Start with **Python** (web or console) once provisioning is defined in [application.md](application.md).
+Start with **[rest/](rest/)**, then run **[python/](python/)** against that config.
 
 ## Further reading
 
+- [rest/README.md](rest/README.md) — REST provisioning (preferred; no MCP)
+- [PROVISIONING.md](PROVISIONING.md) — UI checklist + copy-paste messages
 - [application.md](application.md) — AgentControl completion config specification
 - [../README.md](../README.md) — series setup (Ollama, AWS, LaunchDarkly)
 - [01-reference-agent/application.md](../../01-reference-agent/application.md) — baseline agent UI (no LaunchDarkly)

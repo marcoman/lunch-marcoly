@@ -8,7 +8,7 @@ Examples here keep the same news → generate product shape. What changes is **w
 
 | # | Directory | What it adds |
 |---|-----------|--------------|
-| 21 | [21-agent-completion-config](21-agent-completion-config/) | **Completion config**: runtime **model**, **system prompt**, and **user prompt** |
+| 21 | [21-agent-completion-config](21-agent-completion-config/) | **Completion config**: runtime **model**, **system prompt**, and **user prompt** — provision with [rest/](21-agent-completion-config/rest/) |
 
 More AgentControl patterns (targeting, agent mode, rollouts, …) can land as `22-…`, `23-…` siblings under this folder.
 
@@ -127,7 +127,7 @@ That confirms Yahoo stories, streaming UI, and Ollama before you add AgentContro
 
 1. Read this page (shared LD + LLM setup).
 2. Open the child example README + `application.md` (config key, variations, acceptance criteria).
-3. Provision the AgentControl config (UI checklist and/or `terraform/` / `rest/` when present).
+3. Provision the AgentControl config ([rest/](21-agent-completion-config/rest/) preferred; UI checklist in [PROVISIONING.md](21-agent-completion-config/PROVISIONING.md)).
 4. Run the language implementation under that example.
 
 ## Related
