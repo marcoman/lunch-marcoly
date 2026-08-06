@@ -251,6 +251,36 @@ def user_message_text(messages: list[dict[str, str]]) -> str:
     return ""
 
 
+def system_message_text(messages: list[dict[str, str]]) -> str:
+    for msg in messages:
+        if msg.get("role") == "system":
+            return msg.get("content") or ""
+    return ""
+
+
+def system_prompt_preview(messages: list[dict[str, str]], max_chars: int = 40) -> str:
+    """Short preview for server logs (first line, capped)."""
+    text = system_message_text(messages).strip()
+    if not text:
+        return "(none)"
+    first_line = text.splitlines()[0].strip()
+    if len(first_line) > max_chars:
+        return first_line[: max_chars - 1] + "…"
+    return first_line
+
+
+def log_system_prompt_source(source: str, messages: list[dict[str, str]], persona: Persona) -> None:
+    """Log that we have a system prompt (from LD or code baseline) without dumping it.
+
+    Prefer the server terminal over the UI Status panel — the full prompt is long.
+    """
+    preview = system_prompt_preview(messages)
+    print(
+        f"[generate] {persona.name}: system prompt from {source}: {preview!r}",
+        flush=True,
+    )
+
+
 def resolve_runtime(config) -> tuple[str, str]:
     """Map served provider/model to a local caller (ollama | bedrock).
 
@@ -318,6 +348,7 @@ def generate_stream(
         messages = baseline_messages(stories_text)
         provider, model = "ollama", default_ollama_model()
         mode = "baseline-fallback"
+        log_system_prompt_source("code baseline (AgentControl off)", messages, persona)
         prompt_preview = user_message_text(messages) or stories_text
         yield {
             "type": "meta",
@@ -368,6 +399,7 @@ def generate_stream(
         yield {"type": "done"}
         return
 
+    log_system_prompt_source(f"LaunchDarkly ({config_key()})", messages, persona)
     prompt_preview = user_message_text(messages) or stories_text
     yield {
         "type": "meta",

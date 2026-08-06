@@ -36,7 +36,7 @@ Open **http://127.0.0.1:8210/** (01 uses 8090).
 ## What to try
 
 1. **Get Stories** → headline panels fill
-2. **Generate AI Report** → Prompt shows the LD user message (with `{{ stories }}` filled); Response streams from Ollama
+2. **Generate AI Report** → User Prompt shows the LD user message (with `{{ stories }}` filled); Response streams from Ollama
 3. Provider/model should show `ollama / llama3.2:3b` (from the served variation)
 4. Switch users: **Charlie** → `concise-skeptic`; **Nancy** → `baseline-analyst`; **Toby** → `reckless-hype` (`../rest/update-name-targeting.sh`)
 5. Or flip fallthrough only: `../rest/update-targeting.sh concise-skeptic` → regenerate → flip back
