@@ -237,6 +237,109 @@ def evaluate_completion(
     )
 
 
+def evaluation_meta(persona: Persona) -> dict[str, Any]:
+    """Metadata for the served variation (public SDK: variation_detail).
+
+    The typed AICompletionConfig exposes model/messages/provider/enabled, but not
+    variationKey. That lives on the raw evaluation's ``_ldMeta`` (and in the
+    metrics tracker). variation_detail also returns the match reason.
+    https://launchdarkly.com/docs/sdk/features/evaluation-reasons
+    """
+    client = _ld_client
+    if client is None:
+        init_launchdarkly()
+        client = _ld_client
+    assert client is not None
+
+    detail = client.variation_detail(
+        config_key(),
+        build_context(persona),
+        baseline_completion_default().to_dict(),
+    )
+    value = detail.value if isinstance(detail.value, dict) else {}
+    meta = value.get("_ldMeta") or {}
+    return {
+        "variationKey": meta.get("variationKey"),
+        "version": meta.get("version"),
+        "versionKey": meta.get("versionKey"),
+        "mode": meta.get("mode"),
+        "modelKey": meta.get("modelKey"),
+        "modelVersion": meta.get("modelVersion"),
+        "enabledMeta": meta.get("enabled"),
+        "variationIndex": detail.variation_index,
+        "reason": detail.reason,
+    }
+
+
+def log_served_variation(persona: Persona, meta: dict[str, Any] | None) -> None:
+    """One-line server log: which AgentControl variation we received."""
+    if not meta:
+        print(f"[generate] {persona.name}: variation=(unknown)", flush=True)
+        return
+    key = meta.get("variationKey") or "(none)"
+    reason = meta.get("reason") or {}
+    reason_kind = reason.get("kind") if isinstance(reason, dict) else reason
+    print(
+        f"[generate] {persona.name}: variation={key!r} reason={reason_kind!r}",
+        flush=True,
+    )
+
+
+def build_ld_transaction(
+    *,
+    persona: Persona,
+    stories_text: str,
+    config_key_value: str,
+    fallback: bool,
+    mode: str,
+    provider: str,
+    model: str,
+    messages: list[dict[str, str]],
+    served_meta: dict[str, Any] | None,
+    enabled: bool | None,
+) -> dict[str, object]:
+    """Payload for the UI 'LD details' overlay (last generate: sent + received)."""
+    context = build_context(persona)
+    reason = (served_meta or {}).get("reason")
+    return {
+        "sent": {
+            "configKey": config_key_value,
+            "context": context.to_dict(),
+            "variables": {"stories": stories_text},
+            "sdkDefault": {
+                "description": (
+                    "AICompletionConfigDefault passed to completion_config "
+                    "(baseline-analyst shape; used if config key is missing)."
+                ),
+                "enabled": True,
+                "model": default_ollama_model(),
+                "provider": "Custom",
+                "messages": [
+                    {"role": "system", "content": baseline_system_prompt()},
+                    {"role": "user", "content": baseline_user_template()},
+                ],
+            },
+        },
+        "received": {
+            "fallback": fallback,
+            "mode": mode,
+            "enabled": enabled,
+            "configKey": config_key_value,
+            "variationKey": (served_meta or {}).get("variationKey"),
+            "variationIndex": (served_meta or {}).get("variationIndex"),
+            "reason": reason,
+            "version": (served_meta or {}).get("version"),
+            "versionKey": (served_meta or {}).get("versionKey"),
+            "ldMode": (served_meta or {}).get("mode"),
+            "modelKey": (served_meta or {}).get("modelKey"),
+            "modelVersion": (served_meta or {}).get("modelVersion"),
+            "provider": provider,
+            "model": model,
+            "messages": messages,
+        },
+    }
+
+
 def messages_as_dicts(config) -> list[dict[str, str]]:
     out: list[dict[str, str]] = []
     for msg in config.messages or []:
@@ -329,10 +432,12 @@ def generate_stream(
     try:
         # LaunchDarkly: evaluate completion config (model + messages).
         config = evaluate_completion(persona, stories_text)
+        served_meta = evaluation_meta(persona)
     except Exception as exc:  # noqa: BLE001
         # Network / init failure — still try the code baseline so demos work.
         using_fallback = True
         config = None
+        served_meta = None
         fallback_reason = f"LaunchDarkly evaluation failed ({exc}); using code baseline."
     else:
         fallback_reason = None
@@ -348,6 +453,10 @@ def generate_stream(
         messages = baseline_messages(stories_text)
         provider, model = "ollama", default_ollama_model()
         mode = "baseline-fallback"
+        print(
+            f"[generate] {persona.name}: variation='code-baseline' reason='FALLBACK'",
+            flush=True,
+        )
         log_system_prompt_source("code baseline (AgentControl off)", messages, persona)
         prompt_preview = user_message_text(messages) or stories_text
         yield {
@@ -360,6 +469,18 @@ def generate_stream(
             "configKey": config_key(),
             "fallback": True,
             "stories": ticker_results or [],
+            "ldTransaction": build_ld_transaction(
+                persona=persona,
+                stories_text=stories_text,
+                config_key_value=config_key(),
+                fallback=True,
+                mode=mode,
+                provider=provider,
+                model=f"{model} (code baseline)",
+                messages=messages,
+                served_meta=served_meta,
+                enabled=False if config is None else bool(config.enabled),
+            ),
         }
         if fallback_reason:
             # Informational — not a hard failure; generation continues.
@@ -399,6 +520,7 @@ def generate_stream(
         yield {"type": "done"}
         return
 
+    log_served_variation(persona, served_meta)
     log_system_prompt_source(f"LaunchDarkly ({config_key()})", messages, persona)
     prompt_preview = user_message_text(messages) or stories_text
     yield {
@@ -409,8 +531,21 @@ def generate_stream(
         "model": model,
         "mode": "launchdarkly",
         "configKey": config_key(),
+        "variationKey": (served_meta or {}).get("variationKey"),
         "fallback": False,
         "stories": ticker_results or [],
+        "ldTransaction": build_ld_transaction(
+            persona=persona,
+            stories_text=stories_text,
+            config_key_value=config_key(),
+            fallback=False,
+            mode="launchdarkly",
+            provider=provider,
+            model=model,
+            messages=messages,
+            served_meta=served_meta,
+            enabled=bool(config.enabled),
+        ),
     }
 
     try:
