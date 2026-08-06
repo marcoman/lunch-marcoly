@@ -77,14 +77,27 @@ cd rest && chmod +x *.sh && ./create-config.sh
 | Language | Directory | Type | Status |
 |----------|-----------|------|--------|
 | Python | [`python/`](python/) | Web | Ready — http://127.0.0.1:8210/ |
+| Node.js | [`node/`](node/) | Web | Ready — http://127.0.0.1:8211/ |
+| Java | [`java/`](java/) | Web | Ready — http://127.0.0.1:8212/ |
 | Python | `python-console/` | Console | Planned |
-| Node.js / Java / Go / Rust / C++ | — | — | Later |
+| Go / Rust / C++ | — | — | Later |
 
-Start with **[rest/](rest/)**, then run **[python/](python/)** against that config.
+Start with **[rest/](rest/)**, then run any web language against that config.
+
+| Port | Language |
+|------|----------|
+| 8210 | Python |
+| 8211 | Node.js |
+| 8212 | Java |
+
+Java note: there is no official LaunchDarkly **Java AI SDK** yet. The Java example evaluates the AgentControl config with the **server SDK** JSON variation API (`jsonValueVariationDetail`) and substitutes `{{ stories }}` locally — same config key and targeting as Python/Node.
 
 ## Further reading
 
 - [rest/README.md](rest/README.md) — REST provisioning (preferred; no MCP)
+- [python/README.md](python/README.md) — Python web
+- [node/README.md](node/README.md) — Node.js web
+- [java/README.md](java/README.md) — Java web (server SDK JSON evaluation)
 - [PROVISIONING.md](PROVISIONING.md) — UI checklist + copy-paste messages
 - [application.md](application.md) — AgentControl completion config specification
 - [../README.md](../README.md) — series setup (Ollama, AWS, LaunchDarkly)

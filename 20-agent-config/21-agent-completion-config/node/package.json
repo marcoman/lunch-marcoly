@@ -1,0 +1,17 @@
+{
+  "name": "agent-completion-config",
+  "version": "1.0.0",
+  "private": true,
+  "description": "21-agent-completion-config — AgentControl completion config demo (Node web)",
+  "main": "21-agent-completion-config.js",
+  "scripts": {
+    "start": "node 21-agent-completion-config.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0",
+    "@launchdarkly/server-sdk-ai": "^2.0.0"
+  }
+}
