@@ -92,14 +92,14 @@ Serve different variations from the persona **name** attribute (set by the Pytho
 | `Conservative Charlie` | `concise-skeptic` |
 | `Neutral Nancy` | `baseline-analyst` |
 | `Thoughtless Toby` | `reckless-hype` |
-| (everyone else) | `baseline-analyst` (fallthrough) |
+| (everyone else, e.g. Anonymous Amelia) | `baseline-analyst` (fallthrough) |
 
 ```bash
 ./create-variation-reckless-hype.sh   # once, if missing
 ./update-name-targeting.sh
 ```
 
-In the UI: Charlie (skeptical) vs Nancy (baseline) vs Toby (reckless hype / Pets.com energy).
+In the UI: Charlie (skeptical) vs Nancy (baseline) vs Toby (reckless hype) vs **Anonymous Amelia** (anonymous context → fallthrough / baseline).
 
 ### Delete and recreate
 

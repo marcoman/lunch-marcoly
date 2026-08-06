@@ -197,7 +197,7 @@ Target variations by the context **`name`** attribute (the Python app sets `name
 | `Conservative Charlie` | `concise-skeptic` |
 | `Neutral Nancy` | `baseline-analyst` |
 | `Thoughtless Toby` | `reckless-hype` |
-| Default rule | `baseline-analyst` |
+| Default rule | `baseline-analyst` (e.g. **Anonymous Amelia** — anonymous context, no name rule) |
 
 ```bash
 ./rest/create-variation-reckless-hype.sh   # if the variation is missing
@@ -205,6 +205,8 @@ Target variations by the context **`name`** attribute (the Python app sets `name
 ```
 
 `reckless-hype` is the Thoughtless Toby voice: no caution, fabricates freely, sweeping claims, and cheerfully recommends defunct companies (e.g. Pets.com).
+
+**Anonymous Amelia** is not in targeting: the app builds an **anonymous** user context (`anonymous=true`, key `anonymous-amelia`). Name rules do not match → fallthrough → `baseline-analyst`.
 
 To demo “change without deploy” later (no code change):
 

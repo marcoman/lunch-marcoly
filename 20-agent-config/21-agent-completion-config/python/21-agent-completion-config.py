@@ -76,7 +76,13 @@ class Handler(BaseHTTPRequestHandler):
             body = {
                 "appBanner": APP_BANNER,
                 "personas": [
-                    {"id": p.id, "name": p.name, "profile": p.profile} for p in PERSONAS
+                    {
+                        "id": p.id,
+                        "name": p.name,
+                        "profile": p.profile,
+                        "anonymous": p.anonymous,
+                    }
+                    for p in PERSONAS
                 ],
                 "defaultTickers": {
                     "ticker1": (cached or {}).get("ticker1") or DEFAULT_TICKER_1,

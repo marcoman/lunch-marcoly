@@ -33,7 +33,7 @@ This example uses **completion mode** (single-step messages + model), not multi-
 - Tickers → Get Stories (Yahoo) → optional user cycle → Generate
 - Streamed response, provider/model display, metrics, status
 - Shared stories cache concept under this example’s `stories/` (when implementations land)
-- Demo personas: Conservative Charlie, Neutral Nancy, Thoughtless Toby
+- Demo personas: Conservative Charlie, Neutral Nancy, Thoughtless Toby, Anonymous Amelia (anonymous context → fallthrough)
 
 ## What changes vs 01
 
@@ -100,10 +100,11 @@ flowchart LR
 | Attribute | Source |
 |-----------|--------|
 | Kind | `user` |
-| Key | Persona id (e.g. `conservative-charlie`) |
+| Key | Persona id (e.g. `conservative-charlie`, `anonymous-amelia`) |
 | Name | Persona display name |
+| Anonymous | `true` only for **Anonymous Amelia** ([anonymous contexts](https://launchdarkly.com/docs/sdk/features/anonymous)) |
 
-Additional attributes (risk profile, etc.) may be added in later examples; keep v1 minimal.
+Named personas can match name-based targeting. Anonymous Amelia is not targeted by name rules and receives the **fallthrough** variation (`baseline-analyst`).
 
 ## Environment variables (summary)
 

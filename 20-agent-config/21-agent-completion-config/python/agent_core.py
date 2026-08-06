@@ -68,12 +68,15 @@ class Persona:
     id: str
     name: str
     profile: str
+    anonymous: bool = False
 
 
 PERSONAS: tuple[Persona, ...] = (
     Persona("conservative-charlie", "Conservative Charlie", "conservative"),
     Persona("neutral-nancy", "Neutral Nancy", "neutral"),
     Persona("thoughtless-toby", "Thoughtless Toby", "risk-taker"),
+    # No name targeting — anonymous context falls through to baseline-analyst.
+    Persona("anonymous-amelia", "Anonymous Amelia", "anonymous", anonymous=True),
 )
 
 
@@ -212,8 +215,17 @@ def ai_client() -> LDAIClient:
 
 
 def build_context(persona: Persona) -> Context:
-    """Build the minimum LD context for this example (user key + name)."""
-    return Context.builder(persona.id).name(persona.name).build()
+    """Build the LD evaluation context for this persona.
+
+    Named personas: user key + name (name targeting matches Charlie/Nancy/Toby).
+    Anonymous Amelia: fixed key, anonymous=True — not indexed as a known user;
+    name rules do not match → fallthrough (baseline-analyst).
+    https://launchdarkly.com/docs/sdk/features/anonymous
+    """
+    builder = Context.builder(persona.id).name(persona.name)
+    if persona.anonymous:
+        builder = builder.anonymous(True)
+    return builder.build()
 
 
 def evaluate_completion(

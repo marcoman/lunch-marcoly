@@ -804,7 +804,8 @@
     function renderPersona() {
       const p = personas[index];
       els.name.textContent = p.name;
-      els.profile.textContent = `Profile: ${p.profile}`;
+      const anon = p.anonymous ? " · anonymous context" : "";
+      els.profile.textContent = `Profile: ${p.profile}${anon}`;
     }
 
     function selectUser(nextIndex) {
