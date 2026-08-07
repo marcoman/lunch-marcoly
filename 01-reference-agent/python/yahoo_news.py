@@ -17,7 +17,13 @@ Returned shape (per ticker)
   "ticker": "NVDA",
   "name": "NVIDIA Corporation",
   "stories": [
-    {"title": "...", "publisher": "...", "link": "...", "uuid": "..."},
+    {
+      "title": "...",
+      "publisher": "...",
+      "published": "2026-08-04T15:25:00-04:00",
+      "link": "...",
+      "uuid": "...",
+    },
     ...
   ],
   "error": null | "human-readable failure",
@@ -46,6 +52,8 @@ YAHOO_SEARCH_HOSTS = (
     "https://query1.finance.yahoo.com/v1/finance/search",
     "https://query2.finance.yahoo.com/v1/finance/search",
 )
+# Space Yahoo calls; stop walking hosts/variants on HTTP 429.
+REQUEST_GAP_S = 1.0
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
@@ -181,7 +189,11 @@ def _remember_pair(ticker1: str, ticker2: str, results: list[dict[str, Any]]) ->
 
 
 def _yahoo_get_json(url: str) -> dict[str, Any]:
-    """GET JSON from Yahoo; retry once on HTTP 429."""
+    """GET JSON from Yahoo.
+
+    Waits REQUEST_GAP_S before each attempt. Retries briefly on 503/timeouts.
+    HTTP 429 is raised immediately (no retry) so callers can stop early.
+    """
     req = urllib.request.Request(
         url,
         headers={
@@ -193,12 +205,16 @@ def _yahoo_get_json(url: str) -> dict[str, Any]:
     )
     last_exc: Exception | None = None
     for attempt in range(3):
+        time.sleep(REQUEST_GAP_S)
         try:
             with urllib.request.urlopen(req, timeout=20) as resp:
                 return json.loads(resp.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
             last_exc = exc
-            if exc.code in {429, 503} and attempt < 2:
+            # Rate-limited: do not retry — caller falls back to cache.
+            if exc.code == 429:
+                raise
+            if exc.code == 503 and attempt < 2:
                 time.sleep(1.5 * (attempt + 1))
                 continue
             raise
@@ -210,6 +226,44 @@ def _yahoo_get_json(url: str) -> dict[str, Any]:
             raise
     assert last_exc is not None
     raise last_exc
+
+
+def _unix_to_iso(value: Any) -> str:
+    """Convert Yahoo providerPublishTime (unix seconds) to local ISO datetime."""
+    try:
+        ts = int(value)
+    except (TypeError, ValueError):
+        return ""
+    if ts <= 0:
+        return ""
+    try:
+        return datetime.fromtimestamp(ts, tz=timezone.utc).astimezone().isoformat(timespec="seconds")
+    except (OverflowError, OSError, ValueError):
+        return ""
+
+
+def format_published_display(published: str | None) -> str:
+    """Human date+time for UI: 'Aug 4, 2026 3:25 PM'."""
+    text = (published or "").strip()
+    if not text:
+        return ""
+    try:
+        dt = datetime.fromisoformat(text)
+    except ValueError:
+        return text
+    hour = dt.strftime("%I").lstrip("0") or "12"
+    return f"{dt.strftime('%b')} {dt.day}, {dt.year} {hour}:{dt.strftime('%M')} {dt.strftime('%p')}"
+
+
+def format_story_source(story: dict[str, Any] | None) -> str:
+    """Publisher followed by date/time, e.g. 'Simply Wall St. · Aug 4, 2026 3:25 PM'."""
+    if not story:
+        return ""
+    publisher = (story.get("publisher") or "").strip()
+    when = format_published_display(str(story.get("published") or ""))
+    if publisher and when:
+        return f"{publisher} · {when}"
+    return publisher or when
 
 
 def _parse_search_payload(symbol: str, payload: dict[str, Any], count: int) -> dict[str, Any] | None:
@@ -225,10 +279,12 @@ def _parse_search_payload(symbol: str, payload: dict[str, Any], count: int) -> d
         title = (item.get("title") or "").strip()
         if not title:
             continue
+        published = _unix_to_iso(item.get("providerPublishTime"))
         stories.append(
             {
                 "title": title,
                 "publisher": (item.get("publisher") or "").strip(),
+                "published": published,
                 "link": (item.get("link") or "").strip(),
                 "uuid": (item.get("uuid") or "").strip(),
             }
@@ -281,6 +337,7 @@ def fetch_stories_for_ticker(ticker: str, count: int = 2) -> dict[str, Any]:
     )
 
     last_error = f"No recent stories found for {symbol}."
+    rate_limited = False
     for host in YAHOO_SEARCH_HOSTS:
         for params in query_variants:
             url = f"{host}?{urllib.parse.urlencode(params)}"
@@ -288,6 +345,10 @@ def fetch_stories_for_ticker(ticker: str, count: int = 2) -> dict[str, Any]:
                 payload = _yahoo_get_json(url)
             except urllib.error.HTTPError as exc:
                 last_error = f"Yahoo Finance HTTP {exc.code} for {symbol}."
+                # 429: stop all host/variant walks — more requests make it worse.
+                if exc.code == 429:
+                    rate_limited = True
+                    break
                 # 404 on one variant is common; try the next shape/host.
                 continue
             except urllib.error.URLError as exc:
@@ -304,6 +365,8 @@ def fetch_stories_for_ticker(ticker: str, count: int = 2) -> dict[str, Any]:
 
             _remember_ticker(symbol, parsed["name"], parsed["stories"])
             return parsed
+        if rate_limited:
+            break
 
     # Live fetch failed — serve last good headlines if we have them.
     cached = get_cached_ticker(symbol)
@@ -327,8 +390,8 @@ def fetch_stories_for_tickers(
     t1 = normalize_ticker(ticker1) or DEFAULT_TICKER_1
     t2 = normalize_ticker(ticker2) or DEFAULT_TICKER_2
     first = fetch_stories_for_ticker(t1, count=count)
-    # Small gap helps avoid Yahoo rate limits when fetching the pair.
-    time.sleep(0.5)
+    # Gap between tickers (each request also waits REQUEST_GAP_S).
+    time.sleep(REQUEST_GAP_S)
     second = fetch_stories_for_ticker(t2, count=count)
     results = [first, second]
     _remember_pair(t1, t2, results)
@@ -365,7 +428,7 @@ def format_stories_for_prompt(ticker_results: list[dict[str, Any]]) -> str:
         else:
             for i, story in enumerate(stories, start=1):
                 title = story.get("title") or "(untitled)"
-                publisher = story.get("publisher") or "unknown"
-                lines.append(f"{i}. {title} — {publisher}")
+                source = format_story_source(story) or "unknown"
+                lines.append(f"{i}. {title} — {source}")
         lines.append("")
     return "\n".join(lines).strip()

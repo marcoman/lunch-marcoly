@@ -29,6 +29,7 @@ from yahoo_news import (  # noqa: E402
     DEFAULT_TICKER_1,
     DEFAULT_TICKER_2,
     fetch_stories_for_tickers,
+    format_story_source,
     get_last_pair_cached,
     normalize_ticker,
 )
@@ -579,10 +580,10 @@ class App:
                 continue
             for story in items:
                 title = story.get("title") or "(untitled)"
-                publisher = story.get("publisher") or ""
+                source = format_story_source(story)
                 line = f"    · {title}"
-                if publisher:
-                    line += f" — {publisher}"
+                if source:
+                    line += f" — {source}"
                 self.append(line, story_kind)
             if block.get("error"):
                 self.append(f"    note: {block['error']}", "warn")

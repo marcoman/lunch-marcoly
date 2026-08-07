@@ -20,6 +20,7 @@ const {
   DEFAULT_TICKER_1,
   DEFAULT_TICKER_2,
   fetchStoriesForTickers,
+  formatStorySource,
   getLastPairCached,
   normalizeTicker,
 } = require("../node/yahooNews");
@@ -332,7 +333,8 @@ class App {
       }
       for (const story of items) {
         let line = `    · ${story.title || "(untitled)"}`;
-        if (story.publisher) line += ` — ${story.publisher}`;
+        const source = formatStorySource(story);
+        if (source) line += ` — ${source}`;
         this.append(line, `story${slot}`);
       }
       if (block.error) this.append(`    note: ${block.error}`, "warn");

@@ -14,11 +14,10 @@
       1. Enter two tickers
       2. Get Stories → Yahoo Finance headlines into the two story panels
       3. Choose user (Previous/Next)
-      4. Generate AI Report → AgentControl completionConfig → stream LLM
+      4. Generate AI Report → AgentControl completion_config → stream LLM
 
     Layout:
-      • Tickers + Get Stories
-      • Two story panels (ticker name + titles)
+      • Collapsible Stories chrome (tickers + Get Stories + headline panels)
       • User panel: Previous User | name | Next user
       • Generate AI Report
       • User Prompt | Response (side-by-side)
@@ -90,12 +89,86 @@
     .persona-panel .persona-nav {
       display: contents;
     }
+    /* Collapsible tickers + headlines chrome */
+    .stories-chrome {
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+      background: var(--panel);
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+    .stories-chrome-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+      color: var(--ink);
+    }
+    .stories-chrome-header:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--accent) 8%, transparent);
+      border-color: transparent;
+    }
+    .stories-chrome-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      flex: 0 0 auto;
+    }
+    .stories-chrome-summary {
+      flex: 1 1 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.35rem 0.75rem;
+      min-width: 0;
+    }
+    .stories-chrome-tickers {
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .stories-chrome-status {
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 400;
+    }
+    .stories-chrome-chevron {
+      flex: 0 0 auto;
+      width: 1.35rem;
+      height: 1.35rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 0.35rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+      line-height: 1;
+      transition: transform 0.15s ease;
+    }
+    .stories-chrome.collapsed .stories-chrome-chevron {
+      transform: rotate(-90deg);
+    }
+    .stories-chrome-body {
+      padding: 0 1rem 1rem;
+      border-top: 1px solid var(--line);
+    }
+    .stories-chrome.collapsed .stories-chrome-body {
+      display: none;
+    }
     .ticker-row {
       display: flex;
       flex-wrap: wrap;
       gap: 0.75rem;
       align-items: end;
-      margin-bottom: 1rem;
+      margin: 1rem 0;
     }
     .field {
       display: flex;
@@ -141,10 +214,13 @@
       display: grid;
       gap: 1rem;
       grid-template-columns: 1fr;
-      margin-bottom: 1rem;
+      margin-bottom: 0;
     }
     @media (min-width: 700px) {
       .stories-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .stories-chrome-body .panel {
+      background: color-mix(in srgb, var(--bg) 55%, var(--panel));
     }
     .grid {
       display: grid;
@@ -429,32 +505,50 @@
     <h1>Agent completion config</h1>
     <p class="subtitle">Pull ticker headlines, then stream a briefing from LaunchDarkly AgentControl.</p>
 
-    <div class="ticker-row">
-      <div class="field">
-        <label for="ticker1">Ticker 1</label>
-        <input id="ticker1" type="text" value="NVDA" maxlength="12" autocomplete="off" />
-      </div>
-      <div class="field">
-        <label for="ticker2">Ticker 2</label>
-        <input id="ticker2" type="text" value="SPCX" maxlength="12" autocomplete="off" />
-      </div>
-      <button id="btn-stories" class="primary" type="button">Get Stories</button>
-    </div>
+    <section class="stories-chrome" id="stories-chrome" aria-label="Tickers and stories">
+      <button
+        type="button"
+        class="stories-chrome-header"
+        id="btn-stories-toggle"
+        aria-expanded="true"
+        aria-controls="stories-chrome-body"
+      >
+        <span class="stories-chrome-label">Stories</span>
+        <span class="stories-chrome-summary">
+          <span class="stories-chrome-tickers" id="stories-summary-tickers">NVDA · SPCX</span>
+          <span class="stories-chrome-status" id="stories-summary-status">(no stories yet)</span>
+        </span>
+        <span class="stories-chrome-chevron" id="stories-chrome-chevron" aria-hidden="true">▾</span>
+      </button>
+      <div class="stories-chrome-body" id="stories-chrome-body">
+        <div class="ticker-row">
+          <div class="field">
+            <label for="ticker1">Ticker 1</label>
+            <input id="ticker1" type="text" value="NVDA" maxlength="12" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="ticker2">Ticker 2</label>
+            <input id="ticker2" type="text" value="SPCX" maxlength="12" autocomplete="off" />
+          </div>
+          <button id="btn-stories" class="primary" type="button">Get Stories</button>
+        </div>
 
-    <div class="stories-grid">
-      <div class="panel" id="panel-story-1">
-        <div class="label">Stories — ticker 1</div>
-        <div class="ticker-heading" id="story1-heading">—</div>
-        <div class="ticker-sub" id="story1-name"></div>
-        <div id="story1-list" class="empty-stories">Click Get Stories to load headlines.</div>
+        <div class="stories-grid">
+          <div class="panel" id="panel-story-1">
+            <div class="label">Stories — ticker 1</div>
+            <div class="ticker-heading" id="story1-heading">—</div>
+            <div class="ticker-sub" id="story1-name"></div>
+            <div id="story1-list" class="empty-stories">Click Get Stories to load headlines.</div>
+          </div>
+          <div class="panel" id="panel-story-2">
+            <div class="label">Stories — ticker 2</div>
+            <div class="ticker-heading" id="story2-heading">—</div>
+            <div class="ticker-sub" id="story2-name"></div>
+            <div id="story2-list" class="empty-stories">Click Get Stories to load headlines.</div>
+          </div>
+        </div>
       </div>
-      <div class="panel" id="panel-story-2">
-        <div class="label">Stories — ticker 2</div>
-        <div class="ticker-heading" id="story2-heading">—</div>
-        <div class="ticker-sub" id="story2-name"></div>
-        <div id="story2-list" class="empty-stories">Click Get Stories to load headlines.</div>
-      </div>
-    </div>
+    </section>
 
     <div class="panel persona-panel">
       <button id="btn-prev" type="button">← Previous User</button>
@@ -540,6 +634,7 @@
      */
 
     const STORAGE_KEY = "reference-agent-stories-v1";
+    const STORIES_CHROME_KEY = "21-stories-chrome-collapsed";
 
     let personas = [];
     let index = 0;
@@ -551,6 +646,10 @@
 
     const els = {
       banner: document.getElementById("app-banner"),
+      storiesChrome: document.getElementById("stories-chrome"),
+      storiesToggle: document.getElementById("btn-stories-toggle"),
+      storiesSummaryTickers: document.getElementById("stories-summary-tickers"),
+      storiesSummaryStatus: document.getElementById("stories-summary-status"),
       ticker1: document.getElementById("ticker1"),
       ticker2: document.getElementById("ticker2"),
       stories: document.getElementById("btn-stories"),
@@ -831,8 +930,47 @@
       };
     }
 
+    function storyCount(blocks) {
+      return (blocks || []).reduce((n, b) => n + ((b && b.stories) || []).length, 0);
+    }
+
+    function updateStoriesSummary() {
+      const { ticker1, ticker2 } = currentTickers();
+      els.storiesSummaryTickers.textContent = `${ticker1} · ${ticker2}`;
+      const n = storyCount(latestStories);
+      if (n <= 0) {
+        els.storiesSummaryStatus.textContent = "(no stories yet)";
+      } else if (n === 1) {
+        els.storiesSummaryStatus.textContent = "(1 story)";
+      } else {
+        els.storiesSummaryStatus.textContent = `(${n} stories)`;
+      }
+    }
+
+    function setStoriesChromeCollapsed(collapsed) {
+      els.storiesChrome.classList.toggle("collapsed", collapsed);
+      els.storiesToggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      try {
+        localStorage.setItem(STORIES_CHROME_KEY, collapsed ? "1" : "0");
+      } catch (_) {}
+    }
+
+    function restoreStoriesChromeState() {
+      try {
+        const raw = localStorage.getItem(STORIES_CHROME_KEY);
+        if (raw === "1") setStoriesChromeCollapsed(true);
+        else setStoriesChromeCollapsed(false);
+      } catch (_) {
+        setStoriesChromeCollapsed(false);
+      }
+    }
+
     function hasUsableStories() {
       return (latestStories || []).some((b) => (b.stories || []).length > 0);
+    }
+
+    function hasUsableStoriesAfter(blocks) {
+      return (blocks || []).some((b) => (b.stories || []).length > 0);
     }
 
     function saveStoriesLocally(ticker1, ticker2, tickerBlocks) {
@@ -861,6 +999,29 @@
       }
     }
 
+
+    function formatPublishedDisplay(published) {
+      const text = String(published || "").trim();
+      if (!text) return "";
+      const dt = new Date(text);
+      if (Number.isNaN(dt.getTime())) return text;
+      return dt.toLocaleString(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      });
+    }
+
+    function formatStorySource(story) {
+      if (!story) return "";
+      const publisher = String(story.publisher || "").trim();
+      const when = formatPublishedDisplay(story.published);
+      if (publisher && when) return `${publisher} · ${when}`;
+      return publisher || when;
+    }
+
     function renderStoryPanel(block, headingEl, nameEl, listEl) {
       const ticker = (block && block.ticker) || "—";
       const name = (block && block.name) || "";
@@ -884,10 +1045,11 @@
       for (const story of stories) {
         const li = document.createElement("li");
         li.appendChild(document.createTextNode(story.title || "(untitled)"));
-        if (story.publisher) {
+        const source = formatStorySource(story);
+        if (source) {
           const pub = document.createElement("span");
           pub.className = "story-pub";
-          pub.textContent = story.publisher;
+          pub.textContent = source;
           li.appendChild(pub);
         }
         ul.appendChild(li);
@@ -910,9 +1072,13 @@
         els.story2Name,
         els.story2List
       );
+      updateStoriesSummary();
       if (options.persist) {
         const { ticker1, ticker2 } = currentTickers();
         saveStoriesLocally(ticker1, ticker2, latestStories);
+      }
+      if (options.collapse) {
+        setStoriesChromeCollapsed(true);
       }
     }
 
@@ -926,10 +1092,12 @@
         );
         if (!res.ok) throw new Error(`Stories request failed (${res.status})`);
         const data = await res.json();
-        renderStories(data.tickers || [], { persist: true });
+        const blocks = data.tickers || [];
+        const usable = hasUsableStoriesAfter(blocks);
+        renderStories(blocks, { persist: true, collapse: usable });
         const notes = [];
         if (data.errors && data.errors.length) notes.push(data.errors.join(" · "));
-        const cached = (data.tickers || []).some((b) => b.from_cache);
+        const cached = blocks.some((b) => b.from_cache);
         if (cached) notes.push("Used saved headlines where live Yahoo fetch failed.");
         if (notes.length) {
           setStatus(notes.join(" "), "error");
@@ -1051,6 +1219,12 @@
       }
     }
 
+    els.storiesToggle.addEventListener("click", () => {
+      const collapsed = !els.storiesChrome.classList.contains("collapsed");
+      setStoriesChromeCollapsed(collapsed);
+    });
+    els.ticker1.addEventListener("input", updateStoriesSummary);
+    els.ticker2.addEventListener("input", updateStoriesSummary);
     els.stories.addEventListener("click", () => {
       if (busy) return;
       getStories();
@@ -1069,6 +1243,7 @@
     });
 
     async function boot() {
+      restoreStoriesChromeState();
       const res = await fetch("/api/bootstrap");
       if (!res.ok) throw new Error(`Bootstrap failed (${res.status})`);
       const data = await res.json();
@@ -1087,6 +1262,7 @@
 
       index = 0;
       renderPersona();
+      updateStoriesSummary();
 
       if (restored && restored.tickers && restored.tickers.length >= 2) {
         renderStories(restored.tickers, { persist: true });

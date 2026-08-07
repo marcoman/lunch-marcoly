@@ -15,9 +15,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -33,6 +36,8 @@ public final class YahooNews {
             "https://query1.finance.yahoo.com/v1/finance/search",
             "https://query2.finance.yahoo.com/v1/finance/search"
     };
+    /** Space Yahoo calls; stop walking hosts/variants on HTTP 429. */
+    private static final long REQUEST_GAP_MS = 1000L;
     private static final String USER_AGENT =
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                     + "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
@@ -115,7 +120,7 @@ public final class YahooNews {
             t2 = DEFAULT_TICKER_2;
         }
         Map<String, Object> first = fetchStoriesForTicker(t1, count);
-        Thread.sleep(500);
+        Thread.sleep(REQUEST_GAP_MS);
         Map<String, Object> second = fetchStoriesForTicker(t2, count);
         List<Map<String, Object>> results = List.of(first, second);
         rememberPair(t1, t2, results);
@@ -155,8 +160,11 @@ public final class YahooNews {
                 int i = 1;
                 for (Map<String, Object> story : stories) {
                     String title = stringOr(story.get("title"), "(untitled)");
-                    String publisher = stringOr(story.get("publisher"), "unknown");
-                    lines.append(i++).append(". ").append(title).append(" — ").append(publisher).append("\n");
+                    String source = formatStorySource(story);
+                    if (source.isEmpty()) {
+                        source = "unknown";
+                    }
+                    lines.append(i++).append(". ").append(title).append(" — ").append(source).append("\n");
                 }
             }
             lines.append("\n");
@@ -197,6 +205,7 @@ public final class YahooNews {
         );
 
         String lastError = "No recent stories found for " + symbol + ".";
+        hostLoop:
         for (String host : YAHOO_SEARCH_HOSTS) {
             for (Map<String, String> params : queryVariants) {
                 String url = host + "?" + encodeParams(params);
@@ -214,6 +223,13 @@ public final class YahooNews {
                     return parsed;
                 } catch (IOException exc) {
                     lastError = "Yahoo Finance request failed for " + symbol + ": " + exc.getMessage();
+                    if (exc.getMessage() != null && exc.getMessage().contains("HTTP 429")) {
+                        lastError = "Yahoo Finance HTTP 429 for " + symbol + ".";
+                        break hostLoop;
+                    }
+                    if (exc.getMessage() != null && exc.getMessage().startsWith("HTTP ")) {
+                        lastError = "Yahoo Finance " + exc.getMessage() + " for " + symbol + ".";
+                    }
                 }
             }
         }
@@ -262,6 +278,7 @@ public final class YahooNews {
             Map<String, Object> story = new LinkedHashMap<>();
             story.put("title", title);
             story.put("publisher", asString(item.get("publisher")).trim());
+            story.put("published", unixToIso(item.get("providerPublishTime")));
             story.put("link", asString(item.get("link")).trim());
             story.put("uuid", asString(item.get("uuid")).trim());
             stories.add(story);
@@ -281,6 +298,7 @@ public final class YahooNews {
     private static JsonObject yahooGetJson(String url) throws IOException, InterruptedException {
         IOException last = null;
         for (int attempt = 0; attempt < 3; attempt++) {
+            Thread.sleep(REQUEST_GAP_MS);
             HttpRequest request = HttpRequest.newBuilder(URI.create(url))
                     .timeout(Duration.ofSeconds(20))
                     .header("User-Agent", USER_AGENT)
@@ -294,7 +312,11 @@ public final class YahooNews {
                 return JsonParser.parseString(response.body()).getAsJsonObject();
             }
             last = new IOException("HTTP " + code);
-            if ((code == 429 || code == 503) && attempt < 2) {
+            // Rate-limited: do not retry — caller falls back to cache.
+            if (code == 429) {
+                throw last;
+            }
+            if (code == 503 && attempt < 2) {
                 Thread.sleep(1500L * (attempt + 1));
                 continue;
             }
@@ -462,6 +484,61 @@ public final class YahooNews {
 
     private static String nowIso() {
         return Instant.now().toString().replaceAll("\\.\\d+Z$", "Z");
+    }
+
+    private static String unixToIso(JsonElement el) {
+        if (el == null || el.isJsonNull()) {
+            return "";
+        }
+        long ts;
+        try {
+            ts = el.getAsLong();
+        } catch (Exception exc) {
+            return "";
+        }
+        if (ts <= 0) {
+            return "";
+        }
+        try {
+            return Instant.ofEpochSecond(ts).atZone(ZoneId.systemDefault()).toOffsetDateTime().toString();
+        } catch (Exception exc) {
+            return "";
+        }
+    }
+
+    /** Human date+time: 'Aug 4, 2026, 3:25 PM'. */
+    public static String formatPublishedDisplay(String published) {
+        if (published == null || published.isBlank()) {
+            return "";
+        }
+        String text = published.trim();
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("MMM d, yyyy h:mm a", Locale.US);
+        try {
+            return java.time.OffsetDateTime.parse(text).atZoneSameInstant(ZoneId.systemDefault()).format(fmt);
+        } catch (Exception ignored) {
+            // fall through
+        }
+        try {
+            return Instant.parse(text).atZone(ZoneId.systemDefault()).format(fmt);
+        } catch (Exception ignored) {
+            return text;
+        }
+    }
+
+    /** Publisher followed by date/time, e.g. 'Simply Wall St. · Aug 4, 2026, 3:25 PM'. */
+    public static String formatStorySource(Map<String, Object> story) {
+        if (story == null) {
+            return "";
+        }
+        String publisher = stringOr(story.get("publisher"), "").trim();
+        String when = formatPublishedDisplay(stringOr(story.get("published"), ""));
+        if (!publisher.isEmpty() && !when.isEmpty()) {
+            return publisher + " · " + when;
+        }
+        if (!publisher.isEmpty()) {
+            return publisher;
+        }
+        return when;
     }
 
     private static String asString(JsonElement el) {

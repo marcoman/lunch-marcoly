@@ -2,8 +2,7 @@
  * yahooNews.js — fetch recent Yahoo Finance news titles for tickers.
  *
  * Uses Yahoo's unofficial public search JSON endpoints (no API key).
- * Successful fetches are written to the shared example cache under the
- * AgentControl example root (parent of node/):
+ * Successful fetches are written to the shared example cache:
  *   ../stories/stories_cache.json
  */
 
@@ -21,6 +20,9 @@ const YAHOO_SEARCH_HOSTS = [
   "https://query2.finance.yahoo.com/v1/finance/search",
 ];
 
+// Space Yahoo calls; stop walking hosts/variants on HTTP 429.
+const REQUEST_GAP_MS = 1000;
+
 const USER_AGENT =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " +
   "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
@@ -37,6 +39,38 @@ function normalizeTicker(raw) {
 
 function nowIso() {
   return new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
+}
+
+function unixToIso(value) {
+  const ts = Number(value);
+  if (!Number.isFinite(ts) || ts <= 0) return "";
+  try {
+    return new Date(ts * 1000).toISOString().replace(/\.\d{3}Z$/, "Z");
+  } catch (_) {
+    return "";
+  }
+}
+
+function formatPublishedDisplay(published) {
+  const text = String(published || "").trim();
+  if (!text) return "";
+  const dt = new Date(text);
+  if (Number.isNaN(dt.getTime())) return text;
+  return dt.toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+function formatStorySource(story) {
+  if (!story) return "";
+  const publisher = String(story.publisher || "").trim();
+  const when = formatPublishedDisplay(story.published);
+  if (publisher && when) return `${publisher} · ${when}`;
+  return publisher || when;
 }
 
 function sleep(ms) {
@@ -146,6 +180,7 @@ function rememberPair(ticker1, ticker2, results) {
 async function yahooGetJson(url) {
   let lastErr = null;
   for (let attempt = 0; attempt < 3; attempt += 1) {
+    await sleep(REQUEST_GAP_MS);
     try {
       const res = await fetch(url, {
         method: "GET",
@@ -159,7 +194,11 @@ async function yahooGetJson(url) {
       if (!res.ok) {
         const err = new Error(`HTTP ${res.status}`);
         err.status = res.status;
-        if ((res.status === 429 || res.status === 503) && attempt < 2) {
+        // Rate-limited: do not retry — caller falls back to cache.
+        if (res.status === 429) {
+          throw err;
+        }
+        if (res.status === 503 && attempt < 2) {
           lastErr = err;
           await sleep(1500 * (attempt + 1));
           continue;
@@ -169,11 +208,14 @@ async function yahooGetJson(url) {
       return await res.json();
     } catch (exc) {
       lastErr = exc;
+      if (exc.status === 429) {
+        throw exc;
+      }
       if (attempt < 2 && (exc.name === "TimeoutError" || exc.name === "AbortError")) {
         await sleep(1000);
         continue;
       }
-      if (attempt < 2 && (exc.status === 429 || exc.status === 503)) {
+      if (attempt < 2 && exc.status === 503) {
         await sleep(1500 * (attempt + 1));
         continue;
       }
@@ -197,6 +239,7 @@ function parseSearchPayload(symbol, payload, count) {
     stories.push({
       title,
       publisher: String(item.publisher || "").trim(),
+      published: unixToIso(item.providerPublishTime),
       link: String(item.link || "").trim(),
       uuid: String(item.uuid || "").trim(),
     });
@@ -243,7 +286,7 @@ async function fetchStoriesForTicker(ticker, count = 2) {
   ];
 
   let lastError = `No recent stories found for ${symbol}.`;
-  for (const host of YAHOO_SEARCH_HOSTS) {
+  outer: for (const host of YAHOO_SEARCH_HOSTS) {
     for (const params of queryVariants) {
       const url = `${host}?${new URLSearchParams(params)}`;
       try {
@@ -258,6 +301,9 @@ async function fetchStoriesForTicker(ticker, count = 2) {
       } catch (exc) {
         if (exc.status) {
           lastError = `Yahoo Finance HTTP ${exc.status} for ${symbol}.`;
+          if (exc.status === 429) {
+            break outer;
+          }
         } else {
           lastError = `Yahoo Finance request failed for ${symbol}: ${exc.message || exc}`;
         }
@@ -284,7 +330,7 @@ async function fetchStoriesForTickers(ticker1, ticker2, count = 2) {
   const t1 = normalizeTicker(ticker1) || DEFAULT_TICKER_1;
   const t2 = normalizeTicker(ticker2) || DEFAULT_TICKER_2;
   const first = await fetchStoriesForTicker(t1, count);
-  await sleep(500);
+  await sleep(REQUEST_GAP_MS);
   const second = await fetchStoriesForTicker(t2, count);
   const results = [first, second];
   rememberPair(t1, t2, results);
@@ -316,8 +362,8 @@ function formatStoriesForPrompt(tickerResults) {
     } else {
       stories.forEach((story, i) => {
         const title = story.title || "(untitled)";
-        const publisher = story.publisher || "unknown";
-        lines.push(`${i + 1}. ${title} — ${publisher}`);
+        const source = formatStorySource(story) || "unknown";
+        lines.push(`${i + 1}. ${title} — ${source}`);
       });
     }
     lines.push("");
@@ -332,4 +378,6 @@ module.exports = {
   getLastPairCached,
   fetchStoriesForTickers,
   formatStoriesForPrompt,
+  formatStorySource,
+  formatPublishedDisplay,
 };
