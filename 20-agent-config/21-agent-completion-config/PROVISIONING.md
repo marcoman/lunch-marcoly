@@ -39,9 +39,9 @@ That creates:
 
 | Resource | Key / name |
 |----------|------------|
-| Model config | `Custom.llama3.2-3b` → Ollama id `llama3.2:3b` |
+| Model configs | `Custom.llama3.2-3b` (best), `Custom.gemma2-2b` (default), `Custom.llama3.2-1b` (simple) |
 | Completion config | `equity-briefing-completion` |
-| Variations | `baseline-analyst` (fallthrough), `concise-skeptic` |
+| Variations | `baseline-analyst` → `gemma2:2b`, `concise-skeptic` → `llama3.2:3b`, `reckless-hype` → `llama3.2:1b` |
 
 Then set the app SDK key and skip to [§7 What the app will do](#7-what-the-app-will-do-for-implementers).
 
@@ -52,10 +52,12 @@ Then set the app SDK key and skip to [§7 What the app will do](#7-what-the-app-
 - [ ] LaunchDarkly project + environment exist (e.g. project `lunch-marcoly`, environment `test`)
 - [ ] Your role can create AgentControl configs ([role actions](https://launchdarkly.com/docs/home/account/roles/role-actions#agentcontrol-config-actions))
 - [ ] You have a **server-side SDK key** for that environment (`LD_SDK_KEY`)
-- [ ] **Ollama** is running locally with `llama3.2:3b` pulled **or** you will use a cloud model you can call (Bedrock / etc.)
+- [ ] **Ollama** is running locally with the three demo tags pulled **or** you will use a cloud model you can call (Bedrock / etc.)
 
 ```bash
-ollama pull llama3.2:3b
+ollama pull llama3.2:3b    # Charlie — best
+ollama pull gemma2:2b      # Nancy / Amelia — default
+ollama pull llama3.2:1b    # Toby — simple
 curl -s http://127.0.0.1:11434/api/tags | head
 export LD_SDK_KEY="sdk-..."
 export LD_AGENT_CONFIG_KEY="equity-briefing-completion"   # optional; this is the default key
@@ -63,25 +65,21 @@ export LD_AGENT_CONFIG_KEY="equity-briefing-completion"   # optional; this is th
 
 ---
 
-## 1. Optional — register a custom model (Ollama)
+## 1. Optional — register custom models (Ollama)
 
-If `llama3.2:3b` is not in LaunchDarkly’s model picker, add a custom AI model configuration.
+If the demo Ollama tags are not in LaunchDarkly’s model picker, add custom AI model configurations.
 
-**REST:** `./rest/create-model-config.sh` (also run automatically by `create-config.sh`).
+**REST:** `./rest/create-config.sh` registers all three (or `./rest/create-model-config.sh [key] [id] [name]` one at a time).
 
-**UI:**
+**UI:** For each row, **+ Add a model** under Project settings → AI / model configuration ([docs](https://launchdarkly.com/docs/home/agentcontrol/create-model-config)):
 
-1. Open **Project settings** → AI / model configuration (see [Create and manage AI model configurations](https://launchdarkly.com/docs/home/agentcontrol/create-model-config)).
-2. **+ Add a model** with values the app can map to Ollama:
+| Tier | Persona / variation | Display name | Key | Model id |
+|------|---------------------|--------------|-----|----------|
+| Best | Charlie → `concise-skeptic` | `Ollama llama3.2:3b (best)` | `Custom.llama3.2-3b` | `llama3.2:3b` |
+| Default | Nancy / Amelia → `baseline-analyst` | `Ollama gemma2:2b (default)` | `Custom.gemma2-2b` | `gemma2:2b` |
+| Simple | Toby → `reckless-hype` | `Ollama llama3.2:1b (simple)` | `Custom.llama3.2-1b` | `llama3.2:1b` |
 
-| Field | Suggested value |
-|-------|-----------------|
-| Display name | `Ollama llama3.2:3b` |
-| Key | `Custom.llama3.2-3b` |
-| Model id / name | `llama3.2:3b` |
-| Provider | Custom / Ollama (as the UI labels it) |
-
-3. Save. You will select this model on each variation below.
+Provider: Custom / Ollama (as the UI labels it). Select the matching model on each variation below.
 
 For Bedrock demos, pick a Nova / Claude model already listed, or add one with the Bedrock model id you use in [01-reference-agent](../../01-reference-agent/application.md#aws-bedrock). Complete `aws sso login` first ([20-agent-config README](../README.md#aws-bedrock-optional-cloud-path)).
 
@@ -111,7 +109,7 @@ Docs: [Quickstart — create an agent-based config](https://launchdarkly.com/doc
 On the **Variations** tab:
 
 1. Name the first variation **`baseline-analyst`**.
-2. **Select a model** → `llama3.2:3b` (or your custom Ollama / Bedrock model from step 1).
+2. **Select a model** → `gemma2:2b` (default tier; or `Custom.gemma2-2b` from step 1).
 3. Add a **system** message. Paste:
 
 ```text
@@ -153,7 +151,7 @@ Optional later: `{{ ldctx.name }}` for the persona display name ([customizing co
 ## 4. Variation B — `concise-skeptic` (change without deploy)
 
 1. **Add variation** → name **`concise-skeptic`**.
-2. Model: same as A, or a different one if you want a visible model swap.
+2. Model: `llama3.2:3b` (best tier; or `Custom.llama3.2-3b`) — Conservative Charlie gets the strongest model of this lot.
 3. **System** message:
 
 ```text
@@ -192,19 +190,19 @@ Fresh configs often fall through to a **disabled** variation until you set fallt
 
 Target variations by the context **`name`** attribute (the Python app sets `name` from the selected persona):
 
-| Context `name` | Serves |
-|----------------|--------|
-| `Conservative Charlie` | `concise-skeptic` |
-| `Neutral Nancy` | `baseline-analyst` |
-| `Thoughtless Toby` | `reckless-hype` |
-| Default rule | `baseline-analyst` (e.g. **Anonymous Amelia** — anonymous context, no name rule) |
+| Context `name` | Serves | Model |
+|----------------|--------|-------|
+| `Conservative Charlie` | `concise-skeptic` | `llama3.2:3b` (best) |
+| `Neutral Nancy` | `baseline-analyst` | `gemma2:2b` (default) |
+| `Thoughtless Toby` | `reckless-hype` | `llama3.2:1b` (simple) |
+| Default rule | `baseline-analyst` (e.g. **Anonymous Amelia** — anonymous context, no name rule) | `gemma2:2b` |
 
 ```bash
 ./rest/create-variation-reckless-hype.sh   # if the variation is missing
 ./rest/update-name-targeting.sh
 ```
 
-`reckless-hype` is the Thoughtless Toby voice: no caution, fabricates freely, sweeping claims, and cheerfully recommends defunct companies (e.g. Pets.com).
+`reckless-hype` is the Thoughtless Toby voice (simple model): no caution, fabricates freely, sweeping claims, and cheerfully recommends defunct companies (e.g. Pets.com).
 
 **Anonymous Amelia** is not in targeting: the app builds an **anonymous** user context (`anonymous=true`, key `anonymous-amelia`). Name rules do not match → fallthrough → `baseline-analyst`.
 

@@ -16,12 +16,14 @@ Keywords: **AgentControl** · **completion config** · **AI SDK** · **message v
 2. `npm install` in this folder (`@launchdarkly/node-server-sdk`, `@launchdarkly/server-sdk-ai`)
 3. Provisioned config: `cd ../rest && ./create-config.sh`
 4. `LD_SDK_KEY` for the **same environment** as `LD_ENVIRONMENT_KEY` used in targeting
-5. Ollama with `llama3.2:3b` (matches `Custom.llama3.2-3b`)
+5. Ollama with the three demo tags (see [rest/README.md](../rest/README.md)):
 
 ```bash
 export LD_SDK_KEY="sdk-..."
 # optional: export LD_AGENT_CONFIG_KEY="equity-briefing-completion"
-ollama pull llama3.2:3b
+ollama pull llama3.2:3b    # Charlie — best
+ollama pull gemma2:2b      # Nancy / Amelia — default
+ollama pull llama3.2:1b    # Toby — simple
 ```
 
 ## Run
@@ -39,7 +41,7 @@ Open **http://127.0.0.1:8211/** (Python twin uses 8210; 01 uses 8090).
 
 1. **Get Stories** → headline panels fill
 2. **Generate AI Report** → User Prompt shows the LD user message (with `{{ stories }}` filled); Response streams from Ollama
-3. Provider/model should show `ollama / llama3.2:3b` (from the served variation)
+3. Provider/model should match the served variation (`gemma2:2b` for Nancy; `llama3.2:3b` for Charlie; `llama3.2:1b` for Toby)
 4. Switch users: **Charlie** → `concise-skeptic`; **Nancy** → `baseline-analyst`; **Toby** → `reckless-hype`; **Anonymous Amelia** → fallthrough `baseline-analyst` (anonymous context)
 5. Or flip fallthrough only: `../rest/update-targeting.sh concise-skeptic` → regenerate → flip back
 

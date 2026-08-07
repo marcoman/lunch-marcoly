@@ -61,15 +61,15 @@ Naming follows LaunchDarkly resource style: clear name, kebab-case **key**.
 
 ### Variations (summary)
 
-| Variation | Role |
-|-----------|------|
-| `baseline-analyst` | Default; analyst voice aligned with 01’s `system_prompt.txt` |
-| `concise-skeptic` | Shorter skeptical voice (Conservative Charlie via name targeting) |
-| `reckless-hype` | No caution, fabricates freely, sweeping claims, defunct-company tips (Thoughtless Toby) |
+| Variation | Persona | Role | Ollama model |
+|-----------|---------|------|--------------|
+| `baseline-analyst` | Nancy / Amelia (fallthrough) | Default analyst voice | `gemma2:2b` (default tier) |
+| `concise-skeptic` | Conservative Charlie | Shorter skeptical voice | `llama3.2:3b` (best tier) |
+| `reckless-hype` | Thoughtless Toby | No caution; fabricates freely | `llama3.2:1b` (simple tier) |
 
-Both message sets use a **user** message that includes the variable `{{ stories }}`. The app passes the formatted headline block as `stories` when calling `completion_config`. Full message text: [PROVISIONING.md](PROVISIONING.md) · [rest/messages/](rest/messages/).
+Both message sets use a **user** message that includes the variable `{{ stories }}`. The app passes the formatted headline block as `stories` when calling `completion_config`. Full message text: [PROVISIONING.md](PROVISIONING.md) · [rest/messages/](rest/messages/). Model keys: [rest/README.md](rest/README.md).
 
-Targeting the second/third variation (or editing the default) should visibly change the streamed report without rebuilding the app.
+Targeting a different variation (or editing the default) should visibly change the streamed report **and** the served model id without rebuilding the app.
 
 ## Application generate path
 

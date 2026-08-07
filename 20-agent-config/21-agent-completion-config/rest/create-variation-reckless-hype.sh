@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # LaunchDarkly capability: AgentControl — create reckless-hype variation
 # Thoughtless Toby voice: no caution, fabricates freely, sweeping claims, defunct-company tips.
+# Uses the simple/cheapest Ollama model tier (llama3.2:1b by default).
 # https://launchdarkly.com/docs/api/agent-control/post-ai-config-variation
 
 set -euo pipefail
@@ -27,12 +28,12 @@ if echo "$EXISTING" | jq -e --arg k "$VARIATION_KEY" '.variations[]? | select(.k
   exit 0
 fi
 
-echo "Creating variation ${VARIATION_KEY} on ${CONFIG_KEY}..."
+echo "Creating variation ${VARIATION_KEY} on ${CONFIG_KEY} (model=${LD_MODEL_SIMPLE_ID})..."
 BODY="$(jq -n \
   --rawfile sys "${MESSAGES_DIR}/reckless-system.txt" \
   --rawfile user "${MESSAGES_DIR}/reckless-user.txt" \
-  --arg mck "$LD_MODEL_CONFIG_KEY" \
-  --arg mid "$LD_MODEL_ID" \
+  --arg mck "$LD_MODEL_SIMPLE_CONFIG_KEY" \
+  --arg mid "$LD_MODEL_SIMPLE_ID" \
   --arg key "$VARIATION_KEY" \
   '{
     key: $key,

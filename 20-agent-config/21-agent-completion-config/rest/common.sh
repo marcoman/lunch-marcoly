@@ -12,10 +12,30 @@ set -euo pipefail
 
 : "${LD_CONFIG_KEY:=equity-briefing-completion}"
 : "${LD_CONFIG_NAME:=Equity briefing completion}"
-: "${LD_MODEL_CONFIG_KEY:=Custom.llama3.2-3b}"
-: "${LD_MODEL_ID:=llama3.2:3b}"
-: "${LD_MODEL_DISPLAY_NAME:=Ollama llama3.2:3b}"
 : "${LD_MODEL_PROVIDER:=Custom}"
+
+# ---------------------------------------------------------------------------
+# Three Ollama model tiers (one per persona / variation)
+# ---------------------------------------------------------------------------
+# Conservative Charlie → concise-skeptic → best quality of this lot
+: "${LD_MODEL_BEST_CONFIG_KEY:=Custom.llama3.2-3b}"
+: "${LD_MODEL_BEST_ID:=llama3.2:3b}"
+: "${LD_MODEL_BEST_DISPLAY_NAME:=Ollama llama3.2:3b (best)}"
+
+# Neutral Nancy + Anonymous Amelia fallthrough → baseline-analyst → default / middle
+: "${LD_MODEL_DEFAULT_CONFIG_KEY:=Custom.gemma2-2b}"
+: "${LD_MODEL_DEFAULT_ID:=gemma2:2b}"
+: "${LD_MODEL_DEFAULT_DISPLAY_NAME:=Ollama gemma2:2b (default)}"
+
+# Thoughtless Toby → reckless-hype → cheapest / simplest
+: "${LD_MODEL_SIMPLE_CONFIG_KEY:=Custom.llama3.2-1b}"
+: "${LD_MODEL_SIMPLE_ID:=llama3.2:1b}"
+: "${LD_MODEL_SIMPLE_DISPLAY_NAME:=Ollama llama3.2:1b (simple)}"
+
+# Legacy single-model aliases → best tier (create-model-config.sh one-shot defaults)
+: "${LD_MODEL_CONFIG_KEY:=${LD_MODEL_BEST_CONFIG_KEY}}"
+: "${LD_MODEL_ID:=${LD_MODEL_BEST_ID}}"
+: "${LD_MODEL_DISPLAY_NAME:=${LD_MODEL_BEST_DISPLAY_NAME}}"
 
 if [[ -z "${LD_API_ACCESS_TOKEN:-}" ]]; then
   echo "error: LD_API_ACCESS_TOKEN is required" >&2
