@@ -74,4 +74,4 @@ Provider/model shows `ollama / llama3.2:3b (code baseline)`.
 | Ollama errors | Daemon up; model id on variation matches `ollama list` |
 | Wrong voice after targeting change | Wait a few seconds for stream refresh, then Generate again |
 
-Parent: [../README.md](../README.md) · Spec: [../application.md](../application.md)
+Parent: [../README.md](../README.md) · Spec: [../application.md](../application.md) · Console: [../python-console/README.md](../python-console/README.md)

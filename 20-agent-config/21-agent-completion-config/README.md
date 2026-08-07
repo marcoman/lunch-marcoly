@@ -79,7 +79,7 @@ cd rest && chmod +x *.sh && ./create-config.sh
 | Python | [`python/`](python/) | Web | Ready — http://127.0.0.1:8210/ |
 | Node.js | [`node/`](node/) | Web | Ready — http://127.0.0.1:8211/ |
 | Java | [`java/`](java/) | Web | Ready — http://127.0.0.1:8212/ |
-| Python | `python-console/` | Console | Planned |
+| Python | [`python-console/`](python-console/) | Console | Ready — curses; `(l)d` for LD details |
 | Go / Rust / C++ | — | — | Later |
 
 Start with **[rest/](rest/)**, then run any web language against that config.
@@ -96,6 +96,7 @@ Java note: there is no official LaunchDarkly **Java AI SDK** yet. The Java examp
 
 - [rest/README.md](rest/README.md) — REST provisioning (preferred; no MCP)
 - [python/README.md](python/README.md) — Python web
+- [python-console/README.md](python-console/README.md) — Python console (curses)
 - [node/README.md](node/README.md) — Node.js web
 - [java/README.md](java/README.md) — Java web (server SDK JSON evaluation)
 - [PROVISIONING.md](PROVISIONING.md) — UI checklist + copy-paste messages
