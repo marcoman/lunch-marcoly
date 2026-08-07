@@ -41,12 +41,23 @@ export LD_PROJECT_KEY="lunch-marcoly"   # or your project
 export LD_ENVIRONMENT_KEY="test"        # must match your LD_SDK_KEY environment
 ```
 
-Pull the three Ollama tags when your network allows (apps need them at generate time):
+## Required: pull the three Ollama models
+
+REST provisioning registers **Custom** model configs that point at local Ollama tags. The apps call those tags at generate time. **Pull all three before you demo**—otherwise Charlie, Nancy/Amelia, or Toby will fail when their variation is served.
+
+Local models are how anyone succeeds without a cloud LLM account. Cloud (e.g. Bedrock) remains optional for enhanced results once you retarget a variation. Full narrative: [../README.md#required-ollama-models](../README.md#required-ollama-models).
+
+| Tier | Tag | Persona |
+|------|-----|---------|
+| Best | `llama3.2:3b` | Conservative Charlie |
+| Default | `gemma2:2b` | Neutral Nancy / Anonymous Amelia |
+| Simple | `llama3.2:1b` | Thoughtless Toby |
 
 ```bash
-ollama pull llama3.2:3b    # Charlie — best
-ollama pull gemma2:2b      # Nancy / Amelia — default
-ollama pull llama3.2:1b    # Toby — simple
+ollama pull llama3.2:3b    # required — Charlie (best)
+ollama pull gemma2:2b      # required — Nancy / Amelia (default)
+ollama pull llama3.2:1b    # required — Toby (simple)
+ollama list                # confirm all three appear
 ```
 
 ## How to run
@@ -163,7 +174,7 @@ curl -X PATCH "${LD_API_HOST:-https://app.launchdarkly.com}/api/v2/projects/${LD
 | 409 / already exists | `./delete-config.sh` then recreate, or `./get-config.sh` to inspect |
 | Model picker / “NO MODEL” | `modelConfigKey` must exist; format `Provider.model-id` (e.g. `Custom.gemma2-2b`) |
 | Wrong environment | `LD_ENVIRONMENT_KEY` must match the environment of `LD_SDK_KEY` |
-| Ollama errors later | Daemon up; pull all three tags; model **id** on the variation matches `ollama list` |
+| Ollama errors later | Daemon up; **all three** tags pulled (`ollama list`); model **id** on the variation matches the tag |
 
 ## Further reading
 

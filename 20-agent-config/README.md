@@ -51,37 +51,59 @@ You also need permission to create **AgentControl** configs. Per-example config 
 
 ### 3. LLM providers (start here)
 
-AgentControl **names** the model in the config variation. Your machine or cloud account must still be able to **call** that model. Use the paths below for local learning; point the LaunchDarkly variation at a matching model id.
+AgentControl **names** the model in the config variation. Your machine or cloud account must still be able to **call** that model.
 
-#### Ollama (recommended first path)
+**Ollama is the required local path for these examples.** Pulling the documented tags lets anyone run generate end-to-end without a cloud LLM account. Cloud providers (Bedrock and others) remain available when you want stronger models later—point a variation at a cloud model id once credentials work.
 
-Local, no cloud keys. Good default for classroom and laptop demos.
+#### Ollama (required local path)
+
+Local inference is how the series stays classroom-friendly: no AWS or OpenAI bill to smoke-test AgentControl, and every laptop can show **model + prompt** changes from LaunchDarkly.
 
 1. Install and start [Ollama](https://ollama.com).
-2. Pull a small chat model:
-
-```bash
-ollama pull llama3.2:3b
-```
-
+2. Pull the models your example documents (see below).
 3. Confirm the daemon:
 
 ```bash
 curl -s http://127.0.0.1:11434/api/tags | head
+ollama list
 ```
 
-4. In the AgentControl variation (or while iterating), use a model name your app maps to Ollama (e.g. `llama3.2:3b`). Language READMEs document exact mapping.
+4. Keep the LaunchDarkly variation’s model id aligned with a tag from `ollama list` (Custom provider → same string the app passes to Ollama).
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
 | `OLLAMA_HOST` | `http://127.0.0.1:11434` | Ollama base URL |
 | `OLLAMA_MODEL` | `llama3.2:3b` | Fallback / local tag when the app still reads env |
 
-Baseline behavior without LaunchDarkly: [01-reference-agent](../01-reference-agent/) with `AGENT_LLM_MODE=ollama`.
+**[01-reference-agent](../01-reference-agent/)** (no LaunchDarkly) — one small model is enough:
+
+```bash
+ollama pull llama3.2:3b
+```
+
+Then run with `AGENT_LLM_MODE=ollama`.
+
+**[21-agent-completion-config](21-agent-completion-config/)** — **all three tags are required.** Each demo persona is wired to a different Ollama model so switching users visibly changes provider/model in the UI (not only the system prompt). Missing a tag breaks generate for that persona.
+
+| Tier | Ollama tag | Persona / variation | Why this tag |
+|------|------------|---------------------|--------------|
+| Best | `llama3.2:3b` | Conservative Charlie → `concise-skeptic` | Strongest of the local lot |
+| Default | `gemma2:2b` | Neutral Nancy / Anonymous Amelia → `baseline-analyst` | Middle tier; fallthrough |
+| Simple | `llama3.2:1b` | Thoughtless Toby → `reckless-hype` | Smallest / cheapest local option |
+
+```bash
+ollama pull llama3.2:3b    # required — Charlie (best)
+ollama pull gemma2:2b      # required — Nancy / Amelia (default)
+ollama pull llama3.2:1b    # required — Toby (simple)
+```
+
+Full narrative and verification: [21-agent-completion-config README](21-agent-completion-config/README.md#required-ollama-models).
 
 #### AWS Bedrock (optional cloud path)
 
-Use when a variation targets a Bedrock model (e.g. Nova Lite). This series expects **IAM Identity Center (SSO)** with a named profile—not long-lived access keys in the shell for day-to-day demos.
+Use when you want **enhanced** results beyond the local trio—or when a variation targets a Bedrock model (e.g. Nova Lite). Local Ollama still covers the happy-path demo; Bedrock is the upgrade path, not a substitute for pulling the three tags above.
+
+This series expects **IAM Identity Center (SSO)** with a named profile—not long-lived access keys in the shell for day-to-day demos.
 
 **Expectations**
 

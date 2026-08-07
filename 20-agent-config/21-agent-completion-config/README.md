@@ -29,18 +29,53 @@ Full behavior, config key, variations, and acceptance criteria: [application.md]
 
 ## Prerequisites
 
-Shared setup: [20-agent-config README](../README.md) (LaunchDarkly SDK key, **Ollama** first path, **AWS SSO** for Bedrock).
+Shared setup: [20-agent-config README](../README.md) (LaunchDarkly SDK key, **required Ollama models**, optional **AWS SSO** for Bedrock).
 
 Also required for this example:
 
 - Access to create **AgentControl** configs
-- Provider reachability matching the model named on the served variation
+- The **three Ollama tags** below (generate fails for a persona if its model is missing)
+- Optional later: cloud reachability if you retarget a variation to Bedrock / another provider
 
 ```bash
 export LD_PROJECT_KEY="default"
 export LD_ENVIRONMENT_KEY="test"
 export LD_SDK_KEY="sdk-..."
 ```
+
+## Required Ollama models
+
+This example’s success story is **persona → different completion variation → different local model**. LaunchDarkly can swap prompts and model ids without redeploying, but Ollama must already have each tag on disk. Pulling all three is a **requirement**, not an optional optimization.
+
+**Why local models first**
+
+- Anyone can test AgentControl (targeting, variations, UI chrome) **without a cloud LLM account**.
+- Classroom and laptop demos stay reproducible: same three tags, same ports, same REST provisioning.
+- You can still use **cloud** models later for enhanced quality—retarget a variation to Bedrock (or another provider) once SSO/credentials work. Local Ollama remains the default path that makes the demo succeed for everyone.
+
+| Tier | Ollama tag | Persona | Variation | Role in the demo |
+|------|------------|---------|-----------|------------------|
+| Best | `llama3.2:3b` | Conservative Charlie | `concise-skeptic` | Strongest local model of this lot |
+| Default | `gemma2:2b` | Neutral Nancy, Anonymous Amelia | `baseline-analyst` | Middle tier; fallthrough |
+| Simple | `llama3.2:1b` | Thoughtless Toby | `reckless-hype` | Smallest / most cost-effective local model |
+
+Install and start [Ollama](https://ollama.com), then pull **all three**:
+
+```bash
+ollama pull llama3.2:3b    # required — Charlie (best)
+ollama pull gemma2:2b      # required — Nancy / Amelia (default)
+ollama pull llama3.2:1b    # required — Toby (simple)
+```
+
+Verify before generate:
+
+```bash
+ollama list
+# expect llama3.2:3b, gemma2:2b, and llama3.2:1b
+curl -s http://127.0.0.1:11434/api/tags | head
+```
+
+If `ollama list` is missing a tag, switching to that persona and pressing **Generate** will error until you pull it. Series overview: [../README.md](../README.md#3-llm-providers-start-here).
 
 ## Relationship to 01-reference-agent
 

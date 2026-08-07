@@ -52,22 +52,34 @@ Then set the app SDK key and skip to [§7 What the app will do](#7-what-the-app-
 - [ ] LaunchDarkly project + environment exist (e.g. project `lunch-marcoly`, environment `test`)
 - [ ] Your role can create AgentControl configs ([role actions](https://launchdarkly.com/docs/home/account/roles/role-actions#agentcontrol-config-actions))
 - [ ] You have a **server-side SDK key** for that environment (`LD_SDK_KEY`)
-- [ ] **Ollama** is running locally with the three demo tags pulled **or** you will use a cloud model you can call (Bedrock / etc.)
+- [ ] **Ollama is running** and you have pulled **all three required** demo tags (see below)—required for the persona → model demo to succeed without a cloud LLM account
+- [ ] Optional later: Bedrock / cloud credentials if you retarget a variation for enhanced results
+
+**Required Ollama installs** (do this before generate):
+
+| Tier | Tag | Persona |
+|------|-----|---------|
+| Best | `llama3.2:3b` | Conservative Charlie |
+| Default | `gemma2:2b` | Neutral Nancy / Anonymous Amelia |
+| Simple | `llama3.2:1b` | Thoughtless Toby |
 
 ```bash
-ollama pull llama3.2:3b    # Charlie — best
-ollama pull gemma2:2b      # Nancy / Amelia — default
-ollama pull llama3.2:1b    # Toby — simple
+ollama pull llama3.2:3b    # required — Charlie (best)
+ollama pull gemma2:2b      # required — Nancy / Amelia (default)
+ollama pull llama3.2:1b    # required — Toby (simple)
+ollama list
 curl -s http://127.0.0.1:11434/api/tags | head
 export LD_SDK_KEY="sdk-..."
 export LD_AGENT_CONFIG_KEY="equity-briefing-completion"   # optional; this is the default key
 ```
 
+Why three models, and how cloud fits in: [README.md#required-ollama-models](README.md#required-ollama-models) · [series setup](../README.md#3-llm-providers-start-here).
+
 ---
 
-## 1. Optional — register custom models (Ollama)
+## 1. Register custom models (Ollama)
 
-If the demo Ollama tags are not in LaunchDarkly’s model picker, add custom AI model configurations.
+The demo Ollama tags are usually **not** in LaunchDarkly’s stock model picker—register them as Custom AI model configurations. This step is part of the happy path (REST does it for you).
 
 **REST:** `./rest/create-config.sh` registers all three (or `./rest/create-model-config.sh [key] [id] [name]` one at a time).
 
@@ -81,7 +93,7 @@ If the demo Ollama tags are not in LaunchDarkly’s model picker, add custom AI 
 
 Provider: Custom / Ollama (as the UI labels it). Select the matching model on each variation below.
 
-For Bedrock demos, pick a Nova / Claude model already listed, or add one with the Bedrock model id you use in [01-reference-agent](../../01-reference-agent/application.md#aws-bedrock). Complete `aws sso login` first ([20-agent-config README](../README.md#aws-bedrock-optional-cloud-path)).
+For Bedrock demos (optional enhanced path), pick a Nova / Claude model already listed, or add one with the Bedrock model id you use in [01-reference-agent](../../01-reference-agent/application.md#aws-bedrock). Complete `aws sso login` first ([20-agent-config README](../README.md#aws-bedrock-optional-cloud-path)).
 
 ---
 

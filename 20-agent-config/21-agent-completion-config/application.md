@@ -69,6 +69,8 @@ Naming follows LaunchDarkly resource style: clear name, kebab-case **key**.
 
 Both message sets use a **user** message that includes the variable `{{ stories }}`. The app passes the formatted headline block as `stories` when calling `completion_config`. Full message text: [PROVISIONING.md](PROVISIONING.md) · [rest/messages/](rest/messages/). Model keys: [rest/README.md](rest/README.md).
 
+**Local Ollama requirement:** pull `llama3.2:3b`, `gemma2:2b`, and `llama3.2:1b` before generate so each persona’s model id resolves. That keeps the demo successful without a cloud LLM account; Bedrock (or other cloud) remains optional for enhanced results. See [README.md#required-ollama-models](README.md#required-ollama-models).
+
 Targeting a different variation (or editing the default) should visibly change the streamed report **and** the served model id without rebuilding the app.
 
 ## Application generate path

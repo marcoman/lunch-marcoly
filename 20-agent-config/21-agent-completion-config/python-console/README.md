@@ -17,15 +17,18 @@ Same as the web app:
 1. Repo `.venv` + `pip install -r requirements.txt`
 2. Provisioned config: `cd ../rest && ./create-config.sh`
 3. `LD_SDK_KEY` for the targeted environment
-4. Ollama with the three demo tags (see [../rest/README.md](../rest/README.md))
+4. **Required:** all three Ollama tags ([parent README](../README.md#required-ollama-models))
 5. A terminal that supports **curses**
+
+Local models let anyone complete the demo without a cloud LLM account. Cloud (Bedrock) remains optional for enhanced results later.
 
 ```bash
 export LD_SDK_KEY="sdk-..."
 # optional: export LD_AGENT_CONFIG_KEY="equity-briefing-completion"
-ollama pull llama3.2:3b    # Charlie — best
-ollama pull gemma2:2b      # Nancy / Amelia — default
-ollama pull llama3.2:1b    # Toby — simple
+ollama pull llama3.2:3b    # required — Charlie (best)
+ollama pull gemma2:2b      # required — Nancy / Amelia (default)
+ollama pull llama3.2:1b    # required — Toby (simple)
+ollama list
 ```
 
 ## Run
