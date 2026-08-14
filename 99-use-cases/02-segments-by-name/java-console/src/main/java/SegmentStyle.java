@@ -9,7 +9,13 @@ import java.util.Set;
  * Map segment types and flag variations to UI highlight styling.
  */
 public final class SegmentStyle {
+    // LaunchDarkly: flag key=configure-grid-selection-green-highlight name="Configure: grid selection green highlight" kind=boolean
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-grid-selection-green-highlight
+
     static final String FLAG_HIGHLIGHT = "configure-grid-selection-green-highlight";
+    // LaunchDarkly: flag key=VIP name="VIP" kind=boolean
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/VIP
+
     static final String FLAG_VIP = "VIP";
     static final String VIP_BADGE = "**VIP**";
 

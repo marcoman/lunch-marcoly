@@ -9,7 +9,13 @@ from ldclient import Context
 # LaunchDarkly capability: Context attributes for segment rules
 # See: https://launchdarkly.com/docs/home/observability/context-kinds
 
+# LaunchDarkly: flag key=configure-grid-selection-green-highlight name="Configure: grid selection green highlight" kind=boolean
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-grid-selection-green-highlight
+
 FLAG_HIGHLIGHT = "configure-grid-selection-green-highlight"
+# LaunchDarkly: flag key=VIP name="VIP" kind=boolean
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/VIP
+
 FLAG_VIP = "VIP"
 
 COLOR_NAMES = frozenset({"yellow", "red", "blue", "green", "purple"})

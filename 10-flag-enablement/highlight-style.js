@@ -2,8 +2,17 @@
 
 const { osEmojiFor } = require("./host-os");
 
+// LaunchDarkly: flag key=configure-grid-selection-green-highlight name="Configure: grid selection green highlight" kind=boolean
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-grid-selection-green-highlight
+
 const FLAG_HIGHLIGHT = "configure-grid-selection-green-highlight";
+// LaunchDarkly: flag key=configure-grid-selection-context-highlight name="Configure: grid selection context highlight" kind=boolean
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-grid-selection-context-highlight
+
 const FLAG_CONTEXT = "configure-grid-selection-context-highlight";
+// LaunchDarkly: flag key=show-navigation-move-count name="Show: navigation move count" kind=boolean
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/show-navigation-move-count
+
 const FLAG_COUNT = "show-navigation-move-count";
 
 function parseCohorts(username) {

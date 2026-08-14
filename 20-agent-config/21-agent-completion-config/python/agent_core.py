@@ -55,6 +55,9 @@ CANNED_STORIES = (
     "No ticker stories loaded yet. Ask the user to click Get Stories."
 )
 
+# LaunchDarkly: ai-config key=equity-briefing-completion name="Equity briefing completion" mode=completion
+# https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-completion
+
 DEFAULT_CONFIG_KEY = "equity-briefing-completion"
 DEFAULT_BEDROCK_REGION = "us-east-1"
 DEFAULT_AWS_PROFILE = "Administrator"

@@ -1,0 +1,34 @@
+# Desired AgentControl (AI Config) inventory.
+# LaunchDarkly: AgentControl · AI Configs
+# https://docs.launchdarkly.com/home/ai-configs
+# sources: filled by ldctl instrument --write.
+
+agent_configs:
+- key: equity-briefing-completion
+  name: Equity briefing completion
+  mode: completion
+  examples:
+  - path: 20-agent-config/21-agent-completion-config
+  variations:
+  - key: baseline-analyst
+    model_config_key: Custom.gemma2-2b
+  - key: concise-skeptic
+    model_config_key: Custom.llama3.2-3b
+  - key: reckless-hype
+    model_config_key: Custom.llama3.2-1b
+  model_configs:
+  - key: Custom.llama3.2-3b
+    model_id: llama3.2:3b
+  - key: Custom.gemma2-2b
+    model_id: gemma2:2b
+  - key: Custom.llama3.2-1b
+    model_id: llama3.2:1b
+  sources:
+  - path: 20-agent-config/21-agent-completion-config/java/src/main/java/AgentCore.java
+    role: evaluation
+  - path: 20-agent-config/21-agent-completion-config/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/21-agent-completion-config/python/agent_core.py
+    role: evaluation
+  - path: 20-agent-config/21-agent-completion-config/rest/common.sh
+    role: provisioning

@@ -7,6 +7,9 @@
 public final class HostOs {
     static final String HOST_OS_ATTR = "hostOs";
     static final String ANONYMOUS_CONTEXT_KEY = "anonymous";
+    // LaunchDarkly: flag key=show-anonymous-host-os-emoji name="Show: anonymous host OS emoji" kind=boolean
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/show-anonymous-host-os-emoji
+
     static final String FLAG_ANON_OS_EMOJI = "show-anonymous-host-os-emoji";
 
     private HostOs() {

@@ -11,8 +11,17 @@ const {
 // LaunchDarkly capability: Multivariate flag evaluation (string, number, JSON)
 // See: https://launchdarkly.com/docs/sdk/features/flag-types
 
+// LaunchDarkly: flag key=configure-navigation-count-label name="Configure: navigation count label" kind=string
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-navigation-count-label
+
 const FLAG_COUNT_LABEL = "configure-navigation-count-label";
+// LaunchDarkly: flag key=configure-lucky-number name="Configure: lucky number" kind=number
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-lucky-number
+
 const FLAG_LUCKY_NUMBER = "configure-lucky-number";
+// LaunchDarkly: flag key=configure-max-navigation-moves name="Configure: max navigation moves" kind=json
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-max-navigation-moves
+
 const FLAG_MAX_MOVES = "configure-max-navigation-moves";
 
 const DEFAULT_COUNT_LABEL = "Count";

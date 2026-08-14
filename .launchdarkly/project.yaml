@@ -1,0 +1,13 @@
+# Default LaunchDarkly project/env keys for inventory reports.
+# Override at runtime with LD_PROJECT_KEY / LD_ENVIRONMENT_KEY.
+# Never put secrets here — use LD_API_ACCESS_TOKEN in the environment.
+
+project_key: lunch-marcoly
+environment_key: test
+
+api:
+  host: https://app.launchdarkly.com
+  # Feature flags + metrics
+  version: "20240415"
+  # AgentControl / AI Configs require the beta API version
+  agent_control_version: beta

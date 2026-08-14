@@ -5,6 +5,9 @@ const LaunchDarkly = require("@launchdarkly/node-server-sdk");
 // LaunchDarkly capability: String flag evaluation (server-side SDK)
 // See: https://launchdarkly.com/docs/sdk/features/evaluations
 
+// LaunchDarkly: flag key=configure-grid-selection-green-highlight name="Configure: grid selection green highlight" kind=boolean
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-grid-selection-green-highlight
+
 const FLAG_HIGHLIGHT = "configure-grid-selection-green-highlight";
 const VALID_COLORS = new Set(["yellow", "red", "blue", "green", "purple"]);
 

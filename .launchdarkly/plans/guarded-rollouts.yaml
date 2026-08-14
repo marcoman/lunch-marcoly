@@ -1,0 +1,16 @@
+# Intent-only metadata for guarded rollouts (not executors).
+# Live start/stop remains in 99-use-cases/15-guarded-rollout/rest/.
+
+guarded_rollouts:
+  - id: grid-green-highlight
+    flag_key: configure-grid-selection-green-highlight
+    examples:
+      - path: 99-use-cases/15-guarded-rollout
+    baseline_variation: none
+    rollout_variation: green
+    stages_percent: [10, 20, 30, 50]
+    stage_seconds: 180
+    metric_keys:
+      - grid-nav-latency
+      - grid-highlight-error-rate
+      - grid-nav-movement

@@ -37,6 +37,9 @@ const BASELINE_MESSAGES_DIR = path.join(EXAMPLE_ROOT, "rest", "messages");
 const CANNED_STORIES =
   "No ticker stories loaded yet. Ask the user to click Get Stories.";
 
+// LaunchDarkly: ai-config key=equity-briefing-completion name="Equity briefing completion" mode=completion
+// https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-completion
+
 const DEFAULT_CONFIG_KEY = "equity-briefing-completion";
 const DEFAULT_OLLAMA_MODEL = "llama3.2:3b";
 

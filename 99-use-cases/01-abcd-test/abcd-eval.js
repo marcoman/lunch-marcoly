@@ -5,6 +5,9 @@ const LaunchDarkly = require("@launchdarkly/node-server-sdk");
 // LaunchDarkly capability: String flag evaluation for multivariate A/B/C/D test
 // See: https://launchdarkly.com/docs/sdk/features/flag-types
 
+// LaunchDarkly: flag key=configure-navigation-count-label name="Configure: navigation count label" kind=string
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-navigation-count-label
+
 const FLAG_COUNT_LABEL = "configure-navigation-count-label";
 const DEFAULT_COUNT_LABEL = "Count";
 

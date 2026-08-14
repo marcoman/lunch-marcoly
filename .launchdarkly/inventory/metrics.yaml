@@ -1,0 +1,20 @@
+# Desired metrics inventory (guarded-rollout guardrails).
+
+metrics:
+  - key: grid-nav-latency
+    name: Grid navigation latency
+    event_key: grid-navigation-latency
+    examples:
+      - path: 99-use-cases/15-guarded-rollout
+
+  - key: grid-highlight-error-rate
+    name: Grid highlight error rate
+    event_key: grid-highlight-color-error
+    examples:
+      - path: 99-use-cases/15-guarded-rollout
+
+  - key: grid-nav-movement
+    name: Grid navigation movement
+    event_key: grid-navigation-count
+    examples:
+      - path: 99-use-cases/15-guarded-rollout

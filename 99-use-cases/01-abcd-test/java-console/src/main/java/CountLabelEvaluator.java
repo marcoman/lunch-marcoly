@@ -8,6 +8,9 @@ import java.io.IOException;
  * LaunchDarkly capability: String flag evaluation for multivariate A/B/C/D test
  */
 public final class CountLabelEvaluator {
+    // LaunchDarkly: flag key=configure-navigation-count-label name="Configure: navigation count label" kind=string
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-navigation-count-label
+
     private static final String FLAG_COUNT_LABEL = "configure-navigation-count-label";
     private static final String DEFAULT_COUNT_LABEL = "Count";
 

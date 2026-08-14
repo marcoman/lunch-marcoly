@@ -6,6 +6,9 @@ const os = require("os");
 // See: https://launchdarkly.com/docs/sdk/features/private-attributes
 
 const HOST_OS_ATTR = "hostOs";
+// LaunchDarkly: flag key=show-host-os-emoji name="Show: host OS emoji" kind=boolean
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/show-host-os-emoji
+
 const FLAG_OS_EMOJI = "show-host-os-emoji";
 
 const OS_EMOJI = {

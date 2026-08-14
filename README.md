@@ -10,6 +10,7 @@ lunch-marcoly/
 ├── .python-version          # Python version for pyenv (repository-wide)
 ├── .nvmrc                   # Node.js version for nvm (repository-wide)
 ├── .venv/                   # Python virtual environment (local)
+├── .launchdarkly/           # LD inventory + visibility CLI (see README there)
 ├── 00-reference-code/
 │   ├── README.md
 │   ├── python/              # web application

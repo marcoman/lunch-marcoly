@@ -9,6 +9,9 @@ import platform
 # See: https://launchdarkly.com/docs/sdk/features/private-attributes
 
 HOST_OS_ATTR = "hostOs"
+# LaunchDarkly: flag key=show-host-os-emoji name="Show: host OS emoji" kind=boolean
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/show-host-os-emoji
+
 FLAG_OS_EMOJI = "show-host-os-emoji"
 
 OS_EMOJI = {

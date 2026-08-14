@@ -24,6 +24,9 @@ from abcd_eval import VARIATION_VALUES
 # LaunchDarkly capability: REST API semantic patch — percentage rollout
 # See: https://launchdarkly.com/docs/api/feature-flags/patch-feature-flag
 
+# LaunchDarkly: flag key=configure-navigation-count-label name="Configure: navigation count label" kind=string
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-navigation-count-label
+
 FLAG_KEY = "configure-navigation-count-label"
 
 

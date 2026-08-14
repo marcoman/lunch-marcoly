@@ -1,0 +1,154 @@
+# Desired feature-flag inventory for lunch-marcoly examples.
+# Visibility only — provisioning lives in each example's rest/ or terraform/.
+# sources: filled by ldctl instrument --write (evaluation + provisioning hits).
+
+flags:
+- key: configure-grid-selection-green-highlight
+  name: 'Configure: grid selection green highlight'
+  kind: boolean
+  examples:
+  - path: 10-flag-enablement
+    kind: boolean
+  - path: 99-use-cases/11-create-eval-flag
+    kind: string
+  - path: 99-use-cases/14-progressive-rollout
+    kind: string
+  - path: 99-use-cases/15-guarded-rollout
+    kind: string
+  - path: 99-use-cases/02-segments-by-name
+    kind: string
+  notes: >
+    Same key is boolean in 10-flag-enablement and string in use cases.
+    Use separate projects or environments to avoid collisions.
+  sources:
+  - path: 10-flag-enablement/highlight-style.js
+    role: evaluation
+  - path: 10-flag-enablement/highlight_style.py
+    role: evaluation
+  - path: 10-flag-enablement/java/src/main/java/HighlightStyle.java
+    role: evaluation
+  - path: 10-flag-enablement/java-console/src/main/java/HighlightStyle.java
+    role: evaluation
+  - path: 99-use-cases/02-segments-by-name/java/src/main/java/SegmentStyle.java
+    role: evaluation
+- key: configure-grid-selection-context-highlight
+  name: 'Configure: grid selection context highlight'
+  kind: boolean
+  examples:
+  - path: 10-flag-enablement
+  sources:
+  - path: 10-flag-enablement/highlight-style.js
+    role: evaluation
+  - path: 10-flag-enablement/highlight_style.py
+    role: evaluation
+  - path: 10-flag-enablement/java/src/main/java/HighlightStyle.java
+    role: evaluation
+  - path: 10-flag-enablement/java-console/src/main/java/HighlightStyle.java
+    role: evaluation
+- key: show-navigation-move-count
+  name: 'Show: navigation move count'
+  kind: boolean
+  examples:
+  - path: 10-flag-enablement
+  sources:
+  - path: 10-flag-enablement/highlight-style.js
+    role: evaluation
+  - path: 10-flag-enablement/highlight_style.py
+    role: evaluation
+  - path: 10-flag-enablement/java/src/main/java/HighlightStyle.java
+    role: evaluation
+  - path: 10-flag-enablement/java-console/src/main/java/HighlightStyle.java
+    role: evaluation
+  - path: 10-flag-enablement/rest/create-flags.sh
+    role: provisioning
+- key: show-host-os-emoji
+  name: 'Show: host OS emoji'
+  kind: boolean
+  examples:
+  - path: 10-flag-enablement
+  sources:
+  - path: 10-flag-enablement/host-os.js
+    role: evaluation
+  - path: 10-flag-enablement/host_os.py
+    role: evaluation
+  - path: 10-flag-enablement/java/src/main/java/HostOs.java
+    role: evaluation
+  - path: 10-flag-enablement/java-console/src/main/java/HostOs.java
+    role: evaluation
+  - path: 10-flag-enablement/rest/create-flags.sh
+    role: provisioning
+- key: show-anonymous-host-os-emoji
+  name: 'Show: anonymous host OS emoji'
+  kind: boolean
+  examples:
+  - path: 11-flag-variations
+  sources:
+  - path: 11-flag-variations/host-os.js
+    role: evaluation
+  - path: 11-flag-variations/host_os.py
+    role: evaluation
+  - path: 11-flag-variations/java/src/main/java/HostOs.java
+    role: evaluation
+  - path: 11-flag-variations/java-console/src/main/java/HostOs.java
+    role: evaluation
+  - path: 11-flag-variations/rest/create-flags.sh
+    role: provisioning
+- key: configure-navigation-count-label
+  name: 'Configure: navigation count label'
+  kind: string
+  examples:
+  - path: 11-flag-variations
+  - path: 99-use-cases/01-abcd-test
+  sources:
+  - path: 11-flag-variations/flag-variations.js
+    role: evaluation
+  - path: 11-flag-variations/flag_variations.py
+    role: evaluation
+  - path: 11-flag-variations/java/src/main/java/FlagEvaluator.java
+    role: evaluation
+  - path: 11-flag-variations/java-console/src/main/java/FlagEvaluator.java
+    role: evaluation
+  - path: 99-use-cases/01-abcd-test/abcd-eval.js
+    role: evaluation
+- key: configure-lucky-number
+  name: 'Configure: lucky number'
+  kind: number
+  examples:
+  - path: 11-flag-variations
+  sources:
+  - path: 11-flag-variations/flag-variations.js
+    role: evaluation
+  - path: 11-flag-variations/flag_variations.py
+    role: evaluation
+  - path: 11-flag-variations/java/src/main/java/FlagEvaluator.java
+    role: evaluation
+  - path: 11-flag-variations/java-console/src/main/java/FlagEvaluator.java
+    role: evaluation
+- key: configure-max-navigation-moves
+  name: 'Configure: max navigation moves'
+  kind: json
+  examples:
+  - path: 11-flag-variations
+  sources:
+  - path: 11-flag-variations/flag-variations.js
+    role: evaluation
+  - path: 11-flag-variations/flag_variations.py
+    role: evaluation
+  - path: 11-flag-variations/java/src/main/java/FlagEvaluator.java
+    role: evaluation
+  - path: 11-flag-variations/java-console/src/main/java/FlagEvaluator.java
+    role: evaluation
+- key: VIP
+  name: VIP
+  kind: boolean
+  examples:
+  - path: 99-use-cases/02-segments-by-name
+  sources:
+  - path: 99-use-cases/02-segments-by-name/java/src/main/java/SegmentStyle.java
+    role: evaluation
+  - path: 99-use-cases/02-segments-by-name/java-console/src/main/java/SegmentStyle.java
+    role: evaluation
+  - path: 99-use-cases/02-segments-by-name/rest/create-all.sh
+    role: provisioning
+  - path: 99-use-cases/02-segments-by-name/segment-context.js
+    role: evaluation

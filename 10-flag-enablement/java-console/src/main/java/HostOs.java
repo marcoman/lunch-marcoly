@@ -3,6 +3,9 @@
  */
 public final class HostOs {
     static final String HOST_OS_ATTR = "hostOs";
+    // LaunchDarkly: flag key=show-host-os-emoji name="Show: host OS emoji" kind=boolean
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/show-host-os-emoji
+
     static final String FLAG_OS_EMOJI = "show-host-os-emoji";
 
     private HostOs() {

@@ -11,6 +11,9 @@ import platform
 
 HOST_OS_ATTR = "hostOs"
 ANONYMOUS_CONTEXT_KEY = "anonymous"
+# LaunchDarkly: flag key=show-anonymous-host-os-emoji name="Show: anonymous host OS emoji" kind=boolean
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/show-anonymous-host-os-emoji
+
 FLAG_ANON_OS_EMOJI = "show-anonymous-host-os-emoji"
 
 OS_EMOJI = {

@@ -11,6 +11,9 @@ from ldclient import Context
 # LaunchDarkly capability: String flag evaluation (server-side SDK)
 # See: https://launchdarkly.com/docs/sdk/features/evaluations
 
+# LaunchDarkly: flag key=configure-grid-selection-green-highlight name="Configure: grid selection green highlight" kind=boolean
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-grid-selection-green-highlight
+
 FLAG_HIGHLIGHT = "configure-grid-selection-green-highlight"
 
 VALID_COLORS = frozenset({"yellow", "red", "blue", "green", "purple"})

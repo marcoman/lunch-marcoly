@@ -64,6 +64,9 @@ public final class AgentCore {
 
     private static final String CANNED_STORIES =
             "No ticker stories loaded yet. Ask the user to click Get Stories.";
+    // LaunchDarkly: ai-config key=equity-briefing-completion name="Equity briefing completion" mode=completion
+    // https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-completion
+
     private static final String DEFAULT_CONFIG_KEY = "equity-briefing-completion";
     private static final String DEFAULT_OLLAMA_MODEL = "llama3.2:3b";
 

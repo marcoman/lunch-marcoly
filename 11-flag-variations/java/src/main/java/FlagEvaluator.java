@@ -11,8 +11,17 @@ import java.io.IOException;
  * See: https://launchdarkly.com/docs/sdk/features/anonymous
  */
 public final class FlagEvaluator {
+    // LaunchDarkly: flag key=configure-navigation-count-label name="Configure: navigation count label" kind=string
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-navigation-count-label
+
     private static final String FLAG_COUNT_LABEL = "configure-navigation-count-label";
+    // LaunchDarkly: flag key=configure-lucky-number name="Configure: lucky number" kind=number
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-lucky-number
+
     private static final String FLAG_LUCKY_NUMBER = "configure-lucky-number";
+    // LaunchDarkly: flag key=configure-max-navigation-moves name="Configure: max navigation moves" kind=json
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-max-navigation-moves
+
     private static final String FLAG_MAX_MOVES = "configure-max-navigation-moves";
     private static final String DEFAULT_COUNT_LABEL = "Count";
     private static final int DEFAULT_LUCKY_NUMBER = 0;

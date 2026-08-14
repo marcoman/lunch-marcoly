@@ -10,6 +10,9 @@ import java.util.Set;
  * Evaluate configure-grid-selection-green-highlight for grid highlight color.
  */
 public final class HighlightEval {
+    // LaunchDarkly: flag key=configure-grid-selection-green-highlight name="Configure: grid selection green highlight" kind=boolean
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-grid-selection-green-highlight
+
     static final String FLAG_HIGHLIGHT = "configure-grid-selection-green-highlight";
 
     private static final Set<String> VALID_COLORS =
