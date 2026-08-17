@@ -16,3 +16,6 @@ launchdarkly-server-sdk-ai>=0.7
 typing_extensions>=4.0
 PyYAML>=6.0
 # .launchdarkly/bin/ldctl (inventory validate / status / report)
+anthropic>=0.40
+# 22-config-outside-code Best Betty → Claude
+
