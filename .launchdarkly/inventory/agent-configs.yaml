@@ -32,3 +32,22 @@ agent_configs:
     role: evaluation
   - path: 20-agent-config/21-agent-completion-config/rest/common.sh
     role: provisioning
+
+- key: equity-briefing-tracked-completion
+  name: Equity briefing tracked completion
+  mode: completion
+  examples:
+  - path: 20-agent-config/22-config-outside-code
+  variations:
+  - key: tracked-ollama
+    model_config_key: Custom.llama3.2-1b
+  - key: tracked-anthropic
+    model_id: claude-sonnet-5
+  model_configs:
+  - key: Custom.llama3.2-1b
+    model_id: llama3.2:1b
+  sources:
+  - path: 20-agent-config/22-config-outside-code/python/agent_core.py
+    role: evaluation
+  - path: 20-agent-config/22-config-outside-code/rest/common.sh
+    role: provisioning
