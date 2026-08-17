@@ -41,7 +41,7 @@ Guide (pattern source): https://launchdarkly.com/docs/guides/agentcontrol/config
 
 ```mermaid
 flowchart LR
-  UI[Python UI] --> Eval[completion_config]
+  UI[Web UI] --> Eval[completion_config / JSON eval]
   Eval --> Track[track_metrics_of]
   Track --> Ollama[Ollama]
   Track --> Anthropic[Anthropic]
@@ -52,11 +52,13 @@ flowchart LR
 ```
 
 1. Build context from persona (`name`, optional `anonymous`).
-2. `completion_config(key, context, default, {stories})`.
-3. Mint tracker; keep `resumption_token` for the UI.
-4. `tracker.track_metrics_of(extractor, llm_call)`.
+2. Evaluate config: Python/Node `completion_config`; Java `jsonValueVariationDetail`.
+3. Mint tracker; keep `resumption_token` for the UI (Java: synthetic token + `LDClient.track`).
+4. Python/Node: `tracker.track_metrics_of(extractor, llm_call)`.
 5. Chunk response to SSE for the browser.
-6. On thumbs: `ai_client.create_tracker(token, context)` → `track_feedback`.
+6. On thumbs: `create_tracker(token, context)` → `track_feedback` (Java: `$ld:ai:feedback:*` via `track`).
+
+Ports: Python **8220** · Node **8221** · Java **8222**.
 
 ## Env vars
 
@@ -69,7 +71,8 @@ flowchart LR
 
 ## Acceptance
 
-- [ ] Amelia generates via Ollama; Monitoring shows generation metrics
+- [ ] Amelia generates via Ollama; Monitoring shows generation metrics (Python/Node)
 - [ ] Best Betty generates via Anthropic when `ANTHROPIC_API_KEY` is set
 - [ ] Thumbs up/down succeed after a generate (resumption token present)
 - [ ] Editing variation messages in LD changes output without code changes
+- [ ] Node 8221 and Java 8222 match the Python UI contract (bootstrap / stories / generate / feedback)

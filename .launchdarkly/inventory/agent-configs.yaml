@@ -49,5 +49,9 @@ agent_configs:
   sources:
   - path: 20-agent-config/22-config-outside-code/python/agent_core.py
     role: evaluation
+  - path: 20-agent-config/22-config-outside-code/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/22-config-outside-code/java/src/main/java/AgentCore.java
+    role: evaluation
   - path: 20-agent-config/22-config-outside-code/rest/common.sh
     role: provisioning

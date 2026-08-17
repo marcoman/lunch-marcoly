@@ -9,7 +9,7 @@ Examples here keep the same news → generate product shape. What changes is **w
 | # | Directory | What it adds |
 |---|-----------|--------------|
 | 21 | [21-agent-completion-config](21-agent-completion-config/) | **Completion config**: runtime **model**, **system prompt**, and **user prompt** — provision with [rest/](21-agent-completion-config/rest/) |
-| 22 | [22-config-outside-code](22-config-outside-code/) | **Tracked completion**: same shell + **`track_metrics_of`**, thumbs feedback, Ollama default / Anthropic for Best Betty (Python web first) |
+| 22 | [22-config-outside-code](22-config-outside-code/) | **Tracked completion**: **`track_metrics_of`**, thumbs feedback, Ollama / Anthropic (Best Betty) — Python **8220** · Node **8221** · Java **8222** |
 
 More AgentControl patterns (agent mode, rollouts, …) can land as `23-…`, `24-…` siblings under this folder.
 
