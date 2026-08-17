@@ -16,6 +16,40 @@ Series landing page (Ollama, AWS SSO, shared env): [../README.md](../README.md).
 
 Keywords: **AgentControl** · **completion config** · **completion mode** · **config variations** · **model configuration** · **system/user messages** · **AI SDK**
 
+## Architecture
+
+The user picks a persona and generates a briefing. LaunchDarkly **targets** a variation (prompts + model) from the context `name`; the app streams the model response—no tools yet (those arrive in [23](../23-agent-tools/)).
+
+```mermaid
+flowchart TB
+  User["User (analyst)"]
+  UI["Web UI :8210 / :8211 / :8212"]
+  App["App: completion_config"]
+  LD["LaunchDarkly AgentControl<br/>key: equity-briefing-completion"]
+  V1["concise-skeptic<br/>Charlie → llama3.2:3b"]
+  V2["baseline-analyst<br/>Nancy / Amelia → gemma2:2b"]
+  V3["reckless-hype<br/>Toby → llama3.2:1b"]
+  LLM["Ollama (local)"]
+
+  User -->|"persona + Generate"| UI --> App
+  App -->|"context.name"| LD
+  LD --> V1 & V2 & V3
+  V1 & V2 & V3 -->|"model + system/user messages"| App
+  App --> LLM -->|"briefing"| User
+```
+
+### LaunchDarkly keys (convenience)
+
+| Kind | Key |
+|------|-----|
+| AI config | `equity-briefing-completion` |
+| Variation | `baseline-analyst` (fallthrough / Nancy / Amelia) |
+| Variation | `concise-skeptic` (Conservative Charlie) |
+| Variation | `reckless-hype` (Thoughtless Toby) |
+| Model config | `Custom.gemma2-2b` · `Custom.llama3.2-3b` · `Custom.llama3.2-1b` |
+
+Status helper: `./rest/get-targeting-status.sh`.
+
 ## LaunchDarkly documentation
 
 | Topic | Docs |
@@ -129,7 +163,7 @@ Java note: there is no official LaunchDarkly **Java AI SDK** yet. The Java examp
 
 ## Further reading
 
-- [rest/README.md](rest/README.md) — REST provisioning (preferred; no MCP)
+- [rest/README.md](rest/README.md) — REST provisioning (preferred; no MCP); `get-targeting-status.sh` for demo health
 - [python/README.md](python/README.md) — Python web
 - [python-console/README.md](python-console/README.md) — Python console (curses)
 - [node/README.md](node/README.md) — Node.js web

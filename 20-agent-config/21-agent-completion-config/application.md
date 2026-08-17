@@ -76,14 +76,16 @@ Targeting a different variation (or editing the default) should visibly change t
 ## Application generate path
 
 ```mermaid
-flowchart LR
-  UI[Generate AI Report] --> APP[App]
-  APP -->|context + config key| LD[LaunchDarkly AI SDK]
-  LD -->|variation: model + messages| APP
-  YF[Stories already on screen] --> APP
-  APP -->|chat + stream| LLM[Configured model]
-  LLM -->|tokens| UI
+flowchart TB
+  User["User"] --> UI["Web UI"]
+  UI --> App["completion_config"]
+  App --> LD["equity-briefing-completion"]
+  LD -->|"name → variation"| App
+  App --> LLM["Ollama"]
+  LLM --> User
 ```
+
+See the [README architecture](README.md#architecture) for persona → variation keys and the full diagram.
 
 ### Generate step (normative)
 
@@ -134,6 +136,7 @@ Exact AI SDK package names and init snippets live in each language README when i
 5. Missing `LD_SDK_KEY` or a **disabled** AgentControl config falls back to the in-code **baseline-analyst** prompts (same text as `rest/messages/baseline-*.txt`), clearly labeled in the UI (e.g. `code baseline`).
 6. README and [PROVISIONING.md](PROVISIONING.md) link to AgentControl docs with the keywords above.
 7. Provisioned config matches [PROVISIONING.md](PROVISIONING.md) (key, completion mode, `{{ stories }}`, default → `baseline-analyst`).
+8. `./rest/get-targeting-status.sh` reports Healthy (variations · name rules · fallthrough · on).
 
 ## Related
 

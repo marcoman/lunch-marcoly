@@ -6,6 +6,41 @@ Templated from [01-reference-agent](../../01-reference-agent/) (same news → ge
 
 Inspired by: [Managing AI model configuration outside of code (Node.js)](https://launchdarkly.com/docs/guides/agentcontrol/config-outside-code-nodejs) — same idea here with Ollama + Anthropic (Python / Node / Java).
 
+## Architecture
+
+The user still generates a briefing from headlines; LaunchDarkly owns the **prompts and model**, and every generate is **tracked** so Monitoring (and thumbs) reflect what actually ran.
+
+```mermaid
+flowchart TB
+  User["User (analyst)"]
+  UI["Web UI :8220 / :8221 / :8222"]
+  App["App: completion_config"]
+  LD["LaunchDarkly AgentControl<br/>key: equity-briefing-tracked-completion"]
+  Track["track_metrics_of"]
+  LLM["Ollama or Anthropic"]
+  Mon["Monitoring"]
+  FB["Thumbs 👍 / 👎"]
+
+  User -->|"Get Stories → Generate"| UI --> App
+  App -->|"evaluate (name targeting)"| LD
+  LD -->|"variation: model + messages"| App
+  App --> Track --> LLM
+  Track -->|"tokens / success / latency"| Mon
+  LLM -->|"briefing"| User
+  User --> FB
+  FB -->|"resumption token → feedback"| Mon
+```
+
+### LaunchDarkly keys (convenience)
+
+| Kind | Key |
+|------|-----|
+| AI config | `equity-briefing-tracked-completion` |
+| Variation (fallthrough / Amelia) | `tracked-ollama` |
+| Variation (Best Betty) | `tracked-anthropic` |
+
+Override with `LD_AGENT_CONFIG_KEY` if needed. Status helper: `./rest/get-feedback-status.sh`.
+
 ## Languages
 
 | Language | Port | Status |

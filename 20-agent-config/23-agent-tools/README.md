@@ -11,6 +11,60 @@ and [21-agent-completion-config](../21-agent-completion-config/) (completion + t
 Docs: [Tools](https://launchdarkly.com/docs/home/agentcontrol/tools) ·
 [Python AI SDK](https://launchdarkly.com/docs/sdk/ai/python)
 
+## Architecture
+
+Tools sit between the user and the final report: LaunchDarkly supplies the tool
+**schemas** on the variation; the app runs the model-driven loop and returns a
+briefing that cites tool evidence—not free-form invention.
+
+```mermaid
+flowchart TB
+  User["User (analyst)"]
+  UI["Web UI :8230"]
+  App["App: completion_config + tool loop"]
+  LD["LaunchDarkly AgentControl<br/>key: equity-briefing-tools<br/>variation: tools-anthropic"]
+  T1["Library tool<br/>analyze-ticker-stories"]
+  T2["Library tool<br/>compare-ticker-analyses"]
+  LLM["Model (Claude / Llama / Gwen)"]
+  Mon["Monitoring<br/>track_tool_call"]
+
+  User -->|"Get Stories → Generate"| UI --> App
+  App -->|"evaluate"| LD
+  LD -->|"model + messages + tool schemas"| App
+  App --> LLM
+  LLM -->|"tool_use"| App
+  App -->|"1× per ticker"| T1
+  App -->|"after both analyzes"| T2
+  T1 -->|"claims + evidence titles"| App
+  T2 -->|"preferred ticker + rationale"| App
+  App -->|"briefing"| User
+  App -->|"each execution"| Mon
+```
+
+### LaunchDarkly keys (convenience)
+
+| Kind | Key |
+|------|-----|
+| AI config | `equity-briefing-tools` |
+| Variation | `tools-anthropic` |
+| Tool | `analyze-ticker-stories` |
+| Tool | `compare-ticker-analyses` |
+
+Override the config key in the app with `LD_AGENT_CONFIG_KEY` if needed.
+
+### Why tool calls help the end user
+
+Without tools, the model can invent headlines, skip a ticker, or pick a “winner”
+with no evidence trail. Attached Library tools force a **structured path** from
+stories → per-ticker analysis → comparison → briefing the user can trust and audit
+in the **Tool trace** panel.
+
+- **Grounded claims** — handlers only use titles you fetched; the briefing cites them
+- **Comparable structure** — same analyze shape for both tickers before compare
+- **Visible work** — tool trace shows what ran (and what local models skipped)
+- **Operable in LaunchDarkly** — attach/detach or revise schemas without redeploying the app
+- **Observable** — `track_tool_call` shows up on the config Monitoring tab
+
 ## Languages (this cut)
 
 | Language | Port | Status |

@@ -66,7 +66,8 @@ ollama list                # confirm all three appear
 cd 20-agent-config/21-agent-completion-config/rest
 chmod +x *.sh
 ./create-config.sh
-./get-config.sh
+./update-name-targeting.sh
+./get-targeting-status.sh
 ```
 
 If the AI config already exists from an older single-model setup:
@@ -105,6 +106,7 @@ Model configs are left in place across deletes; recreate is idempotent for them.
 | `create-config.sh` | `POST` (+ targeting `PATCH`) | `/projects/{p}/ai-configs` … | Full demo config + three models |
 | `create-variation-reckless-hype.sh` | `POST` | `…/variations` | Thoughtless Toby voice (simple model) |
 | `get-config.sh` | `GET` | config + optional targeting | Summary JSON |
+| `get-targeting-status.sh` | `GET` | config + targeting (+ metrics) | Demo status: variations · name rules · fallthrough |
 | `update-targeting.sh [variation]` | `PATCH` | `…/ai-configs/{key}/targeting` | Fallthrough → variation |
 | `update-name-targeting.sh` | `PATCH` | `…/ai-configs/{key}/targeting` | Name rules + fallthrough |
 | `delete-config.sh [key]` | `DELETE` | `…/ai-configs/{key}` | Config removed |
@@ -139,6 +141,39 @@ Serve different **prompts and models** from the persona **name** attribute (set 
 
 In the UI: Charlie (skeptical + best model) vs Nancy (baseline + default) vs Toby (reckless + simple) vs **Anonymous Amelia** (anonymous → fallthrough / baseline).
 
+### Demo status check
+
+```bash
+./get-targeting-status.sh
+./get-targeting-status.sh --verbose
+./get-targeting-status.sh --json
+```
+
+Example output:
+
+```text
+Agent Config Key: equity-briefing-completion
+Environment: test
+Healthy: yes
+
+Targeting:
+  on=true  fallthrough=baseline-analyst (matches)
+  name rules: 3
+
+Variations:
+  ✓ baseline-analyst  model=Custom.gemma2-2b  — Neutral Nancy / Amelia (fallthrough)
+  ✓ concise-skeptic  model=Custom.llama3.2-3b  — Conservative Charlie
+  ✓ reckless-hype  model=Custom.llama3.2-1b  — Thoughtless Toby
+
+Name targeting:
+  ✓ Conservative Charlie → concise-skeptic
+  ✓ Neutral Nancy → baseline-analyst
+  ✓ Thoughtless Toby → reckless-hype
+```
+
+`get-config.sh` remains the raw inspector; `get-targeting-status.sh` is the before/after demo check
+(sibling idea to 22’s `get-feedback-status.sh` and 23’s `get-tools-status.sh`).
+
 ### Delete and recreate
 
 ```bash
@@ -170,7 +205,7 @@ curl -X PATCH "${LD_API_HOST:-https://app.launchdarkly.com}/api/v2/projects/${LD
 
 | Symptom | Check |
 |---------|--------|
-| SDK `enabled=false` | Fallthrough still on disabled variation — run `./update-targeting.sh baseline-analyst` |
+| SDK `enabled=false` | Fallthrough still on disabled variation — run `./update-targeting.sh baseline-analyst` (or `./get-targeting-status.sh`) |
 | 409 / already exists | `./delete-config.sh` then recreate, or `./get-config.sh` to inspect |
 | Model picker / “NO MODEL” | `modelConfigKey` must exist; format `Provider.model-id` (e.g. `Custom.gemma2-2b`) |
 | Wrong environment | `LD_ENVIRONMENT_KEY` must match the environment of `LD_SDK_KEY` |

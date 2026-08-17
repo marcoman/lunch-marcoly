@@ -40,16 +40,20 @@ Guide (pattern source): https://launchdarkly.com/docs/guides/agentcontrol/config
 ## Generate path
 
 ```mermaid
-flowchart LR
-  UI[Web UI] --> Eval[completion_config / JSON eval]
-  Eval --> Track[track_metrics_of]
-  Track --> Ollama[Ollama]
-  Track --> Anthropic[Anthropic]
-  Track --> Mon[LD Monitoring]
-  UI --> FB[thumbs]
-  FB --> Resume[resumption token]
-  Resume --> Mon
+flowchart TB
+  User["User"] --> UI["Web UI"]
+  UI --> App["completion_config"]
+  App --> LD["equity-briefing-tracked-completion"]
+  LD --> App
+  App --> Track["track_metrics_of"]
+  Track --> LLM["Ollama / Anthropic"]
+  Track --> Mon["Monitoring"]
+  LLM --> User
+  UI --> FB["Thumbs"]
+  FB --> Mon
 ```
+
+See the [README architecture](README.md#architecture) for keys and the full diagram.
 
 1. Build context from persona (`name`, optional `anonymous`).
 2. Evaluate config: Python/Node `completion_config`; Java `jsonValueVariationDetail`.

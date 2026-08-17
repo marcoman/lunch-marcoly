@@ -34,17 +34,26 @@ Docs: https://launchdarkly.com/docs/home/agentcontrol/tools · https://launchdar
 ## Generate path
 
 ```mermaid
-flowchart LR
-  UI[Get Stories] --> Gen[Generate]
-  Gen --> Eval[completion_config]
-  Eval --> Loop[Anthropic tool loop]
-  Loop --> T1a[analyze ticker1]
-  Loop --> T1b[analyze ticker2]
-  T1a --> T2[compare]
-  T1b --> T2
-  T2 --> Final[Briefing text]
-  Loop --> Mon[track_tool_call]
+flowchart TB
+  User["User"]
+  UI["Web UI :8230"]
+  App["App tool loop"]
+  LD["equity-briefing-tools / tools-anthropic"]
+  T1["analyze-ticker-stories"]
+  T2["compare-ticker-analyses"]
+  Brief["Briefing"]
+  Mon["track_tool_call"]
+
+  User --> UI --> App
+  App --> LD
+  LD -->|"schemas attached"| App
+  App -->|"×2"| T1 --> App
+  App --> T2 --> App
+  App --> Brief --> User
+  App --> Mon
 ```
+
+See the [README architecture](README.md#architecture) for the full user-facing diagram and keys.
 
 ## Env vars
 
