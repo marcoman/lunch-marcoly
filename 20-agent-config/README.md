@@ -10,8 +10,9 @@ Examples here keep the same news → generate product shape. What changes is **w
 |---|-----------|--------------|
 | 21 | [21-agent-completion-config](21-agent-completion-config/) | **Completion config**: runtime **model**, **system prompt**, and **user prompt** — provision with [rest/](21-agent-completion-config/rest/) |
 | 22 | [22-config-outside-code](22-config-outside-code/) | **Tracked completion**: **`track_metrics_of`**, thumbs feedback, Ollama / Anthropic (Best Betty) — Python **8220** · Node **8221** · Java **8222** |
+| 23 | [23-agent-tools](23-agent-tools/) | **Library tools**: analyze-ticker-stories ×2 → compare-ticker-analyses; tool loop + `track_tool_call` — Python **8230** |
 
-More AgentControl patterns (agent mode, rollouts, …) can land as `23-…`, `24-…` siblings under this folder.
+More AgentControl patterns (agent mode, rollouts, …) can land as `24-…` siblings under this folder.
 
 ## Common setup
 

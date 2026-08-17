@@ -55,3 +55,22 @@ agent_configs:
     role: evaluation
   - path: 20-agent-config/22-config-outside-code/rest/common.sh
     role: provisioning
+
+- key: equity-briefing-tools
+  name: Equity briefing tools
+  mode: completion
+  examples:
+  - path: 20-agent-config/23-agent-tools
+  variations:
+  - key: tools-anthropic
+    model_id: claude-sonnet-5
+  tools:
+  - key: analyze-ticker-stories
+  - key: compare-ticker-analyses
+  sources:
+  - path: 20-agent-config/23-agent-tools/python/agent_core.py
+    role: evaluation
+  - path: 20-agent-config/23-agent-tools/rest/common.sh
+    role: provisioning
+  - path: 20-agent-config/23-agent-tools/rest/create-tools.sh
+    role: provisioning

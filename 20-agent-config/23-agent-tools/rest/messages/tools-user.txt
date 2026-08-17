@@ -1,0 +1,7 @@
+Write an equity briefing for these tickers using the required tools.
+
+## Stories
+{{ stories }}
+
+## Reminder
+Call analyze-ticker-stories once per ticker (pass that ticker's headlines), then compare-ticker-analyses, then write the briefing from tool results only.
