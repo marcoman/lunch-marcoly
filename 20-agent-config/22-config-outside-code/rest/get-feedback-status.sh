@@ -95,16 +95,45 @@ if [[ "$JSON" -eq 1 ]]; then
           docsAutogenMetrics: $docsAutogen,
           docsMetricsApi: $docsMetricsApi
         },
-        events: {
-          thumbsUp: "$ld:ai:feedback:user:positive",
-          thumbsDown: "$ld:ai:feedback:user:negative",
-          generationSuccess: "$ld:ai:generation:success",
-          generationError: "$ld:ai:generation:error"
-        },
+        events: [
+          {
+            key: "$ld:ai:feedback:user:positive",
+            name: "Positive AI feedback (thumbs up)"
+          },
+          {
+            key: "$ld:ai:feedback:user:negative",
+            name: "Negative AI feedback (thumbs down)"
+          },
+          {
+            key: "$ld:ai:generation:success",
+            name: "AI completion success"
+          },
+          {
+            key: "$ld:ai:generation:error",
+            name: "AI completion error"
+          }
+        ],
         relatedAutogenMetrics: [
-          "Positive AI feedback count / rate  ← $ld:ai:feedback:user:positive",
-          "Negative AI feedback count / rate ← $ld:ai:feedback:user:negative",
-          "AI completion success count       ← $ld:ai:generation:success"
+          {
+            name: "Positive AI feedback count",
+            event: "$ld:ai:feedback:user:positive"
+          },
+          {
+            name: "Positive AI feedback rate",
+            event: "$ld:ai:feedback:user:positive"
+          },
+          {
+            name: "Negative AI feedback count",
+            event: "$ld:ai:feedback:user:negative"
+          },
+          {
+            name: "Negative AI feedback rate",
+            event: "$ld:ai:feedback:user:negative"
+          },
+          {
+            name: "AI completion success count",
+            event: "$ld:ai:generation:success"
+          }
         ]
       } else . end
   '
@@ -143,16 +172,18 @@ Links:
   Docs autogen:  ${DOCS_AUTOGEN}
   Docs metrics:  ${DOCS_METRICS_API}
 
-Events (same stream as Thumbs / generationSuccessCount):
-  Thumbs Up              ← \$ld:ai:feedback:user:positive
-  Thumbs Down            ← \$ld:ai:feedback:user:negative
-  generationSuccessCount ← \$ld:ai:generation:success
-  generationErrorCount   ← \$ld:ai:generation:error
+Event key → Event name
+  \$ld:ai:feedback:user:positive  →  Positive AI feedback (thumbs up)
+  \$ld:ai:feedback:user:negative  →  Negative AI feedback (thumbs down)
+  \$ld:ai:generation:success      →  AI completion success
+  \$ld:ai:generation:error        →  AI completion error
 
 Related autogen metrics (Experiments / Guarded rollouts):
-  Positive AI feedback count / rate  ← \$ld:ai:feedback:user:positive
-  Negative AI feedback count / rate  ← \$ld:ai:feedback:user:negative
-  AI completion success count        ← \$ld:ai:generation:success
+  Positive AI feedback count   (event: \$ld:ai:feedback:user:positive)
+  Positive AI feedback rate    (event: \$ld:ai:feedback:user:positive)
+  Negative AI feedback count   (event: \$ld:ai:feedback:user:negative)
+  Negative AI feedback rate    (event: \$ld:ai:feedback:user:negative)
+  AI completion success count  (event: \$ld:ai:generation:success)
 EOF
 fi
 

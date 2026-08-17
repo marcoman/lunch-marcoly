@@ -38,8 +38,19 @@ count=2  (Thumbs Up + Thumbs Down)
 generationSuccessCount=3  generationErrorCount=0
 ```
 
-With `--verbose`, also prints Agent Config / Monitoring URLs, docs, SDK event names, and related autogen metric names (Positive/Negative AI feedback count/rate).
+With `--verbose`, also prints:
 
-Use `--json` (and optionally `--verbose`) for machine-readable output. Window: `LD_METRICS_LOOKBACK_HOURS` (default 24).
+```text
+Event key → Event name
+  $ld:ai:feedback:user:positive  →  Positive AI feedback (thumbs up)
+  …
+
+Related autogen metrics (Experiments / Guarded rollouts):
+  Positive AI feedback count   (event: $ld:ai:feedback:user:positive)
+  Positive AI feedback rate    (event: $ld:ai:feedback:user:positive)
+  …
+```
+
+Plus Agent Config / Monitoring URLs and docs links. Use `--json` (and optionally `--verbose`) for machine-readable output. Window: `LD_METRICS_LOOKBACK_HOURS` (default 24).
 
 Requires `jq`. AgentControl API version: `beta` (see `common.sh`).
