@@ -25,6 +25,12 @@ obj/
 01-reference-agent/cpp/third_party/
 10-flag-enablement/**/10-flag-enablement
 10-flag-enablement/**/10-flag-enablement.exe
+20-agent-config/21-agent-completion-config/go/21-agent-completion-config
+20-agent-config/21-agent-completion-config/go/21-agent-completion-config.exe
+20-agent-config/22-config-outside-code/go/22-config-outside-code
+20-agent-config/22-config-outside-code/go/22-config-outside-code.exe
+20-agent-config/23-agent-tools/go/23-agent-tools
+20-agent-config/23-agent-tools/go/23-agent-tools.exe
 
 # Rust build output
 **/rust/target/

@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-18T12:18:25Z",
+  "updated_at": "2026-08-18T13:26:00Z",
   "tickers": {
     "NVDA": {
       "name": "NVIDIA Corporation",
@@ -7,19 +7,35 @@
         {
           "title": "Why Is Nvidia (NVDA) Investing $1.5 Billion In A Massive Ohio AI Site?",
           "publisher": "Simply Wall St.",
-          "published": "2026-08-18T11:10:25Z",
           "link": "https://finance.yahoo.com/technology/ai/articles/why-nvidia-nvda-investing-1-111025027.html",
           "uuid": "39f94f17-e4ae-34b0-bbec-d1f32b1ac7ab"
         },
         {
           "title": "Nvidia, LG Electronics Expand Robotics Collaboration in Seoul",
           "publisher": "MT Newswires",
-          "published": "2026-08-18T08:55:06Z",
           "link": "https://finance.yahoo.com/technology/ai/articles/nvidia-lg-electronics-expand-robotics-085506425.html",
           "uuid": "84b33eda-6ada-3595-866f-d4a983becf59"
         }
       ],
-      "cached_at": "2026-08-18T12:18:25Z"
+      "cached_at": "2026-08-18T13:26:00Z"
+    },
+    "RKLB": {
+      "name": "Rocket Lab Corporation",
+      "stories": [
+        {
+          "title": "Top Analyst Raises SpaceX Price Target to $248 on Massive Orbital AI Opportunity",
+          "publisher": "24/7 Wall St.",
+          "link": "https://finance.yahoo.com/m/5d5e0a89-9b89-3025-88bd-3870a63916b7/top-analyst-raises-spacex.html",
+          "uuid": "5d5e0a89-9b89-3025-88bd-3870a63916b7"
+        },
+        {
+          "title": "RKLB Stock Jumps As Stifel Calls Viasat Deal Another Success",
+          "publisher": "Stocktwits",
+          "link": "https://finance.yahoo.com/m/3ddf5d1e-699d-3115-94fc-8bc3c9e98d6f/rklb-stock-jumps-as-stifel.html",
+          "uuid": "3ddf5d1e-699d-3115-94fc-8bc3c9e98d6f"
+        }
+      ],
+      "cached_at": "2026-08-18T13:26:00Z"
     },
     "SPCX": {
       "name": "Space Exploration Technologies",
@@ -27,14 +43,12 @@
         {
           "title": "5-star analyst sets alarming SpaceX stock price target",
           "publisher": "TheStreet",
-          "published": "2026-08-18T03:07:00Z",
           "link": "https://finance.yahoo.com/m/5d935cf8-8ba7-35d3-aa5f-f44744ab8b4a/5-star-analyst-sets-alarming.html",
           "uuid": "5d935cf8-8ba7-35d3-aa5f-f44744ab8b4a"
         },
         {
           "title": "Can Space Stocks Bounce Back? This $1 Billion Air Force Contract Might Help.",
           "publisher": "Motley Fool",
-          "published": "2026-08-18T11:27:00Z",
           "link": "https://finance.yahoo.com/m/1f889dcc-9ba2-31e7-8bdb-5aff6b6a1806/can-space-stocks-bounce-back%3F.html",
           "uuid": "1f889dcc-9ba2-31e7-8bdb-5aff6b6a1806"
         }
@@ -44,6 +58,6 @@
   },
   "last_pair": {
     "ticker1": "NVDA",
-    "ticker2": "SPCX"
+    "ticker2": "RKLB"
   }
 }

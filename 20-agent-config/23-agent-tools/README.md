@@ -9,7 +9,8 @@ Sibling of [22-config-outside-code](../22-config-outside-code/) (metrics/feedbac
 and [21-agent-completion-config](../21-agent-completion-config/) (completion + targeting).
 
 Docs: [Tools](https://launchdarkly.com/docs/home/agentcontrol/tools) ·
-[Python AI SDK](https://launchdarkly.com/docs/sdk/ai/python)
+[Python AI SDK](https://launchdarkly.com/docs/sdk/ai/python) ·
+[Go AI SDK](https://launchdarkly.com/docs/sdk/ai/go)
 
 ## Architecture
 
@@ -74,6 +75,7 @@ in the **Tool trace** panel.
 | Node web | **8231** | v1 — AI SDK `completionConfig` + `trackToolCall` |
 | Java web | **8232** | v1 — server SDK JSON eval; tool loop in-app; best-effort tool metrics |
 | .NET web | **8233** | v1 — AI SDK `CompletionConfig` + `TrackToolCall` |
+| Go console | raw-terminal | v1 — AI SDK `CompletionConfig` + `Tracker.TrackToolCall`; tool trace printed inline — see [go/README.md](go/README.md) |
 
 ## Config + tools
 
@@ -117,6 +119,9 @@ cd ../java && ./mvnw -q -DskipTests package && java -jar target/23-agent-tools.j
 
 # .NET (8233)
 cd ../dotnet && dotnet run
+
+# Go console (raw-terminal, no port)
+cd ../go && go mod tidy && go build -o 23-agent-tools . && ./23-agent-tools
 ```
 
 ## What to try
@@ -131,6 +136,6 @@ cd ../dotnet && dotnet run
 ## Docs
 
 - [application.md](application.md)
-- [python/README.md](python/README.md) · [node/README.md](node/README.md) · [java/README.md](java/README.md) · [dotnet/README.md](dotnet/README.md)
+- [python/README.md](python/README.md) · [node/README.md](node/README.md) · [java/README.md](java/README.md) · [dotnet/README.md](dotnet/README.md) · [go/README.md](go/README.md)
 - [rest/README.md](rest/README.md)
 - Series: [../README.md](../README.md)

@@ -150,7 +150,8 @@ cd rest && chmod +x *.sh && ./create-config.sh
 | Java | [`java/`](java/) | Web | Ready — http://127.0.0.1:8212/ |
 | .NET | [`dotnet/`](dotnet/) | Web | Ready — http://127.0.0.1:8213/ |
 | Python | [`python-console/`](python-console/) | Console | Ready — curses; `(l)d` for LD details |
-| Go / Rust / C++ | — | — | Later |
+| Go | [`go/`](go/) | Console | Ready — raw-terminal TUI, matches [01 go](../../01-reference-agent/go/) chrome |
+| Rust / C++ | — | — | Later |
 
 Start with **[rest/](rest/)**, then run any web language against that config.
 
@@ -165,6 +166,8 @@ Java note: there is no official LaunchDarkly **Java AI SDK** yet. The Java examp
 
 .NET note: uses [`LaunchDarkly.ServerSdk.Ai`](https://launchdarkly.com/docs/sdk/ai/dotnet) (`CompletionConfig`) on **net10.0**. The AI SDK is pre-1.0; Python/Node often get features first.
 
+Go note: uses the separate [`go-server-sdk-ai`](https://launchdarkly.com/docs/sdk/ai/go) module (`ldai.Client.CompletionConfig`), **not** the older `Config()` bundled inside `go-server-sdk/v7`'s `ldai` subpackage (which has no completion/agent mode distinction). Also pre-1.0. Console only — see [go/README.md](go/README.md#go-ai-sdk-note-api-quirks-vs-python--node--net) for API quirks vs the other ports.
+
 
 ## Further reading
 
@@ -174,6 +177,7 @@ Java note: there is no official LaunchDarkly **Java AI SDK** yet. The Java examp
 - [node/README.md](node/README.md) — Node.js web
 - [java/README.md](java/README.md) — Java web (server SDK JSON evaluation)
 - [dotnet/README.md](dotnet/README.md) — .NET web (AI SDK `CompletionConfig`)
+- [go/README.md](go/README.md) — Go console (raw-terminal TUI, AI SDK `CompletionConfig`)
 - [PROVISIONING.md](PROVISIONING.md) — UI checklist + copy-paste messages
 - [application.md](application.md) — AgentControl completion config specification
 - [../README.md](../README.md) — series setup (Ollama, AWS, LaunchDarkly)

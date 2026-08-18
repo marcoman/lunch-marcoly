@@ -49,6 +49,7 @@ Override with `LD_AGENT_CONFIG_KEY` if needed. Status helper: `./rest/get-feedba
 | Node web | **8221** | v1 — same AI SDK path as Python |
 | Java web | **8222** | v1 — server SDK eval + Anthropic/Ollama; feedback via `track` (no Java AI SDK yet) |
 | .NET web | **8223** | v1 — AI SDK `CompletionConfig` + `TrackMetricsOf` + `TrackFeedback` |
+| Go console | — | v1 — raw-terminal TUI; AI SDK `CompletionConfig` + `ldai.TrackMetricsOf` + `TrackFeedback`; `+`/`-` hotkeys |
 
 ## Config
 
@@ -92,16 +93,19 @@ cd ../java && ./mvnw -q -DskipTests package && java -jar target/22-config-outsid
 
 # .NET (8223)
 cd ../dotnet && dotnet run
+
+# Go console (raw-terminal TUI; no port)
+cd ../go && go mod tidy && go build -o 22-config-outside-code . && ./22-config-outside-code
 ```
 
 ## What to try
 
-1. **Anonymous Amelia** → local Ollama; after generate, check Monitoring + try 👍/👎.
-2. **Best Betty** → Anthropic Claude; same metrics + feedback path (Python/Node/.NET; Java thumbs use best-effort `track`).
+1. **Anonymous Amelia** → local Ollama; after generate, check Monitoring + try 👍/👎 (or `+`/`-` in the Go console).
+2. **Best Betty** → Anthropic Claude; same metrics + feedback path (Python/Node/.NET/Go; Java thumbs use best-effort `track`).
 3. Edit prompts on the variation in the LD UI — no code change, no redeploy.
 
 ## Docs
 
 - [application.md](application.md) — normative behavior
-- [python/README.md](python/README.md) · [node/README.md](node/README.md) · [java/README.md](java/README.md) · [dotnet/README.md](dotnet/README.md)
+- [python/README.md](python/README.md) · [node/README.md](node/README.md) · [java/README.md](java/README.md) · [dotnet/README.md](dotnet/README.md) · [go/README.md](go/README.md)
 - Series: [../README.md](../README.md)
