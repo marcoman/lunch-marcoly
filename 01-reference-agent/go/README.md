@@ -13,6 +13,7 @@ Terminal UI version of the [01-reference-agent](../application.md), matching the
 From this directory:
 
 ```bash
+go mod tidy
 go build -o 01-reference-agent .
 ```
 

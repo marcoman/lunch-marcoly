@@ -123,6 +123,7 @@ Edit that file to change analyst behavior. The server re-reads it on each genera
 | **Node.js 20 LTS** (npm web app) | [nvm](https://github.com/nvm-sh/nvm) + root [`.nvmrc`](../.nvmrc) | Same | nvm-windows, native Node installer, or **nvm inside WSL** |
 | **Java 21+** (Maven web app) | Temurin / Homebrew OpenJDK | Distro JDK 21 | Temurin installer, or **OpenJDK inside WSL** |
 | **.NET SDK 10** (dotnet web app) | [dotnet.microsoft.com](https://dotnet.microsoft.com/download) installer | Distro package or [dotnet.microsoft.com](https://dotnet.microsoft.com/download) install script | [dotnet.microsoft.com](https://dotnet.microsoft.com/download) installer, or **.NET SDK inside WSL** |
+| **Go 1.22+** (console) | [go.dev](https://go.dev/dl/) installer / Homebrew | Distro package or go.dev tarball | go.dev MSI, or **Go inside WSL** |
 | **Browser** | Any modern browser | Same | Same (including when the server runs in WSL) |
 | **Network** | Needed for Yahoo headlines; optional for stub LLM | Same | Same |
 | **Ollama** (optional) | [ollama.com](https://ollama.com) Mac app / install | Linux install script | Windows app / install |
@@ -130,9 +131,9 @@ Edit that file to change analyst behavior. The server re-reads it on each genera
 
 **Python:** always use a virtual environment. Do not install project packages into the system Python.
 
-**Windows + WSL:** install Ubuntu via `wsl --install`, then follow the Linux steps for Python, Node, or Java inside WSL. Details: [python/README.md — WSL](python/README.md#windows-with-wsl-windows-subsystem-for-linux), [node/README.md — WSL](node/README.md#windows-with-wsl), [java/README.md — WSL](java/README.md#windows-with-wsl).
+**Windows + WSL:** install Ubuntu via `wsl --install`, then follow the Linux steps for Python, Node, Java, .NET, or Go inside WSL. Details: [python/README.md — WSL](python/README.md#windows-with-wsl-windows-subsystem-for-linux), [node/README.md — WSL](node/README.md#windows-with-wsl), [java/README.md — WSL](java/README.md#windows-with-wsl), [dotnet/README.md](dotnet/README.md), [go/README.md](go/README.md).
 
-Full copy-paste steps: **[python/README.md](python/README.md)** · **[node/README.md](node/README.md)** · **[java/README.md](java/README.md)** · **[dotnet/README.md](dotnet/README.md)**.
+Full copy-paste steps: **[python/README.md](python/README.md)** · **[node/README.md](node/README.md)** · **[java/README.md](java/README.md)** · **[dotnet/README.md](dotnet/README.md)** · **[go/README.md](go/README.md)**.
 
 ## Quick start — Python (stub)
 
@@ -223,6 +224,7 @@ java -jar target/01-reference-agent-console.jar
 
 # Go
 cd 01-reference-agent/go
+go mod tidy
 go build -o 01-reference-agent .
 ./01-reference-agent
 

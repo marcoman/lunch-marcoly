@@ -2,7 +2,7 @@
 
 Port **8223**. Requires .NET **10.0 SDK**, `LD_SDK_KEY`, and (for Best Betty) `ANTHROPIC_API_KEY`.
 
-Full parity twin of the Node/Python implementations: evaluates the AgentControl completion
+Uses [`LaunchDarkly.ServerSdk.Ai`](https://launchdarkly.com/docs/sdk/ai/dotnet) (**pre-1.0** on **net10.0** — Python/Node often get features first). Full parity twin of the Node/Python implementations: evaluates the AgentControl completion
 config with the **AI SDK** (`LdAiClient.CompletionConfig`), calls Ollama/Anthropic, wraps the
 call in **`TrackMetricsOf`**, and records thumbs with **`TrackFeedback`** via a resumption
 token — same LaunchDarkly surface as Node's `trackMetricsOf` / `trackFeedback`.

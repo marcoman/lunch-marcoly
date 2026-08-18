@@ -25,7 +25,7 @@ Supported languages and application types:
 | Go       | `go/`     | Console application | go modules                   |
 | Rust     | `rust/`   | Console application | Cargo                     |
 
-**Web applications** (`python/`, `node/`, `java/`) include a graphical component served in the browser. Each README should document how to start the local server and which URL to open.
+**Web applications** (`python/`, `node/`, `java/`, `dotnet/`) include a graphical component served in the browser. Each README should document how to start the local server and which URL to open.
 
 **Console applications** (`python-console/`, `node-console/`, `java-console/`, `go/`, `cpp/`, `rust/`) run in the terminal with text-based input and output.
 
@@ -58,7 +58,7 @@ lunch-marcoly/
 ├── 01-reference-agent/             # Reference agent UI — web + console (config/env LLM)
 │   ├── README.md
 │   ├── application.md         # Agent UI behavior spec
-│   ├── python/ · node/ · java/          # Web apps
+│   ├── python/ · node/ · java/ · dotnet/   # Web apps
 │   ├── python-console/ · node-console/ · java-console/
 │   └── go/ · rust/ · cpp/     # Console-only languages
 ├── 10-flag-enablement/        # Feature flags for the grid navigator
@@ -75,12 +75,15 @@ lunch-marcoly/
 │   └── <language[-console]>/
 ├── 20-agent-config/             # AgentControl series (shared setup README)
 │   ├── README.md                # Ollama, AWS SSO, LD env — landing page
-│   └── 21-agent-completion-config/  # Completion config: model + system/user prompts
-│       ├── README.md
-│       ├── application.md
-│       ├── rest/                # Planned
-│       ├── terraform/           # Planned
-│       └── <language[-console]>/  # Planned (Python first)
+│   ├── 21-agent-completion-config/  # Completion config: model + system/user prompts
+│   │   ├── README.md · application.md · rest/
+│   │   └── python/ · node/ · java/ · dotnet/ · python-console/ · go/
+│   ├── 22-config-outside-code/      # Tracked completion + feedback
+│   │   ├── README.md · application.md · rest/
+│   │   └── python/ · node/ · java/ · dotnet/ · go/
+│   └── 23-agent-tools/              # Library tools + tool loop
+│       ├── README.md · application.md · rest/
+│       └── python/ · node/ · java/ · dotnet/ · go/
 ├── 99-use-cases/              # Focused LaunchDarkly use-case examples
 │   ├── README.md
 │   └── 01-abcd-test/          # A-B-C-D test on navigation count label
@@ -111,6 +114,9 @@ lunch-marcoly/
 - `01-reference-agent` is the baseline news → prompt → LLM agent UI (config/env and a prompt file only).
 - `20-agent-config` groups LaunchDarkly **AgentControl** examples; shared LLM/AWS/LD setup lives in its README.
 - `21-agent-completion-config` (under `20-agent-config/`) adds a **completion config**: runtime **model**, **system prompt**, and **user prompt** on the agent shape from `01`.
+- `22-config-outside-code` adds **tracked completion** (`TrackMetricsOf` / feedback) on that same config shape.
+- `23-agent-tools` adds **Library tools**, a tool loop, and `TrackToolCall`.
+- AgentControl **web** ports: Python / Node / Java / .NET. **Go** is console-only under this series (raw-terminal TUI).
 - `10-flag-enablement` demonstrates feature flag naming, provisioning, and enablement for the grid navigator.
 - `11-flag-variations` demonstrates string, number, JSON, and anonymous-context flag variation types.
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive and guarded rollouts).
@@ -314,7 +320,7 @@ Prefer `./mvnw` over a system-wide `mvn` install for consistency.
 
 ### .NET
 
-- **Build tool:** `dotnet` CLI only (SDK 10+). No LaunchDarkly examples require a separate wrapper script.
+- **Build tool:** `dotnet` CLI only (SDK **10+**, TFM **net10.0**). Put the SDK on `PATH` when needed (macOS often `/usr/local/share/dotnet`).
 - **Build:** from the `dotnet/` language folder:
 
 ```bash
@@ -330,6 +336,8 @@ dotnet run
 ```
 
 Project file name matches the example directory (e.g. `01-reference-agent.csproj`).
+
+- **AgentControl gotcha:** examples under `20-agent-config/` use [`LaunchDarkly.ServerSdk.Ai`](https://launchdarkly.com/docs/sdk/ai/dotnet) (**pre-1.0**). The baseline `01-reference-agent/dotnet` has **no** LaunchDarkly packages.
 
 ### C++
 
@@ -348,9 +356,10 @@ make all
 
 ### Go
 
-- **Build:** from the `go/` folder:
+- **Build:** from the `go/` folder (binary name matches the example directory):
 
 ```bash
+go mod tidy
 go build -o 00-reference-code .
 ```
 
@@ -359,6 +368,9 @@ go build -o 00-reference-code .
 ```bash
 ./00-reference-code
 ```
+
+- **Version:** baseline is **Go 1.22+**. AgentControl consoles under `20-agent-config/*/go/` often pin **`go 1.24`** in `go.mod` — follow that folder's README.
+- **AI SDK gotcha:** AgentControl examples import the separate module [`github.com/launchdarkly/go-server-sdk-ai`](https://launchdarkly.com/docs/sdk/ai/go) (`ldai.CompletionConfig`), **not** the older `ldai` subpackage bundled inside `go-server-sdk/v7`. `TrackMetricsOf` is a **package function**, not a tracker method — see each `go/README.md` under 21–23.
 
 ### Rust
 
@@ -445,7 +457,7 @@ Install only what you need for the language and provisioning approach you are wo
 | Java            | 21+             | Maven Wrapper (`./mvnw`) in each Java folder |
 | .NET            | SDK 10+         | `dotnet` CLI (`dotnet restore` / `dotnet build`) in each `dotnet/` folder |
 | C++             | C++20           | Make and a C++20-capable compiler |
-| Go              | 1.22+           | go modules |
+| Go              | 1.22+           | go modules; AgentControl `go/` ports may require **1.24** (see `go.mod`) |
 | Rust            | 1.75+           | 2021 edition |
 | Terraform       | 1.5+            | Required for `terraform/` provisioning examples |
 | curl            | any recent      | Required for `rest/` provisioning examples |

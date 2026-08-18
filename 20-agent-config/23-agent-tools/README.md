@@ -118,11 +118,18 @@ cd ../node && npm install && npm start
 cd ../java && ./mvnw -q -DskipTests package && java -jar target/23-agent-tools.jar
 
 # .NET (8233)
-cd ../dotnet && dotnet run
+export PATH="/usr/local/share/dotnet:$PATH"
+cd ../dotnet && dotnet restore && dotnet build && dotnet run
 
 # Go console (raw-terminal, no port)
 cd ../go && go mod tidy && go build -o 23-agent-tools . && ./23-agent-tools
 ```
+
+Java note: no official **Java AI SDK** yet — server SDK JSON evaluation; tool loop in-app; best-effort tool metrics.
+
+.NET note: [`LaunchDarkly.ServerSdk.Ai`](https://launchdarkly.com/docs/sdk/ai/dotnet) (`CompletionConfig` · `TrackToolCall` · `TrackMetricsOf`) on **net10.0**. AI SDK is **pre-1.0** — see [dotnet/README.md](dotnet/README.md#tracktoolcall--trackmetricsof-notes-net-ai-sdk-0120).
+
+Go note: separate [`go-server-sdk-ai`](https://launchdarkly.com/docs/sdk/ai/go) module — **not** bundled `go-server-sdk/v7/ldai`. `ldai.TrackMetricsOf` is a **package function**. See [go/README.md](go/README.md#go-ai-sdk-note-api-quirks-vs-python--node--net).
 
 ## What to try
 

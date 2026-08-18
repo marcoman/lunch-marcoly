@@ -1,7 +1,8 @@
 # 23-agent-tools — .NET web
 
 Port **8233**. Requires **.NET 10 SDK**, `LD_SDK_KEY`, and a provisioned AgentControl config
-(`equity-briefing-tools` with Library tools attached).
+(`equity-briefing-tools` with Library tools attached). Uses
+[`LaunchDarkly.ServerSdk.Ai`](https://launchdarkly.com/docs/sdk/ai/dotnet) (**pre-1.0** on **net10.0**).
 
 - **Analyst Claude** → Anthropic (`ANTHROPIC_API_KEY`)
 - **Analyst Llama** → Ollama `llama3.2:3b` (`ollama pull llama3.2:3b`)

@@ -168,6 +168,18 @@ Java note: there is no official LaunchDarkly **Java AI SDK** yet. The Java examp
 
 Go note: uses the separate [`go-server-sdk-ai`](https://launchdarkly.com/docs/sdk/ai/go) module (`ldai.Client.CompletionConfig`), **not** the older `Config()` bundled inside `go-server-sdk/v7`'s `ldai` subpackage (which has no completion/agent mode distinction). Also pre-1.0. Console only — see [go/README.md](go/README.md#go-ai-sdk-note-api-quirks-vs-python--node--net) for API quirks vs the other ports.
 
+## Quick start — .NET / Go build
+
+```bash
+# .NET (8213)
+export PATH="/usr/local/share/dotnet:$PATH"
+cd dotnet && dotnet restore && dotnet build && dotnet run
+
+# Go console (no port)
+cd go && go mod tidy && go build -o 21-agent-completion-config . && ./21-agent-completion-config
+```
+
+Full steps per language: [dotnet/README.md](dotnet/README.md) · [go/README.md](go/README.md).
 
 ## Further reading
 

@@ -92,11 +92,18 @@ cd ../node && npm install && npm start
 cd ../java && ./mvnw -q -DskipTests package && java -jar target/22-config-outside-code.jar
 
 # .NET (8223)
-cd ../dotnet && dotnet run
+export PATH="/usr/local/share/dotnet:$PATH"
+cd ../dotnet && dotnet restore && dotnet build && dotnet run
 
 # Go console (raw-terminal TUI; no port)
 cd ../go && go mod tidy && go build -o 22-config-outside-code . && ./22-config-outside-code
 ```
+
+Java note: no official **Java AI SDK** yet — server SDK JSON evaluation + best-effort `track` for thumbs.
+
+.NET note: [`LaunchDarkly.ServerSdk.Ai`](https://launchdarkly.com/docs/sdk/ai/dotnet) (`CompletionConfig` · `TrackMetricsOf` · `TrackFeedback`) on **net10.0**. AI SDK is **pre-1.0**.
+
+Go note: separate [`go-server-sdk-ai`](https://launchdarkly.com/docs/sdk/ai/go) module — **not** bundled `go-server-sdk/v7/ldai`. `ldai.TrackMetricsOf` is a **package function**, not a tracker method. See [go/README.md](go/README.md#go-ai-sdk-note-api-quirks-vs-python--node--net).
 
 ## What to try
 

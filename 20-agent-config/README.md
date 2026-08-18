@@ -32,10 +32,21 @@ nvm use                            # see root .nvmrc
 
 # .NET (21 / 22 / 23 web twins on ports *213 / *223 / *233)
 # Requires SDK 10+ on PATH (e.g. /usr/local/share/dotnet)
+export PATH="/usr/local/share/dotnet:$PATH"
 dotnet --list-sdks
+
+# Go (21 / 22 / 23 console — no HTTP port)
+go version   # 1.22+; AgentControl go.mod may require 1.24
 ```
 
 See [project.md](../project.md) and the root [README.md](../README.md) for OS / toolchain conventions.
+
+**Smoke paths after series setup**
+
+| Language | Typical first run |
+|----------|-------------------|
+| .NET web | `cd 01-reference-agent/dotnet && dotnet run` → then `21…/dotnet` on **8213** |
+| Go console | `cd 21-agent-completion-config/go && go mod tidy && go build -o 21-agent-completion-config . && ./21-agent-completion-config` |
 
 ### 2. LaunchDarkly
 
@@ -167,8 +178,19 @@ dotnet run
 3. Provision the AgentControl config ([rest/](21-agent-completion-config/rest/) preferred; UI checklist in [PROVISIONING.md](21-agent-completion-config/PROVISIONING.md)).
 4. Run the language implementation under that example.
 
+## SDK notes (.NET / Go)
+
+| Surface | Gotcha |
+|---------|--------|
+| **.NET** AI SDK | [`LaunchDarkly.ServerSdk.Ai`](https://launchdarkly.com/docs/sdk/ai/dotnet) on **net10.0** — **pre-1.0**; Python/Node often get features first. Build: `PATH` → `dotnet restore` → `dotnet build` → `dotnet run`. |
+| **Go** AI SDK | Separate module [`go-server-sdk-ai`](https://launchdarkly.com/docs/sdk/ai/go) — **not** the older `ldai` inside `go-server-sdk/v7`. `TrackMetricsOf` is a **package function**. Console only. Build: `go mod tidy` → `go build -o <example> .`. |
+
+Per-example quirks live in each child `dotnet/README.md` and `go/README.md`.
+
 ## Related
 
 - [01-reference-agent](../01-reference-agent/) — baseline agent (file prompt + env model; no LaunchDarkly)
 - [project.md](../project.md) — repository conventions
-- [21-agent-completion-config](21-agent-completion-config/) — first AgentControl example in this series
+- [21-agent-completion-config](21-agent-completion-config/) — completion config
+- [22-config-outside-code](22-config-outside-code/) — tracked metrics + feedback
+- [23-agent-tools](23-agent-tools/) — Library tools + tool loop

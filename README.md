@@ -22,12 +22,14 @@ lunch-marcoly/
 │   ├── README.md
 │   ├── application.md
 │   ├── prompts/ · stories/  # shared system prompt + headline cache
-│   ├── python/ · node/ · java/                 # web apps
+│   ├── python/ · node/ · java/ · dotnet/         # web apps
 │   ├── python-console/ · node-console/ · java-console/
-│   └── go/ · rust/ · cpp/                      # console-only languages
+│   └── go/ · rust/ · cpp/                        # console-only languages
 ├── 20-agent-config/             # AgentControl series (shared setup)
 │   ├── README.md
-│   └── 21-agent-completion-config/
+│   ├── 21-agent-completion-config/   # web + Go console
+│   ├── 22-config-outside-code/       # web + Go console
+│   └── 23-agent-tools/               # web + Go console
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -39,7 +41,7 @@ Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control
 
 ## Languages
 
-Each example may include implementations in any of these languages. Python, Node.js, and Java default to **web applications** with a browser UI. Go, Rust, and C++ are **console applications**. Optional `-console` variants exist for Python, Node.js, and Java when a terminal-based version is also needed.
+Each example may include implementations in any of these languages. Python, Node.js, Java, and **.NET** default to **web applications** with a browser UI. Go, Rust, and C++ are **console applications**. Optional `-console` variants exist for Python, Node.js, and Java when a terminal-based version is also needed.
 
 | Language | Directory | Application type |
 |----------|-----------|------------------|
@@ -49,6 +51,7 @@ Each example may include implementations in any of these languages. Python, Node
 | Node.js  | `node-console/` | Console application |
 | Java     | `java/`   | Web application |
 | Java     | `java-console/` | Console application |
+| .NET     | `dotnet/` | Web application |
 | C++      | `cpp/`    | Console application |
 | Go       | `go/`     | Console application |
 | Rust     | `rust/`   | Console application |
@@ -61,8 +64,10 @@ Each example may include implementations in any of these languages. Python, Node
 | 01 | [01-reference-agent](01-reference-agent/) | News headlines → AI equity briefing (Python / Node / Java / .NET web + consoles; LaunchDarkly comes in later examples) |
 | 10 | [10-flag-enablement](10-flag-enablement/) | Grid navigator with LaunchDarkly flags (all languages, Terraform + REST) |
 | 11 | [11-flag-variations](11-flag-variations/) | Grid navigator with string, number, JSON, and anonymous flags (all languages) |
-| 20 | [20-agent-config](20-agent-config/) | AgentControl examples (shared LLM / AWS / LD setup) |
-| 21 | [21-agent-completion-config](20-agent-config/21-agent-completion-config/) | Completion config: runtime model + system/user prompts on the equity briefing agent |
+| 20 | [20-agent-config](20-agent-config/) | AgentControl series (shared LLM / AWS / LD setup) |
+| 21 | [21-agent-completion-config](20-agent-config/21-agent-completion-config/) | Completion config: model + system/user prompts (web + Go console) |
+| 22 | [22-config-outside-code](20-agent-config/22-config-outside-code/) | Tracked completion: metrics + thumbs feedback (web + Go console) |
+| 23 | [23-agent-tools](20-agent-config/23-agent-tools/) | Library tools + tool loop + `track_tool_call` (web + Go console) |
 | 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (A-B-C-D test, segments, …) |
 
 ## Building code
@@ -114,8 +119,9 @@ Run `nvm use` whenever you open a new shell before working on Node examples.
 | Python   | [pyenv](https://github.com/pyenv/pyenv) — see [Python and pyenv](#python-and-pyenv) |
 | Node.js  | [nvm](https://github.com/nvm-sh/nvm) — see above |
 | Java     | [adoptium.net](https://adoptium.net/) 21+ (Maven Wrapper included per project) |
+| .NET     | [dotnet.microsoft.com](https://dotnet.microsoft.com/download) SDK **10+** (often `/usr/local/share/dotnet` on macOS) |
 | C++      | C++20 compiler and Make |
-| Go       | [go.dev](https://go.dev/dl/) 1.22+ |
+| Go       | [go.dev](https://go.dev/dl/) **1.22+** (AgentControl `go/` modules may require **1.24** — see each `go.mod`) |
 | Rust     | [rustup.rs](https://rustup.rs/) 1.75+ |
 
 ### Build patterns (from each language folder)
@@ -125,8 +131,9 @@ Run `nvm use` whenever you open a new shell before working on Node examples.
 | Python | *(no compile step)* | `python 00-reference-code.py` |
 | Node.js | `npm install` *(when deps exist)* | `node 00-reference-code.js` |
 | Java | `./mvnw clean install` | `java -jar target/00-reference-code.jar` |
+| .NET | `export PATH="/usr/local/share/dotnet:$PATH"` · `dotnet restore` · `dotnet build` | `dotnet run` (TFM **net10.0**) |
 | C++ | `make clean && make all` | `./00-reference-code` |
-| Go | `go build -o 00-reference-code .` | `./00-reference-code` |
+| Go | `go mod tidy` · `go build -o <example-name> .` | `./<example-name>` |
 | Rust | `cargo build --release` | `./target/release/00-reference-code` |
 
 Each language folder's `README.md` lists the exact **Build** and **Run** commands for that implementation.
