@@ -13,6 +13,9 @@
 boto3>=1.35
 launchdarkly-server-sdk>=9.0
 launchdarkly-server-sdk-ai>=0.7
+# 24-agent-judges: create_judge uses the OpenAI provider package against Ollama /v1
+launchdarkly-server-sdk-ai-openai>=0.7
+openai>=1.0
 typing_extensions>=4.0
 PyYAML>=6.0
 # .launchdarkly/bin/ldctl (inventory validate / status / report)

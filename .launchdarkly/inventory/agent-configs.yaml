@@ -90,3 +90,44 @@ agent_configs:
     role: provisioning
   - path: 20-agent-config/23-agent-tools/rest/create-tools.sh
     role: provisioning
+
+- key: equity-briefing-judged
+  name: Equity briefing judged
+  mode: completion
+  examples:
+  - path: 20-agent-config/24-agent-judges
+  variations:
+  - key: reckless-hype
+    model_config_key: Custom.llama3.2-1b
+  - key: concise-skeptic
+    model_config_key: Custom.llama3.2-3b
+  model_configs:
+  - key: Custom.llama3.2-1b
+    model_id: llama3.2:1b
+  - key: Custom.llama3.2-3b
+    model_id: llama3.2:3b
+  sources:
+  - path: 20-agent-config/24-agent-judges/python/agent_core.py
+    role: evaluation
+  - path: 20-agent-config/24-agent-judges/rest/common.sh
+    role: provisioning
+  - path: 20-agent-config/24-agent-judges/rest/messages
+    role: provisioning
+
+- key: equity-briefing-source-fidelity
+  name: Equity briefing source fidelity
+  mode: judge
+  examples:
+  - path: 20-agent-config/24-agent-judges
+  sources:
+  - path: 20-agent-config/24-agent-judges/rest/messages/judge-source-fidelity-system.txt
+    role: provisioning
+
+- key: equity-briefing-recommendation-discipline
+  name: Equity briefing recommendation discipline
+  mode: judge
+  examples:
+  - path: 20-agent-config/24-agent-judges
+  sources:
+  - path: 20-agent-config/24-agent-judges/rest/messages/judge-recommendation-discipline-system.txt
+    role: provisioning

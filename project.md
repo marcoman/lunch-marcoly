@@ -81,9 +81,13 @@ lunch-marcoly/
 │   ├── 22-config-outside-code/      # Tracked completion + feedback
 │   │   ├── README.md · application.md · rest/
 │   │   └── python/ · node/ · java/ · dotnet/ · go/
-│   └── 23-agent-tools/              # Library tools + tool loop
+│   ├── 23-agent-tools/              # Library tools + tool loop
+│   │   ├── README.md · application.md · rest/
+│   │   └── python/ · node/ · java/ · dotnet/ · go/
+│   └── 24-agent-judges/             # Judges runtime gate + rewrite
 │       ├── README.md · application.md · rest/
-│       └── python/ · node/ · java/ · dotnet/ · go/
+│       └── python/                  # Web :8240
+
 ├── 99-use-cases/              # Focused LaunchDarkly use-case examples
 │   ├── README.md
 │   └── 01-abcd-test/          # A-B-C-D test on navigation count label
@@ -116,6 +120,7 @@ lunch-marcoly/
 - `21-agent-completion-config` (under `20-agent-config/`) adds a **completion config**: runtime **model**, **system prompt**, and **user prompt** on the agent shape from `01`.
 - `22-config-outside-code` adds **tracked completion** (`TrackMetricsOf` / feedback) on that same config shape.
 - `23-agent-tools` adds **Library tools**, a tool loop, and `TrackToolCall`.
+- `24-agent-judges` adds **custom Judges** as a runtime quality gate (draft → scores → one Charlie rewrite).
 - AgentControl **web** ports: Python / Node / Java / .NET. **Go** is console-only under this series (raw-terminal TUI).
 - `10-flag-enablement` demonstrates feature flag naming, provisioning, and enablement for the grid navigator.
 - `11-flag-variations` demonstrates string, number, JSON, and anonymous-context flag variation types.
