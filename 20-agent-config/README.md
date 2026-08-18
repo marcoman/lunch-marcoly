@@ -151,6 +151,15 @@ AGENT_LLM_MODE=ollama python 01-reference-agent.py
 
 That confirms Yahoo stories, streaming UI, and Ollama before you add AgentControl.
 
+The .NET baseline (no LaunchDarkly) that the `dotnet/` ports below build on lives at [`01-reference-agent/dotnet/`](../01-reference-agent/dotnet/):
+
+```bash
+export PATH="/usr/local/share/dotnet:$PATH"
+cd 01-reference-agent/dotnet
+dotnet run
+# open http://127.0.0.1:8090/
+```
+
 ## How to navigate
 
 1. Read this page (shared LD + LLM setup).

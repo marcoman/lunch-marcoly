@@ -16,6 +16,7 @@ You do **not** need a LaunchDarkly account to run this example. It is the **base
 | [cpp/README.md](cpp/README.md) | C++ terminal console |
 | [node/README.md](node/README.md) | Node.js / npm web app setup (macOS, Linux, Windows, WSL) |
 | [java/README.md](java/README.md) | Java / Maven web app setup (macOS, Linux, Windows, WSL) |
+| [dotnet/README.md](dotnet/README.md) | .NET / dotnet CLI web app setup (macOS, Linux, Windows, WSL) — no LaunchDarkly |
 | [application.md](application.md) | Full behavior specification |
 | [prompts/system_prompt.txt](prompts/system_prompt.txt) | The system prompt sent to the LLM |
 | [stories/](stories/) | Shared Yahoo headline cache (`stories_cache.json`, gitignored) |
@@ -58,7 +59,7 @@ flowchart LR
   end
 
   subgraph server [Web app :8090]
-    HTTP[HTTP + SSE<br/>python/ · node/ · java/]
+    HTTP[HTTP + SSE<br/>python/ · node/ · java/ · dotnet/]
     NEWS[Yahoo news helper]
     CORE[Agent core]
     PROMPT[prompts/system_prompt.txt]
@@ -121,6 +122,7 @@ Edit that file to change analyst behavior. The server re-reads it on each genera
 | **Root `requirements.txt`** | Required (`pip install -r requirements.txt`) | Same | Same |
 | **Node.js 20 LTS** (npm web app) | [nvm](https://github.com/nvm-sh/nvm) + root [`.nvmrc`](../.nvmrc) | Same | nvm-windows, native Node installer, or **nvm inside WSL** |
 | **Java 21+** (Maven web app) | Temurin / Homebrew OpenJDK | Distro JDK 21 | Temurin installer, or **OpenJDK inside WSL** |
+| **.NET SDK 10** (dotnet web app) | [dotnet.microsoft.com](https://dotnet.microsoft.com/download) installer | Distro package or [dotnet.microsoft.com](https://dotnet.microsoft.com/download) install script | [dotnet.microsoft.com](https://dotnet.microsoft.com/download) installer, or **.NET SDK inside WSL** |
 | **Browser** | Any modern browser | Same | Same (including when the server runs in WSL) |
 | **Network** | Needed for Yahoo headlines; optional for stub LLM | Same | Same |
 | **Ollama** (optional) | [ollama.com](https://ollama.com) Mac app / install | Linux install script | Windows app / install |
@@ -130,7 +132,7 @@ Edit that file to change analyst behavior. The server re-reads it on each genera
 
 **Windows + WSL:** install Ubuntu via `wsl --install`, then follow the Linux steps for Python, Node, or Java inside WSL. Details: [python/README.md — WSL](python/README.md#windows-with-wsl-windows-subsystem-for-linux), [node/README.md — WSL](node/README.md#windows-with-wsl), [java/README.md — WSL](java/README.md#windows-with-wsl).
 
-Full copy-paste steps: **[python/README.md](python/README.md)** · **[node/README.md](node/README.md)** · **[java/README.md](java/README.md)**.
+Full copy-paste steps: **[python/README.md](python/README.md)** · **[node/README.md](node/README.md)** · **[java/README.md](java/README.md)** · **[dotnet/README.md](dotnet/README.md)**.
 
 ## Quick start — Python (stub)
 
@@ -182,6 +184,20 @@ java -jar target/01-reference-agent.jar
 ```
 
 Open **http://127.0.0.1:8090/** (same port — run one language at a time).
+
+## Quick start — .NET (stub)
+
+From this example's .NET folder:
+
+```bash
+export PATH="/usr/local/share/dotnet:$PATH"
+cd 01-reference-agent/dotnet
+dotnet restore
+dotnet build
+dotnet run
+```
+
+Open **http://127.0.0.1:8090/** (same port — run one language at a time). No LaunchDarkly packages or credentials required.
 
 ## Quick start — Python console (stub)
 
@@ -262,6 +278,7 @@ Details: [application.md — AWS Bedrock](application.md#aws-bedrock).
 | Python | [python/](python/) | Web | Available (`stub` / `ollama` / `bedrock`) |
 | Node.js | [node/](node/) | Web | Available (`stub` / `ollama`) |
 | Java | [java/](java/) | Web | Available (`stub` / `ollama`) |
+| .NET | [dotnet/](dotnet/) | Web | Available (`stub` / `ollama`) — no LaunchDarkly |
 | Python | [python-console/](python-console/) | Console | Available (`stub` / `ollama` / `bedrock`) |
 | Node.js | [node-console/](node-console/) | Console | Available (`stub` / `ollama`) |
 | Java | [java-console/](java-console/) | Console | Available (`stub` / `ollama`) |

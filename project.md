@@ -20,6 +20,7 @@ Supported languages and application types:
 | Node.js  | `node-console/` | Console application | nvm + npm              |
 | Java     | `java/`   | Web application  | Maven (wrapper)              |
 | Java     | `java-console/` | Console application | Maven (wrapper)         |
+| .NET     | `dotnet/` | Web application  | dotnet CLI (SDK 10)          |
 | C++      | `cpp/`    | Console application | Make                         |
 | Go       | `go/`     | Console application | go modules                   |
 | Rust     | `rust/`   | Console application | Cargo                     |
@@ -119,7 +120,7 @@ lunch-marcoly/
 ### Language directories (inside an example)
 
 - Use the fixed directory names from the table above
-- Web implementations: `python/`, `node/`, `java/`
+- Web implementations: `python/`, `node/`, `java/`, `dotnet/`
 - Console implementations: `python-console/`, `node-console/`, `java-console/`, `go/`, `cpp/`, `rust/`
 - Only create a language folder when that implementation exists
 - Do not nest `-console` folders inside their web counterparts — each is a sibling directory at the example root
@@ -133,6 +134,7 @@ Follow the idiomatic naming style of each language:
 | Python   | `python/`, `python-console/` | `{example-name}.py` | `00-reference-code.py` |
 | Node.js  | `node/`, `node-console/` | `{example-name}.js` | `00-reference-code.js` |
 | Java     | `java/`, `java-console/` | PascalCase (classes) | `WebServer.java` |
+| .NET     | `dotnet/` | `{example-name}.csproj` + PascalCase classes | `01-reference-agent.csproj`, `Program.cs`, `AgentCore.cs` |
 | C++      | `cpp/`    | `main.cpp` + Makefile | binary `00-reference-code` |
 | Go       | `go/`     | `main.go` | binary `00-reference-code` |
 | Rust     | `rust/`   | `src/main.rs` | binary `00-reference-code` |
@@ -220,6 +222,7 @@ Repository-wide and per-language dependency conventions:
 | Node.js | `node/`, `node-console/` → `package.json` | Per-folder Node metadata and scripts |
 | Java | `java/`, `java-console/` → `pom.xml` | Maven build; use `./mvnw` (Maven Wrapper) |
 | Java | `mvnw`, `.mvn/wrapper/` | Maven Wrapper — preferred over a system `mvn` install |
+| .NET | `dotnet/` → `{example-name}.csproj` | Per-folder .NET project file; use `dotnet restore` / `dotnet build` |
 | C++ | `cpp/` → `Makefile` | Must provide `all` and `clean` targets |
 | Go | `go/` → `go.mod` | Go modules |
 | Rust | `rust/` → `Cargo.toml` | Cargo; binary name matches example directory |
@@ -234,10 +237,10 @@ Every implementation **builds locally** inside its language folder. The root [RE
 
 The runnable artifact uses the **example directory name**:
 
-| Example folder | Python script | Node script | C++ / Go binary | Rust binary | Java JAR |
-|----------------|---------------|-------------|-----------------|-------------|----------|
-| `00-reference-code` | `00-reference-code.py` | `00-reference-code.js` | `./00-reference-code` | `./target/release/00-reference-code` | `target/00-reference-code.jar` |
-| `01-hello-world` | `01-hello-world.py` | `01-hello-world.js` | `./01-hello-world` | `./target/release/01-hello-world` | `target/01-hello-world.jar` |
+| Example folder | Python script | Node script | C++ / Go binary | Rust binary | Java JAR | .NET project |
+|----------------|---------------|-------------|-----------------|-------------|----------|--------------|
+| `00-reference-code` | `00-reference-code.py` | `00-reference-code.js` | `./00-reference-code` | `./target/release/00-reference-code` | `target/00-reference-code.jar` | `00-reference-code.csproj` |
+| `01-hello-world` | `01-hello-world.py` | `01-hello-world.js` | `./01-hello-world` | `./target/release/01-hello-world` | `target/01-hello-world.jar` | `01-hello-world.csproj` |
 
 Java **console** folders may use a `-console` JAR suffix when the web twin already owns `{example}.jar` (e.g. `01-reference-agent/java-console` → `target/01-reference-agent-console.jar`). Language READMEs document the exact name.
 
@@ -308,6 +311,25 @@ java -jar target/00-reference-code.jar
 ```
 
 Prefer `./mvnw` over a system-wide `mvn` install for consistency.
+
+### .NET
+
+- **Build tool:** `dotnet` CLI only (SDK 10+). No LaunchDarkly examples require a separate wrapper script.
+- **Build:** from the `dotnet/` language folder:
+
+```bash
+export PATH="/usr/local/share/dotnet:$PATH"   # if dotnet is not already on PATH
+dotnet restore
+dotnet build
+```
+
+- **Run:**
+
+```bash
+dotnet run
+```
+
+Project file name matches the example directory (e.g. `01-reference-agent.csproj`).
 
 ### C++
 
@@ -421,6 +443,7 @@ Install only what you need for the language and provisioning approach you are wo
 | Python          | 3.12+           | [pyenv](https://github.com/pyenv/pyenv) and `.python-version`; pip in `.venv` |
 | Node.js         | 20 LTS+         | [nvm](https://github.com/nvm-sh/nvm) and `.nvmrc` at repository root |
 | Java            | 21+             | Maven Wrapper (`./mvnw`) in each Java folder |
+| .NET            | SDK 10+         | `dotnet` CLI (`dotnet restore` / `dotnet build`) in each `dotnet/` folder |
 | C++             | C++20           | Make and a C++20-capable compiler |
 | Go              | 1.22+           | go modules |
 | Rust            | 1.75+           | 2021 edition |

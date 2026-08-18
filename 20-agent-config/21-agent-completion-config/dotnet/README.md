@@ -1,6 +1,6 @@
 # .NET web — AgentControl completion config
 
-Same UI as [01-reference-agent](../../../01-reference-agent/), but **Generate AI Report** loads **model**, **system**, and **user** messages from LaunchDarkly AgentControl.
+Same UI as [01-reference-agent/dotnet](../../../01-reference-agent/dotnet/) (no LaunchDarkly), but **Generate AI Report** loads **model**, **system**, and **user** messages from LaunchDarkly AgentControl.
 
 This example uses the official **LaunchDarkly AI SDK for .NET** (`LaunchDarkly.ServerSdk.Ai`) — `LdAiClient.CompletionConfig(...)` returns the targeted variation's model + messages directly, and `config.CreateTracker()` reports generation success/error/duration back to LaunchDarkly. A parallel `LdClient.JsonVariationDetail(...)` call reads the raw `_ldMeta` JSON (variation key, version, enabled) for the debug panel, since those fields are internal on the typed AI SDK object in the installed package version.
 
