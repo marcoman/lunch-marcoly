@@ -13,7 +13,7 @@ The user still generates a briefing from headlines; LaunchDarkly owns the **prom
 ```mermaid
 flowchart TB
   User["User (analyst)"]
-  UI["Web UI :8220 / :8221 / :8222"]
+  UI["Web UI :8220 / :8221 / :8222 / :8223"]
   App["App: completion_config"]
   LD["LaunchDarkly AgentControl<br/>key: equity-briefing-tracked-completion"]
   Track["track_metrics_of"]
@@ -48,6 +48,7 @@ Override with `LD_AGENT_CONFIG_KEY` if needed. Status helper: `./rest/get-feedba
 | Python web | **8220** | v1 — `track_metrics_of` + official feedback |
 | Node web | **8221** | v1 — same AI SDK path as Python |
 | Java web | **8222** | v1 — server SDK eval + Anthropic/Ollama; feedback via `track` (no Java AI SDK yet) |
+| .NET web | **8223** | v1 — AI SDK `CompletionConfig` + `TrackMetricsOf` + `TrackFeedback` |
 
 ## Config
 
@@ -88,16 +89,19 @@ cd ../node && npm install && npm start
 
 # Java (8222)
 cd ../java && ./mvnw -q -DskipTests package && java -jar target/22-config-outside-code.jar
+
+# .NET (8223)
+cd ../dotnet && dotnet run
 ```
 
 ## What to try
 
 1. **Anonymous Amelia** → local Ollama; after generate, check Monitoring + try 👍/👎.
-2. **Best Betty** → Anthropic Claude; same metrics + feedback path (Python/Node; Java thumbs use best-effort `track`).
+2. **Best Betty** → Anthropic Claude; same metrics + feedback path (Python/Node/.NET; Java thumbs use best-effort `track`).
 3. Edit prompts on the variation in the LD UI — no code change, no redeploy.
 
 ## Docs
 
 - [application.md](application.md) — normative behavior
-- [python/README.md](python/README.md) · [node/README.md](node/README.md) · [java/README.md](java/README.md)
+- [python/README.md](python/README.md) · [node/README.md](node/README.md) · [java/README.md](java/README.md) · [dotnet/README.md](dotnet/README.md)
 - Series: [../README.md](../README.md)

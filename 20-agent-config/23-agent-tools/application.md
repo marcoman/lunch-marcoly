@@ -36,7 +36,7 @@ Docs: https://launchdarkly.com/docs/home/agentcontrol/tools · https://launchdar
 ```mermaid
 flowchart TB
   User["User"]
-  UI["Web UI :8230"]
+  UI["Web UI :8230 / :8231 / :8232"]
   App["App tool loop"]
   LD["equity-briefing-tools / tools-anthropic"]
   T1["analyze-ticker-stories"]
@@ -54,6 +54,8 @@ flowchart TB
 ```
 
 See the [README architecture](README.md#architecture) for the full user-facing diagram and keys.
+
+Ports: Python **8230** · Node **8231** · Java **8232** · .NET **8233**.
 
 ## Env vars
 

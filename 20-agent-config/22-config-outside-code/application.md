@@ -62,7 +62,7 @@ See the [README architecture](README.md#architecture) for keys and the full diag
 5. Chunk response to SSE for the browser.
 6. On thumbs: `create_tracker(token, context)` → `track_feedback` (Java: `$ld:ai:feedback:*` via `track`).
 
-Ports: Python **8220** · Node **8221** · Java **8222**.
+Ports: Python **8220** · Node **8221** · Java **8222** · .NET **8223**.
 
 ## Env vars
 

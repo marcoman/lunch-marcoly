@@ -11,6 +11,10 @@ node_modules/
 # Java / Maven
 target/
 
+# .NET
+bin/
+obj/
+
 # C++ / Go native executables (example-named binaries, no file extension)
 00-reference-code/**/00-reference-code
 00-reference-code/**/00-reference-code.exe

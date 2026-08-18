@@ -1,0 +1,17 @@
+{
+  "name": "23-agent-tools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "23-agent-tools — AgentControl Library tools loop (Node web)",
+  "main": "23-agent-tools.js",
+  "scripts": {
+    "start": "node 23-agent-tools.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0",
+    "@launchdarkly/server-sdk-ai": "^2.0.0"
+  }
+}

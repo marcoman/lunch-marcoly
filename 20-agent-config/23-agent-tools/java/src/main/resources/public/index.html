@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent completion config</title>
+  <!--
+    UI for 22-config-outside-code (Python web).
+
+    Same flow as 01-reference-agent, but Generate uses LaunchDarkly AgentControl
+    for model + system/user messages (completion config).
+
+    Flow:
+      1. Enter two tickers
+      2. Get Stories → Yahoo Finance headlines into the two story panels
+      3. Choose user (Previous/Next)
+      4. Generate AI Report → AgentControl tools loop (analyze ×2 → compare) → stream briefing
+
+    Layout:
+      • Collapsible Stories chrome (tickers + Get Stories + headline panels)
+      • User panel: Previous User | name | Next user
+      • Generate AI Report
+      • User Prompt | Response (side-by-side)
+      • Provider/model · Metrics · Status (below)
+  -->
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --ink: #1c1a16;
+      --muted: #6b645a;
+      --panel: #fffdf8;
+      --line: #d9d0c3;
+      --accent: #2f5d50;
+      --danger: #8b2e2e;
+      --ok: #2f5d50;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, #efe6d6 0%, transparent 40%),
+        linear-gradient(180deg, #f7f3eb 0%, #ebe4d8 100%);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+    .wrap {
+      /* Standard desktop content width: 1280px (common laptop / Tailwind max-w-7xl). */
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 3rem;
+    }
+    .app-banner {
+      font-size: 0.85rem;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+      margin-bottom: 0.75rem;
+    }
+    h1 {
+      font-family: "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+      font-size: 2rem;
+      font-weight: 600;
+      margin: 0 0 0.35rem;
+    }
+    .subtitle {
+      color: var(--muted);
+      margin: 0 0 1.25rem;
+    }
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      align-items: center;
+    }
+    .generate-block {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .generate-block > .primary {
+      align-self: flex-start;
+    }
+    .generate-block .tool-trace-panel {
+      width: 100%;
+      margin: 0;
+    }
+    .persona-panel {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1rem;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .persona-panel .persona-meta {
+      text-align: center;
+      min-width: 12rem;
+      flex: 1 1 14rem;
+    }
+    .persona-panel .persona-nav {
+      display: contents;
+    }
+    /* Collapsible tickers + headlines chrome */
+    .stories-chrome {
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+      background: var(--panel);
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+    .stories-chrome-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+      color: var(--ink);
+    }
+    .stories-chrome-header:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--accent) 8%, transparent);
+      border-color: transparent;
+    }
+    .stories-chrome-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      flex: 0 0 auto;
+    }
+    .stories-chrome-summary {
+      flex: 1 1 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.35rem 0.75rem;
+      min-width: 0;
+    }
+    .stories-chrome-tickers {
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .stories-chrome-status {
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 400;
+    }
+    .stories-chrome-chevron {
+      flex: 0 0 auto;
+      width: 1.35rem;
+      height: 1.35rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 0.35rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+      line-height: 1;
+      transition: transform 0.15s ease;
+    }
+    .stories-chrome.collapsed .stories-chrome-chevron {
+      transform: rotate(-90deg);
+    }
+    .stories-chrome-body {
+      padding: 0 1rem 1rem;
+      border-top: 1px solid var(--line);
+    }
+    .stories-chrome.collapsed .stories-chrome-body {
+      display: none;
+    }
+    .ticker-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: end;
+      margin: 1rem 0;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .field label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+    .field input {
+      font: inherit;
+      padding: 0.55rem 0.7rem;
+      border: 1px solid var(--line);
+      border-radius: 0.4rem;
+      background: var(--panel);
+      color: var(--ink);
+      min-width: 7rem;
+      text-transform: uppercase;
+    }
+    button {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+      padding: 0.55rem 0.9rem;
+      border-radius: 0.4rem;
+      cursor: pointer;
+      font: inherit;
+    }
+    button:hover:not(:disabled) { border-color: var(--accent); }
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    button.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .stories-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr;
+      margin-bottom: 0;
+    }
+    @media (min-width: 700px) {
+      .stories-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .stories-chrome-body .panel {
+      background: color-mix(in srgb, var(--bg) 55%, var(--panel));
+    }
+    .grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr;
+      margin-bottom: 1rem;
+    }
+    @media (min-width: 900px) {
+      .grid.io-grid { grid-template-columns: 1fr 1fr; }
+      .grid.meta-grid { grid-template-columns: 1fr 1.2fr 1fr; }
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+      padding: 1rem 1.1rem;
+    }
+    .panel.io-panel {
+      min-height: 16rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .panel.io-panel .value {
+      flex: 1 1 auto;
+      overflow: auto;
+      max-height: 28rem;
+    }
+    .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+    .value {
+      white-space: pre-wrap;
+      line-height: 1.5;
+      min-height: 1.5rem;
+    }
+    .prompt-view {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      white-space: normal;
+    }
+    .prompt-heading {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--accent);
+      margin: 0;
+    }
+    .prompt-body {
+      margin: 0;
+      color: var(--fg, inherit);
+      line-height: 1.45;
+    }
+    .prompt-code {
+      margin: 0;
+      padding: 0.65rem 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--bg) 70%, var(--panel));
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      overflow: auto;
+      max-height: 16rem;
+      color: color-mix(in srgb, var(--fg, #e8e8ec) 92%, var(--accent));
+    }
+    .tool-trace-view {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      white-space: normal;
+      font-size: 0.85rem;
+    }
+    .tool-call {
+      border: 1px solid var(--line);
+      border-radius: 0.5rem;
+      padding: 0.45rem 0.6rem;
+      background: color-mix(in srgb, var(--bg) 60%, var(--panel));
+    }
+    .tool-call-head {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 0.65rem;
+      align-items: baseline;
+      margin-bottom: 0.25rem;
+    }
+    .tool-idx {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .tool-name {
+      font-weight: 700;
+    }
+    .tool-round {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+    .tool-call details summary {
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    .tool-call pre {
+      margin: 0.35rem 0 0;
+      padding: 0.45rem 0.5rem;
+      border-radius: 0.35rem;
+      background: color-mix(in srgb, var(--bg) 80%, #000);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.75rem;
+      white-space: pre-wrap;
+      overflow: auto;
+      max-height: 12rem;
+    }
+    .tool-attached {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin: 0;
+    }
+    .ticker-heading {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+    }
+    .ticker-sub {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 0.65rem;
+    }
+    .story-list {
+      margin: 0;
+      padding-left: 1.1rem;
+      line-height: 1.45;
+    }
+    .story-list li {
+      margin-bottom: 0.45rem;
+    }
+    .story-list a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .story-list a:hover { text-decoration: underline; }
+    .story-pub {
+      display: block;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    .empty-stories {
+      color: var(--muted);
+      font-style: italic;
+    }
+    #response {
+      min-height: 10rem;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 0.95rem;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.65rem 1rem;
+      font-size: 0.95rem;
+    }
+    .metrics div span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    #status {
+      min-height: 3rem;
+      color: var(--muted);
+    }
+    #status.error { color: var(--danger); }
+    #status.ok { color: var(--ok); }
+    #status.busy {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .status-panel.busy {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+    .persona-name {
+      font-size: 1.35rem;
+      font-weight: 600;
+    }
+    .profile {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* LD details overlay (does not resize main layout) */
+    .ld-fab {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 40;
+      box-shadow: 0 2px 10px rgba(28, 26, 22, 0.12);
+    }
+    .ld-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(28, 26, 22, 0.28);
+      z-index: 50;
+    }
+    .ld-backdrop.open { display: block; }
+    .ld-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      width: min(28rem, 92vw);
+      max-width: 92vw;
+      background: var(--panel);
+      border-left: 1px solid var(--line);
+      z-index: 60;
+      transform: translateX(100%);
+      transition: transform 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -8px 0 24px rgba(28, 26, 22, 0.12);
+    }
+    .ld-drawer.open { transform: translateX(0); }
+    .ld-drawer-resize {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      cursor: ew-resize;
+      background: transparent;
+    }
+    .ld-drawer-resize:hover { background: rgba(47, 93, 80, 0.15); }
+    .ld-drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 1rem 1.1rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .ld-drawer-header h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+    .ld-tabs {
+      display: flex;
+      gap: 0.35rem;
+      padding: 0.65rem 1.1rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .ld-tab {
+      border: none;
+      background: transparent;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      padding: 0.45rem 0.65rem;
+      color: var(--muted);
+      font: inherit;
+      cursor: pointer;
+    }
+    .ld-tab.active {
+      color: var(--ink);
+      border-bottom-color: var(--accent);
+      font-weight: 600;
+    }
+    .ld-drawer-body {
+      flex: 1 1 auto;
+      overflow: auto;
+      padding: 1rem 1.1rem 2rem;
+    }
+    .ld-empty {
+      color: var(--muted);
+      line-height: 1.5;
+      font-style: italic;
+    }
+    .ld-section { display: none; }
+    .ld-section.active { display: block; }
+    .ld-kv {
+      display: grid;
+      grid-template-columns: 7.5rem 1fr;
+      gap: 0.35rem 0.75rem;
+      margin: 0 0 1rem;
+      font-size: 0.92rem;
+    }
+    .ld-kv dt {
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding-top: 0.15rem;
+    }
+    .ld-kv dd {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.4;
+    }
+    .ld-block-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin: 1rem 0 0.4rem;
+    }
+    .ld-msg {
+      border: 1px solid var(--line);
+      border-radius: 0.5rem;
+      padding: 0.65rem 0.75rem;
+      margin-bottom: 0.65rem;
+      background: #fff;
+    }
+    .ld-msg-role {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+      font-weight: 600;
+    }
+    .ld-msg-body {
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.45;
+      font-size: 0.9rem;
+    }
+    .ld-msg-body.collapsed {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+    .ld-msg-toggle {
+      margin-top: 0.4rem;
+      padding: 0.2rem 0.45rem;
+      font-size: 0.8rem;
+      color: var(--accent);
+      border-color: transparent;
+      background: transparent;
+    }
+    .ld-msg-toggle:hover { border-color: var(--line); }
+    .ld-json {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 0.8rem;
+      background: #f7f3eb;
+      border: 1px solid var(--line);
+      border-radius: 0.4rem;
+      padding: 0.65rem 0.75rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 14rem;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="app-banner" id="app-banner">23-agent-tools[java]</div>
+    <h1>AgentControl tools</h1>
+    <p class="subtitle">Pull ticker headlines, then generate a briefing via a Library tools loop (analyze → compare).</p>
+
+    <section class="stories-chrome" id="stories-chrome" aria-label="Tickers and stories">
+      <button
+        type="button"
+        class="stories-chrome-header"
+        id="btn-stories-toggle"
+        aria-expanded="true"
+        aria-controls="stories-chrome-body"
+      >
+        <span class="stories-chrome-label">Stories</span>
+        <span class="stories-chrome-summary">
+          <span class="stories-chrome-tickers" id="stories-summary-tickers">NVDA · SPCX</span>
+          <span class="stories-chrome-status" id="stories-summary-status">(no stories yet)</span>
+        </span>
+        <span class="stories-chrome-chevron" id="stories-chrome-chevron" aria-hidden="true">▾</span>
+      </button>
+      <div class="stories-chrome-body" id="stories-chrome-body">
+        <div class="ticker-row">
+          <div class="field">
+            <label for="ticker1">Ticker 1</label>
+            <input id="ticker1" type="text" value="NVDA" maxlength="12" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="ticker2">Ticker 2</label>
+            <input id="ticker2" type="text" value="SPCX" maxlength="12" autocomplete="off" />
+          </div>
+          <button id="btn-stories" class="primary" type="button">Get Stories</button>
+        </div>
+
+        <div class="stories-grid">
+          <div class="panel" id="panel-story-1">
+            <div class="label">Stories — ticker 1</div>
+            <div class="ticker-heading" id="story1-heading">—</div>
+            <div class="ticker-sub" id="story1-name"></div>
+            <div id="story1-list" class="empty-stories">Click Get Stories to load headlines.</div>
+          </div>
+          <div class="panel" id="panel-story-2">
+            <div class="label">Stories — ticker 2</div>
+            <div class="ticker-heading" id="story2-heading">—</div>
+            <div class="ticker-sub" id="story2-name"></div>
+            <div id="story2-list" class="empty-stories">Click Get Stories to load headlines.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="panel persona-panel">
+      <button id="btn-prev" type="button">← Previous User</button>
+      <div class="persona-meta">
+        <div class="label">User</div>
+        <div class="persona-name" id="persona-name">—</div>
+        <div class="profile" id="persona-profile">—</div>
+      </div>
+      <button id="btn-next" type="button">Next user →</button>
+    </div>
+
+    <div class="generate-block">
+      <button id="btn-refresh" class="primary" type="button">Generate AI Report</button>
+      <div class="panel tool-trace-panel">
+        <div class="label">Tool trace</div>
+        <div class="value tool-trace-view" id="tool-trace">—</div>
+      </div>
+    </div>
+
+    <div class="grid io-grid">
+      <div class="panel io-panel">
+        <div class="label">User Prompt</div>
+        <div class="value prompt-view" id="input">—</div>
+      </div>
+      <div class="panel io-panel">
+        <div class="label">Response</div>
+        <div class="value" id="response"></div>
+      </div>
+    </div>
+
+    <div class="grid meta-grid">
+      <div class="panel">
+        <div class="label">Provider / model</div>
+        <div class="value" id="provider-model">—</div>
+      </div>
+      <div class="panel">
+        <div class="label">Metrics</div>
+        <div class="metrics" id="metrics">
+          <div><span>latency_ms</span><strong id="m-latency">—</strong></div>
+          <div><span>ttft_ms</span><strong id="m-ttft">—</strong></div>
+          <div><span>prompt_tokens</span><strong id="m-prompt">—</strong></div>
+          <div><span>completion_tokens</span><strong id="m-completion">—</strong></div>
+          <div><span>total_tokens</span><strong id="m-total">—</strong></div>
+          <div><span>finish_reason</span><strong id="m-finish">—</strong></div>
+        </div>
+      </div>
+      <div class="panel status-panel" id="status-panel">
+        <div class="label">Status</div>
+        <div id="status">Loading…</div>
+      </div>
+    </div>
+  </div>
+
+  <button id="btn-ld-details" class="ld-fab" type="button" title="LaunchDarkly sent/received details">
+    LD details
+  </button>
+  <div id="ld-backdrop" class="ld-backdrop" hidden></div>
+  <aside id="ld-drawer" class="ld-drawer" aria-hidden="true">
+    <div class="ld-drawer-resize" id="ld-drawer-resize" title="Drag to resize"></div>
+    <div class="ld-drawer-header">
+      <h2>LaunchDarkly · last generate</h2>
+      <button id="btn-ld-close" type="button">Close</button>
+    </div>
+    <div class="ld-tabs" role="tablist">
+      <button type="button" class="ld-tab active" data-tab="sent" role="tab" aria-selected="true">Sent</button>
+      <button type="button" class="ld-tab" data-tab="received" role="tab" aria-selected="false">Received</button>
+    </div>
+    <div class="ld-drawer-body">
+      <p id="ld-empty" class="ld-empty">
+        Generate to see the last LD evaluation.
+      </p>
+      <div id="ld-section-sent" class="ld-section active" hidden></div>
+      <div id="ld-section-received" class="ld-section" hidden></div>
+    </div>
+  </aside>
+
+  <script>
+    /*
+     * Client flow
+     * -----------
+     * 1. boot()         → GET /api/bootstrap (+ restore saved story titles)
+     * 2. getStories()   → GET /api/stories  (Yahoo only; no LLM)
+     * 3. selectUser()   → Previous/Next User (UI only; no fetch, no LLM)
+     * 4. generate()     → POST /api/generate with current stories (SSE)
+     *
+     * Generate AI Report is the only action that runs the LLM.
+     */
+
+    const STORAGE_KEY = "22-config-outside-code-stories-v1";
+    const STORIES_CHROME_KEY = "22-stories-chrome-collapsed";
+
+    let personas = [];
+    let index = 0;
+    let busy = false;
+    let abortController = null;
+    let latestStories = [];
+    let lastLdTransaction = null;
+    let ldTab = "sent";
+    let toolTraceLines = [];
+    let toolTraceHtml = "";
+
+    const els = {
+      banner: document.getElementById("app-banner"),
+      storiesChrome: document.getElementById("stories-chrome"),
+      storiesToggle: document.getElementById("btn-stories-toggle"),
+      storiesSummaryTickers: document.getElementById("stories-summary-tickers"),
+      storiesSummaryStatus: document.getElementById("stories-summary-status"),
+      ticker1: document.getElementById("ticker1"),
+      ticker2: document.getElementById("ticker2"),
+      stories: document.getElementById("btn-stories"),
+      story1Heading: document.getElementById("story1-heading"),
+      story1Name: document.getElementById("story1-name"),
+      story1List: document.getElementById("story1-list"),
+      story2Heading: document.getElementById("story2-heading"),
+      story2Name: document.getElementById("story2-name"),
+      story2List: document.getElementById("story2-list"),
+      name: document.getElementById("persona-name"),
+      profile: document.getElementById("persona-profile"),
+      input: document.getElementById("input"),
+      response: document.getElementById("response"),
+      toolTrace: document.getElementById("tool-trace"),
+      providerModel: document.getElementById("provider-model"),
+      statusPanel: document.getElementById("status-panel"),
+      status: document.getElementById("status"),
+      prev: document.getElementById("btn-prev"),
+      next: document.getElementById("btn-next"),
+      refresh: document.getElementById("btn-refresh"),
+      latency: document.getElementById("m-latency"),
+      ttft: document.getElementById("m-ttft"),
+      prompt: document.getElementById("m-prompt"),
+      completion: document.getElementById("m-completion"),
+      total: document.getElementById("m-total"),
+      finish: document.getElementById("m-finish"),
+      ldBtn: document.getElementById("btn-ld-details"),
+      ldBackdrop: document.getElementById("ld-backdrop"),
+      ldDrawer: document.getElementById("ld-drawer"),
+      ldClose: document.getElementById("btn-ld-close"),
+      ldResize: document.getElementById("ld-drawer-resize"),
+      ldEmpty: document.getElementById("ld-empty"),
+      ldSent: document.getElementById("ld-section-sent"),
+      ldReceived: document.getElementById("ld-section-received"),
+    };
+
+    function openLdDrawer() {
+      els.ldBackdrop.hidden = false;
+      els.ldBackdrop.classList.add("open");
+      els.ldDrawer.classList.add("open");
+      els.ldDrawer.setAttribute("aria-hidden", "false");
+      renderLdDrawer();
+    }
+
+    function closeLdDrawer() {
+      els.ldBackdrop.classList.remove("open");
+      els.ldBackdrop.hidden = true;
+      els.ldDrawer.classList.remove("open");
+      els.ldDrawer.setAttribute("aria-hidden", "true");
+    }
+
+    function setLdTab(tab) {
+      ldTab = tab;
+      for (const btn of document.querySelectorAll(".ld-tab")) {
+        const active = btn.dataset.tab === tab;
+        btn.classList.toggle("active", active);
+        btn.setAttribute("aria-selected", active ? "true" : "false");
+      }
+      els.ldSent.classList.toggle("active", tab === "sent");
+      els.ldReceived.classList.toggle("active", tab === "received");
+    }
+
+    function fmtValue(value) {
+      if (value === null || value === undefined || value === "") return "—";
+      if (typeof value === "object") return JSON.stringify(value, null, 2);
+      return String(value);
+    }
+
+    function kvHtml(rows) {
+      const parts = ['<dl class="ld-kv">'];
+      for (const [label, value] of rows) {
+        parts.push(`<dt>${escapeHtml(label)}</dt><dd>${escapeHtml(fmtValue(value))}</dd>`);
+      }
+      parts.push("</dl>");
+      return parts.join("");
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function decodeHtmlEntities(text) {
+      const ta = document.createElement("textarea");
+      ta.innerHTML = String(text || "");
+      return ta.value;
+    }
+
+    function renderPromptSections(sections, fallbackText) {
+      if (!els.input) return;
+      if (sections && sections.length) {
+        const parts = ['<div class="prompt-view">'];
+        for (const section of sections) {
+          const kind = section.kind || "body";
+          const text = decodeHtmlEntities(section.text || "");
+          if (kind === "heading") {
+            parts.push(`<div class="prompt-heading">${escapeHtml(text)}</div>`);
+          } else if (kind === "code") {
+            parts.push(`<pre class="prompt-code">${escapeHtml(text)}</pre>`);
+          } else {
+            parts.push(`<p class="prompt-body">${escapeHtml(text)}</p>`);
+          }
+        }
+        parts.push("</div>");
+        els.input.innerHTML = parts.join("");
+        return;
+      }
+      els.input.textContent = decodeHtmlEntities(fallbackText || "—");
+    }
+
+    function renderToolAttached(tools) {
+      if (!els.toolTrace) return;
+      const line = tools && tools.length
+        ? `<p class="tool-attached">Attached: ${escapeHtml(tools.join(", "))}</p>`
+        : "";
+      toolTraceHtml = line;
+      els.toolTrace.innerHTML = toolTraceHtml || "—";
+    }
+
+    function appendToolCall(event) {
+      if (!els.toolTrace) return;
+      const idx = event.callIndex || event.step || "?";
+      const round = event.round || "?";
+      const name = event.name || "?";
+      const argsJson = JSON.stringify(event.args || {}, null, 2);
+      const resultJson = JSON.stringify(event.result || {}, null, 2);
+      const block = `
+        <div class="tool-call">
+          <div class="tool-call-head">
+            <span class="tool-idx">#${escapeHtml(String(idx))}</span>
+            <span class="tool-name">${escapeHtml(name)}</span>
+            <span class="tool-round">model round ${escapeHtml(String(round))}</span>
+          </div>
+          <details>
+            <summary>Args + result</summary>
+            <pre><strong>args</strong>\n${escapeHtml(argsJson)}\n\n<strong>result</strong>\n${escapeHtml(resultJson)}</pre>
+          </details>
+        </div>`;
+      toolTraceHtml += block;
+      els.toolTrace.innerHTML = toolTraceHtml;
+    }
+
+    function messageBlocksHtml(messages, prefix) {
+      if (!messages || !messages.length) {
+        return '<p class="ld-empty">No messages.</p>';
+      }
+      return messages
+        .map((msg, i) => {
+          const role = msg.role || "message";
+          const content = msg.content || "";
+          const id = `${prefix}-msg-${i}`;
+          const needsToggle = content.split("\n").length > 2 || content.length > 160;
+          return `
+            <div class="ld-msg">
+              <div class="ld-msg-role">${escapeHtml(role)}</div>
+              <div class="ld-msg-body collapsed" id="${id}">${escapeHtml(content)}</div>
+              ${
+                needsToggle
+                  ? `<button type="button" class="ld-msg-toggle" data-target="${id}">Show more</button>`
+                  : ""
+              }
+            </div>`;
+        })
+        .join("");
+    }
+
+    function renderLdDrawer() {
+      if (!lastLdTransaction) {
+        els.ldEmpty.hidden = false;
+        els.ldSent.hidden = true;
+        els.ldReceived.hidden = true;
+        els.ldEmpty.textContent = "Generate to see the last LD evaluation.";
+        return;
+      }
+
+      els.ldEmpty.hidden = true;
+      els.ldSent.hidden = false;
+      els.ldReceived.hidden = false;
+
+      const sent = lastLdTransaction.sent || {};
+      const received = lastLdTransaction.received || {};
+      const ctx = sent.context || {};
+      const vars = sent.variables || {};
+      const sdkDefault = sent.sdkDefault || {};
+
+      els.ldSent.innerHTML = `
+        <div class="ld-block-title">Request</div>
+        ${kvHtml([
+          ["Config key", sent.configKey],
+          ["Context kind", ctx.kind],
+          ["Context key", ctx.key],
+          ["Context name", ctx.name],
+        ])}
+        <div class="ld-block-title">Variables</div>
+        <div class="ld-msg">
+          <div class="ld-msg-role">stories</div>
+          <div class="ld-msg-body collapsed" id="ld-var-stories">${escapeHtml(vars.stories || "")}</div>
+          <button type="button" class="ld-msg-toggle" data-target="ld-var-stories">Show more</button>
+        </div>
+        <div class="ld-block-title">SDK default (fallback shape)</div>
+        ${kvHtml([
+          ["Enabled", sdkDefault.enabled],
+          ["Model", sdkDefault.model],
+          ["Provider", sdkDefault.provider],
+        ])}
+        <p class="ld-empty" style="font-style:normal;margin:0 0 0.5rem">${escapeHtml(sdkDefault.description || "")}</p>
+        ${messageBlocksHtml(sdkDefault.messages || [], "ld-default")}
+        <div class="ld-block-title">Raw context JSON</div>
+        <pre class="ld-json">${escapeHtml(JSON.stringify(ctx, null, 2))}</pre>
+      `;
+
+      const reason = received.reason || {};
+      els.ldReceived.innerHTML = `
+        <div class="ld-block-title">Evaluation</div>
+        ${kvHtml([
+          ["Fallback", received.fallback],
+          ["Mode", received.mode],
+          ["Enabled", received.enabled],
+          ["Config key", received.configKey],
+          ["Variation", received.variationKey],
+          ["Variation index", received.variationIndex],
+          ["Reason", reason.kind || reason],
+          ["Rule index", reason.ruleIndex],
+          ["Rule id", reason.ruleId],
+          ["Version", received.version],
+          ["Version key", received.versionKey],
+          ["LD mode", received.ldMode],
+          ["Model key", received.modelKey],
+          ["Model version", received.modelVersion],
+          ["Provider", received.provider],
+          ["Model", received.model],
+        ])}
+        <div class="ld-block-title">Messages (served)</div>
+        ${messageBlocksHtml(received.messages || [], "ld-recv")}
+        <div class="ld-block-title">Raw reason JSON</div>
+        <pre class="ld-json">${escapeHtml(JSON.stringify(reason, null, 2))}</pre>
+      `;
+
+      setLdTab(ldTab);
+      wireMsgToggles(els.ldSent);
+      wireMsgToggles(els.ldReceived);
+    }
+
+    function wireMsgToggles(root) {
+      for (const btn of root.querySelectorAll(".ld-msg-toggle")) {
+        btn.addEventListener("click", () => {
+          const target = document.getElementById(btn.dataset.target);
+          if (!target) return;
+          const collapsed = target.classList.toggle("collapsed");
+          btn.textContent = collapsed ? "Show more" : "Show less";
+        });
+      }
+    }
+
+    els.ldBtn.addEventListener("click", () => openLdDrawer());
+    els.ldClose.addEventListener("click", () => closeLdDrawer());
+    els.ldBackdrop.addEventListener("click", () => closeLdDrawer());
+    for (const btn of document.querySelectorAll(".ld-tab")) {
+      btn.addEventListener("click", () => setLdTab(btn.dataset.tab));
+    }
+
+    // Drag handle to widen/narrow the overlay drawer.
+    (function setupResize() {
+      let dragging = false;
+      els.ldResize.addEventListener("mousedown", (ev) => {
+        dragging = true;
+        ev.preventDefault();
+      });
+      window.addEventListener("mousemove", (ev) => {
+        if (!dragging) return;
+        const width = Math.min(Math.max(window.innerWidth - ev.clientX, 280), window.innerWidth * 0.92);
+        els.ldDrawer.style.width = `${width}px`;
+      });
+      window.addEventListener("mouseup", () => {
+        dragging = false;
+      });
+    })();
+
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key === "Escape" && els.ldDrawer.classList.contains("open")) {
+        closeLdDrawer();
+      }
+    });
+
+
+    function setBusy(value) {
+      busy = value;
+      // Keep Previous/Next usable for browsing users; only lock fetch/generate.
+      els.refresh.disabled = value;
+      els.stories.disabled = value;
+      els.ticker1.disabled = value;
+      els.ticker2.disabled = value;
+      if (els.statusPanel) {
+        els.statusPanel.classList.toggle("busy", value);
+      }
+    }
+
+    function setStatus(text, kind) {
+      els.status.textContent = text;
+      els.status.className = kind || "";
+    }
+
+    function clearMetrics() {
+      for (const key of ["latency", "ttft", "prompt", "completion", "total", "finish"]) {
+        els[key].textContent = "—";
+      }
+    }
+
+    function renderPersona() {
+      const p = personas[index];
+      els.name.textContent = p.name;
+      const anon = p.anonymous ? " · anonymous context" : "";
+      const model = p.model ? ` · ${p.model}` : "";
+      els.profile.textContent = `Profile: ${p.profile}${model}${anon}`;
+    }
+
+    function selectUser(nextIndex) {
+      index = nextIndex;
+      renderPersona();
+      els.response.textContent = "";
+      clearMetrics();
+      els.input.textContent = "—";
+      setStatus(
+        `Selected ${personas[index].name}. Press Generate AI Report when ready.`,
+        ""
+      );
+    }
+
+    function fmt(value) {
+      return value === null || value === undefined || value === "" ? "—" : String(value);
+    }
+
+    function currentTickers() {
+      return {
+        ticker1: (els.ticker1.value || "NVDA").trim().toUpperCase(),
+        ticker2: (els.ticker2.value || "SPCX").trim().toUpperCase(),
+      };
+    }
+
+    function storyCount(blocks) {
+      return (blocks || []).reduce((n, b) => n + ((b && b.stories) || []).length, 0);
+    }
+
+    function updateStoriesSummary() {
+      const { ticker1, ticker2 } = currentTickers();
+      els.storiesSummaryTickers.textContent = `${ticker1} · ${ticker2}`;
+      const n = storyCount(latestStories);
+      if (n <= 0) {
+        els.storiesSummaryStatus.textContent = "(no stories yet)";
+      } else if (n === 1) {
+        els.storiesSummaryStatus.textContent = "(1 story)";
+      } else {
+        els.storiesSummaryStatus.textContent = `(${n} stories)`;
+      }
+    }
+
+    function setStoriesChromeCollapsed(collapsed) {
+      els.storiesChrome.classList.toggle("collapsed", collapsed);
+      els.storiesToggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      try {
+        localStorage.setItem(STORIES_CHROME_KEY, collapsed ? "1" : "0");
+      } catch (_) {}
+    }
+
+    function restoreStoriesChromeState() {
+      try {
+        const raw = localStorage.getItem(STORIES_CHROME_KEY);
+        if (raw === "1") setStoriesChromeCollapsed(true);
+        else setStoriesChromeCollapsed(false);
+      } catch (_) {
+        setStoriesChromeCollapsed(false);
+      }
+    }
+
+    function hasUsableStories() {
+      return (latestStories || []).some((b) => (b.stories || []).length > 0);
+    }
+
+    function hasUsableStoriesAfter(blocks) {
+      return (blocks || []).some((b) => (b.stories || []).length > 0);
+    }
+
+    function saveStoriesLocally(ticker1, ticker2, tickerBlocks) {
+      const usable = (tickerBlocks || []).filter((b) => (b.stories || []).length > 0);
+      if (usable.length < 2) return;
+      const payload = {
+        ticker1,
+        ticker2,
+        tickers: tickerBlocks,
+        savedAt: new Date().toISOString(),
+      };
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch (_) {}
+    }
+
+    function loadStoriesLocally() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (!data || !Array.isArray(data.tickers) || data.tickers.length < 2) return null;
+        return data;
+      } catch (_) {
+        return null;
+      }
+    }
+
+
+    function formatPublishedDisplay(published) {
+      const text = String(published || "").trim();
+      if (!text) return "";
+      const dt = new Date(text);
+      if (Number.isNaN(dt.getTime())) return text;
+      return dt.toLocaleString(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      });
+    }
+
+    function formatStorySource(story) {
+      if (!story) return "";
+      const publisher = String(story.publisher || "").trim();
+      const when = formatPublishedDisplay(story.published);
+      if (publisher && when) return `${publisher} · ${when}`;
+      return publisher || when;
+    }
+
+    function renderStoryPanel(block, headingEl, nameEl, listEl) {
+      const ticker = (block && block.ticker) || "—";
+      const name = (block && block.name) || "";
+      headingEl.textContent = ticker;
+      let sub = name && name !== ticker ? name : "";
+      if (block && block.from_cache) {
+        sub = sub ? `${sub} · cached` : "cached";
+      }
+      nameEl.textContent = sub;
+
+      const stories = (block && block.stories) || [];
+      if (!stories.length) {
+        const msg = (block && block.error) || "No stories available.";
+        listEl.className = "empty-stories";
+        listEl.textContent = msg;
+        return;
+      }
+
+      const ul = document.createElement("ol");
+      ul.className = "story-list";
+      for (const story of stories) {
+        const li = document.createElement("li");
+        li.appendChild(document.createTextNode(story.title || "(untitled)"));
+        const source = formatStorySource(story);
+        if (source) {
+          const pub = document.createElement("span");
+          pub.className = "story-pub";
+          pub.textContent = source;
+          li.appendChild(pub);
+        }
+        ul.appendChild(li);
+      }
+      listEl.className = "";
+      listEl.replaceChildren(ul);
+    }
+
+    function renderStories(tickerBlocks, options = {}) {
+      latestStories = tickerBlocks || [];
+      renderStoryPanel(
+        latestStories[0],
+        els.story1Heading,
+        els.story1Name,
+        els.story1List
+      );
+      renderStoryPanel(
+        latestStories[1],
+        els.story2Heading,
+        els.story2Name,
+        els.story2List
+      );
+      updateStoriesSummary();
+      if (options.persist) {
+        const { ticker1, ticker2 } = currentTickers();
+        saveStoriesLocally(ticker1, ticker2, latestStories);
+      }
+      if (options.collapse) {
+        setStoriesChromeCollapsed(true);
+      }
+    }
+
+    async function getStories() {
+      const { ticker1, ticker2 } = currentTickers();
+      setBusy(true);
+      setStatus(`Fetching Yahoo Finance stories for ${ticker1} and ${ticker2}…`, "busy");
+      try {
+        const res = await fetch(
+          `/api/stories?ticker1=${encodeURIComponent(ticker1)}&ticker2=${encodeURIComponent(ticker2)}`
+        );
+        if (!res.ok) throw new Error(`Stories request failed (${res.status})`);
+        const data = await res.json();
+        const blocks = data.tickers || [];
+        const usable = hasUsableStoriesAfter(blocks);
+        renderStories(blocks, { persist: true, collapse: usable });
+        const notes = [];
+        if (data.errors && data.errors.length) notes.push(data.errors.join(" · "));
+        const cached = blocks.some((b) => b.from_cache);
+        if (cached) notes.push("Used saved headlines where live Yahoo fetch failed.");
+        if (notes.length) {
+          setStatus(notes.join(" "), "error");
+        } else {
+          setStatus("Stories loaded. Press Generate AI Report when ready.", "ok");
+        }
+      } catch (err) {
+        setStatus(String(err.message || err), "error");
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function generate() {
+      if (!personas.length) return;
+      if (!hasUsableStories()) {
+        setStatus("Load stories first (Get Stories), then press Generate AI Report.", "error");
+        return;
+      }
+      if (abortController) abortController.abort();
+      abortController = new AbortController();
+
+      const persona = personas[index];
+      renderPersona();
+      els.response.textContent = "";
+      clearMetrics();
+      toolTraceLines = [];
+      toolTraceHtml = "";
+      if (els.toolTrace) els.toolTrace.textContent = "—";
+      if (els.input) {
+        els.input.className = "value prompt-view";
+        els.input.textContent = "—";
+      }
+      setBusy(true);
+      setStatus(
+        `Generating AI report for ${persona.name}… (streaming response)`,
+        "busy"
+      );
+
+      try {
+        const res = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            personaId: persona.id,
+            stories: latestStories,
+          }),
+          signal: abortController.signal,
+        });
+        if (!res.ok || !res.body) {
+          throw new Error(`Generate failed (${res.status})`);
+        }
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let sawToken = false;
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const parts = buffer.split("\n\n");
+          buffer = parts.pop() || "";
+          for (const part of parts) {
+            const line = part.trim();
+            if (!line.startsWith("data:")) continue;
+            const payload = JSON.parse(line.slice(5).trim());
+            if (payload.type === "token" && !sawToken) {
+              sawToken = true;
+              setStatus(`Streaming AI report for ${persona.name}…`, "busy");
+            }
+            handleEvent(payload);
+          }
+        }
+      } catch (err) {
+        if (err.name === "AbortError") return;
+        setStatus(String(err.message || err), "error");
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    function handleEvent(event) {
+      if (event.type === "meta") {
+        renderPromptSections(event.inputSections, event.input);
+        els.providerModel.textContent = `${event.provider} / ${event.model}`;
+        if (event.tools && event.tools.length) {
+          renderToolAttached(event.tools);
+        }
+        if (event.ldTransaction) {
+          lastLdTransaction = event.ldTransaction;
+          if (els.ldDrawer.classList.contains("open")) {
+            renderLdDrawer();
+          }
+        }
+        return;
+      }
+      if (event.type === "tool") {
+        appendToolCall(event);
+        const idx = event.callIndex || event.step || "?";
+        setStatus(`Tool #${idx}: ${event.name || "?"} (round ${event.round || "?"})`, "busy");
+        return;
+      }
+      if (event.type === "token") {
+        els.response.textContent += event.text;
+        return;
+      }
+      if (event.type === "metrics") {
+        const m = event.metrics || {};
+        els.latency.textContent = fmt(m.latency_ms);
+        els.ttft.textContent = fmt(m.ttft_ms);
+        els.prompt.textContent = fmt(m.prompt_tokens);
+        els.completion.textContent = fmt(m.completion_tokens);
+        els.total.textContent = fmt(m.total_tokens);
+        els.finish.textContent = fmt(m.finish_reason);
+        return;
+      }
+      if (event.type === "status") {
+        setStatus(event.message || "", "busy");
+        return;
+      }
+      if (event.type === "error") {
+        setStatus(event.message || "Generation error", "error");
+        return;
+      }
+      if (event.type === "done") {
+        if (!els.status.classList.contains("error")) {
+          const fallbackNote =
+            els.providerModel.textContent && els.providerModel.textContent.includes("code baseline")
+              ? " (code baseline — AgentControl off)"
+              : "";
+          setStatus(`AI report complete for ${personas[index].name}.${fallbackNote}`, "ok");
+        }
+      }
+    }
+
+    els.storiesToggle.addEventListener("click", () => {
+      const collapsed = !els.storiesChrome.classList.contains("collapsed");
+      setStoriesChromeCollapsed(collapsed);
+    });
+    els.ticker1.addEventListener("input", updateStoriesSummary);
+    els.ticker2.addEventListener("input", updateStoriesSummary);
+    els.stories.addEventListener("click", () => {
+      if (busy) return;
+      getStories();
+    });
+    els.prev.addEventListener("click", () => {
+      if (busy) return;
+      selectUser((index - 1 + personas.length) % personas.length);
+    });
+    els.next.addEventListener("click", () => {
+      if (busy) return;
+      selectUser((index + 1) % personas.length);
+    });
+    els.refresh.addEventListener("click", () => {
+      if (busy) return;
+      generate();
+    });
+
+    async function boot() {
+      restoreStoriesChromeState();
+      const res = await fetch("/api/bootstrap");
+      if (!res.ok) throw new Error(`Bootstrap failed (${res.status})`);
+      const data = await res.json();
+      personas = data.personas || [];
+      els.banner.textContent = data.appBanner || els.banner.textContent;
+      els.providerModel.textContent = `${data.provider} / ${data.model}`;
+
+      const local = loadStoriesLocally();
+      const cached = data.cachedStories || null;
+      const restored = local || cached;
+
+      if (data.defaultTickers) {
+        els.ticker1.value = (restored && restored.ticker1) || data.defaultTickers.ticker1 || "NVDA";
+        els.ticker2.value = (restored && restored.ticker2) || data.defaultTickers.ticker2 || "SPCX";
+      }
+
+      index = 0;
+      renderPersona();
+      updateStoriesSummary();
+
+      if (restored && restored.tickers && restored.tickers.length >= 2) {
+        renderStories(restored.tickers, { persist: true });
+        const source = local ? "browser" : "server";
+        setStatus(
+          `Loaded saved story titles (${source}). Press Generate AI Report when ready.`,
+          "ok"
+        );
+      } else {
+        setStatus("Enter tickers and click Get Stories.", "");
+      }
+    }
+
+    boot().catch((err) => setStatus(String(err), "error"));
+  </script>
+</body>
+</html>

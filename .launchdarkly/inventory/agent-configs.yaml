@@ -30,6 +30,8 @@ agent_configs:
     role: evaluation
   - path: 20-agent-config/21-agent-completion-config/python/agent_core.py
     role: evaluation
+  - path: 20-agent-config/21-agent-completion-config/dotnet/AgentCore.cs
+    role: evaluation
   - path: 20-agent-config/21-agent-completion-config/rest/common.sh
     role: provisioning
 
@@ -53,6 +55,8 @@ agent_configs:
     role: evaluation
   - path: 20-agent-config/22-config-outside-code/java/src/main/java/AgentCore.java
     role: evaluation
+  - path: 20-agent-config/22-config-outside-code/dotnet/AgentCore.cs
+    role: evaluation
   - path: 20-agent-config/22-config-outside-code/rest/common.sh
     role: provisioning
 
@@ -69,6 +73,12 @@ agent_configs:
   - key: compare-ticker-analyses
   sources:
   - path: 20-agent-config/23-agent-tools/python/agent_core.py
+    role: evaluation
+  - path: 20-agent-config/23-agent-tools/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/23-agent-tools/java/src/main/java/AgentCore.java
+    role: evaluation
+  - path: 20-agent-config/23-agent-tools/dotnet/AgentCore.cs
     role: evaluation
   - path: 20-agent-config/23-agent-tools/rest/common.sh
     role: provisioning

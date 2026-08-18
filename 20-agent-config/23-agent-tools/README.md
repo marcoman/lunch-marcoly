@@ -20,7 +20,7 @@ briefing that cites tool evidence—not free-form invention.
 ```mermaid
 flowchart TB
   User["User (analyst)"]
-  UI["Web UI :8230"]
+  UI["Web UI :8230 / :8231 / :8232 / :8233"]
   App["App: completion_config + tool loop"]
   LD["LaunchDarkly AgentControl<br/>key: equity-briefing-tools<br/>variation: tools-anthropic"]
   T1["Library tool<br/>analyze-ticker-stories"]
@@ -63,14 +63,17 @@ in the **Tool trace** panel.
 - **Comparable structure** — same analyze shape for both tickers before compare
 - **Visible work** — tool trace shows what ran (and what local models skipped)
 - **Operable in LaunchDarkly** — attach/detach or revise schemas without redeploying the app
-- **Observable** — `track_tool_call` shows up on the config Monitoring tab
+- **Observable** — `track_tool_call` / `trackToolCall` / `TrackToolCall` shows up on the config Monitoring tab
+  (Java: best-effort `trackMetric` — see [java/README.md](java/README.md))
 
-## Languages (this cut)
+## Languages
 
 | Language | Port | Status |
 |----------|------|--------|
-| Python web | **8230** | v1 |
-| Node / Java | — | later |
+| Python web | **8230** | v1 — AI SDK `completion_config` + `track_tool_call` |
+| Node web | **8231** | v1 — AI SDK `completionConfig` + `trackToolCall` |
+| Java web | **8232** | v1 — server SDK JSON eval; tool loop in-app; best-effort tool metrics |
+| .NET web | **8233** | v1 — AI SDK `CompletionConfig` + `TrackToolCall` |
 
 ## Config + tools
 
@@ -84,7 +87,7 @@ in the **Tool trace** panel.
 
 **Analyst Claude** uses Anthropic (`ANTHROPIC_API_KEY`). **Analyst Llama** uses local Ollama `llama3.2:3b`. **Analyst Gwen** uses `llama3.2:1b` (smaller / flakier). Personas are **local UI/runtime choices** — not LaunchDarkly name targeting.
 
-Local models may skip tools; the Python Ollama loop nudges and can force `compare-ticker-analyses` from prior analyze results so the lesson still shows. Prefer Claude for a clean demo.
+Local models may skip tools; the Ollama path nudges and can force `compare-ticker-analyses` from prior analyze results so the lesson still shows. Prefer Claude for a clean demo.
 
 ## Quick start
 
@@ -101,10 +104,19 @@ export ANTHROPIC_API_KEY=sk-ant-...   # Analyst Claude
 cd rest
 ./create-config.sh   # also creates tools + attaches + sets fallthrough
 
+# Python (8230)
 cd ../python
 source ../../../.venv/bin/activate
 python 23-agent-tools.py
-# Open http://127.0.0.1:8230/
+
+# Node (8231)
+cd ../node && npm install && npm start
+
+# Java (8232)
+cd ../java && ./mvnw -q -DskipTests package && java -jar target/23-agent-tools.jar
+
+# .NET (8233)
+cd ../dotnet && dotnet run
 ```
 
 ## What to try
@@ -119,6 +131,6 @@ python 23-agent-tools.py
 ## Docs
 
 - [application.md](application.md)
-- [python/README.md](python/README.md)
+- [python/README.md](python/README.md) · [node/README.md](node/README.md) · [java/README.md](java/README.md) · [dotnet/README.md](dotnet/README.md)
 - [rest/README.md](rest/README.md)
 - Series: [../README.md](../README.md)
