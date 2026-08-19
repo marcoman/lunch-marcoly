@@ -38,7 +38,7 @@ source ../../../.venv/bin/activate
 python 24-agent-judges.py
 ```
 
-Open **http://127.0.0.1:8240/**
+Open **http://127.0.0.1:8240/** (Node twin: **8241**; Java twin: **8242**).
 
 ## Demo
 

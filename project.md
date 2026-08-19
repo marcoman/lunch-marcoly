@@ -86,7 +86,7 @@ lunch-marcoly/
 │   │   └── python/ · node/ · java/ · dotnet/ · go/
 │   └── 24-agent-judges/             # Judges runtime gate + rewrite
 │       ├── README.md · application.md · rest/
-│       └── python/                  # Web :8240
+│       └── python/ · node/ · java/  # Web :8240 / :8241 / :8242
 
 ├── 99-use-cases/              # Focused LaunchDarkly use-case examples
 │   ├── README.md

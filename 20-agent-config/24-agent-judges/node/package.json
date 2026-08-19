@@ -1,0 +1,17 @@
+{
+  "name": "24-agent-judges",
+  "version": "1.0.0",
+  "private": true,
+  "description": "24-agent-judges — AgentControl Judges runtime gate (Node web)",
+  "main": "24-agent-judges.js",
+  "scripts": {
+    "start": "node 24-agent-judges.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0",
+    "@launchdarkly/server-sdk-ai": "^2.0.0"
+  }
+}

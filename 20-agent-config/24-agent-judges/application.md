@@ -140,6 +140,8 @@ No Anthropic key required for v1.
 
 - [ ] Provisioning creates `equity-briefing-judged` + both judge configs (REST preferred).
 - [ ] Python web on **8240**; Toby generate shows draft, failing scores, and Charlie rewrite (decorated).
+- [ ] Node web on **8241**; same gate UX as Python.
+- [ ] Java web on **8242**; same gate UX (server SDK JSON + Ollama judge JSON).
 - [ ] Charlie-only generate usually passes (or shows scores without a forced rewrite when both ≥ 0.70).
 - [ ] At most one rewrite per generate.
 - [ ] README documents keys, thresholds, Ollama tags, and demo script (Toby → rewrite).

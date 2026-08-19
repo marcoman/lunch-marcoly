@@ -17,7 +17,7 @@ Keywords: **AgentControl** · **Judges** · **custom judges** · **online evalua
 ```mermaid
 flowchart TB
   User["User"]
-  UI["Web UI :8240"]
+  UI["Web UI :8240 / :8241 / :8242"]
   Draft["First draft<br/>equity-briefing-judged"]
   J1["Source Fidelity Judge"]
   J2["Recommendation Discipline Judge"]
@@ -57,8 +57,10 @@ Status helper: `./rest/get-judges-status.sh` (optional `--verbose` for UI/docs l
 
 | Language | Port | Status |
 |----------|------|--------|
-| Python web | **8240** | Ready — draft → judges → Charlie rewrite |
-| Node / Java / .NET / Go | — | Later |
+| Python web | **8240** | Ready — `create_judge` + `evaluate` → Charlie rewrite |
+| Node web | **8241** | Ready — `judgeConfig` + Ollama JSON (AI SDK 2.x) |
+| Java web | **8242** | Ready — server SDK JSON + Ollama JSON (no Java AI SDK) |
+| .NET / Go | — | Later |
 
 ## Demo script (primary)
 
@@ -89,18 +91,25 @@ cd rest
 cd ../python
 source ../../../.venv/bin/activate
 python 24-agent-judges.py   # → http://127.0.0.1:8240/
+
+# Node
+cd ../node && npm install && npm start   # → :8241
+
+# Java
+cd ../java && ./mvnw -q -DskipTests package && java -jar target/24-agent-judges.jar  # → :8242
 ```
 
 ## SDK / provider notes
 
 - **Judges:** Ollama first (`llama3.2:3b`). Revisit Anthropic only if local scores are too flaky for demos.
-- **Programmatic gate:** `create_judge` + `evaluate` every generate (do not rely on attached-judge sampling for the rescue).
-- **Ollama + create_judge:** the AI SDK judge runner uses the **OpenAI** provider package against Ollama’s `/v1` API (`OPENAI_BASE_URL`). See [python/README.md](python/README.md).
-- **AI SDK:** `launchdarkly-server-sdk-ai` + `launchdarkly-server-sdk-ai-openai` (root `requirements.txt`).
+- **Programmatic gate:** every generate runs both judges (do not rely on attached-judge sampling for the rescue).
+- **Python:** `create_judge` + `evaluate` via OpenAI provider → Ollama `/v1` (`OPENAI_BASE_URL`). See [python/README.md](python/README.md).
+- **Node:** AI SDK 2.x `judgeConfig` + Ollama `format:json` (OpenAI judge package still peers AI SDK 1.x). See [node/README.md](node/README.md).
+- **Java:** no AI SDK — `jsonValueVariationDetail` + Ollama JSON. See [java/README.md](java/README.md).
 - **Attached judges** (optional): same keys for Monitoring charts; metrics validate the gate.
 
 ## Docs
 
 - [application.md](application.md) — normative behavior
-- [rest/](rest/) — provisioning (in progress)
+- [rest/](rest/) — provisioning
 - Series: [../README.md](../README.md)
