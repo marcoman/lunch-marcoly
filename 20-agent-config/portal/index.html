@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>20-agent-config portal</title>
+  <!--
+    Series shell for AgentControl examples 21–24.
+    Tabs switch iframes to each example's own Python server (spawned by portal.py).
+  -->
+  <style>
+    :root {
+      --bg: #e8ecef;
+      --bar: #1a2332;
+      --bar-ink: #f0f3f6;
+      --muted: #9aa7b5;
+      --tab: transparent;
+      --tab-hover: #243044;
+      --tab-active: #2c3f56;
+      --accent: #3d8fd1;
+      --down: #c45c5c;
+      --ok: #3d9a6a;
+      --frame-bg: #0f141c;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      font-family: "Source Sans 3", "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--bar-ink);
+    }
+    .shell {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 100vh;
+    }
+    header.bar {
+      flex: 0 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem 1rem;
+      padding: 0.55rem 1rem;
+      background: var(--bar);
+      border-bottom: 1px solid #2a3548;
+    }
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+      min-width: 10rem;
+    }
+    .brand strong {
+      font-size: 0.95rem;
+      font-weight: 650;
+      letter-spacing: 0.01em;
+    }
+    .brand span {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      flex: 1 1 auto;
+    }
+    .tabs button {
+      appearance: none;
+      border: 1px solid transparent;
+      background: var(--tab);
+      color: var(--bar-ink);
+      font: inherit;
+      font-size: 0.88rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+    .tabs button:hover { background: var(--tab-hover); }
+    .tabs button[aria-selected="true"] {
+      background: var(--tab-active);
+      border-color: #3a4d66;
+      box-shadow: inset 0 -2px 0 var(--accent);
+    }
+    .tabs .num {
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--accent);
+    }
+    .tabs .dot {
+      width: 0.45rem;
+      height: 0.45rem;
+      border-radius: 50%;
+      background: var(--muted);
+      flex: 0 0 auto;
+    }
+    .tabs .dot.up { background: var(--ok); }
+    .tabs .dot.down { background: var(--down); }
+    .status {
+      flex: 0 0 auto;
+      font-size: 0.75rem;
+      color: var(--muted);
+      max-width: 22rem;
+      text-align: right;
+    }
+    .status.warn { color: #e0a060; }
+    .frames {
+      flex: 1 1 auto;
+      position: relative;
+      background: var(--frame-bg);
+      min-height: 0;
+    }
+    .frames iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+      display: none;
+    }
+    .frames iframe.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="bar">
+      <div class="brand">
+        <strong>20-agent-config</strong>
+        <span>AgentControl series · Python portal</span>
+      </div>
+      <nav class="tabs" id="tabs" role="tablist" aria-label="Examples"></nav>
+      <div class="status" id="status" aria-live="polite"></div>
+    </header>
+    <main class="frames" id="frames"></main>
+  </div>
+  <script>
+    const CHILDREN = [
+      { id: "21", label: "Completion", port: 8210 },
+      { id: "22", label: "Tracked + feedback", port: 8220 },
+      { id: "23", label: "Tools", port: 8230 },
+      { id: "24", label: "Judges", port: 8240 },
+    ];
+
+    const tabsEl = document.getElementById("tabs");
+    const framesEl = document.getElementById("frames");
+    const statusEl = document.getElementById("status");
+    const buttons = new Map();
+    const frames = new Map();
+
+    let activeId = (new URLSearchParams(location.search).get("tab") || "21").replace(/\D/g, "") || "21";
+    if (!CHILDREN.some((c) => c.id === activeId)) activeId = "21";
+
+    function selectTab(id) {
+      activeId = id;
+      const url = new URL(location.href);
+      url.searchParams.set("tab", id);
+      history.replaceState(null, "", url);
+
+      for (const c of CHILDREN) {
+        const on = c.id === id;
+        buttons.get(c.id)?.setAttribute("aria-selected", on ? "true" : "false");
+        frames.get(c.id)?.classList.toggle("active", on);
+      }
+    }
+
+    for (const c of CHILDREN) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.role = "tab";
+      btn.id = `tab-${c.id}`;
+      btn.setAttribute("aria-controls", `frame-${c.id}`);
+      btn.innerHTML =
+        `<span class="dot" data-dot="${c.id}" title="server status"></span>` +
+        `<span class="num">${c.id}</span>` +
+        `<span>${c.label}</span>`;
+      btn.addEventListener("click", () => selectTab(c.id));
+      tabsEl.appendChild(btn);
+      buttons.set(c.id, btn);
+
+      const iframe = document.createElement("iframe");
+      iframe.id = `frame-${c.id}`;
+      iframe.title = `${c.id} ${c.label}`;
+      iframe.src = `http://127.0.0.1:${c.port}/`;
+      iframe.setAttribute("loading", c.id === activeId ? "eager" : "lazy");
+      framesEl.appendChild(iframe);
+      frames.set(c.id, iframe);
+    }
+
+    selectTab(activeId);
+
+    async function refreshStatus() {
+      try {
+        const res = await fetch("/api/status", { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const children = data.children || [];
+        let down = 0;
+        for (const c of children) {
+          const dot = tabsEl.querySelector(`[data-dot="${c.id}"]`);
+          if (!dot) continue;
+          dot.classList.toggle("up", !!c.up);
+          dot.classList.toggle("down", !c.up);
+          if (!c.up) down += 1;
+        }
+        if (down === 0) {
+          statusEl.classList.remove("warn");
+          statusEl.textContent = "All example servers up";
+        } else {
+          statusEl.classList.add("warn");
+          statusEl.textContent =
+            `${down} example server${down === 1 ? "" : "s"} not reachable — check portal terminal`;
+        }
+      } catch (err) {
+        statusEl.classList.add("warn");
+        statusEl.textContent = "Portal status unavailable";
+      }
+    }
+
+    refreshStatus();
+    setInterval(refreshStatus, 4000);
+  </script>
+</body>
+</html>

@@ -27,6 +27,7 @@ lunch-marcoly/
 │   └── go/ · rust/ · cpp/                        # console-only languages
 ├── 20-agent-config/             # AgentControl series (shared setup)
 │   ├── README.md
+│   ├── portal/                   # Series shell: Python tabs 21–24 (:8200)
 │   ├── 21-agent-completion-config/   # web + Go console
 │   ├── 22-config-outside-code/       # web + Go console
 │   ├── 23-agent-tools/               # web + Go console
@@ -65,7 +66,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 01 | [01-reference-agent](01-reference-agent/) | News headlines → AI equity briefing (Python / Node / Java / .NET web + consoles; LaunchDarkly comes in later examples) |
 | 10 | [10-flag-enablement](10-flag-enablement/) | Grid navigator with LaunchDarkly flags (all languages, Terraform + REST) |
 | 11 | [11-flag-variations](11-flag-variations/) | Grid navigator with string, number, JSON, and anonymous flags (all languages) |
-| 20 | [20-agent-config](20-agent-config/) | AgentControl series (shared LLM / AWS / LD setup) |
+| 20 | [20-agent-config](20-agent-config/) | AgentControl series (shared LLM / AWS / LD setup); [portal](20-agent-config/portal/) tabs for Python 21–24 |
 | 21 | [21-agent-completion-config](20-agent-config/21-agent-completion-config/) | Completion config: model + system/user prompts (web + Go console) |
 | 22 | [22-config-outside-code](20-agent-config/22-config-outside-code/) | Tracked completion: metrics + thumbs feedback (web + Go console) |
 | 23 | [23-agent-tools](20-agent-config/23-agent-tools/) | Library tools + tool loop + `track_tool_call` (web + Go console) |

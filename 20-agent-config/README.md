@@ -4,10 +4,26 @@ Parent folder for LaunchDarkly **AgentControl** examples built on the [01-refere
 
 Examples here keep the same news → generate product shape. What changes is **where** model and prompts come from: LaunchDarkly AgentControl configs instead of local files and env-only mode.
 
+## Series portal (Python)
+
+Prefer the **portal** when you want to flip between 21–24 in one browser window:
+
+```bash
+source ../.venv/bin/activate   # from repo root: source .venv/bin/activate
+export LD_SDK_KEY=sdk-...
+cd portal
+python portal.py               # → http://127.0.0.1:8200/
+```
+
+The portal spawns each example’s Python web server (8210 / 8220 / 8230 / 8240) and embeds them as tabs. **Ctrl+C** stops portal + children. Details: [portal/README.md](portal/README.md).
+
+Standalone `NN-…/python/*.py` entrypoints still work alone.
+
 ## Examples in this series
 
 | # | Directory | What it adds |
 |---|-----------|--------------|
+| — | [portal](portal/) | **Series shell**: one process, tabs for Python **21–24** (iframes) |
 | 21 | [21-agent-completion-config](21-agent-completion-config/) | **Completion config**: runtime **model**, **system prompt**, and **user prompt** — provision with [rest/](21-agent-completion-config/rest/); `get-targeting-status.sh`. Web: Python/Node/Java/.NET. Console: Python (curses), **Go** (raw-terminal) |
 | 22 | [22-config-outside-code](22-config-outside-code/) | **Tracked completion**: **`track_metrics_of`**, thumbs feedback, Ollama / Anthropic (Best Betty) — Python **8220** · Node **8221** · Java **8222** · .NET **8223**; `get-feedback-status.sh`. Console: **Go** (raw-terminal, `+`/`-` feedback hotkeys) |
 | 23 | [23-agent-tools](23-agent-tools/) | **Library tools**: analyze-ticker-stories ×2 → compare-ticker-analyses; tool loop + `track_tool_call` — Python **8230** · Node **8231** · Java **8232** · .NET **8233**; `get-tools-status.sh`. Console: **Go** (raw-terminal, tool trace) |
@@ -192,6 +208,7 @@ Per-example quirks live in each child `dotnet/README.md` and `go/README.md`.
 
 - [01-reference-agent](../01-reference-agent/) — baseline agent (file prompt + env model; no LaunchDarkly)
 - [project.md](../project.md) — repository conventions
+- [portal](portal/) — series shell (Python tabs for 21–24)
 - [21-agent-completion-config](21-agent-completion-config/) — completion config
 - [22-config-outside-code](22-config-outside-code/) — tracked metrics + feedback
 - [23-agent-tools](23-agent-tools/) — Library tools + tool loop
