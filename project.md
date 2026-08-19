@@ -75,7 +75,7 @@ lunch-marcoly/
 │   └── <language[-console]>/
 ├── 20-agent-config/             # AgentControl series (shared setup README)
 │   ├── README.md                # Ollama, AWS SSO, LD env — landing page
-│   ├── portal/                  # Series shell: tabs for Python 21–24 (:8200)
+│   ├── portal/                  # Series shell: Python :8200 · Node :8201
 │   ├── stories/                 # Shared Yahoo headlines cache (all examples)
 │   ├── 21-agent-completion-config/  # Completion config: model + system/user prompts
 │   │   ├── README.md · application.md · rest/
