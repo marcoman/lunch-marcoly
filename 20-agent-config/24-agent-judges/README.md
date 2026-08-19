@@ -17,7 +17,7 @@ Keywords: **AgentControl** · **Judges** · **custom judges** · **online evalua
 ```mermaid
 flowchart TB
   User["User"]
-  UI["Web UI :8240 / :8241 / :8242"]
+  UI["Web UI :8240–:8243 · Go console"]
   Draft["First draft<br/>equity-briefing-judged"]
   J1["Source Fidelity Judge"]
   J2["Recommendation Discipline Judge"]
@@ -60,7 +60,8 @@ Status helper: `./rest/get-judges-status.sh` (optional `--verbose` for UI/docs l
 | Python web | **8240** | Ready — `create_judge` + `evaluate` → Charlie rewrite |
 | Node web | **8241** | Ready — `judgeConfig` + Ollama JSON (AI SDK 2.x) |
 | Java web | **8242** | Ready — server SDK JSON + Ollama JSON (no Java AI SDK) |
-| .NET / Go | — | Later |
+| .NET web | **8243** | Ready — `JudgeConfig` + Ollama JSON |
+| Go console | — | Ready — `JudgeConfig` + Ollama JSON (raw-terminal TUI) |
 
 ## Demo script (primary)
 
@@ -97,6 +98,12 @@ cd ../node && npm install && npm start   # → :8241
 
 # Java
 cd ../java && ./mvnw -q -DskipTests package && java -jar target/24-agent-judges.jar  # → :8242
+
+# .NET
+cd ../dotnet && dotnet run   # → :8243
+
+# Go console
+cd ../go && go run .         # TUI — t/c, s, g, q
 ```
 
 ## SDK / provider notes
@@ -104,7 +111,7 @@ cd ../java && ./mvnw -q -DskipTests package && java -jar target/24-agent-judges.
 - **Judges:** Ollama first (`llama3.2:3b`). Revisit Anthropic only if local scores are too flaky for demos.
 - **Programmatic gate:** every generate runs both judges (do not rely on attached-judge sampling for the rescue).
 - **Python:** `create_judge` + `evaluate` via OpenAI provider → Ollama `/v1` (`OPENAI_BASE_URL`). See [python/README.md](python/README.md).
-- **Node:** AI SDK 2.x `judgeConfig` + Ollama `format:json` (OpenAI judge package still peers AI SDK 1.x). See [node/README.md](node/README.md).
+- **Node / .NET / Go:** AI SDK `JudgeConfig` / `judgeConfig` + Ollama `format:json` (no first-class `create_judge` runner in these SDKs for this example). See language READMEs.
 - **Java:** no AI SDK — `jsonValueVariationDetail` + Ollama JSON. See [java/README.md](java/README.md).
 - **Attached judges** (optional): same keys for Monitoring charts; metrics validate the gate.
 

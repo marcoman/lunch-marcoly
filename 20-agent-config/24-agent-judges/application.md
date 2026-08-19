@@ -142,6 +142,8 @@ No Anthropic key required for v1.
 - [ ] Python web on **8240**; Toby generate shows draft, failing scores, and Charlie rewrite (decorated).
 - [ ] Node web on **8241**; same gate UX as Python.
 - [ ] Java web on **8242**; same gate UX (server SDK JSON + Ollama judge JSON).
+- [ ] .NET web on **8243**; same gate UX (`JudgeConfig` + Ollama JSON).
+- [ ] Go console; same gate in the raw-terminal TUI.
 - [ ] Charlie-only generate usually passes (or shows scores without a forced rewrite when both ≥ 0.70).
 - [ ] At most one rewrite per generate.
 - [ ] README documents keys, thresholds, Ollama tags, and demo script (Toby → rewrite).
@@ -150,7 +152,6 @@ No Anthropic key required for v1.
 ## Out of scope (v1)
 
 - Library tools / 23 tool loop in the fidelity judge input
-- Java / .NET / Go / Node ports
 - Multi-rewrite loops; Anthropic judges
 - Guarded rollout wiring of judge metrics (mention as further reading only)
 

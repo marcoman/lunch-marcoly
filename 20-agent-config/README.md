@@ -11,7 +11,7 @@ Examples here keep the same news → generate product shape. What changes is **w
 | 21 | [21-agent-completion-config](21-agent-completion-config/) | **Completion config**: runtime **model**, **system prompt**, and **user prompt** — provision with [rest/](21-agent-completion-config/rest/); `get-targeting-status.sh`. Web: Python/Node/Java/.NET. Console: Python (curses), **Go** (raw-terminal) |
 | 22 | [22-config-outside-code](22-config-outside-code/) | **Tracked completion**: **`track_metrics_of`**, thumbs feedback, Ollama / Anthropic (Best Betty) — Python **8220** · Node **8221** · Java **8222** · .NET **8223**; `get-feedback-status.sh`. Console: **Go** (raw-terminal, `+`/`-` feedback hotkeys) |
 | 23 | [23-agent-tools](23-agent-tools/) | **Library tools**: analyze-ticker-stories ×2 → compare-ticker-analyses; tool loop + `track_tool_call` — Python **8230** · Node **8231** · Java **8232** · .NET **8233**; `get-tools-status.sh`. Console: **Go** (raw-terminal, tool trace) |
-| 24 | [24-agent-judges](24-agent-judges/) | **Judges** runtime gate: Source Fidelity + Recommendation Discipline → show draft + scores → rewrite once as Charlie — Python **8240** · Node **8241** · Java **8242**; `get-judges-status.sh`. Base: 21 surface (stories-only), not 23 tools |
+| 24 | [24-agent-judges](24-agent-judges/) | **Judges** runtime gate: Source Fidelity + Recommendation Discipline → show draft + scores → rewrite once as Charlie — Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console; `get-judges-status.sh`. Base: 21 surface (stories-only), not 23 tools |
 
 More AgentControl patterns (agent mode, rollouts, …) can land as `25-…` siblings under this folder.
 

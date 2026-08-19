@@ -30,7 +30,7 @@ lunch-marcoly/
 │   ├── 21-agent-completion-config/   # web + Go console
 │   ├── 22-config-outside-code/       # web + Go console
 │   ├── 23-agent-tools/               # web + Go console
-│   └── 24-agent-judges/              # Judges gate (Python/Node/Java)
+│   └── 24-agent-judges/              # Judges gate (Python/Node/Java/.NET + Go console)
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -69,7 +69,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 21 | [21-agent-completion-config](20-agent-config/21-agent-completion-config/) | Completion config: model + system/user prompts (web + Go console) |
 | 22 | [22-config-outside-code](20-agent-config/22-config-outside-code/) | Tracked completion: metrics + thumbs feedback (web + Go console) |
 | 23 | [23-agent-tools](20-agent-config/23-agent-tools/) | Library tools + tool loop + `track_tool_call` (web + Go console) |
-| 24 | [24-agent-judges](20-agent-config/24-agent-judges/) | Judges runtime gate + rewrite (Python **8240** · Node **8241** · Java **8242**) |
+| 24 | [24-agent-judges](20-agent-config/24-agent-judges/) | Judges runtime gate + rewrite (Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console) |
 | 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (A-B-C-D test, segments, …) |
 
 ## Building code
