@@ -7,7 +7,7 @@ namespace AgentCompletionConfig;
 /// <summary>
 /// Fetch recent Yahoo Finance news titles for tickers (no API key).
 /// Successful fetches are written to the shared example cache:
-///   ../stories/stories_cache.json
+///   ../../stories/stories_cache.json (20-agent-config/stories/)
 /// </summary>
 public static class YahooNews
 {
@@ -33,7 +33,7 @@ public static class YahooNews
 
     /// <summary>
     /// Locate the 21-agent-completion-config example root (the folder containing
-    /// <c>rest/</c> and <c>stories/</c>) so the cache resolves the same way whether you run
+    /// <c>rest/</c>) so messages resolve the same way whether you run
     /// <c>dotnet run</c> from <c>dotnet/</c> or launch the published binary directly.
     /// </summary>
     public static string ExampleRoot()
@@ -66,7 +66,14 @@ public static class YahooNews
         return _cachedExampleRoot;
     }
 
-    private static string CachePath() => Path.Combine(ExampleRoot(), "stories", "stories_cache.json");
+    /// <summary>Series root (20-agent-config/) — shared stories cache for 21–24.</summary>
+    public static string SeriesRoot()
+    {
+        var parent = Directory.GetParent(ExampleRoot());
+        return parent?.FullName ?? ExampleRoot();
+    }
+
+    private static string CachePath() => Path.Combine(SeriesRoot(), "stories", "stories_cache.json");
 
     public static string NormalizeTicker(string? raw)
     {

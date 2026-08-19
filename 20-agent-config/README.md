@@ -19,6 +19,8 @@ The portal spawns each example’s Python web server (8210 / 8220 / 8230 / 8240)
 
 Standalone `NN-…/python/*.py` entrypoints still work alone.
 
+Shared Yahoo headline cache: [stories/](stories/) (`20-agent-config/stories/stories_cache.json`) — one cache for all examples and language ports.
+
 ## Examples in this series
 
 | # | Directory | What it adds |

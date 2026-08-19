@@ -28,6 +28,7 @@ lunch-marcoly/
 ├── 20-agent-config/             # AgentControl series (shared setup)
 │   ├── README.md
 │   ├── portal/                   # Series shell: Python tabs 21–24 (:8200)
+│   ├── stories/                  # Shared Yahoo headlines cache
 │   ├── 21-agent-completion-config/   # web + Go console
 │   ├── 22-config-outside-code/       # web + Go console
 │   ├── 23-agent-tools/               # web + Go console

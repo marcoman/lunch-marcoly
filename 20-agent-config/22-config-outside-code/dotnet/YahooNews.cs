@@ -7,7 +7,7 @@ namespace ConfigOutsideCode;
 /// <summary>
 /// Fetch recent Yahoo Finance news titles for tickers (no API key).
 /// Successful fetches are written to the shared example cache:
-///   22-config-outside-code/stories/stories_cache.json
+///   20-agent-config/stories/stories_cache.json
 ///
 /// Plain data-fetch helper — no LaunchDarkly here. See <see cref="AgentCore"/> for
 /// the LD insertion point (this module only supplies the `{{ stories }}` variable).
@@ -72,7 +72,14 @@ public static class YahooNews
         return _exampleRoot;
     }
 
-    private static string CachePath() => Path.Combine(ExampleRoot(), "stories", "stories_cache.json");
+    /// <summary>Series root (20-agent-config/) — shared stories cache for 21–24.</summary>
+    public static string SeriesRoot()
+    {
+        var parent = Directory.GetParent(ExampleRoot());
+        return parent?.FullName ?? ExampleRoot();
+    }
+
+    private static string CachePath() => Path.Combine(SeriesRoot(), "stories", "stories_cache.json");
 
     public static string NormalizeTicker(string? raw)
     {

@@ -55,8 +55,9 @@ python portal.py
   process (it reuses whatever is listening).
 - `GET /api/status` reports whether each child port is reachable (tab dots).
 
-Stories caches remain **per example** (`../NN-…/stories/`). Standalone runs of
-each `python/*.py` still work without the portal.
+Yahoo headlines use the **series** cache at [`../stories/`](../stories/)
+(`20-agent-config/stories/stories_cache.json`). Standalone runs of each
+`python/*.py` still work without the portal.
 
 ## Non-goals (v1)
 

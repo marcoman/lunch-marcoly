@@ -3,7 +3,7 @@
  *
  * Uses Yahoo's unofficial public search JSON endpoints (no API key).
  * Successful fetches are written to the shared example cache:
- *   ../stories/stories_cache.json
+ *   ../../stories/stories_cache.json (20-agent-config/stories/)
  */
 
 "use strict";
@@ -12,7 +12,8 @@ const fs = require("fs");
 const path = require("path");
 
 const EXAMPLE_ROOT = path.resolve(__dirname, "..");
-const STORIES_DIR = path.join(EXAMPLE_ROOT, "stories");
+const SERIES_ROOT = path.resolve(EXAMPLE_ROOT, ".."); // 20-agent-config/
+const STORIES_DIR = path.join(SERIES_ROOT, "stories");
 const CACHE_PATH = path.join(STORIES_DIR, "stories_cache.json");
 
 const YAHOO_SEARCH_HOSTS = [

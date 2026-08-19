@@ -70,12 +70,17 @@ func exampleRoot() string {
 	return filepath.Clean(filepath.Join(".."))
 }
 
+// seriesRoot is 20-agent-config/ (parent of the example folder).
+func seriesRoot() string {
+	return filepath.Clean(filepath.Join(exampleRoot(), ".."))
+}
+
 func cachePath() string {
-	return filepath.Join(exampleRoot(), "stories", "stories_cache.json")
+	return filepath.Join(seriesRoot(), "stories", "stories_cache.json")
 }
 
 func storiesDir() string {
-	return filepath.Join(exampleRoot(), "stories")
+	return filepath.Join(seriesRoot(), "stories")
 }
 
 func normalizeTicker(raw string) string {

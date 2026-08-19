@@ -25,8 +25,8 @@ import java.util.Map;
 
 /**
  * Fetch recent Yahoo Finance news titles for tickers (no API key).
- * Successful fetches are written to the shared example cache:
- *   23-agent-tools/stories/stories_cache.json
+ * Successful fetches are written to the series cache:
+ *   20-agent-config/stories/stories_cache.json
  */
 public final class YahooNews {
     public static final String DEFAULT_TICKER_1 = "NVDA";
@@ -75,8 +75,15 @@ public final class YahooNews {
         return cwd.resolve("..").normalize();
     }
 
+    /** Series root (20-agent-config/) — shared stories cache for 21–24. */
+    private static Path seriesRoot() {
+        Path ex = exampleRoot();
+        Path parent = ex.getParent();
+        return parent != null ? parent : ex;
+    }
+
     private static Path cachePath() {
-        return exampleRoot().resolve("stories").resolve("stories_cache.json");
+        return seriesRoot().resolve("stories").resolve("stories_cache.json");
     }
 
     public static String normalizeTicker(String raw) {

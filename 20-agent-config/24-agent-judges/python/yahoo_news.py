@@ -5,9 +5,9 @@ Uses Yahoo's unofficial public search JSON endpoints (no API key). Several
 host/query variants are tried because Yahoo rate-limits and occasionally
 returns 404 for a given query shape.
 
-Successful fetches are written to the shared example cache
-(../stories/stories_cache.json) so all language apps can reuse the same
-headlines:
+Successful fetches are written to the series cache
+(../../stories/stories_cache.json under 20-agent-config/) so all examples
+and language ports can reuse the same headlines:
   * a later 404/429 can fall back to the last good headlines
   * the UI can restore titles on application start
 
@@ -45,7 +45,8 @@ from typing import Any
 
 HERE = Path(__file__).resolve().parent
 EXAMPLE_ROOT = HERE.parent
-STORIES_DIR = EXAMPLE_ROOT / "stories"
+SERIES_ROOT = EXAMPLE_ROOT.parent  # 20-agent-config/
+STORIES_DIR = SERIES_ROOT / "stories"
 CACHE_PATH = STORIES_DIR / "stories_cache.json"
 
 YAHOO_SEARCH_HOSTS = (
@@ -91,7 +92,7 @@ def load_cache() -> dict[str, Any]:
 
 
 def save_cache(cache: dict[str, Any]) -> None:
-    """Persist the shared story cache under 01-reference-agent/stories/."""
+    """Persist the shared story cache under 20-agent-config/stories/."""
     cache = dict(cache)
     cache["updated_at"] = _now_iso()
     STORIES_DIR.mkdir(parents=True, exist_ok=True)

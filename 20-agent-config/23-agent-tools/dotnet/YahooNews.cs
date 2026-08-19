@@ -11,8 +11,8 @@ namespace AgentTools;
 /// Uses Yahoo's unofficial public search JSON endpoints. Several host/query
 /// variants are tried because Yahoo rate-limits and occasionally 404s a given
 /// query shape. Successful fetches are written to the shared example cache
-/// (../stories/stories_cache.json) so every language port under 23-agent-tools
-/// can reuse headlines and fall back to the last good result on 429/404.
+/// (20-agent-config/stories/stories_cache.json) so every example and language
+/// port in the series can reuse headlines and fall back on 429/404.
 /// </summary>
 public static class YahooNews
 {
@@ -61,7 +61,14 @@ public static class YahooNews
         return Path.GetFullPath(Path.Combine(cwd, ".."));
     }
 
-    private static string CachePath() => Path.Combine(ExampleRoot(), "stories", "stories_cache.json");
+    /// <summary>Series root (20-agent-config/) — shared stories cache for 21–24.</summary>
+    public static string SeriesRoot()
+    {
+        var parent = Directory.GetParent(ExampleRoot());
+        return parent?.FullName ?? ExampleRoot();
+    }
+
+    private static string CachePath() => Path.Combine(SeriesRoot(), "stories", "stories_cache.json");
 
     public static string NormalizeTicker(string? raw)
     {
