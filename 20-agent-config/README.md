@@ -6,16 +6,18 @@ Examples here keep the same news → generate product shape. What changes is **w
 
 ## Series portal
 
-Prefer a **portal** when you want to flip between 21–24 (and later 25) in one browser window:
+Prefer a **portal** when you want to flip between **21–25** in one browser window:
 
 | Language | Command | URL |
 |----------|---------|-----|
-| **Python** | `cd portal && python portal.py` | http://127.0.0.1:8200/ |
+| **Python** | `cd portal/python && python portal.py` | http://127.0.0.1:8200/ |
 | **Node** | `cd portal/node && npm start` | http://127.0.0.1:8201/ |
+| **Java** | `cd portal/java && ./mvnw -q -DskipTests package && java -jar target/portal-java.jar` | http://127.0.0.1:8202/ |
+| **.NET** | `cd portal/dotnet && dotnet run` | http://127.0.0.1:8203/ |
 
-Each portal spawns that language’s web servers (Python `*210–*240`, Node `*211–*241`) and embeds them as tabs. **Ctrl+C** stops portal + children. Details: [portal/README.md](portal/README.md).
+Each portal spawns that language’s web servers (Python `*210–*250`, Node `*211–*251`, Java `*212–*252`, .NET `*213–*253`) and embeds them as tabs. **Ctrl+C** stops portal + children. Details: [portal/README.md](portal/README.md).
 
-Standalone `NN-…/python/*.py` and `NN-…/node/` entrypoints still work alone.
+Standalone `NN-…/python/*.py`, `NN-…/node/`, `NN-…/java/`, and `NN-…/dotnet/` entrypoints still work alone.
 
 Shared Yahoo headline cache: [stories/](stories/) (`20-agent-config/stories/stories_cache.json`) — one cache for all examples and language ports.
 
@@ -23,7 +25,7 @@ Shared Yahoo headline cache: [stories/](stories/) (`20-agent-config/stories/stor
 
 | # | Directory | What it adds |
 |---|-----------|--------------|
-| — | [portal](portal/) | **Series shell**: tabs for **21–25** — Python **:8200** · Node **:8201** |
+| — | [portal](portal/) | **Series shell**: tabs for **21–25** — Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
 | 21 | [21-agent-completion-config](21-agent-completion-config/) | **Completion config**: runtime **model**, **system prompt**, and **user prompt** — provision with [rest/](21-agent-completion-config/rest/); `get-targeting-status.sh`. Web: Python/Node/Java/.NET. Console: Python (curses), **Go** (raw-terminal) |
 | 22 | [22-config-outside-code](22-config-outside-code/) | **Tracked completion**: **`track_metrics_of`**, thumbs feedback, Ollama / Anthropic (Best Betty) — Python **8220** · Node **8221** · Java **8222** · .NET **8223**; `get-feedback-status.sh`. Console: **Go** (raw-terminal, `+`/`-` feedback hotkeys) |
 | 23 | [23-agent-tools](23-agent-tools/) | **Library tools**: analyze-ticker-stories ×2 → compare-ticker-analyses; tool loop + `track_tool_call` — Python **8230** · Node **8231** · Java **8232** · .NET **8233**; `get-tools-status.sh`. Console: **Go** (raw-terminal, tool trace) |
@@ -209,7 +211,7 @@ Per-example quirks live in each child `dotnet/README.md` and `go/README.md`.
 
 - [01-reference-agent](../01-reference-agent/) — baseline agent (file prompt + env model; no LaunchDarkly)
 - [project.md](../project.md) — repository conventions
-- [portal](portal/) — series shell (Python **:8200** · Node **:8201**)
+- [portal](portal/) — series shell (Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203**)
 - [21-agent-completion-config](21-agent-completion-config/) — completion config
 - [22-config-outside-code](22-config-outside-code/) — tracked metrics + feedback
 - [23-agent-tools](23-agent-tools/) — Library tools + tool loop

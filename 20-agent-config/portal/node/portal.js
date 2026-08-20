@@ -7,7 +7,7 @@
  *   - Spawns each example's existing Node server as a child
  *   - Embeds those pages in iframes (see index.html)
  *
- * Twin of ../portal.py (Python on :8200 / *210–*250).
+ * Twin of ../python (Python on :8200 / *210–*250), ../java (:8202), ../dotnet (:8203).
  * Standalone entrypoints under each example's node/ still work alone.
  * Ctrl+C / SIGTERM stops the portal and all children.
  */

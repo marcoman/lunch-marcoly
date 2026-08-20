@@ -234,6 +234,72 @@ public static class AgentCore
             .Where(m => m.GetValueOrDefault("role") == "system")
             .Select(m => m.GetValueOrDefault("content") ?? "")).Trim();
 
+    private static Dictionary<string, object?> ContextAsMap(Persona persona) => new()
+    {
+        ["kind"] = "user",
+        ["key"] = persona.Id,
+        ["name"] = persona.Name,
+    };
+
+    /// <summary>Payload for the UI 'LD details' overlay (last generate: sent + received).</summary>
+    private static Dictionary<string, object?> BuildLdTransaction(
+        Persona persona,
+        string storiesText,
+        string configKeyValue,
+        bool fallback,
+        string mode,
+        string provider,
+        string model,
+        List<Dictionary<string, string>> messages,
+        Dictionary<string, object?>? servedMeta,
+        bool? enabled)
+    {
+        var sdkDefault = new Dictionary<string, object?>
+        {
+            ["description"] =
+                "LdAiCompletionConfigDefault passed to CompletionConfig " +
+                "(concise-skeptic / Charlie shape; used if config key is missing). " +
+                "Judges gate the draft via JudgeConfig evaluation.",
+            ["enabled"] = true,
+            ["model"] = DefaultOllamaModel(),
+            ["provider"] = "Custom",
+            ["messages"] = new List<Dictionary<string, string>>
+            {
+                new() { ["role"] = "system", ["content"] = ReadMessageFile("skeptic-system.txt").Trim() },
+                new() { ["role"] = "user", ["content"] = ReadMessageFile("skeptic-user.txt").Trim() },
+            },
+        };
+
+        var sent = new Dictionary<string, object?>
+        {
+            ["configKey"] = configKeyValue,
+            ["context"] = ContextAsMap(persona),
+            ["variables"] = new Dictionary<string, object?> { ["stories"] = storiesText },
+            ["sdkDefault"] = sdkDefault,
+        };
+
+        var received = new Dictionary<string, object?>
+        {
+            ["fallback"] = fallback,
+            ["mode"] = mode,
+            ["enabled"] = enabled,
+            ["configKey"] = configKeyValue,
+            ["variationKey"] = servedMeta?.GetValueOrDefault("variationKey"),
+            ["variationIndex"] = servedMeta?.GetValueOrDefault("variationIndex"),
+            ["reason"] = servedMeta?.GetValueOrDefault("reason"),
+            ["version"] = servedMeta?.GetValueOrDefault("version"),
+            ["versionKey"] = servedMeta?.GetValueOrDefault("versionKey"),
+            ["ldMode"] = servedMeta?.GetValueOrDefault("mode"),
+            ["modelKey"] = servedMeta?.GetValueOrDefault("modelKey"),
+            ["modelVersion"] = servedMeta?.GetValueOrDefault("modelVersion"),
+            ["provider"] = provider,
+            ["model"] = model,
+            ["messages"] = messages,
+        };
+
+        return new Dictionary<string, object?> { ["sent"] = sent, ["received"] = received };
+    }
+
     /// <summary>
     /// Map served provider/model to a local caller (ollama).
     /// Custom / Ollama models use provider Custom and model id like llama3.2:3b.
@@ -750,6 +816,17 @@ public static class AgentCore
             ["judgeKeys"] = new[] { JudgeFidelityKey(), JudgeDisciplineKey() },
             ["passThreshold"] = threshold,
             ["stories"] = stories,
+            ["ldTransaction"] = BuildLdTransaction(
+                persona,
+                storiesText,
+                ConfigKey(),
+                fallback: false,
+                mode: "launchdarkly",
+                provider: provider,
+                model: model,
+                messages: messages,
+                servedMeta: null,
+                enabled: true),
         };
 
         yield return new Dictionary<string, object?>

@@ -2,9 +2,9 @@
 
 One-command **Node** shell for the AgentControl series examples **21–25**.
 
-Twin of the [Python portal](../README.md) (`portal.py` on **:8200**). This portal
-serves a tabbed UI on **:8201**, spawns each example’s existing Node web server,
-and embeds those pages in **iframes**.
+Twin of the [Python](../python/), [Java](../java/), and [.NET](../dotnet/) portals.
+This portal serves a tabbed UI on **:8201**, spawns each example’s existing Node
+web server, and embeds those pages in **iframes**.
 
 Keywords: **AgentControl** · **series portal** · **iframe tabs** · **process supervisor**
 
@@ -72,5 +72,5 @@ Standalone `npm start` in each example’s `node/` still works without the porta
 
 ## Related
 
-- Python portal: [../README.md](../README.md) (**:8200**)
+- Series portal index: [../README.md](../README.md)
 - Series setup: [../../README.md](../../README.md)

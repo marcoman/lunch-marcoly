@@ -126,6 +126,18 @@ public static class AgentCore
     public static Context BuildContext(Persona persona) =>
         Context.Builder(persona.Id).Name(persona.Name).Anonymous(persona.Anonymous).Build();
 
+    private static Dictionary<string, object?> ContextAsMap(Persona persona)
+    {
+        var map = new Dictionary<string, object?>
+        {
+            ["kind"] = "user",
+            ["key"] = persona.Id,
+            ["name"] = persona.Name,
+        };
+        if (persona.Anonymous) map["anonymous"] = true;
+        return map;
+    }
+
     private static string ReadMessageFile(string name) =>
         File.ReadAllText(Path.Combine(YahooNews.ExampleRoot(), "rest", "messages", name)).Trim();
 
@@ -185,6 +197,68 @@ public static class AgentCore
         messages.LastOrDefault(m => m.Role == "user")?.Content ?? "";
 
     private static string FirstNonEmpty(string a, string b) => string.IsNullOrEmpty(a) ? b : a;
+
+    private static List<Dictionary<string, string>> MessagesToDicts(List<ChatMessage> messages) =>
+        messages.Select(m => new Dictionary<string, string> { ["role"] = m.Role, ["content"] = m.Content }).ToList();
+
+    /// <summary>Payload for the UI 'LD details' overlay (last generate: sent + received).</summary>
+    private static Dictionary<string, object?> BuildLdTransaction(
+        Persona persona,
+        string storiesText,
+        string configKeyValue,
+        bool fallback,
+        string mode,
+        string provider,
+        string model,
+        List<Dictionary<string, string>> messages,
+        Dictionary<string, object?>? servedMeta,
+        bool? enabled)
+    {
+        var sdkDefault = new Dictionary<string, object?>
+        {
+            ["description"] =
+                "LdAiCompletionConfigDefault passed to CompletionConfig " +
+                "(baseline-analyst shape; used if config key is missing). " +
+                "Generation runs inside TrackMetricsOf for Monitoring.",
+            ["enabled"] = true,
+            ["model"] = DefaultOllamaModel(),
+            ["provider"] = "Custom",
+            ["messages"] = new List<Dictionary<string, string>>
+            {
+                new() { ["role"] = "system", ["content"] = BaselineSystemPrompt() },
+                new() { ["role"] = "user", ["content"] = BaselineUserTemplate() },
+            },
+        };
+
+        var sent = new Dictionary<string, object?>
+        {
+            ["configKey"] = configKeyValue,
+            ["context"] = ContextAsMap(persona),
+            ["variables"] = new Dictionary<string, object?> { ["stories"] = storiesText },
+            ["sdkDefault"] = sdkDefault,
+        };
+
+        var received = new Dictionary<string, object?>
+        {
+            ["fallback"] = fallback,
+            ["mode"] = mode,
+            ["enabled"] = enabled,
+            ["configKey"] = configKeyValue,
+            ["variationKey"] = servedMeta?.GetValueOrDefault("variationKey"),
+            ["variationIndex"] = servedMeta?.GetValueOrDefault("variationIndex"),
+            ["reason"] = servedMeta?.GetValueOrDefault("reason"),
+            ["version"] = servedMeta?.GetValueOrDefault("version"),
+            ["versionKey"] = servedMeta?.GetValueOrDefault("versionKey"),
+            ["ldMode"] = servedMeta?.GetValueOrDefault("mode"),
+            ["modelKey"] = servedMeta?.GetValueOrDefault("modelKey"),
+            ["modelVersion"] = servedMeta?.GetValueOrDefault("modelVersion"),
+            ["provider"] = provider,
+            ["model"] = model,
+            ["messages"] = messages,
+        };
+
+        return new Dictionary<string, object?> { ["sent"] = sent, ["received"] = received };
+    }
 
     private static (string Provider, string Model) ResolveRuntime(LdAiCompletionConfig config)
     {
@@ -410,6 +484,17 @@ public static class AgentCore
                 ["configKey"] = ConfigKey(),
                 ["fallback"] = true,
                 ["stories"] = StoriesOrEmpty(tickerResults),
+                ["ldTransaction"] = BuildLdTransaction(
+                    persona,
+                    storiesText,
+                    ConfigKey(),
+                    fallback: true,
+                    mode: "baseline-fallback",
+                    provider: "ollama",
+                    model: $"{model} (code baseline)",
+                    messages: MessagesToDicts(messages),
+                    servedMeta: null,
+                    enabled: false),
             };
             yield return StatusEvent(reasonMessage);
 
@@ -503,6 +588,17 @@ public static class AgentCore
             ["fallback"] = false,
             ["stories"] = StoriesOrEmpty(tickerResults),
             ["tracked"] = true,
+            ["ldTransaction"] = BuildLdTransaction(
+                persona,
+                storiesText,
+                ConfigKey(),
+                fallback: false,
+                mode: "launchdarkly",
+                provider: provider,
+                model: model2,
+                messages: MessagesToDicts(msgs),
+                servedMeta: null,
+                enabled: true),
         };
 
         ProviderResult? result = null;

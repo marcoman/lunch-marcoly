@@ -31,7 +31,19 @@ internal static class JsonUtil
             case JsonObject o:
                 return ToMap(o);
             case JsonArray a:
-                return a.Select(ToObject).ToList();
+            {
+                // Prefer List<Dictionary<…>> when every element is a map (or the array
+                // is empty) so callers' `as List<Dictionary<string, object?>>` casts
+                // succeed after a browser JSON round-trip of ticker story blocks.
+                var items = a.Select(ToObject).ToList();
+                if (items.Count == 0 || items.All(x => x is Dictionary<string, object?>))
+                {
+                    return items
+                        .OfType<Dictionary<string, object?>>()
+                        .ToList();
+                }
+                return items;
+            }
             case JsonValue v:
                 if (v.TryGetValue<string>(out var s)) return s;
                 if (v.TryGetValue<bool>(out var b)) return b;
@@ -41,6 +53,24 @@ internal static class JsonUtil
             default:
                 return node.ToString();
         }
+    }
+
+    /// <summary>
+    /// Coerce a nested list (from <see cref="ToObject"/> or in-memory builds) to
+    /// <c>List&lt;Dictionary&lt;string, object?&gt;&gt;</c>.
+    /// </summary>
+    public static List<Dictionary<string, object?>> AsDictList(object? value)
+    {
+        if (value is List<Dictionary<string, object?>> typed) return typed;
+        var list = new List<Dictionary<string, object?>>();
+        if (value is IEnumerable enumerable and not string)
+        {
+            foreach (var item in enumerable)
+            {
+                if (item is Dictionary<string, object?> d) list.Add(d);
+            }
+        }
+        return list;
     }
 
     public static Dictionary<string, object?> ToMap(JsonObject obj)

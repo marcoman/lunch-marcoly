@@ -345,6 +345,61 @@ def _user_message_text(messages: list[dict[str, str]]) -> str:
     return ""
 
 
+def build_ld_transaction(
+    *,
+    persona: Persona,
+    stories_text: str,
+    config_key_value: str,
+    fallback: bool,
+    mode: str,
+    provider: str,
+    model: str,
+    messages: list[dict[str, str]],
+    served_meta: dict[str, Any] | None,
+    enabled: bool | None,
+) -> dict[str, object]:
+    """Payload for the UI 'LD details' overlay (last generate: sent + received)."""
+    context = build_context(persona)
+    reason = (served_meta or {}).get("reason")
+    return {
+        "sent": {
+            "configKey": config_key_value,
+            "context": context.to_dict(),
+            "variables": {"stories": stories_text},
+            "sdkDefault": {
+                "description": (
+                    "AICompletionConfigDefault passed to completion_config "
+                    "(baseline shape with Library tools; used if config key is missing)."
+                ),
+                "enabled": True,
+                "model": default_anthropic_model(),
+                "provider": "anthropic",
+                "messages": [
+                    {"role": "system", "content": baseline_system_prompt()},
+                    {"role": "user", "content": baseline_user_template()},
+                ],
+            },
+        },
+        "received": {
+            "fallback": fallback,
+            "mode": mode,
+            "enabled": enabled,
+            "configKey": config_key_value,
+            "variationKey": (served_meta or {}).get("variationKey"),
+            "variationIndex": (served_meta or {}).get("variationIndex"),
+            "reason": reason,
+            "version": (served_meta or {}).get("version"),
+            "versionKey": (served_meta or {}).get("versionKey"),
+            "ldMode": (served_meta or {}).get("mode"),
+            "modelKey": (served_meta or {}).get("modelKey"),
+            "modelVersion": (served_meta or {}).get("modelVersion"),
+            "provider": provider,
+            "model": model,
+            "messages": messages,
+        },
+    }
+
+
 def _ld_tools_to_anthropic(config) -> list[dict[str, Any]]:
     """Convert config.tools (LDTool map) to Anthropic tools= shape."""
     tools_map = getattr(config, "tools", None) or {}
@@ -653,6 +708,10 @@ def generate_stream(
     try:
         config = evaluate_completion(persona, stories_text)
     except Exception as exc:  # noqa: BLE001
+        baseline_msgs = [
+            {"role": "system", "content": baseline_system_prompt()},
+            {"role": "user", "content": baseline_user_template()},
+        ]
         yield {
             "type": "meta",
             "persona": asdict(persona),
@@ -664,6 +723,18 @@ def generate_stream(
             "configKey": config_key(),
             "fallback": True,
             "stories": ticker_results or [],
+            "ldTransaction": build_ld_transaction(
+                persona=persona,
+                stories_text=stories_text,
+                config_key_value=config_key(),
+                fallback=True,
+                mode="baseline-fallback",
+                provider="anthropic",
+                model=default_anthropic_model() + " (code baseline)",
+                messages=baseline_msgs,
+                served_meta=None,
+                enabled=False,
+            ),
         }
         yield {
             "type": "status",
@@ -681,6 +752,10 @@ def generate_stream(
         return
 
     if not config.enabled:
+        baseline_msgs = [
+            {"role": "system", "content": baseline_system_prompt()},
+            {"role": "user", "content": baseline_user_template()},
+        ]
         yield {
             "type": "meta",
             "persona": asdict(persona),
@@ -692,6 +767,18 @@ def generate_stream(
             "configKey": config_key(),
             "fallback": True,
             "stories": ticker_results or [],
+            "ldTransaction": build_ld_transaction(
+                persona=persona,
+                stories_text=stories_text,
+                config_key_value=config_key(),
+                fallback=True,
+                mode="baseline-fallback",
+                provider="anthropic",
+                model=default_anthropic_model() + " (code baseline)",
+                messages=baseline_msgs,
+                served_meta=None,
+                enabled=False,
+            ),
         }
         yield {
             "type": "status",
@@ -731,6 +818,18 @@ def generate_stream(
         "stories": ticker_results or [],
         "tools": tool_names,
         "tracked": True,
+        "ldTransaction": build_ld_transaction(
+            persona=persona,
+            stories_text=stories_text,
+            config_key_value=config_key(),
+            fallback=False,
+            mode="launchdarkly",
+            provider=provider,
+            model=model_name,
+            messages=messages,
+            served_meta=None,
+            enabled=True,
+        ),
     }
 
     if not tool_names:

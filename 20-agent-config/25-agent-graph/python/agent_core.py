@@ -424,6 +424,83 @@ def resolve_runtime(config) -> tuple[str, str]:
     return "ollama", model
 
 
+def _graph_served_meta(graph_tracker: Any) -> dict[str, Any]:
+    """Best-effort graph eval meta from AIGraphTracker (variation_key / version)."""
+    return {
+        "variationKey": getattr(graph_tracker, "_variation_key", None) or None,
+        "version": getattr(graph_tracker, "_version", None),
+    }
+
+
+def build_ld_transaction(
+    *,
+    persona: Persona,
+    action: str,
+    stories_text: str,
+    specialist: str,
+    graph_enabled: bool,
+    provider: str,
+    model: str,
+    messages: list[dict[str, str]],
+    graph_tracker: Any = None,
+) -> dict[str, object]:
+    """Payload for the UI 'LD details' overlay (last generate: sent + received).
+
+    Summarizes the Agent Graph walk for the completion-style drawer — graph key
+    in configKey, node keys + specialist in variables, finalize/specialist prompt
+    as received.messages.
+    """
+    context = build_context(persona, action)
+    gk = graph_key()
+    served = _graph_served_meta(graph_tracker) if graph_tracker is not None else {}
+    fallback = not graph_enabled
+    return {
+        "sent": {
+            "configKey": gk,
+            "context": context.to_dict(),
+            "variables": {
+                "stories": stories_text,
+                "action": action,
+                "specialist": specialist,
+                "assessKey": node_key("assess"),
+                "specialistKey": node_key(specialist),
+                "finalizeKey": node_key("finalize"),
+            },
+            "sdkDefault": {
+                "description": (
+                    "Agent Graph walk (assess → specialist → finalize); "
+                    "SDK defaults used when a node/graph key is missing."
+                ),
+                "enabled": True,
+                "model": default_ollama_model(),
+                "provider": "Custom",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "Agent Graph classroom walk — assess, specialist, finalize.",
+                    }
+                ],
+            },
+        },
+        "received": {
+            "fallback": fallback,
+            "mode": "agent-graph",
+            "enabled": graph_enabled,
+            "configKey": gk,
+            "variationKey": served.get("variationKey"),
+            "version": served.get("version"),
+            "reason": (
+                None
+                if graph_enabled
+                else "graph disabled/missing — local node walk"
+            ),
+            "provider": provider,
+            "model": model,
+            "messages": messages,
+        },
+    }
+
+
 def clip(text: str, max_len: int = 55) -> str:
     s = re.sub(r"\s+", " ", (text or "")).strip()
     if len(s) <= max_len:
@@ -1021,12 +1098,39 @@ def generate_stream(
 
     _, fin_model = resolve_runtime(fin_cfg)
 
+    # Drawer messages: joke streams the specialist draft; otherwise finalize polish.
+    if specialist == "joke":
+        drawer_messages = _messages_for_node(spec_cfg.instructions or "", spec_user)
+        drawer_model = spec_model
+    else:
+        fin_user = (
+            f"Original action: {action}\n"
+            f"Specialist: {specialist}\n\n"
+            f"SPECIALIST DRAFT:\n{specialist_draft}\n\n"
+            "Return the final polished text only."
+        )
+        drawer_messages = _messages_for_node(fin_cfg.instructions or "", fin_user)
+        drawer_model = fin_model
+
+    ld_tx = build_ld_transaction(
+        persona=persona,
+        action=action,
+        stories_text=stories_text if has_real_stories else "(none)",
+        specialist=specialist,
+        graph_enabled=graph_enabled,
+        provider="ollama",
+        model=drawer_model,
+        messages=drawer_messages,
+        graph_tracker=graph_tracker,
+    )
+
     yield {
         "type": "model",
         "provider": "ollama",
         "model": fin_model,
         "configKey": finalize_key,
         "phase": "finalize",
+        "ldTransaction": ld_tx,
     }
 
     final_parts: list[str] = []
@@ -1054,16 +1158,7 @@ def generate_stream(
                 final_parts.append(chunk)
                 yield {"type": "token", "text": chunk}
         else:
-            fin_user = (
-                f"Original action: {action}\n"
-                f"Specialist: {specialist}\n\n"
-                f"SPECIALIST DRAFT:\n{specialist_draft}\n\n"
-                "Return the final polished text only."
-            )
-            for chunk in _ollama_stream(
-                fin_model,
-                _messages_for_node(fin_cfg.instructions or "", fin_user),
-            ):
+            for chunk in _ollama_stream(fin_model, drawer_messages):
                 if first_token_at is None:
                     first_token_at = time.time()
                     metrics.ttft_ms = int((first_token_at - started) * 1000)
@@ -1107,4 +1202,5 @@ def generate_stream(
         "path": path,
         "specialist": specialist,
         "action": action,
+        "ldTransaction": ld_tx,
     }

@@ -269,6 +269,103 @@ public static class AgentCore
         return builder.Build();
     }
 
+    /// <summary>Plain map of the evaluation context for the LD details drawer.</summary>
+    private static Dictionary<string, object?> ContextAsMap(Persona persona, string action)
+    {
+        var map = new Dictionary<string, object?>
+        {
+            ["kind"] = "user",
+            ["key"] = persona.Id,
+            ["name"] = persona.Name,
+            ["action"] = action,
+            ["profile"] = persona.Profile,
+        };
+        if (persona.Anonymous) map["anonymous"] = true;
+        return map;
+    }
+
+    /// <summary>
+    /// Payload for the UI 'LD details' overlay (last generate: sent + received).
+    /// Summarizes the Agent Graph walk for the completion-style drawer.
+    /// </summary>
+    private static Dictionary<string, object?> BuildLdTransaction(
+        Persona persona,
+        string action,
+        string storiesText,
+        string specialist,
+        bool graphEnabled,
+        string provider,
+        string model,
+        List<Dictionary<string, string>> messages,
+        AgentGraphDefinition? graph)
+    {
+        var gk = GraphKey();
+        string? variationKey = null;
+        int? version = null;
+        try
+        {
+            var flag = graph?.GetConfig();
+            var meta = flag?.Meta;
+            if (meta != null)
+            {
+                variationKey = string.IsNullOrWhiteSpace(meta.VariationKey) ? null : meta.VariationKey;
+                version = meta.Version;
+            }
+        }
+        catch
+        {
+            /* best-effort */
+        }
+
+        return new Dictionary<string, object?>
+        {
+            ["sent"] = new Dictionary<string, object?>
+            {
+                ["configKey"] = gk,
+                ["context"] = ContextAsMap(persona, action),
+                ["variables"] = new Dictionary<string, object?>
+                {
+                    ["stories"] = storiesText,
+                    ["action"] = action,
+                    ["specialist"] = specialist,
+                    ["assessKey"] = NodeKey("assess"),
+                    ["specialistKey"] = NodeKey(specialist),
+                    ["finalizeKey"] = NodeKey("finalize"),
+                },
+                ["sdkDefault"] = new Dictionary<string, object?>
+                {
+                    ["description"] =
+                        "Agent Graph walk (assess → specialist → finalize); " +
+                        "SDK defaults used when a node/graph key is missing.",
+                    ["enabled"] = true,
+                    ["model"] = DefaultOllamaModel(),
+                    ["provider"] = "Custom",
+                    ["messages"] = new List<Dictionary<string, string>>
+                    {
+                        new()
+                        {
+                            ["role"] = "system",
+                            ["content"] = "Agent Graph classroom walk — assess, specialist, finalize.",
+                        },
+                    },
+                },
+            },
+            ["received"] = new Dictionary<string, object?>
+            {
+                ["fallback"] = !graphEnabled,
+                ["mode"] = "agent-graph",
+                ["enabled"] = graphEnabled,
+                ["configKey"] = gk,
+                ["variationKey"] = variationKey,
+                ["version"] = version,
+                ["reason"] = graphEnabled ? null : "graph disabled/missing — local node walk",
+                ["provider"] = provider,
+                ["model"] = model,
+                ["messages"] = messages,
+            },
+        };
+    }
+
     private static LdAiAgentConfigDefault AgentDefault(string instructionsFile) =>
         LdAiAgentConfigDefault.New()
             .Enable()
@@ -773,7 +870,8 @@ public static class AgentCore
         if (!ValidSpecialists.Contains(action)) action = "report";
 
         var storiesText = FormatStories(tickerResults);
-        var hasRealStories = (tickerResults?.Count ?? 0) > 0 && storiesText != CannedStories;
+        var hasRealStories = (tickerResults ?? new()).Any(b =>
+            JsonUtil.AsDictList(b.GetValueOrDefault("stories")).Count > 0);
 
         if (ActionsNeedingStories.Contains(action) && !hasRealStories)
         {
@@ -1219,6 +1317,36 @@ public static class AgentCore
 
         var (_, finModel) = ResolveRuntime(finCfg!);
 
+        // Drawer messages: joke streams the specialist draft; otherwise finalize polish.
+        List<Dictionary<string, string>> drawerMessages;
+        string drawerModel;
+        if (specialist == "joke")
+        {
+            drawerMessages = MessagesForNode(specCfg!.Instructions, specUser);
+            drawerModel = specModel;
+        }
+        else
+        {
+            var finUser =
+                $"Original action: {action}\n" +
+                $"Specialist: {specialist}\n\n" +
+                $"SPECIALIST DRAFT:\n{specialistDraft}\n\n" +
+                "Return the final polished text only.";
+            drawerMessages = MessagesForNode(finCfg!.Instructions, finUser);
+            drawerModel = finModel;
+        }
+
+        var ldTx = BuildLdTransaction(
+            persona,
+            action,
+            hasRealStories ? storiesText : "(none)",
+            specialist,
+            graphEnabled,
+            "ollama",
+            drawerModel,
+            drawerMessages,
+            graph);
+
         yield return new Dictionary<string, object?>
         {
             ["type"] = "model",
@@ -1226,6 +1354,7 @@ public static class AgentCore
             ["model"] = finModel,
             ["configKey"] = finalizeKey,
             ["phase"] = "finalize",
+            ["ldTransaction"] = ldTx,
         };
 
         var finalParts = new StringBuilder();
@@ -1258,13 +1387,7 @@ public static class AgentCore
         }
         else
         {
-            var finUser =
-                $"Original action: {action}\n" +
-                $"Specialist: {specialist}\n\n" +
-                $"SPECIALIST DRAFT:\n{specialistDraft}\n\n" +
-                "Return the final polished text only.";
-
-            await foreach (var (evt, text) in FinalizeStreamAsync(finModel, MessagesForNode(finCfg!.Instructions, finUser), sw, metrics, ct))
+            await foreach (var (evt, text) in FinalizeStreamAsync(finModel, drawerMessages, sw, metrics, ct))
             {
                 if (evt.GetValueOrDefault("type") as string == "_complete")
                 {
@@ -1322,6 +1445,7 @@ public static class AgentCore
             ["path"] = path,
             ["specialist"] = specialist,
             ["action"] = action,
+            ["ldTransaction"] = ldTx,
         };
     }
 }

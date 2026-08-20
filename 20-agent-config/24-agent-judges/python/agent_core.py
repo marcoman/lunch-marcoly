@@ -264,6 +264,68 @@ def user_message_text(messages: list[dict[str, str]]) -> str:
     return ""
 
 
+def build_ld_transaction(
+    *,
+    persona: Persona,
+    stories_text: str,
+    config_key_value: str,
+    fallback: bool,
+    mode: str,
+    provider: str,
+    model: str,
+    messages: list[dict[str, str]],
+    served_meta: dict[str, Any] | None,
+    enabled: bool | None,
+) -> dict[str, object]:
+    """Payload for the UI 'LD details' overlay (last generate: sent + received)."""
+    context = build_context(persona)
+    reason = (served_meta or {}).get("reason")
+    return {
+        "sent": {
+            "configKey": config_key_value,
+            "context": context.to_dict(),
+            "variables": {"stories": stories_text},
+            "sdkDefault": {
+                "description": (
+                    "AICompletionConfigDefault passed to completion_config "
+                    "(concise-skeptic / Charlie shape; used if config key is missing). "
+                    "Judges gate the draft via create_judge / evaluate."
+                ),
+                "enabled": True,
+                "model": default_ollama_model(),
+                "provider": "Custom",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": _read_message_file("skeptic-system.txt").strip(),
+                    },
+                    {
+                        "role": "user",
+                        "content": _read_message_file("skeptic-user.txt").strip(),
+                    },
+                ],
+            },
+        },
+        "received": {
+            "fallback": fallback,
+            "mode": mode,
+            "enabled": enabled,
+            "configKey": config_key_value,
+            "variationKey": (served_meta or {}).get("variationKey"),
+            "variationIndex": (served_meta or {}).get("variationIndex"),
+            "reason": reason,
+            "version": (served_meta or {}).get("version"),
+            "versionKey": (served_meta or {}).get("versionKey"),
+            "ldMode": (served_meta or {}).get("mode"),
+            "modelKey": (served_meta or {}).get("modelKey"),
+            "modelVersion": (served_meta or {}).get("modelVersion"),
+            "provider": provider,
+            "model": model,
+            "messages": messages,
+        },
+    }
+
+
 def resolve_runtime(config) -> tuple[str, str]:
     model = (config.model.name if config.model else "") or ""
     provider_name = (config.provider.name if config.provider else "") or ""
@@ -439,6 +501,18 @@ def generate_stream(
         "judgeKeys": [judge_fidelity_key(), judge_discipline_key()],
         "passThreshold": threshold,
         "stories": ticker_results or [],
+        "ldTransaction": build_ld_transaction(
+            persona=persona,
+            stories_text=stories_text,
+            config_key_value=config_key(),
+            fallback=False,
+            mode="launchdarkly",
+            provider=provider,
+            model=model,
+            messages=messages,
+            served_meta=None,
+            enabled=True,
+        ),
     }
 
     yield {

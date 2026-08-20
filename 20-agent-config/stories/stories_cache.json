@@ -1,23 +1,25 @@
 {
-  "updated_at": "2026-08-20T17:48:50Z",
+  "updated_at": "2026-08-20T21:32:29Z",
   "tickers": {
     "NVDA": {
       "name": "NVIDIA Corporation",
       "stories": [
         {
-          "title": "Why Is Nvidia (NVDA) Investing $1.5 Billion In A Massive Ohio AI Site?",
-          "publisher": "Simply Wall St.",
-          "link": "https://finance.yahoo.com/technology/ai/articles/why-nvidia-nvda-investing-1-111025027.html",
-          "uuid": "39f94f17-e4ae-34b0-bbec-d1f32b1ac7ab"
+          "title": "NVDA Stock Flattens As Retail Turns \u2018Extremely Bearish\u2019, But Wall Street Flags $20B CPU Opportunity Ahead of Earnings",
+          "publisher": "Stocktwits",
+          "published": "2026-08-20T15:26:22Z",
+          "link": "https://finance.yahoo.com/m/f3fd92f3-2496-3be4-86c1-d8c77f729b18/nvda-stock-flattens-as-retail.html",
+          "uuid": "f3fd92f3-2496-3be4-86c1-d8c77f729b18"
         },
         {
-          "title": "Nvidia, LG Electronics Expand Robotics Collaboration in Seoul",
+          "title": "Market Chatter: Nvidia Plans Small-Batch Shipments of Bespoke AI Chip for Chinese Customers",
           "publisher": "MT Newswires",
-          "link": "https://finance.yahoo.com/technology/ai/articles/nvidia-lg-electronics-expand-robotics-085506425.html",
-          "uuid": "84b33eda-6ada-3595-866f-d4a983becf59"
+          "published": "2026-08-20T17:15:36Z",
+          "link": "https://finance.yahoo.com/technology/ai/articles/market-chatter-nvidia-plans-small-171536333.html",
+          "uuid": "80be30a9-7a05-3bb3-b1ba-39661f810eed"
         }
       ],
-      "cached_at": "2026-08-18T13:26:00Z"
+      "cached_at": "2026-08-20T21:32:29Z"
     },
     "RKLB": {
       "name": "Rocket Lab Corporation",
@@ -41,19 +43,21 @@
       "name": "Space Exploration Technologies",
       "stories": [
         {
-          "title": "5-star analyst sets alarming SpaceX stock price target",
-          "publisher": "TheStreet",
-          "link": "https://finance.yahoo.com/m/5d935cf8-8ba7-35d3-aa5f-f44744ab8b4a/5-star-analyst-sets-alarming.html",
-          "uuid": "5d935cf8-8ba7-35d3-aa5f-f44744ab8b4a"
+          "title": "SPCX Stock Lock-Up Expiry: SpotGamma Founder Flags This Key Resistance Level",
+          "publisher": "Stocktwits",
+          "published": "2026-08-20T15:46:58Z",
+          "link": "https://finance.yahoo.com/m/0b01ec4a-85db-3b03-87d9-c105a25dcb0a/spcx-stock-lock-up-expiry%3A.html",
+          "uuid": "0b01ec4a-85db-3b03-87d9-c105a25dcb0a"
         },
         {
-          "title": "Can Space Stocks Bounce Back? This $1 Billion Air Force Contract Might Help.",
+          "title": "Grok 4.6 Matches the Frontier Models at a 60% Discount. Now SpaceX Has the Developers to Use It.",
           "publisher": "Motley Fool",
-          "link": "https://finance.yahoo.com/m/1f889dcc-9ba2-31e7-8bdb-5aff6b6a1806/can-space-stocks-bounce-back%3F.html",
-          "uuid": "1f889dcc-9ba2-31e7-8bdb-5aff6b6a1806"
+          "published": "2026-08-20T20:13:00Z",
+          "link": "https://finance.yahoo.com/m/94f1fd07-68e9-3908-8169-5dca6592aeb7/grok-4.6-matches-the-frontier.html",
+          "uuid": "94f1fd07-68e9-3908-8169-5dca6592aeb7"
         }
       ],
-      "cached_at": "2026-08-18T12:18:25Z"
+      "cached_at": "2026-08-20T21:32:29Z"
     }
   },
   "last_pair": {

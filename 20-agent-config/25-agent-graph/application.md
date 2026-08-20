@@ -185,8 +185,8 @@ No Anthropic key required for v1.
 |----------|------|-----------|
 | Python web | **8250** | Ready — graph + Trace; portal tab |
 | Node web | **8251** | Ready — portal tab |
-| Java web | **8252** | Ready — `jsonValueVariationDetail` (no Java AI SDK) |
-| .NET web | **8253** | Ready |
+| Java web | **8252** | Ready — `jsonValueVariationDetail` (no Java AI SDK); portal tab |
+| .NET web | **8253** | Ready — portal tab |
 | Go | — | Later |
 
 ## Acceptance criteria

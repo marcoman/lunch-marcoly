@@ -168,6 +168,59 @@ function userMessageText(messages) {
   return hit ? hit.content || "" : "";
 }
 
+function buildLdTransaction({
+  persona,
+  storiesText,
+  configKeyValue,
+  fallback,
+  mode,
+  provider,
+  model,
+  messages,
+  servedMeta,
+  enabled,
+}) {
+  const context = buildContext(persona);
+  const reason = (servedMeta || {}).reason;
+  return {
+    sent: {
+      configKey: configKeyValue,
+      context,
+      variables: { stories: storiesText },
+      sdkDefault: {
+        description:
+          "AICompletionConfigDefault passed to completionConfig " +
+          "(concise-skeptic / Charlie shape; used if config key is missing). " +
+          "Judges gate the draft via judgeConfig / evaluate.",
+        enabled: true,
+        model: defaultOllamaModel(),
+        provider: "Custom",
+        messages: [
+          { role: "system", content: readMessageFile("skeptic-system.txt").trim() },
+          { role: "user", content: readMessageFile("skeptic-user.txt").trim() },
+        ],
+      },
+    },
+    received: {
+      fallback,
+      mode,
+      enabled,
+      configKey: configKeyValue,
+      variationKey: (servedMeta || {}).variationKey,
+      variationIndex: (servedMeta || {}).variationIndex,
+      reason,
+      version: (servedMeta || {}).version,
+      versionKey: (servedMeta || {}).versionKey,
+      ldMode: (servedMeta || {}).mode,
+      modelKey: (servedMeta || {}).modelKey,
+      modelVersion: (servedMeta || {}).modelVersion,
+      provider,
+      model,
+      messages,
+    },
+  };
+}
+
 function resolveRuntime(config) {
   const model = (config.model && config.model.name) || "";
   const providerName = ((config.provider && config.provider.name) || "").toLowerCase();
@@ -440,6 +493,18 @@ async function* generateStream(persona, tickerResults) {
     judgeKeys: [judgeFidelityKey(), judgeDisciplineKey()],
     passThreshold: threshold,
     stories: tickerResults || [],
+    ldTransaction: buildLdTransaction({
+      persona,
+      storiesText,
+      configKeyValue: configKey(),
+      fallback: false,
+      mode: "launchdarkly",
+      provider,
+      model,
+      messages,
+      servedMeta: null,
+      enabled: true,
+    }),
   };
 
   yield { type: "section", title: `Draft (${persona.name})`, kind: "draft" };

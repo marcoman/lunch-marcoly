@@ -168,6 +168,14 @@ public final class AgentCore {
         return LDContext.builder(persona.id()).name(persona.name()).build();
     }
 
+    private static Map<String, Object> contextAsMap(Persona persona) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("kind", "user");
+        m.put("key", persona.id());
+        m.put("name", persona.name());
+        return m;
+    }
+
     private static Path messagesDir() {
         return YahooNews.exampleRoot().resolve("rest").resolve("messages");
     }
@@ -381,6 +389,62 @@ public final class AgentCore {
         m.put("name", persona.name());
         m.put("profile", persona.profile());
         return m;
+    }
+
+    private static Map<String, Object> buildLdTransaction(
+            Persona persona,
+            String storiesText,
+            String configKeyValue,
+            boolean fallback,
+            String mode,
+            String provider,
+            String model,
+            List<Map<String, String>> messages,
+            Map<String, Object> servedMeta,
+            Boolean enabled
+    ) {
+        Map<String, Object> sdkDefault = new LinkedHashMap<>();
+        sdkDefault.put(
+                "description",
+                "LDValue default passed to jsonValueVariationDetail "
+                        + "(concise-skeptic / Charlie shape; used if config key is missing). "
+                        + "Judges gate the draft via judge config evaluation. "
+                        + "Java has no AI SDK — server SDK JSON evaluation only.");
+        sdkDefault.put("enabled", true);
+        sdkDefault.put("model", defaultOllamaModel());
+        sdkDefault.put("provider", "Custom");
+        sdkDefault.put("messages", List.of(
+                Map.of("role", "system", "content", readMessageFile("skeptic-system.txt").trim()),
+                Map.of("role", "user", "content", readMessageFile("skeptic-user.txt").trim())
+        ));
+
+        Map<String, Object> sent = new LinkedHashMap<>();
+        sent.put("configKey", configKeyValue);
+        sent.put("context", contextAsMap(persona));
+        sent.put("variables", Map.of("stories", storiesText));
+        sent.put("sdkDefault", sdkDefault);
+
+        Map<String, Object> received = new LinkedHashMap<>();
+        received.put("fallback", fallback);
+        received.put("mode", mode);
+        received.put("enabled", enabled);
+        received.put("configKey", configKeyValue);
+        received.put("variationKey", servedMeta == null ? null : servedMeta.get("variationKey"));
+        received.put("variationIndex", servedMeta == null ? null : servedMeta.get("variationIndex"));
+        received.put("reason", servedMeta == null ? null : servedMeta.get("reason"));
+        received.put("version", servedMeta == null ? null : servedMeta.get("version"));
+        received.put("versionKey", servedMeta == null ? null : servedMeta.get("versionKey"));
+        received.put("ldMode", servedMeta == null ? null : servedMeta.get("mode"));
+        received.put("modelKey", servedMeta == null ? null : servedMeta.get("modelKey"));
+        received.put("modelVersion", servedMeta == null ? null : servedMeta.get("modelVersion"));
+        received.put("provider", provider);
+        received.put("model", model);
+        received.put("messages", messages);
+
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("sent", sent);
+        out.put("received", received);
+        return out;
     }
 
     private static String judgeInputText(String storiesText, List<String> tickers) {
@@ -641,6 +705,18 @@ public final class AgentCore {
         meta.put("judgeKeys", List.of(judgeFidelityKey(), judgeDisciplineKey()));
         meta.put("passThreshold", threshold);
         meta.put("stories", tickerResults == null ? List.of() : tickerResults);
+        meta.put("ldTransaction", buildLdTransaction(
+                persona,
+                storiesText,
+                configKey(),
+                false,
+                "launchdarkly",
+                provider,
+                model,
+                messages,
+                null,
+                true
+        ));
         emit.accept(meta);
 
         Map<String, Object> draftSection = new LinkedHashMap<>();

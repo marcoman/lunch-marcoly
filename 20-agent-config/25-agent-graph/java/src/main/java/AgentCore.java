@@ -316,6 +316,86 @@ public final class AgentCore {
         return builder.build();
     }
 
+    /** Plain map of the evaluation context for the LD details drawer. */
+    public static Map<String, Object> contextAsMap(Persona persona, String action) {
+        Map<String, Object> ctx = new LinkedHashMap<>();
+        ctx.put("kind", "user");
+        ctx.put("key", persona.id());
+        ctx.put("name", persona.name());
+        ctx.put("action", action);
+        ctx.put("profile", persona.profile());
+        if (persona.anonymous()) {
+            ctx.put("anonymous", true);
+        }
+        return ctx;
+    }
+
+    /**
+     * Payload for the UI 'LD details' overlay (last generate: sent + received).
+     * Summarizes the Agent Graph walk for the completion-style drawer.
+     */
+    private static Map<String, Object> buildLdTransaction(
+            Persona persona,
+            String action,
+            String storiesText,
+            String specialist,
+            boolean graphEnabled,
+            String provider,
+            String model,
+            List<Map<String, String>> messages,
+            GraphInfo graph
+    ) {
+        String gk = graphKey();
+        Map<String, Object> variables = new LinkedHashMap<>();
+        variables.put("stories", storiesText);
+        variables.put("action", action);
+        variables.put("specialist", specialist);
+        variables.put("assessKey", nodeKey("assess"));
+        variables.put("specialistKey", nodeKey(specialist));
+        variables.put("finalizeKey", nodeKey("finalize"));
+
+        Map<String, Object> sdkDefault = new LinkedHashMap<>();
+        sdkDefault.put(
+                "description",
+                "Agent Graph walk (assess → specialist → finalize); "
+                        + "SDK defaults used when a node/graph key is missing.");
+        sdkDefault.put("enabled", true);
+        sdkDefault.put("model", defaultOllamaModel());
+        sdkDefault.put("provider", "Custom");
+        sdkDefault.put("messages", List.of(Map.of(
+                "role", "system",
+                "content", "Agent Graph classroom walk — assess, specialist, finalize.")));
+
+        Map<String, Object> sent = new LinkedHashMap<>();
+        sent.put("configKey", gk);
+        sent.put("context", contextAsMap(persona, action));
+        sent.put("variables", variables);
+        sent.put("sdkDefault", sdkDefault);
+
+        Map<String, Object> received = new LinkedHashMap<>();
+        received.put("fallback", !graphEnabled);
+        received.put("mode", "agent-graph");
+        received.put("enabled", graphEnabled);
+        received.put("configKey", gk);
+        received.put("variationKey", graph == null ? null : emptyToNull(graph.variationKey));
+        received.put("version", graph == null ? null : graph.version);
+        received.put(
+                "reason",
+                graphEnabled ? null : "graph disabled/missing — local node walk");
+        received.put("provider", provider);
+        received.put("model", model);
+        received.put("messages", messages);
+
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("sent", sent);
+        out.put("received", received);
+        return out;
+    }
+
+    private static String emptyToNull(String s) {
+        return s == null || s.isBlank() ? null : s;
+    }
+
     // -------------------------------------------------------------------
     // Message files (rest/messages)
     // -------------------------------------------------------------------
@@ -1331,12 +1411,39 @@ public final class AgentCore {
 
         String finModel = resolveModel(finCfg.modelName());
 
+        // Drawer messages: joke streams the specialist draft; otherwise finalize polish.
+        List<Map<String, String>> drawerMessages;
+        String drawerModel;
+        if (specialist.equals("joke")) {
+            drawerMessages = messagesForNode(specCfg.instructions(), specUser);
+            drawerModel = specModel;
+        } else {
+            String finUser = "Original action: " + uiAction + "\n"
+                    + "Specialist: " + specialist + "\n\n"
+                    + "SPECIALIST DRAFT:\n" + specialistDraft + "\n\n"
+                    + "Return the final polished text only.";
+            drawerMessages = messagesForNode(finCfg.instructions(), finUser);
+            drawerModel = finModel;
+        }
+
+        Map<String, Object> ldTx = buildLdTransaction(
+                persona,
+                uiAction,
+                hasRealStories ? storiesText : "(none)",
+                specialist,
+                graph.enabled,
+                "ollama",
+                drawerModel,
+                drawerMessages,
+                graph);
+
         Map<String, Object> modelEvent = new LinkedHashMap<>();
         modelEvent.put("type", "model");
         modelEvent.put("provider", "ollama");
         modelEvent.put("model", finModel);
         modelEvent.put("configKey", finalizeKey);
         modelEvent.put("phase", "finalize");
+        modelEvent.put("ldTransaction", ldTx);
         emit.accept(modelEvent);
 
         StringBuilder finalText = new StringBuilder();
@@ -1365,12 +1472,7 @@ public final class AgentCore {
                     emit.accept(Map.of("type", "token", "text", chunk));
                 }
             } else {
-                String finUser = "Original action: " + uiAction + "\n"
-                        + "Specialist: " + specialist + "\n\n"
-                        + "SPECIALIST DRAFT:\n" + specialistDraft + "\n\n"
-                        + "Return the final polished text only.";
-                List<Map<String, String>> finMessages = messagesForNode(finCfg.instructions(), finUser);
-                ollamaStream(finModel, finMessages, 0.0, chunk -> {
+                ollamaStream(finModel, drawerMessages, 0.0, chunk -> {
                     if (firstToken[0]) {
                         firstToken[0] = false;
                         metrics.put("ttft_ms", (System.nanoTime() - started) / 1_000_000L);
@@ -1426,6 +1528,7 @@ public final class AgentCore {
         doneEvent.put("path", path);
         doneEvent.put("specialist", specialist);
         doneEvent.put("action", uiAction);
+        doneEvent.put("ldTransaction", ldTx);
         emit.accept(doneEvent);
     }
 

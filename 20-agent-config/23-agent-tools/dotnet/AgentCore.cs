@@ -324,6 +324,86 @@ public static class AgentCore
         return "";
     }
 
+    private static JsonObject ContextAsJson(Persona persona)
+    {
+        var obj = new JsonObject
+        {
+            ["kind"] = "user",
+            ["key"] = persona.Id,
+            ["name"] = persona.Name,
+        };
+        if (persona.Anonymous) obj["anonymous"] = true;
+        return obj;
+    }
+
+    private static JsonArray MessagesToJsonArray(IEnumerable<(string Role, string Content)> messages)
+    {
+        var arr = new JsonArray();
+        foreach (var (role, content) in messages)
+        {
+            arr.Add(new JsonObject { ["role"] = role, ["content"] = content });
+        }
+        return arr;
+    }
+
+    /// <summary>Payload for the UI 'LD details' overlay (last generate: sent + received).</summary>
+    private static JsonObject BuildLdTransaction(
+        Persona persona,
+        string storiesText,
+        string configKeyValue,
+        bool fallback,
+        string mode,
+        string provider,
+        string model,
+        IEnumerable<(string Role, string Content)> messages,
+        JsonObject? servedMeta,
+        bool? enabled)
+    {
+        var sdkDefault = new JsonObject
+        {
+            ["description"] =
+                "LdAiCompletionConfigDefault passed to CompletionConfig " +
+                "(baseline shape with Library tools; used if config key is missing).",
+            ["enabled"] = true,
+            ["model"] = DefaultAnthropicModel(),
+            ["provider"] = "anthropic",
+            ["messages"] = new JsonArray
+            {
+                new JsonObject { ["role"] = "system", ["content"] = BaselineSystemPrompt() },
+                new JsonObject { ["role"] = "user", ["content"] = BaselineUserTemplate() },
+            },
+        };
+
+        var sent = new JsonObject
+        {
+            ["configKey"] = configKeyValue,
+            ["context"] = ContextAsJson(persona),
+            ["variables"] = new JsonObject { ["stories"] = storiesText },
+            ["sdkDefault"] = sdkDefault,
+        };
+
+        var received = new JsonObject
+        {
+            ["fallback"] = fallback,
+            ["mode"] = mode,
+            ["enabled"] = enabled,
+            ["configKey"] = configKeyValue,
+            ["variationKey"] = servedMeta?["variationKey"]?.DeepClone(),
+            ["variationIndex"] = servedMeta?["variationIndex"]?.DeepClone(),
+            ["reason"] = servedMeta?["reason"]?.DeepClone(),
+            ["version"] = servedMeta?["version"]?.DeepClone(),
+            ["versionKey"] = servedMeta?["versionKey"]?.DeepClone(),
+            ["ldMode"] = servedMeta?["mode"]?.DeepClone(),
+            ["modelKey"] = servedMeta?["modelKey"]?.DeepClone(),
+            ["modelVersion"] = servedMeta?["modelVersion"]?.DeepClone(),
+            ["provider"] = provider,
+            ["model"] = model,
+            ["messages"] = MessagesToJsonArray(messages),
+        };
+
+        return new JsonObject { ["sent"] = sent, ["received"] = received };
+    }
+
     /// <summary>Converts a Library tool's JSON-schema parameters (LdValue map) into a JsonObject.</summary>
     private static JsonObject ToolParametersToJson(LdAiConfigTypes.Tool tool)
     {
@@ -673,8 +753,14 @@ public static class AgentCore
             ["round"] = round,
         };
 
-    private static JsonObject FallbackMeta(Persona persona, string storiesText, JsonArray inputSections, JsonArray? tickerResults) =>
-        new()
+    private static JsonObject FallbackMeta(Persona persona, string storiesText, JsonArray inputSections, JsonArray? tickerResults)
+    {
+        var baselineMsgs = new List<(string Role, string Content)>
+        {
+            ("system", BaselineSystemPrompt()),
+            ("user", BaselineUserTemplate()),
+        };
+        return new JsonObject
         {
             ["type"] = "meta",
             ["persona"] = PersonaJson(persona),
@@ -686,7 +772,19 @@ public static class AgentCore
             ["configKey"] = ConfigKey(),
             ["fallback"] = true,
             ["stories"] = tickerResults?.DeepClone() ?? new JsonArray(),
+            ["ldTransaction"] = BuildLdTransaction(
+                persona,
+                storiesText,
+                ConfigKey(),
+                fallback: true,
+                mode: "baseline-fallback",
+                provider: "anthropic",
+                model: $"{DefaultAnthropicModel()} (code baseline)",
+                messages: baselineMsgs,
+                servedMeta: null,
+                enabled: false),
         };
+    }
 
     /// <summary>
     /// Evaluate config, run the model tool loop (Anthropic or Ollama), and stream the final
@@ -796,6 +894,17 @@ public static class AgentCore
             ["stories"] = tickerResults?.DeepClone() ?? new JsonArray(),
             ["tools"] = toolNamesJson,
             ["tracked"] = true,
+            ["ldTransaction"] = BuildLdTransaction(
+                persona,
+                storiesText,
+                ConfigKey(),
+                fallback: false,
+                mode: "launchdarkly",
+                provider: provider,
+                model: modelName,
+                messages: messages,
+                servedMeta: null,
+                enabled: true),
         });
 
         if (toolNames.Count == 0)

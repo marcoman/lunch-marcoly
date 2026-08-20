@@ -290,6 +290,58 @@ function userMessageText(messages) {
   return "";
 }
 
+function buildLdTransaction({
+  persona,
+  storiesText,
+  configKeyValue,
+  fallback,
+  mode,
+  provider,
+  model,
+  messages,
+  servedMeta,
+  enabled,
+}) {
+  const context = buildContext(persona);
+  const reason = (servedMeta || {}).reason;
+  return {
+    sent: {
+      configKey: configKeyValue,
+      context,
+      variables: { stories: storiesText },
+      sdkDefault: {
+        description:
+          "AICompletionConfigDefault passed to completionConfig " +
+          "(baseline shape with Library tools; used if config key is missing).",
+        enabled: true,
+        model: defaultAnthropicModel(),
+        provider: "anthropic",
+        messages: [
+          { role: "system", content: baselineSystemPrompt() },
+          { role: "user", content: baselineUserTemplate() },
+        ],
+      },
+    },
+    received: {
+      fallback,
+      mode,
+      enabled,
+      configKey: configKeyValue,
+      variationKey: (servedMeta || {}).variationKey,
+      variationIndex: (servedMeta || {}).variationIndex,
+      reason,
+      version: (servedMeta || {}).version,
+      versionKey: (servedMeta || {}).versionKey,
+      ldMode: (servedMeta || {}).mode,
+      modelKey: (servedMeta || {}).modelKey,
+      modelVersion: (servedMeta || {}).modelVersion,
+      provider,
+      model,
+      messages,
+    },
+  };
+}
+
 function toolsEntries(config) {
   const tools = config.tools;
   if (!tools) return [];
@@ -568,6 +620,10 @@ async function* generateStream(persona, tickerResults) {
   try {
     config = await evaluateCompletion(persona, storiesText);
   } catch (exc) {
+    const baselineMsgs = [
+      { role: "system", content: baselineSystemPrompt() },
+      { role: "user", content: baselineUserTemplate() },
+    ];
     yield {
       type: "meta",
       persona: { ...persona },
@@ -579,6 +635,18 @@ async function* generateStream(persona, tickerResults) {
       configKey: configKey(),
       fallback: true,
       stories: tickerResults || [],
+      ldTransaction: buildLdTransaction({
+        persona,
+        storiesText,
+        configKeyValue: configKey(),
+        fallback: true,
+        mode: "baseline-fallback",
+        provider: "anthropic",
+        model: `${defaultAnthropicModel()} (code baseline)`,
+        messages: baselineMsgs,
+        servedMeta: null,
+        enabled: false,
+      }),
     };
     yield {
       type: "status",
@@ -598,6 +666,10 @@ async function* generateStream(persona, tickerResults) {
   }
 
   if (!config.enabled) {
+    const baselineMsgs = [
+      { role: "system", content: baselineSystemPrompt() },
+      { role: "user", content: baselineUserTemplate() },
+    ];
     yield {
       type: "meta",
       persona: { ...persona },
@@ -609,6 +681,18 @@ async function* generateStream(persona, tickerResults) {
       configKey: configKey(),
       fallback: true,
       stories: tickerResults || [],
+      ldTransaction: buildLdTransaction({
+        persona,
+        storiesText,
+        configKeyValue: configKey(),
+        fallback: true,
+        mode: "baseline-fallback",
+        provider: "anthropic",
+        model: `${defaultAnthropicModel()} (code baseline)`,
+        messages: baselineMsgs,
+        servedMeta: null,
+        enabled: false,
+      }),
     };
     yield {
       type: "status",
@@ -648,6 +732,18 @@ async function* generateStream(persona, tickerResults) {
     stories: tickerResults || [],
     tools: toolNames,
     tracked: true,
+    ldTransaction: buildLdTransaction({
+      persona,
+      storiesText,
+      configKeyValue: configKey(),
+      fallback: false,
+      mode: "launchdarkly",
+      provider,
+      model: modelName,
+      messages,
+      servedMeta: null,
+      enabled: true,
+    }),
   };
 
   if (!toolNames.length) {

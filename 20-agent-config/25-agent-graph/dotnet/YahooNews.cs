@@ -197,7 +197,7 @@ public static class YahooNews
         if (results.Count != 2) return;
         foreach (var r in results)
         {
-            if (r.GetValueOrDefault("stories") is not List<Dictionary<string, object?>> s || s.Count == 0) return;
+            if (JsonUtil.AsDictList(r.GetValueOrDefault("stories")).Count == 0) return;
         }
 
         var cache = LoadCache();
@@ -211,7 +211,7 @@ public static class YahooNews
         foreach (var block in results)
         {
             if (block.GetValueOrDefault("from_cache") is true) continue;
-            var stories = block.GetValueOrDefault("stories") as List<Dictionary<string, object?>> ?? new();
+            var stories = JsonUtil.AsDictList(block.GetValueOrDefault("stories"));
             var symbol = NormalizeTicker(block.GetValueOrDefault("ticker") as string ?? "");
             if (symbol.Length == 0 || stories.Count == 0) continue;
             tickers[symbol] = new JsonObject
@@ -460,7 +460,7 @@ public static class YahooNews
             var name = block.GetValueOrDefault("name") as string ?? ticker;
             lines.Add($"## {ticker} ({name})");
 
-            var stories = block.GetValueOrDefault("stories") as List<Dictionary<string, object?>> ?? new();
+            var stories = JsonUtil.AsDictList(block.GetValueOrDefault("stories"));
             if (stories.Count == 0)
             {
                 lines.Add("- (no stories available)");

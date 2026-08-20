@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>20-agent-config portal (Node)</title>
+  <title>20-agent-config portal (Java)</title>
   <!--
     Series shell for AgentControl examples 21–25.
-    Tabs switch iframes to each example's own Node server (spawned by portal.js).
+    Tabs switch iframes to each example's own Java server (spawned by the Java portal).
   -->
   <style>
     :root {
@@ -132,7 +132,7 @@
     <header class="bar">
       <div class="brand">
         <strong>20-agent-config</strong>
-        <span>AgentControl series · Node portal</span>
+        <span>AgentControl series · Java portal</span>
       </div>
       <nav class="tabs" id="tabs" role="tablist" aria-label="Examples"></nav>
       <div class="status" id="status" aria-live="polite"></div>
@@ -141,11 +141,11 @@
   </div>
   <script>
     const CHILDREN = [
-      { id: "21", label: "Completion", port: 8211 },
-      { id: "22", label: "Tracked + feedback", port: 8221 },
-      { id: "23", label: "Tools", port: 8231 },
-      { id: "24", label: "Judges", port: 8241 },
-      { id: "25", label: "Graph", port: 8251 },
+      { id: "21", label: "Completion", port: 8212 },
+      { id: "22", label: "Tracked + feedback", port: 8222 },
+      { id: "23", label: "Tools", port: 8232 },
+      { id: "24", label: "Judges", port: 8242 },
+      { id: "25", label: "Graph", port: 8252 },
     ];
 
     const tabsEl = document.getElementById("tabs");

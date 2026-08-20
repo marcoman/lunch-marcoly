@@ -60,7 +60,7 @@ cd ../python && python 25-agent-graph.py   # → http://127.0.0.1:8250/
 | Java | **8252** | [java/](java/) |
 | .NET | **8253** | [dotnet/](dotnet/) |
 
-Series portals: Python **:8200** · Node **:8201** (Graph tab).
+Series portals: Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** (Graph tab).
 
 ## Status
 
@@ -72,7 +72,7 @@ Series portals: Python **:8200** · Node **:8201** (Graph tab).
 | Node web (:8251) | Ready |
 | Java web (:8252) | Ready |
 | .NET web (:8253) | Ready |
-| Portal tabs | Python + Node wired |
+| Portal tabs | Python · Node · Java · .NET wired |
 | Go | Later |
 
 ## Related

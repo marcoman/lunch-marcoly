@@ -375,6 +375,77 @@ function resolveRuntime(config) {
   return ["ollama", model];
 }
 
+/** Best-effort graph eval meta from AgentGraphDefinition.getConfig()._ldMeta. */
+function graphServedMeta(graph) {
+  const cfg = graph && typeof graph.getConfig === "function" ? graph.getConfig() : null;
+  const ldMeta = (cfg && cfg._ldMeta) || {};
+  return {
+    variationKey: ldMeta.variationKey || null,
+    version: ldMeta.version != null ? ldMeta.version : null,
+  };
+}
+
+/**
+ * Payload for the UI 'LD details' overlay (last generate: sent + received).
+ * Summarizes the Agent Graph walk for the completion-style drawer.
+ */
+function buildLdTransaction({
+  persona,
+  action,
+  storiesText,
+  specialist,
+  graphEnabled,
+  provider,
+  model,
+  messages,
+  graph,
+}) {
+  const context = buildContext(persona, action);
+  const gk = graphKey();
+  const served = graphServedMeta(graph);
+  const fallback = !graphEnabled;
+  return {
+    sent: {
+      configKey: gk,
+      context,
+      variables: {
+        stories: storiesText,
+        action,
+        specialist,
+        assessKey: nodeKey("assess"),
+        specialistKey: nodeKey(specialist),
+        finalizeKey: nodeKey("finalize"),
+      },
+      sdkDefault: {
+        description:
+          "Agent Graph walk (assess → specialist → finalize); " +
+          "SDK defaults used when a node/graph key is missing.",
+        enabled: true,
+        model: defaultOllamaModel(),
+        provider: "Custom",
+        messages: [
+          {
+            role: "system",
+            content: "Agent Graph classroom walk — assess, specialist, finalize.",
+          },
+        ],
+      },
+    },
+    received: {
+      fallback,
+      mode: "agent-graph",
+      enabled: graphEnabled,
+      configKey: gk,
+      variationKey: served.variationKey,
+      version: served.version,
+      reason: graphEnabled ? null : "graph disabled/missing — local node walk",
+      provider,
+      model,
+      messages,
+    },
+  };
+}
+
 function clip(text, maxLen = 55) {
   const s = String(text || "").replace(/\s+/g, " ").trim();
   if (s.length <= maxLen) return s;
@@ -952,7 +1023,42 @@ async function* generateStream(persona, action, tickerResults) {
 
   const [, finModel] = resolveRuntime(finCfg);
 
-  yield { type: "model", provider: "ollama", model: finModel, configKey: finalizeKey, phase: "finalize" };
+  // Drawer messages: joke streams the specialist draft; otherwise finalize polish.
+  let drawerMessages;
+  let drawerModel;
+  if (specialist === "joke") {
+    drawerMessages = messagesForNode(specCfg.instructions || "", specUser);
+    drawerModel = specModel;
+  } else {
+    const finUser =
+      `Original action: ${action}\n` +
+      `Specialist: ${specialist}\n\n` +
+      `SPECIALIST DRAFT:\n${specialistDraft}\n\n` +
+      "Return the final polished text only.";
+    drawerMessages = messagesForNode(finCfg.instructions || "", finUser);
+    drawerModel = finModel;
+  }
+
+  const ldTx = buildLdTransaction({
+    persona,
+    action,
+    storiesText: hasRealStories ? storiesText : "(none)",
+    specialist,
+    graphEnabled,
+    provider: "ollama",
+    model: drawerModel,
+    messages: drawerMessages,
+    graph,
+  });
+
+  yield {
+    type: "model",
+    provider: "ollama",
+    model: finModel,
+    configKey: finalizeKey,
+    phase: "finalize",
+    ldTransaction: ldTx,
+  };
 
   const finalParts = [];
   let firstTokenAt = null;
@@ -977,12 +1083,7 @@ async function* generateStream(persona, action, tickerResults) {
         yield { type: "token", text: chunk };
       }
     } else {
-      const finUser =
-        `Original action: ${action}\n` +
-        `Specialist: ${specialist}\n\n` +
-        `SPECIALIST DRAFT:\n${specialistDraft}\n\n` +
-        "Return the final polished text only.";
-      for await (const chunk of ollamaStream(finModel, messagesForNode(finCfg.instructions || "", finUser))) {
+      for await (const chunk of ollamaStream(finModel, drawerMessages)) {
         if (firstTokenAt === null) {
           firstTokenAt = Date.now();
           metrics.ttft_ms = firstTokenAt - started;
@@ -1022,7 +1123,7 @@ async function* generateStream(persona, action, tickerResults) {
   }
 
   yield { type: "metrics", metrics };
-  yield { type: "done", path: runPath, specialist, action };
+  yield { type: "done", path: runPath, specialist, action, ldTransaction: ldTx };
 }
 
 module.exports = {

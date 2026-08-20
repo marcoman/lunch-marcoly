@@ -166,6 +166,59 @@ function userMessageText(messages) {
   return "";
 }
 
+function buildLdTransaction({
+  persona,
+  storiesText,
+  configKeyValue,
+  fallback,
+  mode,
+  provider,
+  model,
+  messages,
+  servedMeta,
+  enabled,
+}) {
+  const context = buildContext(persona);
+  const reason = (servedMeta || {}).reason;
+  return {
+    sent: {
+      configKey: configKeyValue,
+      context,
+      variables: { stories: storiesText },
+      sdkDefault: {
+        description:
+          "AICompletionConfigDefault passed to completionConfig " +
+          "(baseline-analyst shape; used if config key is missing). " +
+          "Generation runs inside trackMetricsOf for Monitoring.",
+        enabled: true,
+        model: defaultOllamaModel(),
+        provider: "Custom",
+        messages: [
+          { role: "system", content: baselineSystemPrompt() },
+          { role: "user", content: baselineUserTemplate() },
+        ],
+      },
+    },
+    received: {
+      fallback,
+      mode,
+      enabled,
+      configKey: configKeyValue,
+      variationKey: (servedMeta || {}).variationKey,
+      variationIndex: (servedMeta || {}).variationIndex,
+      reason,
+      version: (servedMeta || {}).version,
+      versionKey: (servedMeta || {}).versionKey,
+      ldMode: (servedMeta || {}).mode,
+      modelKey: (servedMeta || {}).modelKey,
+      modelVersion: (servedMeta || {}).modelVersion,
+      provider,
+      model,
+      messages,
+    },
+  };
+}
+
 function resolveRuntime(config) {
   const model = (config.model && config.model.name) || "";
   const providerName = ((config.provider && config.provider.name) || "").toLowerCase();
@@ -309,6 +362,18 @@ async function* generateStream(persona, tickerResults) {
       configKey: configKey(),
       fallback: true,
       stories: tickerResults || [],
+      ldTransaction: buildLdTransaction({
+        persona,
+        storiesText,
+        configKeyValue: configKey(),
+        fallback: true,
+        mode: "baseline-fallback",
+        provider,
+        model: `${model} (code baseline)`,
+        messages,
+        servedMeta: null,
+        enabled: false,
+      }),
     };
     yield {
       type: "status",
@@ -342,6 +407,18 @@ async function* generateStream(persona, tickerResults) {
       configKey: configKey(),
       fallback: true,
       stories: tickerResults || [],
+      ldTransaction: buildLdTransaction({
+        persona,
+        storiesText,
+        configKeyValue: configKey(),
+        fallback: true,
+        mode: "baseline-fallback",
+        provider,
+        model: `${model} (code baseline)`,
+        messages,
+        servedMeta: null,
+        enabled: false,
+      }),
     };
     yield {
       type: "status",
@@ -404,6 +481,18 @@ async function* generateStream(persona, tickerResults) {
     fallback: false,
     stories: tickerResults || [],
     tracked: true,
+    ldTransaction: buildLdTransaction({
+      persona,
+      storiesText,
+      configKeyValue: configKey(),
+      fallback: false,
+      mode: "launchdarkly",
+      provider,
+      model,
+      messages,
+      servedMeta: null,
+      enabled: true,
+    }),
   };
 
   try {
