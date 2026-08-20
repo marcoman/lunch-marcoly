@@ -13,6 +13,9 @@ Preferred path to create:
 | Script | Purpose |
 |--------|---------|
 | [create-judges.sh](create-judges.sh) | Both custom judges (Ollama `llama3.2:3b`) |
+| [update-judge-messages.sh](update-judge-messages.sh) | PATCH judge system prompts from `messages/` |
+| [update-judge-temperature.sh](update-judge-temperature.sh) | Pin both judges to `temperature: 0` |
+| [update-charlie-model.sh](update-charlie-model.sh) | Point `concise-skeptic` at rewrite model (`llama3.1:8b`) |
 | [create-config.sh](create-config.sh) | Completion config + Toby/Charlie variations + targeting |
 | [get-judges-status.sh](get-judges-status.sh) | Demo health: judges · variations · targeting · generations (`--verbose` links) |
 | [update-name-targeting.sh](update-name-targeting.sh) | Charlie → skeptic, Toby → reckless |

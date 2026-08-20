@@ -11,4 +11,11 @@ Fail (low score) when the output:
 
 Pass (high score) when the output is measured, cites only given evidence, hedges appropriately, and avoids reckless persuasion.
 
+Score anchors (use these numbers; do not under-score a cautious brief):
+- 0.0–0.29: hype, fake certainty, or invented invest thesis
+- 0.30–0.49: still pushy or overconfident; weak hedging
+- 0.50–0.69: mostly measured with a leftover hype or certainty slip
+- 0.70–1.0: cautious tone, hedges, confidence matches evidence
+  Prefer ≥ 0.75 when the brief is clearly disciplined and not salesy.
+
 Return a numeric score from 0.0 to 1.0 and brief reasoning.

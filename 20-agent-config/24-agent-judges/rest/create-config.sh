@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # LaunchDarkly: AgentControl — create equity-briefing-judged (completion)
 # Variations:
-#   concise-skeptic (Charlie / rewrite) → llama3.2:3b
+#   concise-skeptic (Charlie / rewrite) → llama3.1:8b
 #   reckless-hype   (Toby / draft)      → llama3.2:1b
 # Fallthrough → concise-skeptic (safe default).
+# Judges stay on llama3.2:3b (see create-judges.sh).
 # https://launchdarkly.com/docs/api/agent-control/post-ai-config
 
 set -euo pipefail
@@ -17,7 +18,7 @@ MESSAGES_DIR="${SCRIPT_DIR}/messages"
 
 echo "==> Model configs"
 "${SCRIPT_DIR}/create-model-config.sh" \
-  "$LD_MODEL_BEST_CONFIG_KEY" "$LD_MODEL_BEST_ID" "$LD_MODEL_BEST_DISPLAY_NAME"
+  "$LD_MODEL_REWRITE_CONFIG_KEY" "$LD_MODEL_REWRITE_ID" "$LD_MODEL_REWRITE_DISPLAY_NAME"
 "${SCRIPT_DIR}/create-model-config.sh" \
   "$LD_MODEL_SIMPLE_CONFIG_KEY" "$LD_MODEL_SIMPLE_ID" "$LD_MODEL_SIMPLE_DISPLAY_NAME"
 
@@ -28,14 +29,14 @@ if [[ "$STATUS" == "200" ]]; then
   exit 1
 fi
 
-echo "==> AI config ${LD_CONFIG_KEY} (defaultVariation=concise-skeptic → ${LD_MODEL_BEST_ID})"
+echo "==> AI config ${LD_CONFIG_KEY} (defaultVariation=concise-skeptic → ${LD_MODEL_REWRITE_ID})"
 CREATE_BODY="$(jq -n \
   --rawfile sys "${MESSAGES_DIR}/skeptic-system.txt" \
   --rawfile user "${MESSAGES_DIR}/skeptic-user.txt" \
   --arg key "$LD_CONFIG_KEY" \
   --arg name "$LD_CONFIG_NAME" \
-  --arg mck "$LD_MODEL_BEST_CONFIG_KEY" \
-  --arg mid "$LD_MODEL_BEST_ID" \
+  --arg mck "$LD_MODEL_REWRITE_CONFIG_KEY" \
+  --arg mid "$LD_MODEL_REWRITE_ID" \
   '{
     key: $key,
     name: $name,
@@ -91,5 +92,5 @@ fi
 
 echo "Done. Config key: ${LD_CONFIG_KEY}"
 echo "Create judges first (or next): ./create-judges.sh"
-echo "Pull: ollama pull ${LD_MODEL_BEST_ID} && ollama pull ${LD_MODEL_SIMPLE_ID}"
+echo "Pull: ollama pull ${LD_MODEL_REWRITE_ID} && ollama pull ${LD_MODEL_SIMPLE_ID} && ollama pull ${LD_MODEL_BEST_ID}"
 echo "UI: ${LD_API_HOST}/projects/${LD_PROJECT_KEY}/ai-configs/${LD_CONFIG_KEY}"

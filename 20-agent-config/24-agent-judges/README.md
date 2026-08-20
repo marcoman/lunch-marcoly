@@ -21,7 +21,7 @@ flowchart TB
   Draft["First draft<br/>equity-briefing-judged"]
   J1["Source Fidelity Judge"]
   J2["Recommendation Discipline Judge"]
-  Gate{"both ≥ 0.70?"}
+  Gate{"both ≥ 0.65?"}
   Rewrite["Rewrite once<br/>concise-skeptic / Charlie"]
   Mon["Monitoring"]
 
@@ -47,9 +47,10 @@ Fidelity with **tool outputs** in the judge input is sharper for grounded agents
 | Judge | `equity-briefing-source-fidelity` |
 | Judge | `equity-briefing-recommendation-discipline` |
 | Variation (Toby) | `reckless-hype` → `llama3.2:1b` |
-| Variation (Charlie / rewrite) | `concise-skeptic` → `llama3.2:3b` |
+| Variation (Charlie / rewrite) | `concise-skeptic` → `llama3.1:8b` |
+| Judges | `llama3.2:3b` (unchanged) |
 
-Pass: **both** judges ≥ **0.70**. One rewrite max. Always show scores.
+Pass: **both** judges ≥ **0.65** (soft bar for local Ollama variance; `JUDGE_PASS_THRESHOLD`). One rewrite max. Always show scores.
 
 Status helper: `./rest/get-judges-status.sh` (optional `--verbose` for UI/docs links).
 
@@ -57,7 +58,7 @@ Status helper: `./rest/get-judges-status.sh` (optional `--verbose` for UI/docs l
 
 | Language | Port | Status |
 |----------|------|--------|
-| Python web | **8240** | Ready — `create_judge` + `evaluate` → Charlie rewrite |
+| Python web | **8240** | Ready — `create_judge` + `evaluate` → Charlie rewrite; **Trace** dock under I/O |
 | Node web | **8241** | Ready — `judgeConfig` + Ollama JSON (AI SDK 2.x) |
 | Java web | **8242** | Ready — server SDK JSON + Ollama JSON (no Java AI SDK) |
 | .NET web | **8243** | Ready — `JudgeConfig` + Ollama JSON |

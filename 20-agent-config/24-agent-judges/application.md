@@ -40,7 +40,7 @@ Keywords: **AgentControl** · **Judges** · **custom judges** · **online evalua
 | Persona | Role in the demo | Completion variation | Ollama model |
 |---------|------------------|----------------------|--------------|
 | **Thoughtless Toby** | Primary fail fixture — draft should fail judges | `reckless-hype` | `llama3.2:1b` |
-| **Conservative Charlie** | Safe rewrite voice (and optional “usually passes” control) | `concise-skeptic` | `llama3.2:3b` |
+| **Conservative Charlie** | Safe rewrite voice (and optional “usually passes” control) | `concise-skeptic` | `llama3.1:8b` |
 
 **Toby always fails is the goal.** Charlie is the refined voice used for the replacement draft.
 
@@ -58,7 +58,7 @@ Keywords: **AgentControl** · **Judges** · **custom judges** · **online evalua
 | Variation key | Persona | Model |
 |---------------|---------|-------|
 | `reckless-hype` | Thoughtless Toby | `llama3.2:1b` |
-| `concise-skeptic` | Conservative Charlie (rewrite target) | `llama3.2:3b` |
+| `concise-skeptic` | Conservative Charlie (rewrite target) | `llama3.1:8b` |
 
 Messages: adapt from 21’s reckless / skeptic sets — see [rest/messages/](rest/messages/). User messages include `{{ stories }}`.
 
@@ -73,18 +73,19 @@ Both judges:
 
 - Mode: **Judge** / type **Custom**
 - Provider: **Ollama** (start local; revisit Anthropic only if scores are too flaky)
-- Suggested judge model: `llama3.2:3b` (stronger than Toby’s draft model)
+- Suggested judge model: `llama3.2:3b` (mid-tier; Charlie’s rewrite uses a stronger model)
+- Judge sampling: **`temperature: 0`** on both judge variations (lower run-to-run score variance)
 - Metric keys (required `$ld:ai:judge:` prefix): `$ld:ai:judge:source-fidelity`, `$ld:ai:judge:recommendation-discipline`
 - **No tools** on judges; **no judges attached to judges**
 
-Judge prompts (normative intent) live under [rest/messages/](rest/messages/) (`judge-source-fidelity-*.txt`, `judge-recommendation-discipline-*.txt`).
+Judge prompts (normative intent) live under [rest/messages/](rest/messages/) (`judge-source-fidelity-*.txt`, `judge-recommendation-discipline-*.txt`). Prompts include **score anchors** so a grounded rewrite lands in the pass band while Toby inventions stay low. Refresh live judges with [rest/update-judge-messages.sh](rest/update-judge-messages.sh).
 
 ### Pass / fail rules
 
 | Rule | Value |
 |------|-------|
 | Score range | `0.0`–`1.0` (LaunchDarkly structured judge output) |
-| Pass threshold | **≥ 0.70** per judge (tunable via env later if needed) |
+| Pass threshold | **≥ 0.65** per judge (soft bar for local Ollama variance; override with `JUDGE_PASS_THRESHOLD`) |
 | Combine | **AND** — both must pass |
 | On fail | Show draft + both scores/reasoning → **one** rewrite with Charlie → show replacement + scores on rewrite (always show scores; do not loop) |
 | Charlie rewrite fails | Accept and surface scores; no second rewrite (deal with flakiness if classrooms hit it) |
@@ -104,7 +105,7 @@ flowchart TB
   App --> LD["Toby → reckless-hype<br/>Charlie → concise-skeptic"]
   LD --> Draft["First draft LLM"]
   Draft --> Judges["Source Fidelity + Recommendation Discipline<br/>create_judge + evaluate"]
-  Judges -->|"both ≥ 0.70"| Pass["Show draft + scores"]
+  Judges -->|"both ≥ 0.65"| Pass["Show draft + scores"]
   Judges -->|"either fails"| Gate["Show draft + scores<br/>then rewrite once as Charlie"]
   Gate --> Rewrite["completion_config concise-skeptic"]
   Rewrite --> Out["Show replacement + scores"]
@@ -123,7 +124,7 @@ flowchart TB
    - `--- Draft (Thoughtless Toby) ---`
    - `--- Judge scores ---` (each score + short reasoning)
    - if failed: `--- Rewrite (Conservative Charlie) ---` then replacement text
-7. If either score &lt; 0.70: evaluate Charlie’s variation (or force `concise-skeptic`), generate **once**, append replacement; optionally re-score the rewrite for display only (no further rewrite).
+7. If either score &lt; 0.65: evaluate Charlie’s variation (or force `concise-skeptic`), generate **once**, append replacement; optionally re-score the rewrite for display only (no further rewrite).
 8. Track generation / judge-related metrics so Monitoring corroborates the demo (exact tracker API per AI SDK version — document in language README).
 9. On LD or judge/provider failure: clear status error; do not silently skip the gate in the happy-path demo script.
 
@@ -131,10 +132,11 @@ flowchart TB
 
 ```bash
 ollama pull llama3.2:1b    # Toby draft
-ollama pull llama3.2:3b    # Charlie rewrite + judges
+ollama pull llama3.2:3b    # Judges
+ollama pull llama3.1:8b    # Charlie rewrite (local fallback model)
 ```
 
-No Anthropic key required for v1.
+No Anthropic key required for v1. Optional local alt tried in class: `qwen2.5:7b` via `LD_MODEL_REWRITE_*` / `update-charlie-model.sh`.
 
 ## Acceptance criteria
 
@@ -144,10 +146,14 @@ No Anthropic key required for v1.
 - [ ] Java web on **8242**; same gate UX (server SDK JSON + Ollama judge JSON).
 - [ ] .NET web on **8243**; same gate UX (`JudgeConfig` + Ollama JSON).
 - [ ] Go console; same gate in the raw-terminal TUI.
-- [ ] Charlie-only generate usually passes (or shows scores without a forced rewrite when both ≥ 0.70).
+- [ ] Charlie-only generate usually passes (or shows scores without a forced rewrite when both ≥ 0.65).
 - [ ] At most one rewrite per generate.
 - [ ] README documents keys, thresholds, Ollama tags, and demo script (Toby → rewrite).
 - [ ] Series landing lists 24; inventory stub includes the three keys.
+
+## Follow-ups
+
+- [ ] **After next Yahoo story refresh:** if rewrite Recommendation Discipline still hangs ~0.69 with threshold 0.65 feeling too soft, add a one-line score-anchor nudge in `judge-recommendation-discipline-system.txt` (prefer ≥ 0.72 when clearly disciplined) and re-push via `rest/update-judge-messages.sh`.
 
 ## Out of scope (v1)
 

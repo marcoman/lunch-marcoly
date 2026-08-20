@@ -23,7 +23,8 @@ export LD_ENVIRONMENT_KEY="test"
 export LD_API_ACCESS_TOKEN="..."
 
 ollama pull llama3.2:1b    # Toby draft
-ollama pull llama3.2:3b    # Charlie rewrite + judges
+ollama pull llama3.2:3b    # Judges
+ollama pull llama3.1:8b    # Charlie rewrite
 
 cd ../rest
 ./create-judges.sh
@@ -44,7 +45,10 @@ Open **http://127.0.0.1:8240/** (Node twin: **8241**; Java twin: **8242**).
 
 1. Select **Thoughtless Toby**.
 2. **Get Stories** → **Generate AI Report**.
-3. Expect decorated Response: **Draft** → **Judge scores (FAIL)** → **Rewrite (Conservative Charlie)**.
+3. Expect decorated Response: **Draft** → **Judge scores (FAIL)** → **Rewrite (Conservative Charlie)** → **Rewrite judge scores**.
+4. Watch **Trace** under Prompt/Response for a one-line-per-step under-the-hood log
+   (prompt → model → draft → judges → gate → rewrite → rewrite judges). Collapse or use **Taller** as needed.
+5. **LD details** (right drawer) still has Sent / Received for the last evaluation.
 
 ## SDK gotcha (Ollama + create_judge)
 
@@ -69,7 +73,7 @@ Drafts still call Ollama’s native `/api/chat`. Judges call Ollama via `/v1`.
 | `LD_AGENT_CONFIG_KEY` | No | Default `equity-briefing-judged` |
 | `LD_JUDGE_FIDELITY_KEY` | No | Default `equity-briefing-source-fidelity` |
 | `LD_JUDGE_DISCIPLINE_KEY` | No | Default `equity-briefing-recommendation-discipline` |
-| `JUDGE_PASS_THRESHOLD` | No | Default `0.70` |
+| `JUDGE_PASS_THRESHOLD` | No | Default `0.65` |
 | `OLLAMA_HOST` | No | Default `http://127.0.0.1:11434` |
 
 Parent: [../README.md](../README.md)

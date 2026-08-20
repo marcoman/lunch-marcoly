@@ -23,19 +23,24 @@ set -euo pipefail
 
 : "${LD_MODEL_PROVIDER:=Custom}"
 
-# Charlie / judges / rewrite
+# Judges (stay mid-tier so Charlie's bigger rewrite is the visible upgrade)
 : "${LD_MODEL_BEST_CONFIG_KEY:=Custom.llama3.2-3b}"
 : "${LD_MODEL_BEST_ID:=llama3.2:3b}"
-: "${LD_MODEL_BEST_DISPLAY_NAME:=Ollama llama3.2:3b (best)}"
+: "${LD_MODEL_BEST_DISPLAY_NAME:=Ollama llama3.2:3b (judges)}"
+
+# Charlie / concise-skeptic rewrite — stronger local model
+: "${LD_MODEL_REWRITE_CONFIG_KEY:=Custom.llama3.1-8b}"
+: "${LD_MODEL_REWRITE_ID:=llama3.1:8b}"
+: "${LD_MODEL_REWRITE_DISPLAY_NAME:=Ollama llama3.1:8b (Charlie rewrite)}"
 
 # Toby draft
 : "${LD_MODEL_SIMPLE_CONFIG_KEY:=Custom.llama3.2-1b}"
 : "${LD_MODEL_SIMPLE_ID:=llama3.2:1b}"
 : "${LD_MODEL_SIMPLE_DISPLAY_NAME:=Ollama llama3.2:1b (simple)}"
 
-: "${LD_MODEL_CONFIG_KEY:=${LD_MODEL_BEST_CONFIG_KEY}}"
-: "${LD_MODEL_ID:=${LD_MODEL_BEST_ID}}"
-: "${LD_MODEL_DISPLAY_NAME:=${LD_MODEL_BEST_DISPLAY_NAME}}"
+: "${LD_MODEL_CONFIG_KEY:=${LD_MODEL_REWRITE_CONFIG_KEY}}"
+: "${LD_MODEL_ID:=${LD_MODEL_REWRITE_ID}}"
+: "${LD_MODEL_DISPLAY_NAME:=${LD_MODEL_REWRITE_DISPLAY_NAME}}"
 
 if [[ -z "${LD_API_ACCESS_TOKEN:-}" ]]; then
   echo "error: LD_API_ACCESS_TOKEN is required" >&2

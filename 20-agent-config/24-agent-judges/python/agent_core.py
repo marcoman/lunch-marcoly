@@ -11,9 +11,11 @@ Same equity-briefing product as 21, plus a **runtime judge gate**:
   2. LaunchDarkly  completion_config + create_judge / evaluate
   3. Providers     Ollama for drafts; judges via OpenAI-compatible Ollama
   4. Generation    draft → both judges → optional one Charlie rewrite
+                   → re-score rewrite (display only; no second rewrite)
 
 LaunchDarkly insertion (read first):
   generate_stream() → completion_config(...) then create_judge(...).evaluate(...)
+  (again on the rewrite when the draft gate fails)
   Docs: https://launchdarkly.com/docs/home/agentcontrol/judges
   Keywords: Judges · custom judges · create_judge · evaluate · runtime gate
 
@@ -59,7 +61,7 @@ DEFAULT_CONFIG_KEY = "equity-briefing-judged"
 DEFAULT_JUDGE_FIDELITY_KEY = "equity-briefing-source-fidelity"
 DEFAULT_JUDGE_DISCIPLINE_KEY = "equity-briefing-recommendation-discipline"
 DEFAULT_OLLAMA_MODEL = "llama3.2:3b"
-DEFAULT_PASS_THRESHOLD = 0.70
+DEFAULT_PASS_THRESHOLD = 0.65
 
 
 @dataclass(frozen=True)
@@ -214,9 +216,13 @@ def skeptic_completion_default() -> AICompletionConfigDefault:
 
 
 def judge_default(system_file: str, metric_key: str) -> AIJudgeConfigDefault:
+    # temperature=0: pin sampling so local Ollama judges bounce less run-to-run.
     return AIJudgeConfigDefault(
         enabled=True,
-        model=ModelConfig(name=default_ollama_model()),
+        model=ModelConfig(
+            name=default_ollama_model(),
+            parameters={"temperature": 0},
+        ),
         provider=ProviderConfig(name="Custom"),
         evaluation_metric_key=metric_key,
         messages=[
@@ -296,56 +302,76 @@ def extract_tickers(ticker_results: list[dict[str, Any]] | None) -> list[str]:
 # ---------------------------------------------------------------------------
 
 def _run_one_judge(key: str, persona: Persona, input_text: str, output_text: str) -> dict[str, Any]:
-    """Synchronous wrapper around async Judge.evaluate (100% sampling)."""
+    """Evaluate one judge (async). Prefer run_judges() so both share one event loop."""
+    return asyncio.run(_eval_one_judge(key, persona, input_text, output_text))
 
-    async def _async() -> dict[str, Any]:
-        # LaunchDarkly: create_judge + evaluate — runtime gate (not Monitoring-only).
-        # https://launchdarkly.com/docs/sdk/ai/python
-        metric = _default_metric_for_judge_key(key)
-        default = judge_default(
-            "judge-source-fidelity-system.txt"
-            if "fidelity" in key
-            else "judge-recommendation-discipline-system.txt",
-            metric,
-        )
-        judge = ai_client().create_judge(
-            key,
-            build_context(persona),
-            default,
-            default_ai_provider="openai",
-        )
-        if judge is None:
-            return {
-                "key": key,
-                "success": False,
-                "error": "create_judge returned None (disabled or unsupported provider)",
-                "score": None,
-                "reasoning": None,
-                "passed": False,
-            }
-        result = await judge.evaluate(input_text, output_text, sampling_rate=1.0)
-        score = result.score
-        passed = score is not None and float(score) >= pass_threshold()
+
+async def _eval_one_judge(
+    key: str, persona: Persona, input_text: str, output_text: str
+) -> dict[str, Any]:
+    # LaunchDarkly: create_judge + evaluate — runtime gate (not Monitoring-only).
+    # https://launchdarkly.com/docs/sdk/ai/python
+    metric = _default_metric_for_judge_key(key)
+    default = judge_default(
+        "judge-source-fidelity-system.txt"
+        if "fidelity" in key
+        else "judge-recommendation-discipline-system.txt",
+        metric,
+    )
+    judge = ai_client().create_judge(
+        key,
+        build_context(persona),
+        default,
+        default_ai_provider="openai",
+    )
+    if judge is None:
         return {
             "key": key,
-            "success": bool(result.success),
-            "error": result.error_message,
-            "score": score,
-            "reasoning": result.reasoning,
-            "metricKey": result.metric_key,
-            "sampled": result.sampled,
-            "passed": passed,
+            "success": False,
+            "error": "create_judge returned None (disabled or unsupported provider)",
+            "score": None,
+            "reasoning": None,
+            "model": default_ollama_model(),
+            "passed": False,
         }
-
-    return asyncio.run(_async())
+    # Prefer the model from the evaluated judge variation (usually llama3.2:3b).
+    model_name = default_ollama_model()
+    try:
+        cfg_model = getattr(getattr(judge, "_ai_config", None), "model", None)
+        if cfg_model is not None and getattr(cfg_model, "name", None):
+            model_name = cfg_model.name
+    except Exception:
+        pass
+    result = await judge.evaluate(input_text, output_text, sampling_rate=1.0)
+    score = result.score
+    passed = score is not None and float(score) >= pass_threshold()
+    return {
+        "key": key,
+        "success": bool(result.success),
+        "error": result.error_message,
+        "score": score,
+        "reasoning": result.reasoning,
+        "metricKey": result.metric_key,
+        "sampled": result.sampled,
+        "model": model_name,
+        "passed": passed,
+    }
 
 
 def run_judges(persona: Persona, input_text: str, draft: str) -> list[dict[str, Any]]:
-    results = [
-        _run_one_judge(judge_fidelity_key(), persona, input_text, draft),
-        _run_one_judge(judge_discipline_key(), persona, input_text, draft),
-    ]
-    return results
+    """Run both judges in one asyncio.run so httpx clients close before the loop dies.
+
+    Two separate asyncio.run() calls left orphaned AsyncClient.aclose() tasks and
+    printed 'Event loop is closed' after a successful generate.
+    """
+
+    async def _both() -> list[dict[str, Any]]:
+        return [
+            await _eval_one_judge(judge_fidelity_key(), persona, input_text, draft),
+            await _eval_one_judge(judge_discipline_key(), persona, input_text, draft),
+        ]
+
+    return asyncio.run(_both())
 
 
 def judges_passed(results: list[dict[str, Any]]) -> bool:
@@ -491,7 +517,7 @@ def generate_stream(
         yield {"type": "done"}
         return
 
-    # One rewrite max — Conservative Charlie.
+    # One rewrite max — Conservative Charlie (stronger local model).
     yield {
         "type": "status",
         "message": "Gate failed — rewriting once with Conservative Charlie…",
@@ -504,6 +530,7 @@ def generate_stream(
 
     rewrite_metrics = Metrics()
     rewrite_started = time.perf_counter()
+    rewrite_parts: list[str] = []
     try:
         charlie_config = evaluate_completion(CHARLIE, stories_text)
         if not charlie_config.enabled:
@@ -512,12 +539,18 @@ def generate_stream(
         c_messages = messages_as_dicts(charlie_config)
         c_tracker = charlie_config.create_tracker()
         yield {
+            "type": "status",
+            "message": f"Falling back to a different model ({c_model}).",
+        }
+        yield {
             "type": "rewrite_meta",
             "persona": asdict(CHARLIE),
             "provider": c_provider,
             "model": c_model,
         }
         for event in _generate_ollama(c_model, c_messages, rewrite_started, rewrite_metrics):
+            if event.get("type") == "token":
+                rewrite_parts.append(str(event.get("text") or ""))
             yield event
         if c_tracker is not None:
             c_tracker.track_success()
@@ -525,13 +558,54 @@ def generate_stream(
             c_tracker.track_duration(rewrite_metrics.latency_ms or 0)
     except Exception as exc:  # noqa: BLE001
         yield {"type": "error", "message": f"Charlie rewrite failed: {exc}"}
+        metrics.latency_ms = int((time.perf_counter() - started) * 1000)
+        yield {"type": "metrics", "metrics": metrics.to_dict()}
+        yield {"type": "done"}
+        return
+
+    rewrite = "".join(rewrite_parts).strip()
+    yield {
+        "type": "status",
+        "message": "Re-scoring rewrite (Source Fidelity + Recommendation Discipline)…",
+    }
+    try:
+        rewrite_judge_results = run_judges(CHARLIE, j_input, rewrite)
+    except Exception as exc:  # noqa: BLE001
+        yield {"type": "error", "message": f"Rewrite judge evaluation failed: {exc}"}
+        metrics.latency_ms = int((time.perf_counter() - started) * 1000)
+        yield {"type": "metrics", "metrics": metrics.to_dict()}
+        yield {"type": "done"}
+        return
+
+    rewrite_passed = judges_passed(rewrite_judge_results)
+    yield {
+        "type": "section",
+        "title": "Rewrite judge scores",
+        "kind": "judges",
+    }
+    yield {
+        "type": "judges",
+        "phase": "rewrite",
+        "passed": rewrite_passed,
+        "threshold": threshold,
+        "results": rewrite_judge_results,
+    }
 
     metrics.latency_ms = int((time.perf_counter() - started) * 1000)
     yield {"type": "metrics", "metrics": metrics.to_dict()}
-    yield {
-        "type": "status",
-        "message": "Rewrite complete (one rewrite max; scores above are for the draft).",
-    }
+    if rewrite_passed:
+        yield {
+            "type": "status",
+            "message": "Rewrite complete — both judges passed (one rewrite max).",
+        }
+    else:
+        yield {
+            "type": "status",
+            "message": (
+                "Rewrite complete — judges still below threshold "
+                "(one rewrite max; no further rewrite)."
+            ),
+        }
     yield {"type": "done"}
 
 

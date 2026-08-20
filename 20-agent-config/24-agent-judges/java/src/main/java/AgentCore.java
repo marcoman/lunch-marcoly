@@ -66,7 +66,7 @@ public final class AgentCore {
     private static final String DEFAULT_JUDGE_DISCIPLINE_KEY =
             "equity-briefing-recommendation-discipline";
     private static final String DEFAULT_OLLAMA_MODEL = "llama3.2:3b";
-    private static final double DEFAULT_PASS_THRESHOLD = 0.70;
+    private static final double DEFAULT_PASS_THRESHOLD = 0.65;
 
     private static final String EVENT_GENERATION_SUCCESS = "$ld:ai:generation:success";
     private static final String JUDGE_JSON_SUFFIX =
@@ -855,6 +855,7 @@ public final class AgentCore {
         payload.put("model", model);
         payload.put("stream", false);
         payload.put("format", "json");
+        payload.put("options", Map.of("temperature", 0));
         payload.put("messages", messages);
         String body = GSON.toJson(payload);
 

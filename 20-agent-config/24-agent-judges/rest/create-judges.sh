@@ -56,7 +56,10 @@ create_judge() {
         key: "default",
         name: "default",
         modelConfigKey: $mck,
-        model: { modelName: $mid },
+        model: {
+          modelName: $mid,
+          parameters: { temperature: 0 }
+        },
         messages: [
           { role: "system", content: $sys }
         ]

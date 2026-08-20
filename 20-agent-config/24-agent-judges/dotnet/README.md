@@ -57,7 +57,7 @@ After each Ollama score: `tracker.TrackJudgeResult(new JudgeResult(...))`.
 | `LD_AGENT_CONFIG_KEY` | No | Default `equity-briefing-judged` |
 | `LD_JUDGE_FIDELITY_KEY` | No | Default `equity-briefing-source-fidelity` |
 | `LD_JUDGE_DISCIPLINE_KEY` | No | Default `equity-briefing-recommendation-discipline` |
-| `JUDGE_PASS_THRESHOLD` | No | Default `0.70` |
+| `JUDGE_PASS_THRESHOLD` | No | Default `0.65` |
 | `OLLAMA_HOST` | No | Default `http://127.0.0.1:11434` |
 | `OLLAMA_MODEL` | No | Default `llama3.2:3b` (SDK defaults / judges) |
 | `PORT` | No | Default `8243` |

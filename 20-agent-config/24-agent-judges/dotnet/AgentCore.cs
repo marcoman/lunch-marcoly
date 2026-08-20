@@ -54,7 +54,7 @@ public static class AgentCore
     private const string DefaultJudgeFidelityKey = "equity-briefing-source-fidelity";
     private const string DefaultJudgeDisciplineKey = "equity-briefing-recommendation-discipline";
     private const string DefaultOllamaModelName = "llama3.2:3b";
-    private const double DefaultPassThreshold = 0.70;
+    private const double DefaultPassThreshold = 0.65;
     private const string JudgeJsonSuffix =
         "Respond with JSON {\"score\":0.0-1.0,\"reasoning\":\"...\"}.";
 
@@ -471,7 +471,14 @@ public static class AgentCore
         using var request = new HttpRequestMessage(HttpMethod.Post, url)
         {
             Content = new StringContent(
-                JsonSerializer.Serialize(new { model, stream = false, format = "json", messages }),
+                JsonSerializer.Serialize(new
+                {
+                    model,
+                    stream = false,
+                    format = "json",
+                    options = new { temperature = 0 },
+                    messages,
+                }),
                 Encoding.UTF8, "application/json"),
         };
 

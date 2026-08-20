@@ -56,7 +56,7 @@ const (
 	defaultJudgeFidelityKey   = "equity-briefing-source-fidelity"
 	defaultJudgeDisciplineKey = "equity-briefing-recommendation-discipline"
 	defaultOllamaModelName    = "llama3.2:3b"
-	defaultPassThreshold      = 0.70
+	defaultPassThreshold      = 0.65
 
 	judgeJSONSuffix = `Respond with JSON {"score":0.0-1.0,"reasoning":"..."}.`
 )
@@ -452,6 +452,7 @@ func ollamaJudgeJSON(model string, messages []datamodel.Message) (map[string]any
 		"model":    model,
 		"stream":   false,
 		"format":   "json",
+		"options":  map[string]any{"temperature": 0},
 		"messages": messages,
 	}
 	raw, err := json.Marshal(payload)

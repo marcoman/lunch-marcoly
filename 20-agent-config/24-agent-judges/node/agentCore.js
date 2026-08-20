@@ -33,7 +33,7 @@ const DEFAULT_CONFIG_KEY = "equity-briefing-judged";
 const DEFAULT_JUDGE_FIDELITY_KEY = "equity-briefing-source-fidelity";
 const DEFAULT_JUDGE_DISCIPLINE_KEY = "equity-briefing-recommendation-discipline";
 const DEFAULT_OLLAMA_MODEL = "llama3.2:3b";
-const DEFAULT_PASS_THRESHOLD = 0.7;
+const DEFAULT_PASS_THRESHOLD = 0.65;
 const JUDGE_JSON_SUFFIX =
   'Respond with JSON {"score":0.0-1.0,"reasoning":"..."}.';
 
@@ -201,6 +201,7 @@ async function ollamaJudgeJson(model, messages) {
       model,
       stream: false,
       format: "json",
+      options: { temperature: 0 },
       messages,
     }),
   });

@@ -2,7 +2,7 @@
 
 Terminal UI twin of the web ports (Python/Node/Java/.NET). **No HTTP port** — fixed
 hotkey chrome like [21-agent-completion-config/go](../../21-agent-completion-config/go/).
-Same runtime gate: draft → two custom judges (≥ **0.70** AND) → optional one
+Same runtime gate: draft → two custom judges (≥ **0.65** AND) → optional one
 **Conservative Charlie** rewrite.
 
 Keywords: **AgentControl** · **Judges** · **JudgeConfig** · **TrackJudgeResponse** ·
@@ -25,7 +25,8 @@ Keywords: **AgentControl** · **Judges** · **JudgeConfig** · **TrackJudgeRespo
 ```bash
 export LD_SDK_KEY="sdk-..."
 ollama pull llama3.2:1b    # Toby draft
-ollama pull llama3.2:3b    # Charlie rewrite + judges
+ollama pull llama3.2:3b    # Judges
+ollama pull llama3.1:8b    # Charlie rewrite
 
 cd ../rest
 ./create-judges.sh
@@ -78,7 +79,7 @@ Completion uses `CompletionConfig` (same as 21). Judges use
 
 Scores are reported with **`tracker.TrackJudgeResponse(datamodel.JudgeResponse{...})`**
 (metric keys like `$ld:ai:judge:source-fidelity`). Pass threshold: both judges
-≥ **0.70** (`JUDGE_PASS_THRESHOLD`).
+≥ **0.65** (`JUDGE_PASS_THRESHOLD`).
 
 ## Environment
 
@@ -88,7 +89,7 @@ Scores are reported with **`tracker.TrackJudgeResponse(datamodel.JudgeResponse{.
 | `LD_AGENT_CONFIG_KEY` | No | Default `equity-briefing-judged` |
 | `LD_JUDGE_FIDELITY_KEY` | No | Default `equity-briefing-source-fidelity` |
 | `LD_JUDGE_DISCIPLINE_KEY` | No | Default `equity-briefing-recommendation-discipline` |
-| `JUDGE_PASS_THRESHOLD` | No | Default `0.70` |
+| `JUDGE_PASS_THRESHOLD` | No | Default `0.65` |
 | `OLLAMA_HOST` | No | Default `http://127.0.0.1:11434` |
 | `OLLAMA_MODEL` | No | Default `llama3.2:3b` (SDK defaults / judges) |
 
