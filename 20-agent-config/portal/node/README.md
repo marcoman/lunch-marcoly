@@ -1,6 +1,6 @@
 # 20-agent-config portal — Node
 
-One-command **Node** shell for the AgentControl series examples **21–24**.
+One-command **Node** shell for the AgentControl series examples **21–25**.
 
 Twin of the [Python portal](../README.md) (`portal.py` on **:8200**). This portal
 serves a tabbed UI on **:8201**, spawns each example’s existing Node web server,
@@ -19,7 +19,8 @@ for d in \
   ../../21-agent-completion-config/node \
   ../../22-config-outside-code/node \
   ../../23-agent-tools/node \
-  ../../24-agent-judges/node
+  ../../24-agent-judges/node \
+  ../../25-agent-graph/node
 do
   (cd "$d" && npm install)
 done
@@ -43,6 +44,7 @@ Open **http://127.0.0.1:8201/**
 | 22 | Tracked + feedback | **8221** |
 | 23 | Tools | **8231** |
 | 24 | Judges | **8241** |
+| 25 | Graph | **8251** |
 
 **Ctrl+C** stops the portal **and** all child servers.
 
@@ -56,7 +58,8 @@ node portal.js
   ├─ child 21    → …/21-…/node/…js :8211  ← iframe
   ├─ child 22    → …/22-…/node/…js :8221
   ├─ child 23    → …/23-…/node/…js :8231
-  └─ child 24    → …/24-…/node/…js :8241
+  ├─ child 24    → …/24-…/node/…js :8241
+  └─ child 25    → …/25-…/node/…js :8251
 ```
 
 - Children inherit the portal’s environment (`LD_SDK_KEY`, Ollama, etc.).

@@ -1,0 +1,2103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent graph</title>
+  <!--
+    UI for 25-agent-graph (Java web).
+
+    LaunchDarkly AgentControl Agent Graphs: assess → specialist → finalize.
+
+    Flow:
+      1. Enter two tickers (optional for joke)
+      2. Get Stories → Yahoo Finance headlines
+      3. Choose user (Charlie / Amelia / Toby)
+      4. Pick an action → graph walk with Trace
+  -->
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --ink: #1c1a16;
+      --muted: #6b645a;
+      --panel: #fffdf8;
+      --line: #d9d0c3;
+      --accent: #2f5d50;
+      --danger: #8b2e2e;
+      --ok: #2f5d50;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, #efe6d6 0%, transparent 40%),
+        linear-gradient(180deg, #f7f3eb 0%, #ebe4d8 100%);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+    .wrap {
+      /* Standard desktop content width: 1280px (common laptop / Tailwind max-w-7xl). */
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 3rem;
+    }
+    .app-banner {
+      font-size: 0.85rem;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+      margin-bottom: 0.75rem;
+    }
+    h1 {
+      font-family: "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+      font-size: 2rem;
+      font-weight: 600;
+      margin: 0 0 0.35rem;
+    }
+    .subtitle {
+      color: var(--muted);
+      margin: 0 0 1.25rem;
+    }
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      align-items: center;
+    }
+    .persona-panel {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1rem;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .persona-panel .persona-meta {
+      text-align: center;
+      min-width: 12rem;
+      flex: 1 1 14rem;
+    }
+    .persona-panel .persona-nav {
+      display: contents;
+    }
+    /* Collapsible tickers + headlines chrome */
+    .stories-chrome {
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+      background: var(--panel);
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+    .stories-chrome-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+      color: var(--ink);
+    }
+    .stories-chrome-header:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--accent) 8%, transparent);
+      border-color: transparent;
+    }
+    .stories-chrome-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      flex: 0 0 auto;
+    }
+    .stories-chrome-summary {
+      flex: 1 1 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.35rem 0.75rem;
+      min-width: 0;
+    }
+    .stories-chrome-tickers {
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .stories-chrome-status {
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 400;
+    }
+    .stories-chrome-chevron {
+      flex: 0 0 auto;
+      width: 1.35rem;
+      height: 1.35rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 0.35rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+      line-height: 1;
+      transition: transform 0.15s ease;
+    }
+    .stories-chrome.collapsed .stories-chrome-chevron {
+      transform: rotate(-90deg);
+    }
+    .stories-chrome-body {
+      padding: 0 1rem 1rem;
+      border-top: 1px solid var(--line);
+    }
+    .stories-chrome.collapsed .stories-chrome-body {
+      display: none;
+    }
+    .ticker-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: end;
+      margin: 1rem 0;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .field label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+    .field input {
+      font: inherit;
+      padding: 0.55rem 0.7rem;
+      border: 1px solid var(--line);
+      border-radius: 0.4rem;
+      background: var(--panel);
+      color: var(--ink);
+      min-width: 7rem;
+      text-transform: uppercase;
+    }
+    button {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+      padding: 0.55rem 0.9rem;
+      border-radius: 0.4rem;
+      cursor: pointer;
+      font: inherit;
+    }
+    button:hover:not(:disabled) { border-color: var(--accent); }
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    button.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .stories-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr;
+      margin-bottom: 0;
+    }
+    @media (min-width: 700px) {
+      .stories-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .stories-chrome-body .panel {
+      background: color-mix(in srgb, var(--bg) 55%, var(--panel));
+    }
+    .grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr;
+      margin-bottom: 1rem;
+    }
+    @media (min-width: 900px) {
+      .grid.io-grid { grid-template-columns: 1fr 1fr; }
+      .grid.meta-grid { grid-template-columns: 1fr 1.2fr 1fr; }
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+      padding: 1rem 1.1rem;
+    }
+    .panel.io-panel {
+      min-height: 13.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .panel.io-panel .value {
+      flex: 1 1 auto;
+      overflow: auto;
+      max-height: 23.5rem;
+    }
+    .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+    .value {
+      white-space: pre-wrap;
+      line-height: 1.5;
+      min-height: 1.5rem;
+    }
+    .ticker-heading {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+    }
+    .ticker-sub {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 0.65rem;
+    }
+    .story-list {
+      margin: 0;
+      padding-left: 1.1rem;
+      line-height: 1.45;
+    }
+    .story-list li {
+      margin-bottom: 0.45rem;
+    }
+    .story-list a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .story-list a:hover { text-decoration: underline; }
+    .story-pub {
+      display: block;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    .empty-stories {
+      color: var(--muted);
+      font-style: italic;
+    }
+    #response {
+      min-height: 10rem;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 0.95rem;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.65rem 1rem;
+      font-size: 0.95rem;
+    }
+    .metrics div span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    #status {
+      min-height: 3rem;
+      color: var(--muted);
+    }
+    #status.error { color: var(--danger); }
+    #status.ok { color: var(--ok); }
+    #status.busy {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .status-panel.busy {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+    .judge-block {
+      margin: 0.55rem 0;
+      padding: 0.55rem 0.7rem;
+      border-left: 3px solid #8a6a1f;
+      background: rgba(212, 184, 74, 0.12);
+      white-space: pre-wrap;
+      font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+      font-size: 0.82rem;
+    }
+    .judge-block.pass {
+      border-left-color: var(--ok);
+      background: rgba(47, 93, 80, 0.1);
+    }
+    .judge-block.fail {
+      border-left-color: var(--danger);
+      background: rgba(139, 46, 46, 0.1);
+    }
+    .gate-section {
+      margin: 0.75rem 0 0.35rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .gate-section.draft { color: #2f5d50; }
+    .gate-section.judges { color: #8a6a1f; }
+    .gate-section.rewrite { color: #2f5d50; }
+    .gate-summary {
+      margin: 0.35rem 0 0.65rem;
+      font-weight: 600;
+    }
+    .persona-name {
+      font-size: 1.35rem;
+      font-weight: 600;
+    }
+    .profile {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* LD details overlay (does not resize main layout) */
+    .ld-fab {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 40;
+      box-shadow: 0 2px 10px rgba(28, 26, 22, 0.12);
+    }
+    .ld-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(28, 26, 22, 0.28);
+      z-index: 50;
+    }
+    .ld-backdrop.open { display: block; }
+    .ld-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      width: min(28rem, 92vw);
+      max-width: 92vw;
+      background: var(--panel);
+      border-left: 1px solid var(--line);
+      z-index: 60;
+      transform: translateX(100%);
+      transition: transform 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -8px 0 24px rgba(28, 26, 22, 0.12);
+    }
+    .ld-drawer.open { transform: translateX(0); }
+    .ld-drawer-resize {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      cursor: ew-resize;
+      background: transparent;
+    }
+    .ld-drawer-resize:hover { background: rgba(47, 93, 80, 0.15); }
+    .ld-drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 1rem 1.1rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .ld-drawer-header h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+    .ld-tabs {
+      display: flex;
+      gap: 0.35rem;
+      padding: 0.65rem 1.1rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .ld-tab {
+      border: none;
+      background: transparent;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      padding: 0.45rem 0.65rem;
+      color: var(--muted);
+      font: inherit;
+      cursor: pointer;
+    }
+    .ld-tab.active {
+      color: var(--ink);
+      border-bottom-color: var(--accent);
+      font-weight: 600;
+    }
+    .ld-drawer-body {
+      flex: 1 1 auto;
+      overflow: auto;
+      padding: 1rem 1.1rem 2rem;
+    }
+    .ld-empty {
+      color: var(--muted);
+      line-height: 1.5;
+      font-style: italic;
+    }
+    .ld-section { display: none; }
+    .ld-section.active { display: block; }
+    .trace-graph-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 0.75rem;
+      align-items: stretch;
+      margin: 0 0 1rem;
+    }
+    @media (max-width: 860px) {
+      .trace-graph-row { grid-template-columns: 1fr; }
+    }
+    .trace-dock {
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+      background: var(--panel);
+      overflow: hidden;
+      min-width: 0;
+    }
+    .trace-dock-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.55rem 0.35rem 0.35rem;
+    }
+    .trace-dock-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex: 1 1 auto;
+      border: none;
+      background: transparent;
+      font: inherit;
+      color: var(--ink);
+      cursor: pointer;
+      text-align: left;
+      padding: 0.35rem 0.45rem;
+      border-radius: 0.45rem;
+    }
+    .trace-dock-toggle:hover { background: color-mix(in srgb, var(--bg) 55%, transparent); }
+    .trace-dock-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-weight: 650;
+      font-size: 0.92rem;
+    }
+    .trace-dock-meta {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-left: 0.15rem;
+      font-weight: 500;
+    }
+    .trace-dot {
+      display: inline-block;
+      width: 0.45rem;
+      height: 0.45rem;
+      border-radius: 50%;
+      background: transparent;
+      flex: 0 0 auto;
+    }
+    .trace-dot.on {
+      background: var(--accent);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent);
+    }
+    .trace-dock-chevron {
+      color: var(--muted);
+      font-size: 0.85rem;
+      transition: transform 0.15s ease;
+    }
+    .trace-dock:not(.collapsed) .trace-dock-chevron {
+      transform: rotate(180deg);
+    }
+    .trace-dock-body {
+      border-top: 1px solid var(--line);
+      padding: 0.45rem 0.55rem 0.55rem;
+    }
+    .trace-dock.collapsed .trace-dock-body { display: none; }
+    .trace-expand-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 0.2rem 0.65rem;
+      font: inherit;
+      font-size: 0.75rem;
+      color: var(--muted);
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
+    .trace-expand-btn:hover {
+      color: var(--ink);
+      border-color: var(--accent);
+    }
+    .trace-dock.expanded .trace-expand-btn {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .trace-console {
+      margin: 0;
+      padding: 0.45rem 0.4rem 0.55rem;
+      background: #1c2430;
+      color: #c8d0da;
+      border-radius: 8px;
+      border: 1px solid #2a3545;
+      font-family: "IBM Plex Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      /* ~5 visible lines + padding; expand for more history */
+      max-height: calc(0.78rem * 1.45 * 5 + 0.9rem);
+      overflow: auto;
+    }
+    .trace-dock.expanded .trace-console {
+      max-height: min(40vh, 22rem);
+    }
+    .trace-empty {
+      margin: 0;
+      padding: 0.55rem 0.45rem;
+      color: #8b97a8;
+      font-style: italic;
+    }
+    .trace-line {
+      display: grid;
+      grid-template-columns: 2.4rem 5.6rem 1fr;
+      gap: 0.45rem;
+      padding: 0.12rem 0.35rem;
+      border-radius: 3px;
+      align-items: baseline;
+    }
+    .trace-line:hover { background: rgba(255, 255, 255, 0.04); }
+    .trace-num {
+      color: #5c6b7e;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      user-select: none;
+    }
+    .trace-kind {
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .trace-text {
+      color: #aeb8c6;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+    .trace-text .q { color: #d7dee8; }
+    .trace-text .id {
+      color: #e8d5a3;
+      font-weight: 650;
+      font-style: normal;
+    }
+    .k-run .trace-kind,
+    .k-info .trace-kind { color: #7eb6ff; }
+    .k-prompt .trace-kind { color: #9ad7c2; }
+    .k-model .trace-kind { color: #c4a5ff; }
+    .k-assess .trace-kind { color: #e6c35c; }
+    .k-route .trace-kind { color: #7eb6ff; }
+    .k-specialist .trace-kind,
+    .k-report .trace-kind,
+    .k-questions .trace-kind,
+    .k-good .trace-kind,
+    .k-joke .trace-kind { color: #c4a5ff; }
+    .k-finalize .trace-kind { color: #7dcea0; }
+    .k-tool .trace-kind { color: #e6c35c; }
+    .k-metrics .trace-kind { color: #8b97a8; }
+    .k-done .trace-kind { color: #7dcea0; }
+    .k-error .trace-kind,
+    .k-fail .trace-kind { color: #f07178; }
+    .nav.actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      align-items: center;
+    }
+    .nav.actions button {
+      flex: 0 0 auto;
+    }
+    /* Mini path map — highlight only the taken assess → specialist → finalize route */
+    .path-map {
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+      background: var(--panel);
+      padding: 0.55rem 0.6rem 0.65rem;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .path-map-title {
+      font-size: 0.75rem;
+      font-weight: 650;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .mini-graph {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 11.5rem;
+    }
+    .mini-graph svg.mg-edges {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+    .mg-edge {
+      stroke: #cfc6b8;
+      stroke-width: 1.5;
+      fill: none;
+      opacity: 0.85;
+      transition: stroke 0.2s ease, stroke-width 0.2s ease, opacity 0.2s ease;
+    }
+    .mg-edge.on {
+      stroke: var(--accent);
+      stroke-width: 2.75;
+      opacity: 1;
+    }
+    .mg-nodes {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      min-height: 11.5rem;
+      display: grid;
+      grid-template-rows: 1fr 1.15fr 1fr;
+      padding: 0.15rem 0.1rem;
+    }
+    .mg-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .mg-row.specialists {
+      justify-content: space-between;
+      padding: 0 0.1rem;
+    }
+    .mg-node {
+      flex: 0 1 auto;
+      max-width: 4.6rem;
+      padding: 0.28rem 0.3rem;
+      border: 1.5px solid #cfc6b8;
+      border-radius: 0.35rem;
+      background: color-mix(in srgb, var(--bg) 70%, #fff);
+      color: var(--muted);
+      font-size: 0.62rem;
+      font-weight: 600;
+      line-height: 1.2;
+      text-align: center;
+      transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease,
+        box-shadow 0.2s ease, font-weight 0.2s ease;
+    }
+    .mg-node.on {
+      border-color: var(--accent);
+      border-width: 2.5px;
+      background: color-mix(in srgb, var(--accent) 14%, #fff);
+      color: var(--ink);
+      font-weight: 750;
+    }
+    .mg-node.current {
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+    .ld-kv {
+      display: grid;
+      grid-template-columns: 7.5rem 1fr;
+      gap: 0.35rem 0.75rem;
+      margin: 0 0 1rem;
+      font-size: 0.92rem;
+    }
+    .ld-kv dt {
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding-top: 0.15rem;
+    }
+    .ld-kv dd {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.4;
+    }
+    .ld-block-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin: 1rem 0 0.4rem;
+    }
+    .ld-msg {
+      border: 1px solid var(--line);
+      border-radius: 0.5rem;
+      padding: 0.65rem 0.75rem;
+      margin-bottom: 0.65rem;
+      background: #fff;
+    }
+    .ld-msg-role {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+      font-weight: 600;
+    }
+    .ld-msg-body {
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.45;
+      font-size: 0.9rem;
+    }
+    .ld-msg-body.collapsed {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+    .ld-msg-toggle {
+      margin-top: 0.4rem;
+      padding: 0.2rem 0.45rem;
+      font-size: 0.8rem;
+      color: var(--accent);
+      border-color: transparent;
+      background: transparent;
+    }
+    .ld-msg-toggle:hover { border-color: var(--line); }
+    .ld-json {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 0.8rem;
+      background: #f7f3eb;
+      border: 1px solid var(--line);
+      border-radius: 0.4rem;
+      padding: 0.65rem 0.75rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 14rem;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="app-banner" id="app-banner">25-agent-graph[java]</div>
+    <h1>Agent graph</h1>
+    <p class="subtitle">Pull ticker headlines, pick an action, and watch assess → specialist → finalize in Trace.</p>
+
+    <section class="stories-chrome" id="stories-chrome" aria-label="Tickers and stories">
+      <button
+        type="button"
+        class="stories-chrome-header"
+        id="btn-stories-toggle"
+        aria-expanded="true"
+        aria-controls="stories-chrome-body"
+      >
+        <span class="stories-chrome-label">Stories</span>
+        <span class="stories-chrome-summary">
+          <span class="stories-chrome-tickers" id="stories-summary-tickers">NVDA · SPCX</span>
+          <span class="stories-chrome-status" id="stories-summary-status">(no stories yet)</span>
+        </span>
+        <span class="stories-chrome-chevron" id="stories-chrome-chevron" aria-hidden="true">▾</span>
+      </button>
+      <div class="stories-chrome-body" id="stories-chrome-body">
+        <div class="ticker-row">
+          <div class="field">
+            <label for="ticker1">Ticker 1</label>
+            <input id="ticker1" type="text" value="NVDA" maxlength="12" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="ticker2">Ticker 2</label>
+            <input id="ticker2" type="text" value="SPCX" maxlength="12" autocomplete="off" />
+          </div>
+          <button id="btn-stories" class="primary" type="button">Get Stories</button>
+        </div>
+
+        <div class="stories-grid">
+          <div class="panel" id="panel-story-1">
+            <div class="label">Stories — ticker 1</div>
+            <div class="ticker-heading" id="story1-heading">—</div>
+            <div class="ticker-sub" id="story1-name"></div>
+            <div id="story1-list" class="empty-stories">Click Get Stories to load headlines.</div>
+          </div>
+          <div class="panel" id="panel-story-2">
+            <div class="label">Stories — ticker 2</div>
+            <div class="ticker-heading" id="story2-heading">—</div>
+            <div class="ticker-sub" id="story2-name"></div>
+            <div id="story2-list" class="empty-stories">Click Get Stories to load headlines.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="panel persona-panel">
+      <button id="btn-prev" type="button">← Previous User</button>
+      <div class="persona-meta">
+        <div class="label">User</div>
+        <div class="persona-name" id="persona-name">—</div>
+        <div class="profile" id="persona-profile">—</div>
+      </div>
+      <button id="btn-next" type="button">Next user →</button>
+    </div>
+
+    <div class="nav actions" id="action-nav" role="group" aria-label="Graph actions">
+      <button id="btn-report" class="primary" type="button" data-action="report">Generate AI Report</button>
+      <button id="btn-questions" type="button" data-action="questions">Identify questions</button>
+      <button id="btn-good" type="button" data-action="good">Identify good &amp; bad</button>
+      <button id="btn-joke" type="button" data-action="joke">Tell me a joke</button>
+    </div>
+
+    <div class="grid io-grid">
+      <div class="panel io-panel">
+        <div class="label">User Prompt</div>
+        <div class="value" id="input">—</div>
+      </div>
+      <div class="panel io-panel">
+        <div class="label">Response</div>
+        <div class="value" id="response"></div>
+      </div>
+    </div>
+
+    <div class="trace-graph-row">
+    <section class="trace-dock" id="trace-dock" aria-label="Run trace">
+      <div class="trace-dock-header">
+        <button
+          type="button"
+          class="trace-dock-toggle"
+          id="btn-trace-toggle"
+          aria-expanded="true"
+          aria-controls="trace-dock-body"
+        >
+          <span class="trace-dock-title">
+            <span class="trace-dot" id="trace-dot" aria-hidden="true"></span>
+            Trace
+            <span class="trace-dock-meta" id="trace-meta">under the hood</span>
+          </span>
+          <span class="trace-dock-chevron" aria-hidden="true">▾</span>
+        </button>
+        <button type="button" class="trace-expand-btn" id="btn-trace-expand" title="Toggle taller trace">
+          Taller
+        </button>
+      </div>
+      <div class="trace-dock-body" id="trace-dock-body">
+        <div class="trace-console" id="trace-console" aria-live="polite">
+          <p class="trace-empty" id="trace-empty">
+            Graph path for this run: assess → specialist → finalize.
+          </p>
+          <div id="trace-lines" hidden></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="path-map" id="path-map" aria-label="Graph path map">
+      <div class="path-map-title">Path</div>
+      <div class="mini-graph" id="mini-graph">
+        <svg class="mg-edges" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <line class="mg-edge" data-edge="assess-report" x1="50" y1="18" x2="12.5" y2="50" />
+          <line class="mg-edge" data-edge="assess-questions" x1="50" y1="18" x2="37.5" y2="50" />
+          <line class="mg-edge" data-edge="assess-good" x1="50" y1="18" x2="62.5" y2="50" />
+          <line class="mg-edge" data-edge="assess-joke" x1="50" y1="18" x2="87.5" y2="50" />
+          <line class="mg-edge" data-edge="report-finalize" x1="12.5" y1="50" x2="50" y2="82" />
+          <line class="mg-edge" data-edge="questions-finalize" x1="37.5" y1="50" x2="50" y2="82" />
+          <line class="mg-edge" data-edge="good-finalize" x1="62.5" y1="50" x2="50" y2="82" />
+          <line class="mg-edge" data-edge="joke-finalize" x1="87.5" y1="50" x2="50" y2="82" />
+        </svg>
+        <div class="mg-nodes">
+          <div class="mg-row">
+            <div class="mg-node" data-node="assess">Graph Assess</div>
+          </div>
+          <div class="mg-row specialists">
+            <div class="mg-node" data-node="report">Graph Report</div>
+            <div class="mg-node" data-node="questions">Graph Questions</div>
+            <div class="mg-node" data-node="good">Graph Good</div>
+            <div class="mg-node" data-node="joke">Graph Joke</div>
+          </div>
+          <div class="mg-row">
+            <div class="mg-node" data-node="finalize">Graph Finalize</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    </div>
+
+    <div class="grid meta-grid">
+      <div class="panel">
+        <div class="label">Provider / model</div>
+        <div class="value" id="provider-model">—</div>
+      </div>
+      <div class="panel">
+        <div class="label">Metrics</div>
+        <div class="metrics" id="metrics">
+          <div><span>latency_ms</span><strong id="m-latency">—</strong></div>
+          <div><span>ttft_ms</span><strong id="m-ttft">—</strong></div>
+          <div><span>prompt_tokens</span><strong id="m-prompt">—</strong></div>
+          <div><span>completion_tokens</span><strong id="m-completion">—</strong></div>
+          <div><span>total_tokens</span><strong id="m-total">—</strong></div>
+          <div><span>finish_reason</span><strong id="m-finish">—</strong></div>
+        </div>
+      </div>
+      <div class="panel status-panel" id="status-panel">
+        <div class="label">Status</div>
+        <div id="status">Loading…</div>
+      </div>
+    </div>
+  </div>
+
+  <button id="btn-ld-details" class="ld-fab" type="button" title="LaunchDarkly sent/received details">
+    LD details
+  </button>
+  <div id="ld-backdrop" class="ld-backdrop" hidden></div>
+  <aside id="ld-drawer" class="ld-drawer" aria-hidden="true">
+    <div class="ld-drawer-resize" id="ld-drawer-resize" title="Drag to resize"></div>
+    <div class="ld-drawer-header">
+      <h2>LaunchDarkly · last generate</h2>
+      <button id="btn-ld-close" type="button">Close</button>
+    </div>
+    <div class="ld-tabs" role="tablist">
+      <button type="button" class="ld-tab active" data-tab="sent" role="tab" aria-selected="true">Sent</button>
+      <button type="button" class="ld-tab" data-tab="received" role="tab" aria-selected="false">Received</button>
+    </div>
+    <div class="ld-drawer-body">
+      <p id="ld-empty" class="ld-empty">
+        Generate to see the last LD evaluation.
+      </p>
+      <div id="ld-section-sent" class="ld-section active" hidden></div>
+      <div id="ld-section-received" class="ld-section" hidden></div>
+    </div>
+  </aside>
+
+  <script>
+    /*
+     * Client flow
+     * -----------
+     * 1. boot()         → GET /api/bootstrap (+ restore saved story titles)
+     * 2. getStories()   → GET /api/stories  (Yahoo only; no LLM)
+     * 3. selectUser()   → Previous/Next User (UI only; no fetch, no LLM)
+     * 4. generate(action) → POST /api/generate with action + stories (SSE)
+     *
+     * Four actions: report / questions / good / joke.
+     */
+
+    const STORAGE_KEY = "25-agent-graph-stories-java";
+    const STORIES_CHROME_KEY = "25-stories-chrome-collapsed-java";
+
+    let personas = [];
+    let index = 0;
+    let busy = false;
+    let abortController = null;
+    let latestStories = [];
+    let lastLdTransaction = null;
+    let ldTab = "sent";
+    let traceEntries = [];
+    let traceStreamKind = null; // "finalize" while tokens flow
+    let traceStreamingLogged = false;
+    let traceBuf = "";
+
+    const els = {
+      banner: document.getElementById("app-banner"),
+      storiesChrome: document.getElementById("stories-chrome"),
+      storiesToggle: document.getElementById("btn-stories-toggle"),
+      storiesSummaryTickers: document.getElementById("stories-summary-tickers"),
+      storiesSummaryStatus: document.getElementById("stories-summary-status"),
+      ticker1: document.getElementById("ticker1"),
+      ticker2: document.getElementById("ticker2"),
+      stories: document.getElementById("btn-stories"),
+      story1Heading: document.getElementById("story1-heading"),
+      story1Name: document.getElementById("story1-name"),
+      story1List: document.getElementById("story1-list"),
+      story2Heading: document.getElementById("story2-heading"),
+      story2Name: document.getElementById("story2-name"),
+      story2List: document.getElementById("story2-list"),
+      name: document.getElementById("persona-name"),
+      profile: document.getElementById("persona-profile"),
+      input: document.getElementById("input"),
+      response: document.getElementById("response"),
+      providerModel: document.getElementById("provider-model"),
+      statusPanel: document.getElementById("status-panel"),
+      status: document.getElementById("status"),
+      prev: document.getElementById("btn-prev"),
+      next: document.getElementById("btn-next"),
+      btnReport: document.getElementById("btn-report"),
+      btnQuestions: document.getElementById("btn-questions"),
+      btnGood: document.getElementById("btn-good"),
+      btnJoke: document.getElementById("btn-joke"),
+      latency: document.getElementById("m-latency"),
+      ttft: document.getElementById("m-ttft"),
+      prompt: document.getElementById("m-prompt"),
+      completion: document.getElementById("m-completion"),
+      total: document.getElementById("m-total"),
+      finish: document.getElementById("m-finish"),
+      ldBtn: document.getElementById("btn-ld-details"),
+      ldBackdrop: document.getElementById("ld-backdrop"),
+      ldDrawer: document.getElementById("ld-drawer"),
+      ldClose: document.getElementById("btn-ld-close"),
+      ldResize: document.getElementById("ld-drawer-resize"),
+      ldEmpty: document.getElementById("ld-empty"),
+      ldSent: document.getElementById("ld-section-sent"),
+      ldReceived: document.getElementById("ld-section-received"),
+      traceDock: document.getElementById("trace-dock"),
+      traceToggle: document.getElementById("btn-trace-toggle"),
+      traceExpand: document.getElementById("btn-trace-expand"),
+      traceMeta: document.getElementById("trace-meta"),
+      traceEmpty: document.getElementById("trace-empty"),
+      traceLines: document.getElementById("trace-lines"),
+      traceConsole: document.getElementById("trace-console"),
+      traceDot: document.getElementById("trace-dot"),
+    };
+
+    function openLdDrawer() {
+      els.ldBackdrop.hidden = false;
+      els.ldBackdrop.classList.add("open");
+      els.ldDrawer.classList.add("open");
+      els.ldDrawer.setAttribute("aria-hidden", "false");
+      renderLdDrawer();
+    }
+
+    function closeLdDrawer() {
+      els.ldBackdrop.classList.remove("open");
+      els.ldBackdrop.hidden = true;
+      els.ldDrawer.classList.remove("open");
+      els.ldDrawer.setAttribute("aria-hidden", "true");
+    }
+
+    function setLdTab(tab) {
+      ldTab = tab;
+      for (const btn of document.querySelectorAll(".ld-tab")) {
+        const active = btn.dataset.tab === tab;
+        btn.classList.toggle("active", active);
+        btn.setAttribute("aria-selected", active ? "true" : "false");
+      }
+      els.ldSent.classList.toggle("active", tab === "sent");
+      els.ldReceived.classList.toggle("active", tab === "received");
+    }
+
+    const TRACE_COLLAPSE_KEY = "25-trace-dock-collapsed";
+    const TRACE_EXPAND_KEY = "25-trace-dock-expanded";
+
+    function setTraceCollapsed(collapsed) {
+      if (!els.traceDock) return;
+      els.traceDock.classList.toggle("collapsed", !!collapsed);
+      if (els.traceToggle) els.traceToggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      try {
+        localStorage.setItem(TRACE_COLLAPSE_KEY, collapsed ? "1" : "0");
+      } catch (_) {}
+    }
+
+    function setTraceExpanded(expanded) {
+      if (!els.traceDock) return;
+      els.traceDock.classList.toggle("expanded", !!expanded);
+      if (els.traceExpand) els.traceExpand.textContent = expanded ? "Shorter" : "Taller";
+      try {
+        localStorage.setItem(TRACE_EXPAND_KEY, expanded ? "1" : "0");
+      } catch (_) {}
+    }
+
+    function restoreTraceDockState() {
+      try {
+        setTraceCollapsed(localStorage.getItem(TRACE_COLLAPSE_KEY) === "1");
+        setTraceExpanded(localStorage.getItem(TRACE_EXPAND_KEY) === "1");
+      } catch (_) {
+        setTraceCollapsed(false);
+        setTraceExpanded(false);
+      }
+    }
+
+    function clip(text, max = 40) {
+      const s = String(text || "").replace(/\s+/g, " ").trim();
+      if (!s) return "";
+      if (s.length <= max) return s;
+      return `${s.slice(0, Math.max(0, max - 1))}…`;
+    }
+
+    /** Emphasize keys / model ids / persona names in the trace value column. */
+    function idSpan(text) {
+      return `<span class="id">${escapeHtml(text)}</span>`;
+    }
+
+    function shortJudgeKey(key) {
+      return String(key || "judge")
+        .replace(/^equity-briefing-/, "")
+        .replace(/^\$ld:ai:judge:/, "");
+    }
+
+    function setTraceActive(on) {
+      if (els.traceDot) els.traceDot.classList.toggle("on", !!on);
+    }
+
+    const SPECIALISTS = ["report", "questions", "good", "joke"];
+    let pathSpecialist = null;
+
+    function resetPathMap() {
+      pathSpecialist = null;
+      document.querySelectorAll(".mg-node").forEach((el) => {
+        el.classList.remove("on", "current");
+      });
+      document.querySelectorAll(".mg-edge").forEach((el) => {
+        el.classList.remove("on");
+      });
+    }
+
+    function setPathCurrent(nodeId) {
+      document.querySelectorAll(".mg-node.current").forEach((el) => {
+        el.classList.remove("current");
+      });
+      if (!nodeId) return;
+      document.querySelector(`.mg-node[data-node="${nodeId}"]`)?.classList.add("current");
+    }
+
+    function lightPathNode(nodeId, { current = true } = {}) {
+      const el = document.querySelector(`.mg-node[data-node="${nodeId}"]`);
+      if (!el) return;
+      el.classList.add("on");
+      if (current) setPathCurrent(nodeId);
+    }
+
+    function lightPathEdge(from, to) {
+      document
+        .querySelector(`.mg-edge[data-edge="${from}-${to}"]`)
+        ?.classList.add("on");
+    }
+
+    /**
+     * Progressive engagement: only light what has actually started.
+     * phase: assess | specialist | finalize | done
+     */
+    function engagePath(phase, specialist) {
+      const spec = SPECIALISTS.includes(specialist) ? specialist : pathSpecialist;
+      if (SPECIALISTS.includes(specialist)) pathSpecialist = specialist;
+
+      if (phase === "assess") {
+        lightPathNode("assess", { current: true });
+        return;
+      }
+      if (phase === "route" && spec) {
+        // Choice made — connect assess → specialist, but specialist node waits until it runs.
+        lightPathNode("assess", { current: false });
+        lightPathEdge("assess", spec);
+        setPathCurrent("assess");
+        return;
+      }
+      if (phase === "specialist" && spec) {
+        lightPathNode("assess", { current: false });
+        lightPathEdge("assess", spec);
+        lightPathNode(spec, { current: true });
+        return;
+      }
+      if (phase === "finalize" && spec) {
+        lightPathNode("assess", { current: false });
+        lightPathEdge("assess", spec);
+        lightPathNode(spec, { current: false });
+        lightPathEdge(spec, "finalize");
+        lightPathNode("finalize", { current: true });
+        return;
+      }
+      if (phase === "done" && spec) {
+        lightPathNode("assess", { current: false });
+        lightPathEdge("assess", spec);
+        lightPathNode(spec, { current: false });
+        lightPathEdge(spec, "finalize");
+        lightPathNode("finalize", { current: false });
+        setPathCurrent(null);
+      }
+    }
+
+    function clearTrace() {
+      traceEntries = [];
+      traceStreamKind = null;
+      traceStreamingLogged = false;
+      traceBuf = "";
+      renderTrace();
+      setTraceActive(false);
+      resetPathMap();
+    }
+
+    function appendTrace(kind, text, level) {
+      traceEntries.push({
+        kind: kind || "info",
+        text: text || "",
+        level: level || kind || "info",
+      });
+      renderTrace();
+    }
+
+    function renderTrace() {
+      if (!els.traceLines || !els.traceEmpty) return;
+      if (els.traceMeta) {
+        const n = traceEntries.length;
+        els.traceMeta.textContent = n
+          ? `${n} step${n === 1 ? "" : "s"}`
+          : "under the hood";
+      }
+      if (!traceEntries.length) {
+        els.traceEmpty.hidden = false;
+        els.traceLines.hidden = true;
+        els.traceLines.innerHTML = "";
+        return;
+      }
+      els.traceEmpty.hidden = true;
+      els.traceLines.hidden = false;
+      const html = traceEntries
+        .map((entry, i) => {
+          const num = String(i + 1).padStart(3, "0");
+          const level = entry.level || entry.kind || "info";
+          return (
+            `<div class="trace-line k-${escapeHtml(level)}">` +
+            `<span class="trace-num">${num}</span>` +
+            `<span class="trace-kind">${escapeHtml(entry.kind)}</span>` +
+            `<span class="trace-text">${entry.text}</span>` +
+            `</div>`
+          );
+        })
+        .join("");
+      els.traceLines.innerHTML = html;
+      if (els.traceConsole) {
+        els.traceConsole.scrollTop = els.traceConsole.scrollHeight;
+      }
+    }
+
+    /** Quote + escape a clipped preview for the console value column. */
+    function qClip(text, max = 40) {
+      const c = clip(text, max);
+      if (!c) return '<span class="q">""</span>';
+      return `<span class="q">"${escapeHtml(c)}"</span>`;
+    }
+
+    function finishStreamBuffer() {
+      if (!traceStreamKind) return;
+      if (traceBuf) {
+        appendTrace(traceStreamKind, qClip(traceBuf, 55), traceStreamKind);
+      }
+      traceBuf = "";
+      traceStreamKind = null;
+      traceStreamingLogged = false;
+    }
+
+    function handleTraceEvent(event) {
+      if (event.type === "run") {
+        resetPathMap();
+        engagePath("assess");
+        const bits = [
+          idSpan(event.action || "?"),
+          idSpan(event.personaName || event.personaId || "?"),
+          event.graphKey ? idSpan(event.graphKey) : "",
+        ].filter(Boolean);
+        appendTrace("run", bits.join("  "), "run");
+        if (els.traceMeta) {
+          els.traceMeta.textContent = event.graphEnabled === false
+            ? "graph disabled — local walk"
+            : "assess → specialist → finalize";
+        }
+        return;
+      }
+      if (event.type === "info") {
+        appendTrace("info", escapeHtml(event.message || ""), "info");
+        return;
+      }
+      if (event.type === "status") {
+        // Status stays off Trace, but drives Path engagement during LLM latency.
+        const msg = String(event.message || "");
+        if (/^assess\b/i.test(msg)) {
+          engagePath("assess");
+        } else {
+          const m = msg.match(/^(report|questions|good|joke)\b/i);
+          if (m) engagePath("specialist", m[1].toLowerCase());
+          else if (/^finalize\b/i.test(msg)) engagePath("finalize", pathSpecialist);
+        }
+        return;
+      }
+      if (event.type === "assess") {
+        engagePath("assess");
+        appendTrace(
+          "assess",
+          `${idSpan(event.specialist || "?")}  ${qClip(event.reason || event.clip || "", 55)}` +
+            (event.model ? `  ${idSpan(event.model)}` : ""),
+          "assess"
+        );
+        return;
+      }
+      if (event.type === "route") {
+        engagePath("route", event.specialist);
+        appendTrace(
+          "route",
+          `selected specialist  ${idSpan(event.specialist || "?")}` +
+            (event.reason ? `  ${qClip(event.reason, 40)}` : ""),
+          "route"
+        );
+        return;
+      }
+      if (event.type === "specialist") {
+        const kind = event.specialist || "specialist";
+        if (SPECIALISTS.includes(kind)) {
+          engagePath("specialist", kind);
+        }
+        appendTrace(
+          kind,
+          `${qClip(event.clip || "", 55)}` +
+            (event.model ? `  ${idSpan(event.model)}` : "") +
+            (event.variationKey ? `  ${idSpan(event.variationKey)}` : ""),
+          kind
+        );
+        return;
+      }
+      if (event.type === "tool") {
+        // Score is intentionally in the tool name (e.g. score-question-gap:0.82).
+        const name = event.name || event.toolKey || "tool";
+        const idx = event.callIndex != null ? `#${event.callIndex}` : "";
+        appendTrace(
+          "tool",
+          `${idSpan(name)}` +
+            (idx ? `  ${escapeHtml(idx)}` : "") +
+            (event.clip ? `  ${qClip(event.clip, 40)}` : ""),
+          "tool"
+        );
+        return;
+      }
+      if (event.type === "model") {
+        finishStreamBuffer();
+        if (event.phase === "finalize") {
+          engagePath("finalize", pathSpecialist);
+        }
+        appendTrace(
+          "model",
+          `${idSpan(event.model || "?")}` +
+            (event.phase ? `  (${idSpan(event.phase)})` : "") +
+            (event.configKey ? `  ${idSpan(event.configKey)}` : ""),
+          "model"
+        );
+        if (event.phase === "finalize") {
+          traceStreamKind = "finalize";
+          traceStreamingLogged = false;
+          traceBuf = "";
+        }
+        return;
+      }
+      if (event.type === "token") {
+        const chunk = event.text || "";
+        if (!chunk) return;
+        if (!traceStreamKind) traceStreamKind = "finalize";
+        if (!traceStreamingLogged) {
+          appendTrace(traceStreamKind, "streaming…", traceStreamKind);
+          traceStreamingLogged = true;
+        }
+        traceBuf += chunk;
+        return;
+      }
+      if (event.type === "finalize") {
+        finishStreamBuffer();
+        engagePath("finalize", pathSpecialist);
+        appendTrace(
+          "finalize",
+          qClip(event.clip || "", 55) + (event.model ? `  ${idSpan(event.model)}` : ""),
+          "finalize"
+        );
+        return;
+      }
+      if (event.type === "metrics") {
+        finishStreamBuffer();
+        const m = event.metrics || {};
+        const bits = [];
+        if (m.latency_ms != null) bits.push(`latency ${Number(m.latency_ms)}ms`);
+        if (m.total_tokens != null) bits.push(`tokens ${m.total_tokens}`);
+        else if (m.prompt_tokens != null || m.completion_tokens != null) {
+          bits.push(`tokens ${m.prompt_tokens || 0}+${m.completion_tokens || 0}`);
+        }
+        if (bits.length) appendTrace("metrics", escapeHtml(bits.join("  ")), "metrics");
+        return;
+      }
+      if (event.type === "error") {
+        finishStreamBuffer();
+        appendTrace("error", qClip(event.message || "error", 60), "error");
+        setTraceActive(false);
+        setPathCurrent(null);
+        return;
+      }
+      if (event.type === "done") {
+        finishStreamBuffer();
+        if (event.specialist && SPECIALISTS.includes(event.specialist)) {
+          pathSpecialist = event.specialist;
+        }
+        engagePath("done", pathSpecialist);
+        const path = (event.path || []).map((p) => String(p).replace(/^equity-briefing-graph-/, "")).join(" → ");
+        appendTrace("done", path ? escapeHtml(path) : "", "done");
+        setTraceActive(false);
+      }
+    }
+
+    function fmtValue(value) {
+      if (value === null || value === undefined || value === "") return "—";
+      if (typeof value === "object") return JSON.stringify(value, null, 2);
+      return String(value);
+    }
+
+    function kvHtml(rows) {
+      const parts = ['<dl class="ld-kv">'];
+      for (const [label, value] of rows) {
+        parts.push(`<dt>${escapeHtml(label)}</dt><dd>${escapeHtml(fmtValue(value))}</dd>`);
+      }
+      parts.push("</dl>");
+      return parts.join("");
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function messageBlocksHtml(messages, prefix) {
+      if (!messages || !messages.length) {
+        return '<p class="ld-empty">No messages.</p>';
+      }
+      return messages
+        .map((msg, i) => {
+          const role = msg.role || "message";
+          const content = msg.content || "";
+          const id = `${prefix}-msg-${i}`;
+          const needsToggle = content.split("\n").length > 2 || content.length > 160;
+          return `
+            <div class="ld-msg">
+              <div class="ld-msg-role">${escapeHtml(role)}</div>
+              <div class="ld-msg-body collapsed" id="${id}">${escapeHtml(content)}</div>
+              ${
+                needsToggle
+                  ? `<button type="button" class="ld-msg-toggle" data-target="${id}">Show more</button>`
+                  : ""
+              }
+            </div>`;
+        })
+        .join("");
+    }
+
+    function renderLdDrawer() {
+      if (!lastLdTransaction) {
+        els.ldEmpty.hidden = false;
+        els.ldSent.hidden = true;
+        els.ldReceived.hidden = true;
+        els.ldEmpty.textContent = "Generate to see the last LD evaluation.";
+        return;
+      }
+
+      els.ldEmpty.hidden = true;
+      els.ldSent.hidden = false;
+      els.ldReceived.hidden = false;
+
+      const sent = lastLdTransaction.sent || {};
+      const received = lastLdTransaction.received || {};
+      const ctx = sent.context || {};
+      const vars = sent.variables || {};
+      const sdkDefault = sent.sdkDefault || {};
+
+      els.ldSent.innerHTML = `
+        <div class="ld-block-title">Request</div>
+        ${kvHtml([
+          ["Config key", sent.configKey],
+          ["Context kind", ctx.kind],
+          ["Context key", ctx.key],
+          ["Context name", ctx.name],
+        ])}
+        <div class="ld-block-title">Variables</div>
+        <div class="ld-msg">
+          <div class="ld-msg-role">stories</div>
+          <div class="ld-msg-body collapsed" id="ld-var-stories">${escapeHtml(vars.stories || "")}</div>
+          <button type="button" class="ld-msg-toggle" data-target="ld-var-stories">Show more</button>
+        </div>
+        <div class="ld-block-title">SDK default (fallback shape)</div>
+        ${kvHtml([
+          ["Enabled", sdkDefault.enabled],
+          ["Model", sdkDefault.model],
+          ["Provider", sdkDefault.provider],
+        ])}
+        <p class="ld-empty" style="font-style:normal;margin:0 0 0.5rem">${escapeHtml(sdkDefault.description || "")}</p>
+        ${messageBlocksHtml(sdkDefault.messages || [], "ld-default")}
+        <div class="ld-block-title">Raw context JSON</div>
+        <pre class="ld-json">${escapeHtml(JSON.stringify(ctx, null, 2))}</pre>
+      `;
+
+      const reason = received.reason || {};
+      els.ldReceived.innerHTML = `
+        <div class="ld-block-title">Evaluation</div>
+        ${kvHtml([
+          ["Fallback", received.fallback],
+          ["Mode", received.mode],
+          ["Enabled", received.enabled],
+          ["Config key", received.configKey],
+          ["Variation", received.variationKey],
+          ["Variation index", received.variationIndex],
+          ["Reason", reason.kind || reason],
+          ["Rule index", reason.ruleIndex],
+          ["Rule id", reason.ruleId],
+          ["Version", received.version],
+          ["Version key", received.versionKey],
+          ["LD mode", received.ldMode],
+          ["Model key", received.modelKey],
+          ["Model version", received.modelVersion],
+          ["Provider", received.provider],
+          ["Model", received.model],
+        ])}
+        <div class="ld-block-title">Messages (served)</div>
+        ${messageBlocksHtml(received.messages || [], "ld-recv")}
+        <div class="ld-block-title">Raw reason JSON</div>
+        <pre class="ld-json">${escapeHtml(JSON.stringify(reason, null, 2))}</pre>
+      `;
+
+      setLdTab(ldTab);
+      wireMsgToggles(els.ldSent);
+      wireMsgToggles(els.ldReceived);
+    }
+
+    function wireMsgToggles(root) {
+      for (const btn of root.querySelectorAll(".ld-msg-toggle")) {
+        btn.addEventListener("click", () => {
+          const target = document.getElementById(btn.dataset.target);
+          if (!target) return;
+          const collapsed = target.classList.toggle("collapsed");
+          btn.textContent = collapsed ? "Show more" : "Show less";
+        });
+      }
+    }
+
+    els.ldBtn.addEventListener("click", () => openLdDrawer());
+    els.ldClose.addEventListener("click", () => closeLdDrawer());
+    els.ldBackdrop.addEventListener("click", () => closeLdDrawer());
+    for (const btn of document.querySelectorAll(".ld-tab")) {
+      btn.addEventListener("click", () => setLdTab(btn.dataset.tab));
+    }
+    if (els.traceToggle) {
+      els.traceToggle.addEventListener("click", () => {
+        const collapsed = !els.traceDock.classList.contains("collapsed");
+        setTraceCollapsed(collapsed);
+      });
+    }
+    if (els.traceExpand) {
+      els.traceExpand.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        setTraceExpanded(!els.traceDock.classList.contains("expanded"));
+      });
+    }
+
+    // Drag handle to widen/narrow the overlay drawer.
+    (function setupResize() {
+      let dragging = false;
+      els.ldResize.addEventListener("mousedown", (ev) => {
+        dragging = true;
+        ev.preventDefault();
+      });
+      window.addEventListener("mousemove", (ev) => {
+        if (!dragging) return;
+        const width = Math.min(Math.max(window.innerWidth - ev.clientX, 280), window.innerWidth * 0.92);
+        els.ldDrawer.style.width = `${width}px`;
+      });
+      window.addEventListener("mouseup", () => {
+        dragging = false;
+      });
+    })();
+
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key === "Escape" && els.ldDrawer.classList.contains("open")) {
+        closeLdDrawer();
+      }
+    });
+
+
+    function setBusy(value) {
+      busy = value;
+      // Keep Previous/Next usable for browsing users; only lock fetch/generate.
+      [els.btnReport, els.btnQuestions, els.btnGood, els.btnJoke].forEach((b) => {
+        if (b) b.disabled = value;
+      });
+      els.stories.disabled = value;
+      els.ticker1.disabled = value;
+      els.ticker2.disabled = value;
+      if (els.statusPanel) {
+        els.statusPanel.classList.toggle("busy", value);
+      }
+    }
+
+    function setStatus(text, kind) {
+      els.status.textContent = text;
+      els.status.className = kind || "";
+    }
+
+    function clearMetrics() {
+      for (const key of ["latency", "ttft", "prompt", "completion", "total", "finish"]) {
+        els[key].textContent = "—";
+      }
+    }
+
+    function renderPersona() {
+      const p = personas[index];
+      els.name.textContent = p.name;
+      const anon = p.anonymous ? " · anonymous context" : "";
+      els.profile.textContent = `Profile: ${p.profile}${anon}`;
+    }
+
+    function selectUser(nextIndex) {
+      index = nextIndex;
+      renderPersona();
+      els.response.textContent = "";
+      clearMetrics();
+      els.input.textContent = "—";
+      setStatus(
+        `Selected ${personas[index].name}. Pick an action when ready.`,
+        ""
+      );
+    }
+
+    function fmt(value) {
+      return value === null || value === undefined || value === "" ? "—" : String(value);
+    }
+
+    function currentTickers() {
+      return {
+        ticker1: (els.ticker1.value || "NVDA").trim().toUpperCase(),
+        ticker2: (els.ticker2.value || "SPCX").trim().toUpperCase(),
+      };
+    }
+
+    function storyCount(blocks) {
+      return (blocks || []).reduce((n, b) => n + ((b && b.stories) || []).length, 0);
+    }
+
+    function updateStoriesSummary() {
+      const { ticker1, ticker2 } = currentTickers();
+      els.storiesSummaryTickers.textContent = `${ticker1} · ${ticker2}`;
+      const n = storyCount(latestStories);
+      if (n <= 0) {
+        els.storiesSummaryStatus.textContent = "(no stories yet)";
+      } else if (n === 1) {
+        els.storiesSummaryStatus.textContent = "(1 story)";
+      } else {
+        els.storiesSummaryStatus.textContent = `(${n} stories)`;
+      }
+    }
+
+    function setStoriesChromeCollapsed(collapsed) {
+      els.storiesChrome.classList.toggle("collapsed", collapsed);
+      els.storiesToggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      try {
+        localStorage.setItem(STORIES_CHROME_KEY, collapsed ? "1" : "0");
+      } catch (_) {}
+    }
+
+    function restoreStoriesChromeState() {
+      try {
+        const raw = localStorage.getItem(STORIES_CHROME_KEY);
+        if (raw === "1") setStoriesChromeCollapsed(true);
+        else setStoriesChromeCollapsed(false);
+      } catch (_) {
+        setStoriesChromeCollapsed(false);
+      }
+    }
+
+    function hasUsableStories() {
+      return (latestStories || []).some((b) => (b.stories || []).length > 0);
+    }
+
+    function hasUsableStoriesAfter(blocks) {
+      return (blocks || []).some((b) => (b.stories || []).length > 0);
+    }
+
+    function saveStoriesLocally(ticker1, ticker2, tickerBlocks) {
+      const usable = (tickerBlocks || []).filter((b) => (b.stories || []).length > 0);
+      if (usable.length < 2) return;
+      const payload = {
+        ticker1,
+        ticker2,
+        tickers: tickerBlocks,
+        savedAt: new Date().toISOString(),
+      };
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch (_) {}
+    }
+
+    function loadStoriesLocally() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (!data || !Array.isArray(data.tickers) || data.tickers.length < 2) return null;
+        return data;
+      } catch (_) {
+        return null;
+      }
+    }
+
+
+    function formatPublishedDisplay(published) {
+      const text = String(published || "").trim();
+      if (!text) return "";
+      const dt = new Date(text);
+      if (Number.isNaN(dt.getTime())) return text;
+      return dt.toLocaleString(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      });
+    }
+
+    function formatStorySource(story) {
+      if (!story) return "";
+      const publisher = String(story.publisher || "").trim();
+      const when = formatPublishedDisplay(story.published);
+      if (publisher && when) return `${publisher} · ${when}`;
+      return publisher || when;
+    }
+
+    function renderStoryPanel(block, headingEl, nameEl, listEl) {
+      const ticker = (block && block.ticker) || "—";
+      const name = (block && block.name) || "";
+      headingEl.textContent = ticker;
+      let sub = name && name !== ticker ? name : "";
+      if (block && block.from_cache) {
+        sub = sub ? `${sub} · cached` : "cached";
+      }
+      nameEl.textContent = sub;
+
+      const stories = (block && block.stories) || [];
+      if (!stories.length) {
+        const msg = (block && block.error) || "No stories available.";
+        listEl.className = "empty-stories";
+        listEl.textContent = msg;
+        return;
+      }
+
+      const ul = document.createElement("ol");
+      ul.className = "story-list";
+      for (const story of stories) {
+        const li = document.createElement("li");
+        li.appendChild(document.createTextNode(story.title || "(untitled)"));
+        const source = formatStorySource(story);
+        if (source) {
+          const pub = document.createElement("span");
+          pub.className = "story-pub";
+          pub.textContent = source;
+          li.appendChild(pub);
+        }
+        ul.appendChild(li);
+      }
+      listEl.className = "";
+      listEl.replaceChildren(ul);
+    }
+
+    function renderStories(tickerBlocks, options = {}) {
+      latestStories = tickerBlocks || [];
+      renderStoryPanel(
+        latestStories[0],
+        els.story1Heading,
+        els.story1Name,
+        els.story1List
+      );
+      renderStoryPanel(
+        latestStories[1],
+        els.story2Heading,
+        els.story2Name,
+        els.story2List
+      );
+      updateStoriesSummary();
+      if (options.persist) {
+        const { ticker1, ticker2 } = currentTickers();
+        saveStoriesLocally(ticker1, ticker2, latestStories);
+      }
+      if (options.collapse) {
+        setStoriesChromeCollapsed(true);
+      }
+    }
+
+    async function getStories() {
+      const { ticker1, ticker2 } = currentTickers();
+      setBusy(true);
+      setStatus(`Fetching Yahoo Finance stories for ${ticker1} and ${ticker2}…`, "busy");
+      try {
+        const res = await fetch(
+          `/api/stories?ticker1=${encodeURIComponent(ticker1)}&ticker2=${encodeURIComponent(ticker2)}`
+        );
+        if (!res.ok) throw new Error(`Stories request failed (${res.status})`);
+        const data = await res.json();
+        const blocks = data.tickers || [];
+        const usable = hasUsableStoriesAfter(blocks);
+        renderStories(blocks, { persist: true, collapse: usable });
+        const notes = [];
+        if (data.errors && data.errors.length) notes.push(data.errors.join(" · "));
+        const cached = blocks.some((b) => b.from_cache);
+        if (cached) notes.push("Used saved headlines where live Yahoo fetch failed.");
+        if (notes.length) {
+          setStatus(notes.join(" "), "error");
+        } else if (!usable) {
+          setStatus(
+            "No usable headlines returned (Yahoo may have failed). Check ticker symbols or try again.",
+            "error"
+          );
+        } else {
+          setStatus("Stories loaded. Pick an action when ready.", "ok");
+        }
+      } catch (err) {
+        setStatus(String(err.message || err), "error");
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function generate(action) {
+      if (!personas.length) return;
+      action = (action || "report").toLowerCase();
+      const needsStories = action !== "joke";
+      if (needsStories && !hasUsableStories()) {
+        setStatus("Load stories first (Get Stories), then try this action again.", "error");
+        return;
+      }
+      if (abortController) abortController.abort();
+      abortController = new AbortController();
+
+      const persona = personas[index];
+      renderPersona();
+      clearResponse();
+      clearMetrics();
+      clearTrace();
+      setTraceActive(true);
+      setTraceCollapsed(false);
+      setBusy(true);
+      const labels = {
+        report: "Generate AI Report",
+        questions: "Identify questions",
+        good: "Identify good & bad",
+        joke: "Tell me a joke",
+      };
+      els.input.textContent = `action=${action}\npersona=${persona.name}`;
+      setStatus(`${labels[action] || action} for ${persona.name}…`, "busy");
+
+      try {
+        const res = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            personaId: persona.id,
+            action,
+            stories: latestStories,
+          }),
+          signal: abortController.signal,
+        });
+        if (!res.ok || !res.body) {
+          throw new Error(`Generate failed (${res.status})`);
+        }
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let sawToken = false;
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const parts = buffer.split("\n\n");
+          buffer = parts.pop() || "";
+          for (const part of parts) {
+            const line = part.trim();
+            if (!line.startsWith("data:")) continue;
+            const payload = JSON.parse(line.slice(5).trim());
+            if (payload.type === "token" && !sawToken) {
+              sawToken = true;
+              setStatus(`Streaming finalize for ${persona.name}…`, "busy");
+            }
+            handleEvent(payload);
+          }
+        }
+      } catch (err) {
+        if (err.name === "AbortError") return;
+        setStatus(String(err.message || err), "error");
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    function clearResponse() {
+      els.response.textContent = "";
+      els.response._streamNode = null;
+    }
+
+    function appendResponseSection(title, kind) {
+      els.response._streamNode = null;
+      const div = document.createElement("div");
+      div.className = `gate-section ${kind || "draft"}`;
+      div.textContent = `═══ ${title} ═══`;
+      els.response.appendChild(div);
+    }
+
+    function appendResponseToken(text) {
+      let node = els.response._streamNode;
+      if (!node || node.parentNode !== els.response) {
+        node = document.createTextNode("");
+        els.response.appendChild(node);
+        els.response._streamNode = node;
+      }
+      node.textContent += text;
+    }
+
+    function appendJudgeResults(payload) {
+      els.response._streamNode = null;
+      const results = payload.results || [];
+      const threshold = payload.threshold;
+      const phase = payload.phase || "draft";
+      results.forEach((r) => {
+        const block = document.createElement("div");
+        const ok = !!r.passed;
+        block.className = `judge-block ${ok ? "pass" : "fail"}`;
+        const score = r.score == null ? "—" : Number(r.score).toFixed(2);
+        const label = (r.key || "").replace("equity-briefing-", "") || "judge";
+        const reason = r.reasoning || r.error || "(no reasoning)";
+        const phaseTag = phase === "rewrite" ? " [rewrite]" : "";
+        const model = r.model ? String(r.model) : "";
+        block.textContent =
+          `${ok ? "PASS" : "FAIL"}  ${label}${phaseTag}\n` +
+          (model ? `model ${model}\n` : "") +
+          `score ${score}  (need ≥ ${Number(threshold).toFixed(2)})\n` +
+          `${reason}`;
+        els.response.appendChild(block);
+      });
+      const summary = document.createElement("div");
+      summary.className = "gate-summary";
+      summary.style.color = payload.passed ? "var(--ok)" : "var(--danger)";
+      if (phase === "rewrite") {
+        summary.textContent = payload.passed
+          ? "Rewrite gate passed."
+          : "Rewrite gate failed — no further rewrite.";
+      } else {
+        summary.textContent = payload.passed
+          ? "Gate passed — keeping draft."
+          : "Gate failed — Charlie rewrite follows.";
+      }
+      els.response.appendChild(summary);
+    }
+
+    function handleEvent(event) {
+      handleTraceEvent(event);
+      if (event.type === "meta") {
+        els.input.textContent = event.input;
+        els.providerModel.textContent = `${event.provider} / ${event.model}`;
+        if (event.ldTransaction) {
+          lastLdTransaction = event.ldTransaction;
+          if (els.ldDrawer.classList.contains("open")) {
+            renderLdDrawer();
+          }
+        }
+        return;
+      }
+      if (event.type === "model") {
+        els.providerModel.textContent =
+          `${event.provider || "ollama"} / ${event.model || "?"}` +
+          (event.phase ? ` (${event.phase})` : "");
+        return;
+      }
+      if (event.type === "tool") {
+        setStatus(`Tool ${event.name || "?"}…`, "busy");
+        return;
+      }
+      if (event.type === "token") {
+        appendResponseToken(event.text || "");
+        return;
+      }
+      if (event.type === "metrics") {
+        const m = event.metrics || {};
+        els.latency.textContent = fmt(m.latency_ms);
+        els.ttft.textContent = fmt(m.ttft_ms);
+        els.prompt.textContent = fmt(m.prompt_tokens);
+        els.completion.textContent = fmt(m.completion_tokens);
+        els.total.textContent = fmt(m.total_tokens);
+        els.finish.textContent = fmt(m.finish_reason);
+        return;
+      }
+      if (event.type === "info") {
+        setStatus(event.message || "", "busy");
+        return;
+      }
+      if (event.type === "status") {
+        setStatus(event.message || "", "busy");
+        return;
+      }
+      if (event.type === "error") {
+        setStatus(event.message || "Generation error", "error");
+        return;
+      }
+      if (event.type === "done") {
+        if (!els.status.classList.contains("error")) {
+          const action = event.action || "run";
+          setStatus(`Complete (${action}) for ${personas[index].name}.`, "ok");
+        }
+      }
+    }
+
+    els.storiesToggle.addEventListener("click", () => {
+      const collapsed = !els.storiesChrome.classList.contains("collapsed");
+      setStoriesChromeCollapsed(collapsed);
+    });
+    els.ticker1.addEventListener("input", updateStoriesSummary);
+    els.ticker2.addEventListener("input", updateStoriesSummary);
+    els.stories.addEventListener("click", () => {
+      if (busy) return;
+      getStories();
+    });
+    els.prev.addEventListener("click", () => {
+      if (busy) return;
+      selectUser((index - 1 + personas.length) % personas.length);
+    });
+    els.next.addEventListener("click", () => {
+      if (busy) return;
+      selectUser((index + 1) % personas.length);
+    });
+    els.btnReport.addEventListener("click", () => generate("report"));
+    els.btnQuestions.addEventListener("click", () => generate("questions"));
+    els.btnGood.addEventListener("click", () => generate("good"));
+    els.btnJoke.addEventListener("click", () => generate("joke"));
+
+    async function boot() {
+      restoreStoriesChromeState();
+      restoreTraceDockState();
+      const res = await fetch("/api/bootstrap");
+      if (!res.ok) throw new Error(`Bootstrap failed (${res.status})`);
+      const data = await res.json();
+      personas = data.personas || [];
+      els.banner.textContent = data.appBanner || els.banner.textContent;
+      els.providerModel.textContent = `${data.provider} / ${data.model}`;
+
+      const local = loadStoriesLocally();
+      const cached = data.cachedStories || null;
+      const restored = local || cached;
+
+      if (data.defaultTickers) {
+        els.ticker1.value = (restored && restored.ticker1) || data.defaultTickers.ticker1 || "NVDA";
+        els.ticker2.value = (restored && restored.ticker2) || data.defaultTickers.ticker2 || "SPCX";
+      }
+
+      index = 0;
+      renderPersona();
+      updateStoriesSummary();
+
+      if (restored && restored.tickers && restored.tickers.length >= 2) {
+        renderStories(restored.tickers, { persist: true });
+        const source = local ? "browser" : "server";
+        setStatus(
+          `Loaded saved story titles (${source}). Pick an action when ready.`,
+          "ok"
+        );
+      } else {
+        setStatus("Enter tickers and click Get Stories.", "");
+      }
+    }
+
+    boot().catch((err) => setStatus(String(err), "error"));
+  </script>
+</body>
+</html>

@@ -993,6 +993,9 @@ def generate_stream(
     graph_tracker.track_handoff_success(specialist_key, finalize_key)
 
     # --- Step 3: finalize (stream to Response) -------------------------------
+    # Joke drafts: pass through (still evaluate finalize + track the edge).
+    # Small models otherwise invent a "market briefing" after the punchline when
+    # headlines are in context (often from a prior Get Stories / localStorage).
     yield {"type": "status", "message": "finalize — polishing…"}
     try:
         fin_cfg = evaluate_agent(
@@ -1002,7 +1005,12 @@ def generate_stream(
                 "action": action,
                 "specialist": specialist,
                 "draft": specialist_draft,
-                "stories": stories_text if has_real_stories else "(none)",
+                # Omit headlines for jokes so a future LLM polish can't brief from them.
+                "stories": (
+                    "(omitted for joke)"
+                    if specialist == "joke"
+                    else (stories_text if has_real_stories else "(none)")
+                ),
             },
         )
     except Exception as exc:  # noqa: BLE001
@@ -1012,12 +1020,6 @@ def generate_stream(
         return
 
     _, fin_model = resolve_runtime(fin_cfg)
-    fin_user = (
-        f"Original action: {action}\n"
-        f"Specialist: {specialist}\n\n"
-        f"SPECIALIST DRAFT:\n{specialist_draft}\n\n"
-        "Return the final polished text only."
-    )
 
     yield {
         "type": "model",
@@ -1030,15 +1032,43 @@ def generate_stream(
     final_parts: list[str] = []
     first_token_at: float | None = None
     try:
-        for chunk in _ollama_stream(
-            fin_model,
-            _messages_for_node(fin_cfg.instructions or "", fin_user),
-        ):
-            if first_token_at is None:
-                first_token_at = time.time()
-                metrics.ttft_ms = int((first_token_at - started) * 1000)
-            final_parts.append(chunk)
-            yield {"type": "token", "text": chunk}
+        if specialist == "joke":
+            yield {
+                "type": "info",
+                "message": (
+                    "joke finalize: pass-through specialist draft "
+                    "(avoids small-model expansion into briefings)"
+                ),
+                "kind": "finalize-passthrough",
+            }
+            final_text_joke = specialist_draft or ""
+            # Stream in small chunks so the Response panel still "types".
+            step = 48
+            for i in range(0, max(len(final_text_joke), 1), step):
+                chunk = final_text_joke[i : i + step]
+                if not chunk:
+                    break
+                if first_token_at is None:
+                    first_token_at = time.time()
+                    metrics.ttft_ms = int((first_token_at - started) * 1000)
+                final_parts.append(chunk)
+                yield {"type": "token", "text": chunk}
+        else:
+            fin_user = (
+                f"Original action: {action}\n"
+                f"Specialist: {specialist}\n\n"
+                f"SPECIALIST DRAFT:\n{specialist_draft}\n\n"
+                "Return the final polished text only."
+            )
+            for chunk in _ollama_stream(
+                fin_model,
+                _messages_for_node(fin_cfg.instructions or "", fin_user),
+            ):
+                if first_token_at is None:
+                    first_token_at = time.time()
+                    metrics.ttft_ms = int((first_token_at - started) * 1000)
+                final_parts.append(chunk)
+                yield {"type": "token", "text": chunk}
     except Exception as exc:  # noqa: BLE001
         yield {"type": "error", "message": str(exc)}
         graph_tracker.track_invocation_failure()

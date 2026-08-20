@@ -183,14 +183,16 @@ No Anthropic key required for v1.
 
 | Language | Port | v1 status |
 |----------|------|-----------|
-| Python web | **8250** | **Ship first** — graph + Trace |
-| Node / Java / .NET / Go | TBD | Later parity |
-| Portal | — | Add tab when Python is ready |
+| Python web | **8250** | Ready — graph + Trace; portal tab |
+| Node web | **8251** | Ready — portal tab |
+| Java web | **8252** | Ready — `jsonValueVariationDetail` (no Java AI SDK) |
+| .NET web | **8253** | Ready |
+| Go | — | Later |
 
 ## Acceptance criteria
 
 - [x] Provisioning creates graph `equity-briefing-graph` + six node configs (or documented equivalent).
-- [x] Python web on **8250**; four action buttons; one Response panel.
+- [x] Web ports: Python **8250**, Node **8251**, Java **8252**, .NET **8253**; series portals wire Graph tabs.
 - [x] Each action runs **assess → specialist → finalize**; Trace shows the path.
 - [x] Joke works **without** stories; prepends humor-level line from persona.
 - [x] Report requires stories; uses persona targeting on the report node.
@@ -205,7 +207,7 @@ No Anthropic key required for v1.
 - Persona targeting on assess / finalize
 - Rework / re-route / multi-hop after finalize
 - Judges on graph output
-- Full multi-language ports (follow-up; Python portal tab is wired)
+- Full multi-language ports beyond Python/Node/Java/.NET (Go later)
 - Anthropic-required happy path
 
 ## Related

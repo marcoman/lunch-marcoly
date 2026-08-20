@@ -288,7 +288,7 @@ def main() -> None:
 
     print(APP_BANNER, flush=True)
     print(f"Open http://127.0.0.1:{PORTAL_PORT}/", flush=True)
-    print("Tabs embed Python examples on 8210 / 8220 / 8230 / 8240.", flush=True)
+    print("Tabs embed Python examples on 8210 / 8220 / 8230 / 8240 / 8250.", flush=True)
     print("Ctrl+C stops the portal and all children.", flush=True)
     try:
         server.serve_forever()

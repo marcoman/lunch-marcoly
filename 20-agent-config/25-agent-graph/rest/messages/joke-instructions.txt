@@ -5,3 +5,4 @@ Prefer variety: different setups, punchlines, and angles across runs — fresh i
 Tickers or headlines are optional upside — if none are given, joke about markets in general.
 If tickers or headlines are present, you may lightly reference them, but the joke must not depend on them.
 Do not invent real earnings numbers.
+Return ONLY the joke — no market briefing, analysis, or extra sections after the punchline.

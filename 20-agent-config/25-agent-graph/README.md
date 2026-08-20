@@ -36,7 +36,7 @@ flowchart LR
 
 - **One** agent graph: `equity-briefing-graph`
 - Persona targeting: **report** node only
-- Tools: deferred (report specialist ready for later)
+- Tools: question-gap + joke-corny scorers (app-side Trace labels)
 - Bad-news specialist: **next iteration**
 
 ## Quick start
@@ -53,6 +53,15 @@ cd rest && ./create-all.sh
 cd ../python && python 25-agent-graph.py   # → http://127.0.0.1:8250/
 ```
 
+| Language | Port | Entry |
+|----------|------|-------|
+| Python | **8250** | [python/](python/) |
+| Node | **8251** | [node/](node/) |
+| Java | **8252** | [java/](java/) |
+| .NET | **8253** | [dotnet/](dotnet/) |
+
+Series portals: Python **:8200** · Node **:8201** (Graph tab).
+
 ## Status
 
 | Piece | State |
@@ -60,8 +69,11 @@ cd ../python && python 25-agent-graph.py   # → http://127.0.0.1:8250/
 | Spec | [application.md](application.md) |
 | REST | [rest/](rest/) — `create-all.sh` |
 | Python web (:8250) | Ready |
-| Portal tab | Wired |
-| Node / Java / .NET / Go | Later |
+| Node web (:8251) | Ready |
+| Java web (:8252) | Ready |
+| .NET web (:8253) | Ready |
+| Portal tabs | Python + Node wired |
+| Go | Later |
 
 ## Related
 

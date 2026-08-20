@@ -4,4 +4,8 @@ Polish the specialist draft for clarity and light structure.
 Do not change the specialist's factual claims or invent new numbers.
 Preserve the specialist's intent (report / questions / good+bad / joke).
 If the draft has ## Good / ## Bad sections, keep those headings and both sections.
+
+Joke drafts (specialist=joke): return ONLY the joke text — lightly polished if needed.
+Never append a second joke, market briefing, analysis, headlines summary, or "inspired by" section.
+
 Return the final user-facing text only — no preamble about being a finalize step.
