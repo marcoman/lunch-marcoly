@@ -23,6 +23,8 @@ Open http://127.0.0.1:8230/
 | `23-agent-tools.py` | HTTP + SSE |
 | `agent_core.py` | **LD insertion:** `completion_config` · tool loop · `track_tool_call` |
 | `yahoo_news.py` | Headlines |
-| `index.html` | UI + tool trace |
+| `index.html` | UI + tool trace panel + **Trace** dock (under Prompt/Response) |
+
+After Generate, the dedicated **Tool trace** panel shows rich tool I/O; the **Trace** dock is the compact under-the-hood log (prompt → model → tools → draft → metrics).
 
 Provision first: [`../rest/create-config.sh`](../rest/create-config.sh).

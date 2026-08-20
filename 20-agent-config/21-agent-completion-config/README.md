@@ -145,10 +145,10 @@ cd rest && chmod +x *.sh && ./create-config.sh
 
 | Language | Directory | Type | Status |
 |----------|-----------|------|--------|
-| Python | [`python/`](python/) | Web | Ready — http://127.0.0.1:8210/ |
-| Node.js | [`node/`](node/) | Web | Ready — http://127.0.0.1:8211/ |
-| Java | [`java/`](java/) | Web | Ready — http://127.0.0.1:8212/ |
-| .NET | [`dotnet/`](dotnet/) | Web | Ready — http://127.0.0.1:8213/ |
+| Python | [`python/`](python/) | Web | Ready — http://127.0.0.1:8210/ (**Trace** dock) |
+| Node.js | [`node/`](node/) | Web | Ready — http://127.0.0.1:8211/ (**Trace** dock) |
+| Java | [`java/`](java/) | Web | Ready — http://127.0.0.1:8212/ (**Trace** dock) |
+| .NET | [`dotnet/`](dotnet/) | Web | Ready — http://127.0.0.1:8213/ (**Trace** dock) |
 | Python | [`python-console/`](python-console/) | Console | Ready — curses; `(l)d` for LD details |
 | Go | [`go/`](go/) | Console | Ready — raw-terminal TUI, matches [01 go](../../01-reference-agent/go/) chrome |
 | Rust / C++ | — | — | Later |

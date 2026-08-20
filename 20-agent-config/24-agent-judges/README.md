@@ -59,10 +59,10 @@ Status helper: `./rest/get-judges-status.sh` (optional `--verbose` for UI/docs l
 | Language | Port | Status |
 |----------|------|--------|
 | Python web | **8240** | Ready — `create_judge` + `evaluate` → Charlie rewrite; **Trace** dock under I/O |
-| Node web | **8241** | Ready — `judgeConfig` + Ollama JSON (AI SDK 2.x) |
-| Java web | **8242** | Ready — server SDK JSON + Ollama JSON (no Java AI SDK) |
-| .NET web | **8243** | Ready — `JudgeConfig` + Ollama JSON |
-| Go console | — | Ready — `JudgeConfig` + Ollama JSON (raw-terminal TUI) |
+| Node web | **8241** | Ready — `judgeConfig` + Ollama JSON (AI SDK 2.x); **Trace** dock |
+| Java web | **8242** | Ready — server SDK JSON + Ollama JSON (no Java AI SDK); **Trace** dock |
+| .NET web | **8243** | Ready — `JudgeConfig` + Ollama JSON; **Trace** dock |
+| Go console | — | Ready — `JudgeConfig` + Ollama JSON (raw-terminal TUI; no HTML Trace) |
 
 ## Demo script (primary)
 
@@ -70,7 +70,8 @@ Status helper: `./rest/get-judges-status.sh` (optional `--verbose` for UI/docs l
 2. Provision: `cd rest && ./create-judges.sh && ./create-config.sh`.
 3. Select **Thoughtless Toby** → **Get Stories** → **Generate**.
 4. Expect: decorated **draft** → **failing judge scores** → **Charlie rewrite**.
-5. Optional control: **Conservative Charlie** alone should usually pass without a rewrite.
+5. Watch **Trace** under Prompt/Response (all web ports) for the under-the-hood step log.
+6. Optional control: **Conservative Charlie** alone should usually pass without a rewrite.
 
 Toby failing on purpose is success. Charlie is the fix.
 

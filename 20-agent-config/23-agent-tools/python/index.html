@@ -253,14 +253,14 @@
       padding: 1rem 1.1rem;
     }
     .panel.io-panel {
-      min-height: 16rem;
+      min-height: 13.5rem;
       display: flex;
       flex-direction: column;
     }
     .panel.io-panel .value {
       flex: 1 1 auto;
       overflow: auto;
-      max-height: 28rem;
+      max-height: 23.5rem;
     }
     .label {
       font-size: 0.75rem;
@@ -522,6 +522,157 @@
     }
     .ld-section { display: none; }
     .ld-section.active { display: block; }
+
+    .trace-dock {
+      margin: 0 0 1rem;
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+      background: var(--panel);
+      overflow: hidden;
+    }
+    .trace-dock-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.55rem 0.35rem 0.35rem;
+    }
+    .trace-dock-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex: 1 1 auto;
+      border: none;
+      background: transparent;
+      font: inherit;
+      color: var(--ink);
+      cursor: pointer;
+      text-align: left;
+      padding: 0.35rem 0.45rem;
+      border-radius: 0.45rem;
+    }
+    .trace-dock-toggle:hover { background: color-mix(in srgb, var(--bg) 55%, transparent); }
+    .trace-dock-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-weight: 650;
+      font-size: 0.92rem;
+    }
+    .trace-dock-meta {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-left: 0.15rem;
+      font-weight: 500;
+    }
+    .trace-dot {
+      display: inline-block;
+      width: 0.45rem;
+      height: 0.45rem;
+      border-radius: 50%;
+      background: transparent;
+      flex: 0 0 auto;
+    }
+    .trace-dot.on {
+      background: var(--accent);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent);
+    }
+    .trace-dock-chevron {
+      color: var(--muted);
+      font-size: 0.85rem;
+      transition: transform 0.15s ease;
+    }
+    .trace-dock:not(.collapsed) .trace-dock-chevron {
+      transform: rotate(180deg);
+    }
+    .trace-dock-body {
+      border-top: 1px solid var(--line);
+      padding: 0.45rem 0.55rem 0.55rem;
+    }
+    .trace-dock.collapsed .trace-dock-body { display: none; }
+    .trace-expand-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 0.2rem 0.65rem;
+      font: inherit;
+      font-size: 0.75rem;
+      color: var(--muted);
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
+    .trace-expand-btn:hover {
+      color: var(--ink);
+      border-color: var(--accent);
+    }
+    .trace-dock.expanded .trace-expand-btn {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .trace-console {
+      margin: 0;
+      padding: 0.45rem 0.4rem 0.55rem;
+      background: #1c2430;
+      color: #c8d0da;
+      border-radius: 8px;
+      border: 1px solid #2a3545;
+      font-family: "IBM Plex Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      max-height: calc(0.78rem * 1.45 * 5 + 0.9rem);
+      overflow: auto;
+    }
+    .trace-dock.expanded .trace-console {
+      max-height: min(40vh, 22rem);
+    }
+    .trace-empty {
+      margin: 0;
+      padding: 0.55rem 0.45rem;
+      color: #8b97a8;
+      font-style: italic;
+    }
+    .trace-line {
+      display: grid;
+      grid-template-columns: 2.4rem 5.6rem 1fr;
+      gap: 0.45rem;
+      padding: 0.12rem 0.35rem;
+      border-radius: 3px;
+      align-items: baseline;
+    }
+    .trace-line:hover { background: rgba(255, 255, 255, 0.04); }
+    .trace-num {
+      color: #5c6b7e;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      user-select: none;
+    }
+    .trace-kind {
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .trace-text {
+      color: #aeb8c6;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+    .trace-text .q { color: #d7dee8; }
+    .trace-text .id {
+      color: #e8d5a3;
+      font-weight: 650;
+      font-style: normal;
+    }
+    .k-run .trace-kind,
+    .k-info .trace-kind { color: #7eb6ff; }
+    .k-prompt .trace-kind { color: #9ad7c2; }
+    .k-model .trace-kind { color: #c4a5ff; }
+    .k-draft .trace-kind { color: #7dcea0; }
+    .k-tool .trace-kind { color: #e6c35c; }
+    .k-metrics .trace-kind { color: #8b97a8; }
+    .k-done .trace-kind { color: #7dcea0; }
+    .k-error .trace-kind { color: #f07178; }
+
     .ld-kv {
       display: grid;
       grid-template-columns: 7.5rem 1fr;
@@ -679,6 +830,36 @@
       </div>
     </div>
 
+    <section class="trace-dock" id="trace-dock" aria-label="Run trace">
+      <div class="trace-dock-header">
+        <button
+          type="button"
+          class="trace-dock-toggle"
+          id="btn-trace-toggle"
+          aria-expanded="true"
+          aria-controls="trace-dock-body"
+        >
+          <span class="trace-dock-title">
+            <span class="trace-dot" id="trace-dot" aria-hidden="true"></span>
+            Trace
+            <span class="trace-dock-meta" id="trace-meta">under the hood</span>
+          </span>
+          <span class="trace-dock-chevron" aria-hidden="true">▾</span>
+        </button>
+        <button type="button" class="trace-expand-btn" id="btn-trace-expand" title="Toggle taller trace">
+          Taller
+        </button>
+      </div>
+      <div class="trace-dock-body" id="trace-dock-body">
+        <div class="trace-console" id="trace-console" aria-live="polite">
+          <p class="trace-empty" id="trace-empty">
+            Step-by-step under the hood for this generate.
+          </p>
+          <div id="trace-lines" hidden></div>
+        </div>
+      </div>
+    </section>
+
     <div class="grid meta-grid">
       <div class="panel">
         <div class="label">Provider / model</div>
@@ -747,6 +928,10 @@
     let latestStories = [];
     let lastLdTransaction = null;
     let ldTab = "sent";
+    let traceEntries = [];
+    let traceStreamKind = null; // "draft" while tokens flow
+    let traceStreamingLogged = false;
+    let traceBuf = "";
     let toolTraceLines = [];
     let toolTraceHtml = "";
 
@@ -790,6 +975,14 @@
       ldEmpty: document.getElementById("ld-empty"),
       ldSent: document.getElementById("ld-section-sent"),
       ldReceived: document.getElementById("ld-section-received"),
+      traceDock: document.getElementById("trace-dock"),
+      traceToggle: document.getElementById("btn-trace-toggle"),
+      traceExpand: document.getElementById("btn-trace-expand"),
+      traceMeta: document.getElementById("trace-meta"),
+      traceEmpty: document.getElementById("trace-empty"),
+      traceLines: document.getElementById("trace-lines"),
+      traceConsole: document.getElementById("trace-console"),
+      traceDot: document.getElementById("trace-dot"),
     };
 
     function openLdDrawer() {
@@ -817,6 +1010,198 @@
       els.ldSent.classList.toggle("active", tab === "sent");
       els.ldReceived.classList.toggle("active", tab === "received");
     }
+
+
+    const TRACE_COLLAPSE_KEY = "23-trace-dock-collapsed";
+    const TRACE_EXPAND_KEY = "23-trace-dock-expanded";
+
+    function setTraceCollapsed(collapsed) {
+      if (!els.traceDock) return;
+      els.traceDock.classList.toggle("collapsed", !!collapsed);
+      if (els.traceToggle) els.traceToggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      try {
+        localStorage.setItem(TRACE_COLLAPSE_KEY, collapsed ? "1" : "0");
+      } catch (_) {}
+    }
+
+    function setTraceExpanded(expanded) {
+      if (!els.traceDock) return;
+      els.traceDock.classList.toggle("expanded", !!expanded);
+      if (els.traceExpand) els.traceExpand.textContent = expanded ? "Shorter" : "Taller";
+      try {
+        localStorage.setItem(TRACE_EXPAND_KEY, expanded ? "1" : "0");
+      } catch (_) {}
+    }
+
+    function restoreTraceDockState() {
+      try {
+        setTraceCollapsed(localStorage.getItem(TRACE_COLLAPSE_KEY) === "1");
+        setTraceExpanded(localStorage.getItem(TRACE_EXPAND_KEY) === "1");
+      } catch (_) {
+        setTraceCollapsed(false);
+        setTraceExpanded(false);
+      }
+    }
+
+    function clip(text, max = 40) {
+      const s = String(text || "").replace(/\s+/g, " ").trim();
+      if (!s) return "";
+      if (s.length <= max) return s;
+      return `${s.slice(0, Math.max(0, max - 1))}…`;
+    }
+
+    function idSpan(text) {
+      return `<span class="id">${escapeHtml(text)}</span>`;
+    }
+
+    function setTraceActive(on) {
+      if (els.traceDot) els.traceDot.classList.toggle("on", !!on);
+    }
+
+    function clearTrace() {
+      traceEntries = [];
+      traceStreamKind = null;
+      traceStreamingLogged = false;
+      traceBuf = "";
+      renderTrace();
+      setTraceActive(false);
+    }
+
+    function appendTrace(kind, text, level) {
+      traceEntries.push({
+        kind: kind || "info",
+        text: text || "",
+        level: level || kind || "info",
+      });
+      renderTrace();
+    }
+
+    function renderTrace() {
+      if (!els.traceLines || !els.traceEmpty) return;
+      if (els.traceMeta) {
+        const n = traceEntries.length;
+        els.traceMeta.textContent = n
+          ? `${n} step${n === 1 ? "" : "s"}`
+          : "under the hood";
+      }
+      if (!traceEntries.length) {
+        els.traceEmpty.hidden = false;
+        els.traceLines.hidden = true;
+        els.traceLines.innerHTML = "";
+        return;
+      }
+      els.traceEmpty.hidden = true;
+      els.traceLines.hidden = false;
+      const html = traceEntries
+        .map((entry, i) => {
+          const num = String(i + 1).padStart(3, "0");
+          const level = entry.level || entry.kind || "info";
+          return (
+            `<div class="trace-line k-${escapeHtml(level)}">` +
+            `<span class="trace-num">${num}</span>` +
+            `<span class="trace-kind">${escapeHtml(entry.kind)}</span>` +
+            `<span class="trace-text">${entry.text}</span>` +
+            `</div>`
+          );
+        })
+        .join("");
+      els.traceLines.innerHTML = html;
+      if (els.traceConsole) {
+        els.traceConsole.scrollTop = els.traceConsole.scrollHeight;
+      }
+    }
+
+    function qClip(text, max = 40) {
+      const c = clip(text, max);
+      if (!c) return '<span class="q">""</span>';
+      return `<span class="q">"${escapeHtml(c)}"</span>`;
+    }
+
+    function finishStreamBuffer() {
+      if (!traceStreamKind) return;
+      if (traceBuf) {
+        appendTrace(traceStreamKind, qClip(traceBuf, 55), traceStreamKind);
+      }
+      traceBuf = "";
+      traceStreamKind = null;
+      traceStreamingLogged = false;
+    }
+
+    function handleTraceEvent(event) {
+      if (event.type === "meta") {
+        const persona = (event.persona && event.persona.name) || "";
+        appendTrace("prompt", qClip(event.input || "", 55), "prompt");
+        appendTrace(
+          "model",
+          `${idSpan(event.model || "?")}${persona ? `  (${idSpan(persona)})` : ""}`,
+          "model"
+        );
+        return;
+      }
+
+      if (event.type === "tool") {
+        finishStreamBuffer();
+        const name = event.name || "tool";
+        const idx = event.callIndex || event.step || "?";
+        const args = clip(
+          typeof event.args === "string" ? event.args : JSON.stringify(event.args || {}),
+          40
+        );
+        appendTrace(
+          "tool",
+          `${idSpan(name)}  #${escapeHtml(String(idx))}` +
+            (args ? `  ${qClip(args, 40)}` : ""),
+          "tool"
+        );
+        return;
+      }
+
+      if (event.type === "status") {
+        const msg = String(event.message || "");
+        if (
+          /baseline|fallback|AgentControl|MAX_TOOL|skipped compare|Falling back/i.test(msg)
+        ) {
+          appendTrace("info", escapeHtml(clip(msg, 70)), "info");
+        }
+        return;
+      }
+
+      if (event.type === "token") {
+        const chunk = event.text || "";
+        if (!chunk) return;
+        if (!traceStreamKind) traceStreamKind = "draft";
+        if (!traceStreamingLogged) {
+          appendTrace(traceStreamKind, "streaming…", traceStreamKind);
+          traceStreamingLogged = true;
+        }
+        traceBuf += chunk;
+        return;
+      }
+      if (event.type === "metrics") {
+        finishStreamBuffer();
+        const m = event.metrics || {};
+        const bits = [];
+        if (m.latency_ms != null) bits.push(`latency ${Number(m.latency_ms)}ms`);
+        if (m.total_tokens != null) bits.push(`tokens ${m.total_tokens}`);
+        else if (m.prompt_tokens != null || m.completion_tokens != null) {
+          bits.push(`tokens ${m.prompt_tokens || 0}+${m.completion_tokens || 0}`);
+        }
+        if (bits.length) appendTrace("metrics", escapeHtml(bits.join("  ")), "metrics");
+        return;
+      }
+      if (event.type === "error") {
+        finishStreamBuffer();
+        appendTrace("error", qClip(event.message || "error", 60), "error");
+        setTraceActive(false);
+        return;
+      }
+      if (event.type === "done") {
+        finishStreamBuffer();
+        appendTrace("done", "", "done");
+        setTraceActive(false);
+      }
+    }
+
 
     function fmtValue(value) {
       if (value === null || value === undefined || value === "") return "—";
@@ -1019,6 +1404,20 @@
     for (const btn of document.querySelectorAll(".ld-tab")) {
       btn.addEventListener("click", () => setLdTab(btn.dataset.tab));
     }
+
+    if (els.traceToggle) {
+      els.traceToggle.addEventListener("click", () => {
+        const collapsed = !els.traceDock.classList.contains("collapsed");
+        setTraceCollapsed(collapsed);
+      });
+    }
+    if (els.traceExpand) {
+      els.traceExpand.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        setTraceExpanded(!els.traceDock.classList.contains("expanded"));
+      });
+    }
+
 
     // Drag handle to widen/narrow the overlay drawer.
     (function setupResize() {
@@ -1299,6 +1698,10 @@
         els.input.className = "value prompt-view";
         els.input.textContent = "—";
       }
+      clearTrace();
+      setTraceActive(true);
+      setTraceCollapsed(false);
+      appendTrace("run", `start  ${escapeHtml(persona.name)}`, "run");
       setBusy(true);
       setStatus(
         `Generating AI report for ${persona.name}… (streaming response)`,
@@ -1350,6 +1753,7 @@
     }
 
     function handleEvent(event) {
+      handleTraceEvent(event);
       if (event.type === "meta") {
         renderPromptSections(event.inputSections, event.input);
         els.providerModel.textContent = `${event.provider} / ${event.model}`;
@@ -1428,6 +1832,7 @@
 
     async function boot() {
       restoreStoriesChromeState();
+      restoreTraceDockState();
       const res = await fetch("/api/bootstrap");
       if (!res.ok) throw new Error(`Bootstrap failed (${res.status})`);
       const data = await res.json();
