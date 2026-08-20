@@ -431,6 +431,13 @@
       border-bottom-color: var(--accent);
       font-weight: 600;
     }
+
+    .ld-about-p {
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--ink);
+    }
     .ld-drawer-body {
       flex: 1 1 auto;
       overflow: auto;
@@ -964,6 +971,7 @@
     <div class="ld-tabs" role="tablist">
       <button type="button" class="ld-tab active" data-tab="sent" role="tab" aria-selected="true">Sent</button>
       <button type="button" class="ld-tab" data-tab="received" role="tab" aria-selected="false">Received</button>
+      <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
     </div>
     <div class="ld-drawer-body">
       <p id="ld-empty" class="ld-empty">
@@ -971,6 +979,14 @@
       </p>
       <div id="ld-section-sent" class="ld-section active" hidden></div>
       <div id="ld-section-received" class="ld-section" hidden></div>
+      <div id="ld-section-about" class="ld-section" hidden>
+        <div class="ld-block-title">What this example is</div>
+        <p class="ld-about-p">This example teaches LaunchDarkly <strong>Agent Graphs</strong>: a multi-step walk (assess → specialist → finalize) with different UI actions routing to different specialists.</p>
+        <div class="ld-block-title">What we show</div>
+        <p class="ld-about-p">Use Report, Questions, Good &amp; Bad, or Joke. Trace and Path show the graph handoffs; Sent / Received summarize the graph evaluation and the prompt behind the streamed answer.</p>
+        <div class="ld-block-title">Why it matters</div>
+        <p class="ld-about-p">You see multi-agent topology outside the app—so you can change routing and node behavior in LaunchDarkly while keeping a single UI that makes the path observable.</p>
+      </div>
     </div>
   </aside>
 
@@ -1043,6 +1059,7 @@
       ldEmpty: document.getElementById("ld-empty"),
       ldSent: document.getElementById("ld-section-sent"),
       ldReceived: document.getElementById("ld-section-received"),
+      ldAbout: document.getElementById("ld-section-about"),
       traceDock: document.getElementById("trace-dock"),
       traceToggle: document.getElementById("btn-trace-toggle"),
       traceExpand: document.getElementById("btn-trace-expand"),
@@ -1077,6 +1094,20 @@
       }
       els.ldSent.classList.toggle("active", tab === "sent");
       els.ldReceived.classList.toggle("active", tab === "received");
+      if (els.ldAbout) els.ldAbout.classList.toggle("active", tab === "about");
+      // About is always available; Sent/Received need a generate first.
+      if (els.ldEmpty) {
+        const needGenerate = !lastLdTransaction && tab !== "about";
+        els.ldEmpty.hidden = !needGenerate;
+        if (needGenerate) {
+          els.ldEmpty.textContent = "Generate to see the last LD evaluation.";
+        }
+      }
+      if (!lastLdTransaction) {
+        els.ldSent.hidden = true;
+        els.ldReceived.hidden = true;
+        if (els.ldAbout) els.ldAbout.hidden = false;
+      }
     }
 
     const TRACE_COLLAPSE_KEY = "25-trace-dock-collapsed";
@@ -1480,16 +1511,17 @@
 
     function renderLdDrawer() {
       if (!lastLdTransaction) {
-        els.ldEmpty.hidden = false;
         els.ldSent.hidden = true;
         els.ldReceived.hidden = true;
-        els.ldEmpty.textContent = "Generate to see the last LD evaluation.";
+        if (els.ldAbout) els.ldAbout.hidden = false;
+        setLdTab(ldTab);
         return;
       }
 
       els.ldEmpty.hidden = true;
       els.ldSent.hidden = false;
       els.ldReceived.hidden = false;
+      if (els.ldAbout) els.ldAbout.hidden = false;
 
       const sent = lastLdTransaction.sent || {};
       const received = lastLdTransaction.received || {};

@@ -510,6 +510,13 @@
       border-bottom-color: var(--accent);
       font-weight: 600;
     }
+
+    .ld-about-p {
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--ink);
+    }
     .ld-drawer-body {
       flex: 1 1 auto;
       overflow: auto;
@@ -896,6 +903,7 @@
     <div class="ld-tabs" role="tablist">
       <button type="button" class="ld-tab active" data-tab="sent" role="tab" aria-selected="true">Sent</button>
       <button type="button" class="ld-tab" data-tab="received" role="tab" aria-selected="false">Received</button>
+      <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
     </div>
     <div class="ld-drawer-body">
       <p id="ld-empty" class="ld-empty">
@@ -903,6 +911,14 @@
       </p>
       <div id="ld-section-sent" class="ld-section active" hidden></div>
       <div id="ld-section-received" class="ld-section" hidden></div>
+      <div id="ld-section-about" class="ld-section" hidden>
+        <div class="ld-block-title">What this example is</div>
+        <p class="ld-about-p">This example teaches AgentControl <strong>Library tools</strong>: tool schemas live in LaunchDarkly; the app runs a model-driven loop (analyze each ticker, then compare) and tracks tool calls.</p>
+        <div class="ld-block-title">What we show</div>
+        <p class="ld-about-p">Generate with stories loaded. Trace / response show tool use; Sent / Received show the completion config that carried the tool definitions. Handlers stay in app code; schemas stay in LD.</p>
+        <div class="ld-block-title">Why it matters</div>
+        <p class="ld-about-p">You separate <em>what tools exist</em> (governed in LaunchDarkly) from <em>how they execute</em> (your handlers)—so tool contracts can evolve without rewriting the whole agent.</p>
+      </div>
     </div>
   </aside>
 
@@ -975,6 +991,7 @@
       ldEmpty: document.getElementById("ld-empty"),
       ldSent: document.getElementById("ld-section-sent"),
       ldReceived: document.getElementById("ld-section-received"),
+      ldAbout: document.getElementById("ld-section-about"),
       traceDock: document.getElementById("trace-dock"),
       traceToggle: document.getElementById("btn-trace-toggle"),
       traceExpand: document.getElementById("btn-trace-expand"),
@@ -1009,6 +1026,20 @@
       }
       els.ldSent.classList.toggle("active", tab === "sent");
       els.ldReceived.classList.toggle("active", tab === "received");
+      if (els.ldAbout) els.ldAbout.classList.toggle("active", tab === "about");
+      // About is always available; Sent/Received need a generate first.
+      if (els.ldEmpty) {
+        const needGenerate = !lastLdTransaction && tab !== "about";
+        els.ldEmpty.hidden = !needGenerate;
+        if (needGenerate) {
+          els.ldEmpty.textContent = "Generate to see the last LD evaluation.";
+        }
+      }
+      if (!lastLdTransaction) {
+        els.ldSent.hidden = true;
+        els.ldReceived.hidden = true;
+        if (els.ldAbout) els.ldAbout.hidden = false;
+      }
     }
 
 
@@ -1312,16 +1343,17 @@
 
     function renderLdDrawer() {
       if (!lastLdTransaction) {
-        els.ldEmpty.hidden = false;
         els.ldSent.hidden = true;
         els.ldReceived.hidden = true;
-        els.ldEmpty.textContent = "Generate to see the last LD evaluation.";
+        if (els.ldAbout) els.ldAbout.hidden = false;
+        setLdTab(ldTab);
         return;
       }
 
       els.ldEmpty.hidden = true;
       els.ldSent.hidden = false;
       els.ldReceived.hidden = false;
+      if (els.ldAbout) els.ldAbout.hidden = false;
 
       const sent = lastLdTransaction.sent || {};
       const received = lastLdTransaction.received || {};
