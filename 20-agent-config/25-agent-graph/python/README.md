@@ -50,7 +50,8 @@ cd ../rest && ./create-tools.sh && ./attach-tools.sh
 - Graph key: `equity-briefing-graph` (create with `./create-graph.sh` when ready)
 - Node configs: `equity-briefing-graph-{assess,report,questions,good,joke,finalize}`
 - SDK: `agent_graph` + `agent_config` + `track_tool_call`
+- Routing: specialist (and finalize) must match an **outgoing edge** on the evaluated graph; invalid assess→specialist redirects to report when that edge exists
 
-Keywords: **AgentControl** · **Agent graphs** · **Library tools** · **track_tool_call**
+Keywords: **AgentControl** · **Agent graphs** · **Library tools** · **track_tool_call** · **handoffs**
 
 Docs: https://launchdarkly.com/docs/home/agentcontrol/agent-graphs · https://launchdarkly.com/docs/home/agentcontrol/tools

@@ -20,11 +20,15 @@ LaunchDarkly insertion point (read this first):
 Scorers (questions gap/ground, joke corny) are app-invoked for Trace — scores appear
 in the tool *name* (e.g. score-question-gap:0.82); they do not change specialist text.
 
+Routing: after assess, the chosen specialist (and later finalize) must match an
+**outgoing edge** on the evaluated Agent Graph. Invalid edges → redirect to report
+(or fail) and record handoff/redirect metrics on AIGraphTracker.
+
 Why manual walk (not create_agent_graph):
   Automatic orchestration needs LangGraph / OpenAI Agents. Classroom Trace needs
   a visible assess → specialist → finalize path with Ollama — so we evaluate the
-  graph + each node via the AI SDK, then invoke Ollama ourselves and record
-  handoffs on AIGraphTracker.
+  graph + each node via the AI SDK, invoke Ollama ourselves, and validate handoffs
+  against graph edges.
 """
 
 from __future__ import annotations
@@ -157,6 +161,111 @@ def node_key(role: str) -> str:
         if raw:
             return raw
     return defaults[role]
+
+
+def role_from_node_key(config_key: str) -> str | None:
+    """Map a graph config key back to a specialist/role name."""
+    for role in ("assess", "report", "questions", "good", "joke", "finalize"):
+        if config_key == node_key(role):
+            return role
+    # Fallback for default key shape equity-briefing-graph-<role>
+    marker = "equity-briefing-graph-"
+    if config_key.startswith(marker):
+        suffix = config_key[len(marker) :]
+        if suffix in VALID_SPECIALISTS or suffix in {"assess", "finalize"}:
+            return suffix
+    return None
+
+
+def graph_outgoing_targets(graph: Any, source_key: str) -> list[str]:
+    """Return target config keys for edges leaving source_key (empty if unavailable)."""
+    if graph is None or not getattr(graph, "enabled", False):
+        return []
+    get_node = getattr(graph, "get_node", None)
+    if not callable(get_node):
+        return []
+    node = get_node(source_key)
+    if node is None:
+        return []
+    edges = node.get_edges() if hasattr(node, "get_edges") else []
+    out: list[str] = []
+    for edge in edges or []:
+        target = getattr(edge, "target_config", None) or ""
+        if target:
+            out.append(str(target))
+    return out
+
+
+def resolve_specialist_against_edges(
+    graph: Any,
+    preferred: str,
+    graph_tracker: Any,
+) -> tuple[str, str, bool]:
+    """
+    Validate preferred specialist against assess → * edges on the LD graph.
+
+    Returns (specialist_role, note, edge_validated).
+    If the graph is disabled, keeps preferred and sets edge_validated=False.
+    """
+    preferred = preferred if preferred in VALID_SPECIALISTS else "report"
+    assess_key = node_key("assess")
+    preferred_key = node_key(preferred)
+
+    if graph is None or not getattr(graph, "enabled", False):
+        return preferred, "graph disabled — skip edge validation", False
+
+    children = graph_outgoing_targets(graph, assess_key)
+    if not children:
+        return preferred, "assess has no outgoing edges — using preferred", False
+
+    if preferred_key in children:
+        return preferred, f"edge ok: assess → {preferred}", True
+
+    # Invalid handoff — prefer report if that edge exists, else first child.
+    report_key = node_key("report")
+    if hasattr(graph_tracker, "track_handoff_failure"):
+        try:
+            graph_tracker.track_handoff_failure(assess_key, preferred_key)
+        except Exception:  # noqa: BLE001
+            pass
+
+    if report_key in children:
+        if hasattr(graph_tracker, "track_redirect"):
+            try:
+                graph_tracker.track_redirect(assess_key, report_key)
+            except Exception:  # noqa: BLE001
+                pass
+        return (
+            "report",
+            f"no edge assess → {preferred}; redirected to report",
+            True,
+        )
+
+    fallback_key = children[0]
+    fallback_role = role_from_node_key(fallback_key) or "report"
+    if fallback_role not in VALID_SPECIALISTS:
+        fallback_role = "report"
+    if hasattr(graph_tracker, "track_redirect"):
+        try:
+            graph_tracker.track_redirect(assess_key, fallback_key)
+        except Exception:  # noqa: BLE001
+            pass
+    return (
+        fallback_role,
+        f"no edge assess → {preferred}; redirected to {fallback_role}",
+        True,
+    )
+
+
+def finalize_edge_ok(graph: Any, specialist_key: str) -> tuple[bool, str]:
+    """Check specialist → finalize edge when the graph is enabled."""
+    finalize_key = node_key("finalize")
+    if graph is None or not getattr(graph, "enabled", False):
+        return True, "graph disabled — skip finalize edge check"
+    children = graph_outgoing_targets(graph, specialist_key)
+    if finalize_key in children:
+        return True, f"edge ok: {specialist_key} → finalize"
+    return False, f"no edge {specialist_key} → finalize"
 
 
 def default_ollama_model() -> str:
@@ -636,6 +745,20 @@ def generate_stream(
         reason = f"{reason} (UI hint={action}; using hint)"
         specialist = action
 
+    # LaunchDarkly: validate assess → specialist against graph edges.
+    specialist, edge_note, edge_ok = resolve_specialist_against_edges(
+        graph, specialist, graph_tracker
+    )
+    if edge_note:
+        if edge_note not in reason:
+            reason = f"{reason}; {edge_note}"
+        yield {
+            "type": "info",
+            "message": edge_note,
+            "kind": "edge",
+            "validated": edge_ok,
+        }
+
     specialist_key = node_key(specialist)
     path.append(specialist_key)
     graph_tracker.track_handoff_success(node_key("assess"), specialist_key)
@@ -647,12 +770,14 @@ def generate_stream(
         "clip": clip(f"{specialist}: {reason}"),
         "model": assess_model,
         "configKey": node_key("assess"),
+        "edgeValidated": edge_ok,
     }
     yield {
         "type": "route",
         "specialist": specialist,
         "reason": reason,
         "message": f"Selected specialist: {specialist}",
+        "edgeValidated": edge_ok,
     }
 
     # --- Step 2: specialist --------------------------------------------------
@@ -841,6 +966,29 @@ def generate_stream(
             yield {"type": "info", "message": tip, "kind": "humor-tip"}
 
     finalize_key = node_key("finalize")
+    fin_ok, fin_edge_note = finalize_edge_ok(graph, specialist_key)
+    yield {
+        "type": "info",
+        "message": fin_edge_note,
+        "kind": "edge",
+        "validated": fin_ok,
+    }
+    if not fin_ok:
+        try:
+            graph_tracker.track_handoff_failure(specialist_key, finalize_key)
+        except Exception:  # noqa: BLE001
+            pass
+        yield {
+            "type": "error",
+            "message": (
+                f"Graph has no edge from {specialist_key} to {finalize_key}. "
+                "Fix the Agent Graph topology in LaunchDarkly."
+            ),
+        }
+        graph_tracker.track_invocation_failure()
+        yield {"type": "done", "specialist": specialist, "action": action}
+        return
+
     path.append(finalize_key)
     graph_tracker.track_handoff_success(specialist_key, finalize_key)
 
