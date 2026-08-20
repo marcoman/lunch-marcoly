@@ -45,10 +45,10 @@ Override with `LD_AGENT_CONFIG_KEY` if needed. Status helper: `./rest/get-feedba
 
 | Language | Port | Status |
 |----------|------|--------|
-| Python web | **8220** | v1 — `track_metrics_of` + official feedback |
-| Node web | **8221** | v1 — same AI SDK path as Python |
-| Java web | **8222** | v1 — server SDK eval + Anthropic/Ollama; feedback via `track` (no Java AI SDK yet) |
-| .NET web | **8223** | v1 — AI SDK `CompletionConfig` + `TrackMetricsOf` + `TrackFeedback` |
+| Python web | **8220** | v1 — `track_metrics_of` + official feedback; **Trace** includes thumbs |
+| Node web | **8221** | v1 — same AI SDK path as Python; **Trace** includes thumbs |
+| Java web | **8222** | v1 — server SDK eval + Anthropic/Ollama; feedback via `track`; **Trace** includes thumbs |
+| .NET web | **8223** | v1 — AI SDK `CompletionConfig` + `TrackMetricsOf` + `TrackFeedback`; **Trace** includes thumbs |
 | Go console | — | v1 — raw-terminal TUI; AI SDK `CompletionConfig` + `ldai.TrackMetricsOf` + `TrackFeedback`; `+`/`-` hotkeys |
 
 ## Config

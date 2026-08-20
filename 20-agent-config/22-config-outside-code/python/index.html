@@ -571,6 +571,7 @@
     .k-tool .trace-kind { color: #e6c35c; }
     .k-metrics .trace-kind { color: #8b97a8; }
     .k-done .trace-kind { color: #7dcea0; }
+    .k-feedback .trace-kind { color: #c4a5ff; }
     .k-error .trace-kind { color: #f07178; }
 
     .ld-kv {
@@ -1019,6 +1020,50 @@
       if (!c) return '<span class="q">""</span>';
       return `<span class="q">"${escapeHtml(c)}"</span>`;
     }
+
+
+    /** Decode LD resumption token → { runId, configKey, variationKey } when present. */
+    function parseResumptionMeta(token) {
+      const raw = String(token || "").trim();
+      const out = { runId: "", configKey: "", variationKey: "" };
+      if (!raw) return out;
+      // Java 22 uses a plain UUID synthetic token (no config/variation in payload).
+      if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(raw)) {
+        out.runId = raw;
+        return out;
+      }
+      try {
+        let b64 = raw.replace(/-/g, "+").replace(/_/g, "/");
+        const pad = b64.length % 4;
+        if (pad) b64 += "=".repeat(4 - pad);
+        const obj = JSON.parse(atob(b64));
+        out.runId = String(obj.runId || obj.run_id || obj.runID || "");
+        out.configKey = String(obj.configKey || obj.config_key || "");
+        out.variationKey = String(obj.variationKey || obj.variation_key || "");
+      } catch (_) {}
+      return out;
+    }
+
+    /**
+     * Trace line for thumbs: eventKey (Monitoring) + variation + short runId.
+     * eventKey is derived from kind — SDK track_feedback does not return Event objects.
+     */
+    function formatFeedbackTraceText(kind) {
+      const positive = kind === "positive";
+      const eventKey = positive
+        ? "$ld:ai:feedback:user:positive"
+        : "$ld:ai:feedback:user:negative";
+      const meta = parseResumptionMeta(lastResumptionToken);
+      const bits = [idSpan(eventKey)];
+      if (meta.variationKey) bits.push(idSpan(meta.variationKey));
+      else if (meta.configKey) bits.push(idSpan(meta.configKey));
+      if (meta.runId) {
+        const id = meta.runId;
+        bits.push(`runId ${escapeHtml(id.length > 12 ? id.slice(0, 8) + "…" : id)}`);
+      }
+      return bits.join("  ");
+    }
+
 
     function finishStreamBuffer() {
       if (!traceStreamKind) return;
@@ -1648,8 +1693,16 @@
           els.feedbackStatus.textContent =
             kind === "positive" ? "Recorded 👍 in LaunchDarkly" : "Recorded 👎 in LaunchDarkly";
         }
+        // Trace: eventKey matches Monitoring; variation/runId from resumption token data.
+        appendTrace(
+          "feedback",
+          formatFeedbackTraceText(kind),
+          kind === "positive" ? "pass" : "fail"
+        );
+        setTraceCollapsed(false);
       } catch (err) {
         if (els.feedbackStatus) els.feedbackStatus.textContent = String(err.message || err);
+        appendTrace("feedback", qClip(String(err.message || err), 60), "error");
       }
     }
 

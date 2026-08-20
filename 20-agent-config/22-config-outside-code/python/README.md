@@ -19,6 +19,6 @@ Open http://127.0.0.1:8220/
 | `yahoo_news.py` | Headlines (same as 01/21) |
 | `index.html` | UI + thumbs + **Trace** dock (under Prompt/Response) |
 
-After Generate, use **Trace** under Prompt/Response for the step log (prompt → model → draft → metrics).
+After Generate, use **Trace** under Prompt/Response for the step log (prompt → model → draft → metrics). Thumbs 👍/👎 append a **feedback** line with Monitoring `eventKey`, variation, and short `runId`.
 
 Provision the config first: [`../rest/create-config.sh`](../rest/create-config.sh) then [`../update-name-targeting.sh`](../rest/update-name-targeting.sh).

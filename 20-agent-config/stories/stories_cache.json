@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-19T23:24:55+00:00",
+  "updated_at": "2026-08-20T00:34:57+00:00",
   "tickers": {
     "NVDA": {
       "name": "NVIDIA Corporation",
@@ -58,6 +58,6 @@
   },
   "last_pair": {
     "ticker1": "NVDA",
-    "ticker2": "RKLB"
+    "ticker2": "SPCX"
   }
 }
