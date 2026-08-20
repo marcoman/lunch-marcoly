@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "joke": {
+      "type": "string",
+      "description": "Joke text to score for corniness / whimsy."
+    }
+  },
+  "required": ["joke"]
+}

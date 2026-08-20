@@ -131,3 +131,56 @@ agent_configs:
   sources:
   - path: 20-agent-config/24-agent-judges/rest/messages/judge-recommendation-discipline-system.txt
     role: provisioning
+
+- key: equity-briefing-graph-assess
+  name: Graph assess
+  mode: agent
+  examples:
+  - path: 20-agent-config/25-agent-graph
+  sources:
+  - path: 20-agent-config/25-agent-graph/python/agent_core.py
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/rest
+    role: provisioning
+
+- key: equity-briefing-graph-report
+  name: Graph report
+  mode: agent
+  examples:
+  - path: 20-agent-config/25-agent-graph
+  variations:
+  - key: baseline-analyst
+    model_config_key: Custom.llama3.2-3b
+  - key: concise-skeptic
+    model_config_key: Custom.llama3.2-3b
+  - key: reckless-hype
+    model_config_key: Custom.llama3.2-1b
+  sources:
+  - path: 20-agent-config/25-agent-graph/python/agent_core.py
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/rest/update-report-targeting.sh
+    role: provisioning
+
+- key: equity-briefing-graph-questions
+  name: Graph questions
+  mode: agent
+  examples:
+  - path: 20-agent-config/25-agent-graph
+
+- key: equity-briefing-graph-good
+  name: Graph good
+  mode: agent
+  examples:
+  - path: 20-agent-config/25-agent-graph
+
+- key: equity-briefing-graph-joke
+  name: Graph joke
+  mode: agent
+  examples:
+  - path: 20-agent-config/25-agent-graph
+
+- key: equity-briefing-graph-finalize
+  name: Graph finalize
+  mode: agent
+  examples:
+  - path: 20-agent-config/25-agent-graph

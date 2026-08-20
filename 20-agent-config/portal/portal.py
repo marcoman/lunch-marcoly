@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-portal.py — series shell for 20-agent-config (Python web examples 21–24).
+portal.py — series shell for 20-agent-config (Python web examples 21–25).
 
 One process for the user:
   - Serves this folder's index.html on :8200 (PORTAL_PORT)
@@ -64,6 +64,13 @@ CHILDREN: list[dict[str, Any]] = [
         "script": SERIES_ROOT / "24-agent-judges" / "python" / "24-agent-judges.py",
         "cwd": SERIES_ROOT / "24-agent-judges" / "python",
         "port": 8240,
+    },
+    {
+        "id": "25",
+        "label": "Graph",
+        "script": SERIES_ROOT / "25-agent-graph" / "python" / "25-agent-graph.py",
+        "cwd": SERIES_ROOT / "25-agent-graph" / "python",
+        "port": 8250,
     },
 ]
 
