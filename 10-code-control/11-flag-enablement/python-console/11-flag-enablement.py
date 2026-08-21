@@ -61,7 +61,7 @@ def evaluate_flags(username: str) -> dict[str, object]:
         return build_flag_response(username, False, False, False, False, _host_os)
     context, host_os = build_evaluation_context(username)
     highlight, served_color = interpret_highlight_variation(
-        _ld_client.variation(FLAG_HIGHLIGHT, context, False)
+        _ld_client.variation(FLAG_HIGHLIGHT, context, "none")
     )
     context_highlight = bool(_ld_client.variation(FLAG_CONTEXT, context, False))
     show_count = bool(_ld_client.variation(FLAG_COUNT, context, False))

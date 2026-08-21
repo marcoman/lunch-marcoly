@@ -132,11 +132,21 @@ fn format_cohort_label(username: &str, highlight_color: &str, context_highlight:
     }
 }
 
-fn resolve_highlight_color(username: &str, highlight_enabled: bool, context_highlight: bool) -> String {
+fn resolve_highlight_color(
+    username: &str,
+    highlight_enabled: bool,
+    context_highlight: bool,
+    served_color: Option<&str>,
+) -> String {
     if !highlight_enabled {
         return "none".to_string();
     }
     if !context_highlight {
+        if let Some(color) = served_color {
+            if !color.is_empty() && color != "none" {
+                return color.to_string();
+            }
+        }
         return "green".to_string();
     }
     let cohorts = parse_cohorts(username);
@@ -155,6 +165,11 @@ fn resolve_highlight_color(username: &str, highlight_enabled: bool, context_high
     if cohorts.beta {
         return "blue".to_string();
     }
+    if let Some(color) = served_color {
+        if !color.is_empty() && color != "none" {
+            return color.to_string();
+        }
+    }
     "green".to_string()
 }
 
@@ -165,8 +180,9 @@ fn build_flag_response(
     show_move_count: bool,
     show_os_emoji: bool,
     host_os: &str,
+    served_color: Option<&str>,
 ) -> FlagValues {
-    let color = resolve_highlight_color(username, highlight_enabled, context_highlight);
+    let color = resolve_highlight_color(username, highlight_enabled, context_highlight, served_color);
     let label = format_cohort_label(username, &color, context_highlight);
     FlagValues {
         show_move_count,
@@ -230,7 +246,7 @@ impl App {
 
     fn evaluate_flags(&self, username: &str) -> FlagValues {
         let Some(client) = &self.client else {
-            return build_flag_response(username, false, false, false, false, &self.host_os);
+            return build_flag_response(username, false, false, false, false, &self.host_os, None);
         };
         let context = ContextBuilder::new(username)
             .set_value(
@@ -245,6 +261,11 @@ impl App {
             "" | "none" | "false" | "off" => false,
             _ => true,
         };
+        let served_color = if highlight {
+            Some(highlight_raw.as_str())
+        } else {
+            None
+        };
         let context_highlight = client.bool_variation(&context, FLAG_CONTEXT, false);
         let show_count = client.bool_variation(&context, FLAG_COUNT, false);
         let show_os_emoji = client.bool_variation(&context, FLAG_OS_EMOJI, false);
@@ -255,6 +276,7 @@ impl App {
             show_count,
             show_os_emoji,
             &self.host_os,
+            served_color,
         )
     }
 }

@@ -5,7 +5,8 @@ import com.launchdarkly.sdk.server.LDConfig;
 import java.io.IOException;
 
 /**
- * LaunchDarkly capability: Boolean flag evaluation (server-side SDK)
+ * LaunchDarkly capability: flag evaluation (server-side SDK)
+ * String highlight + boolean override / show flags.
  */
 public final class FlagEvaluator {
     private static final String HOST_OS = HostOs.detectHostOs();
@@ -53,11 +54,13 @@ public final class FlagEvaluator {
             return FlagValues.off(username);
         }
         LDContext context = HostOs.buildContext(username, HOST_OS);
-        boolean highlight = client.boolVariation(HighlightStyle.FLAG_HIGHLIGHT, context, false);
+        String highlightRaw = client.stringVariation(HighlightStyle.FLAG_HIGHLIGHT, context, "none");
+        boolean highlight = !HighlightStyle.isHighlightOff(highlightRaw);
+        String servedColor = highlight ? highlightRaw : null;
         boolean contextHighlight = client.boolVariation(HighlightStyle.FLAG_CONTEXT, context, false);
         boolean showCount = client.boolVariation(HighlightStyle.FLAG_COUNT, context, false);
         boolean showOsEmoji = client.boolVariation(HostOs.FLAG_OS_EMOJI, context, false);
-        HighlightStyle.Style style = HighlightStyle.resolve(username, highlight, contextHighlight);
+        HighlightStyle.Style style = HighlightStyle.resolve(username, highlight, contextHighlight, servedColor);
         String osEmoji = HostOs.osEmojiFor(HOST_OS, showOsEmoji);
         return new FlagValues(
                 highlight, contextHighlight, showCount, style.highlightColor(), style.cohortLabel(), osEmoji);

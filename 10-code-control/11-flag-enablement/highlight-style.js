@@ -105,13 +105,13 @@ function resolveHighlightColor(
     if (servedColor && VALID_COLORS.has(servedColor) && servedColor !== "none") {
       return servedColor;
     }
-    return "pink";
+    return DEFAULT_STRING_ON_COLOR;
   }
 
   if (servedColor && VALID_COLORS.has(servedColor) && servedColor !== "none") {
     return servedColor;
   }
-  return "pink";
+  return DEFAULT_STRING_ON_COLOR;
 }
 
 function buildFlagResponse(

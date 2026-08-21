@@ -31,4 +31,4 @@ Open [http://127.0.0.1:8080/](http://127.0.0.1:8080/).
 
 ## What to expect
 
-Same as [python/README.md](../python/README.md): baseline matches 00-reference-code when flags are off; pink/context highlight and move count are controlled by LaunchDarkly flags.
+Same as [python/README.md](../python/README.md): baseline matches 00-reference-code when flags are off; string highlight + color override and move count are controlled by LaunchDarkly flags.

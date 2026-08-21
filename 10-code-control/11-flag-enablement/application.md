@@ -162,7 +162,7 @@ When **both** the highlight flag and this flag are **on**, apply the first match
 | beta only | **blue** |
 | no cohort words matched | **green** (fallthrough) (same as override flag off) |
 
-When the highlight flag is **on** and this flag is **off**, color is always **green** (fallthrough) and the label is `(green)`.
+When the highlight flag is **on** and this flag is **off**, color is the Flag 1 fallthrough (often **green**) and the label matches that color (e.g. `(green)`).
 
 When the highlight flag is **off**, no colors appear on the username or selection; the label is `(no-color)`.
 
@@ -350,11 +350,11 @@ Console implementations use the closest ANSI foreground colors for username, coh
 
 All three flags are independent. Key combinations:
 
-| Highlight | Context | Count | Result |
-|-----------|---------|-------|--------|
+| Highlight | Override | Count | Result |
+|-----------|----------|-------|--------|
 | off | * | off | `(no-color)` label; 00-reference-code cell styling |
 | off | * | on | `(no-color)` label; `Count: N` in header |
-| on | off | off | Pink highlight + `X`; label `(green)` |
+| on | off | off | Fallthrough color highlight + `X`; label matches that color |
 | on | on | off | Cohort-based colors; label like `(human-yellow)` |
 | on | on | on | Cohort colors + `Count: N` |
 
@@ -368,7 +368,7 @@ Implementations should model at least the 00-reference-code state **plus**:
 | `highlightEnabled` | boolean | From `enable-grid-selection-highlight` |
 | `contextHighlight` | boolean | From `enable-grid-highlight-color-override` |
 | `showMoveCount` | boolean | From `show-navigation-move-count` |
-| `highlightColor` | string | `none`, `green`, `yellow`, `red`, `blue`, `green`, or `purple` — derived from flags + username |
+| `highlightColor` | string | `none`, `yellow`, `red`, `blue`, `green`, or `purple` — derived from flags + username |
 | `cohortLabel` | string | e.g. `(human-beta-green)`, `(green)`, or `(no-color)` |
 | `osEmoji` | string | OS emoji character or empty string when flag is off |
 

@@ -51,7 +51,7 @@ async function evaluateFlags(username) {
     hostOs: HOST_OS,
     privateAttributes: [HOST_OS_ATTR],
   };
-  const highlightRaw = await ldClient.variation(FLAG_HIGHLIGHT, context, false);
+  const highlightRaw = await ldClient.variation(FLAG_HIGHLIGHT, context, "none");
   const { enabled: highlightEnabled, servedColor } =
     interpretHighlightVariation(highlightRaw);
   const contextHighlight = await ldClient.variation(FLAG_CONTEXT, context, false);

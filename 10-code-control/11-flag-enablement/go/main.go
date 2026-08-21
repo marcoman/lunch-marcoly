@@ -135,11 +135,14 @@ func formatCohortLabel(username, highlightColor string, contextHighlight bool) s
 	return "(" + colorName + ")"
 }
 
-func resolveHighlightColor(username string, highlightEnabled, contextHighlight bool) string {
+func resolveHighlightColor(username string, highlightEnabled, contextHighlight bool, servedColor string) string {
 	if !highlightEnabled {
 		return "none"
 	}
 	if !contextHighlight {
+		if servedColor != "" && servedColor != "none" {
+			return servedColor
+		}
 		return "green"
 	}
 	c := parseCohorts(username)
@@ -155,12 +158,15 @@ func resolveHighlightColor(username string, highlightEnabled, contextHighlight b
 	case c.beta:
 		return "blue"
 	default:
+		if servedColor != "" && servedColor != "none" {
+			return servedColor
+		}
 		return "green"
 	}
 }
 
-func buildFlagResponse(username string, highlightEnabled, contextHighlight, showMoveCount, showOsEmoji bool, hostOs string) flagValues {
-	color := resolveHighlightColor(username, highlightEnabled, contextHighlight)
+func buildFlagResponse(username string, highlightEnabled, contextHighlight, showMoveCount, showOsEmoji bool, hostOs, servedColor string) flagValues {
+	color := resolveHighlightColor(username, highlightEnabled, contextHighlight, servedColor)
 	label := formatCohortLabel(username, color, contextHighlight)
 	return flagValues{
 		highlightEnabled: highlightEnabled,
@@ -191,7 +197,7 @@ func initLaunchDarkly() {
 
 func evaluateFlags(username string) flagValues {
 	if ldClient == nil {
-		return buildFlagResponse(username, false, false, false, false, hostOS)
+		return buildFlagResponse(username, false, false, false, false, hostOS, "")
 	}
 	context := ldcontext.NewBuilder(username).
 		SetString(hostOsAttr, hostOS).
@@ -199,10 +205,14 @@ func evaluateFlags(username string) flagValues {
 		Build()
 	highlightRaw, _ := ldClient.StringVariation(flagHighlight, context, "none")
 	highlight := highlightRaw != "" && highlightRaw != "none" && highlightRaw != "false" && highlightRaw != "off"
+	servedColor := ""
+	if highlight {
+		servedColor = highlightRaw
+	}
 	contextHighlight, _ := ldClient.BoolVariation(flagContext, context, false)
 	showCount, _ := ldClient.BoolVariation(flagCount, context, false)
 	showOsEmoji, _ := ldClient.BoolVariation(flagOsEmoji, context, false)
-	return buildFlagResponse(username, highlight, contextHighlight, showCount, showOsEmoji, hostOS)
+	return buildFlagResponse(username, highlight, contextHighlight, showCount, showOsEmoji, hostOS, servedColor)
 }
 
 func ansiColor(color string) string {

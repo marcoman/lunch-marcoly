@@ -86,7 +86,7 @@ def interpret_highlight_variation(raw: object) -> tuple[bool, str | None]:
         color = raw.strip().lower()
         if color in VALID_COLORS and color != "none":
             return True, color
-        # Unknown non-empty string: treat as enabled; resolve falls back to pink.
+        # Unknown non-empty string: treat as enabled; resolve falls back to green.
         return True, None
     return bool(raw), None
 
@@ -113,14 +113,14 @@ def resolve_highlight_color(
             return "red"
         if is_beta:
             return "blue"
-        # No cohort words: keep served string color when present, else pink.
+        # No cohort words: keep served string color when present, else green.
         if served_color and served_color in VALID_COLORS and served_color != "none":
             return served_color
-        return "pink"
+        return DEFAULT_STRING_ON_COLOR
 
     if served_color and served_color in VALID_COLORS and served_color != "none":
         return served_color
-    return "pink"
+    return DEFAULT_STRING_ON_COLOR
 
 
 def build_flag_response(

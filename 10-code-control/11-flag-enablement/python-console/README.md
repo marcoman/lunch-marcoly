@@ -32,6 +32,6 @@ python 11-flag-enablement.py
 
 1. Login with a non-empty username.
 2. With both flags off, behavior matches [00-reference-code](../../../00-reference-code/application.md) (`X` only, no count).
-3. Enable `enable-grid-selection-highlight` for a colored outline on the selected cell (pink by default, or cohort colors with the context flag).
+3. Enable `enable-grid-selection-highlight` (string: none|colors) for a colored outline. Enable `enable-grid-highlight-color-override` for cohort colors from human/robot/beta in the username.
 4. Enable `show-navigation-move-count` for `Count: N` in the header.
 5. Flag changes refresh about every 500 ms without moving. Press `L` to log out or `Q` to quit.

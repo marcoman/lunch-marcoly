@@ -70,7 +70,7 @@ def evaluate_flags(username: str) -> dict[str, object]:
     else:
         context, host_os = build_evaluation_context(username)
         # Highlight may be boolean or string ("none" / color) depending on the project flag.
-        highlight_raw = _ld_client.variation(FLAG_HIGHLIGHT, context, False)
+        highlight_raw = _ld_client.variation(FLAG_HIGHLIGHT, context, "none")
         highlight, served_color = interpret_highlight_variation(highlight_raw)
         context_highlight = bool(_ld_client.variation(FLAG_CONTEXT, context, False))
         show_count = bool(_ld_client.variation(FLAG_COUNT, context, False))

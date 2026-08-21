@@ -39,7 +39,7 @@ def main() -> None:
         return
     context, host_os = build_evaluation_context(username)
     highlight, served_color = interpret_highlight_variation(
-        client.variation(FLAG_HIGHLIGHT, context, False)
+        client.variation(FLAG_HIGHLIGHT, context, "none")
     )
     result = build_flag_response(
         username,

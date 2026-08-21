@@ -2,7 +2,8 @@
 
 #include <string>
 
-// LaunchDarkly capability: Boolean flag evaluation (server-side SDK)
+// LaunchDarkly capability: flag evaluation (server-side SDK)
+// String highlight + boolean override / show flags.
 // See: https://launchdarkly.com/docs/sdk/features/evaluating
 
 struct FlagValues {

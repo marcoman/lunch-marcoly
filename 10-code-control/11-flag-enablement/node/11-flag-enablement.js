@@ -52,7 +52,7 @@ async function evaluateFlags(username) {
     return buildFlagResponse(username, false, false, false, false, HOST_OS);
   }
   const context = buildContext(username);
-  const highlightRaw = await ldClient.variation(FLAG_HIGHLIGHT, context, false);
+  const highlightRaw = await ldClient.variation(FLAG_HIGHLIGHT, context, "none");
   const { enabled: highlightEnabled, servedColor } =
     interpretHighlightVariation(highlightRaw);
   const contextHighlight = await ldClient.variation(FLAG_CONTEXT, context, false);

@@ -123,11 +123,15 @@ std::string format_cohort_label(const std::string& username,
 }
 
 std::string resolve_highlight_color(const std::string& username, bool highlight_enabled,
-                                    bool context_highlight) {
+                                    bool context_highlight,
+                                    const std::string& served_color) {
     if (!highlight_enabled) {
         return "none";
     }
     if (!context_highlight) {
+        if (!served_color.empty() && served_color != "none") {
+            return served_color;
+        }
         return "green";
     }
     const Cohorts cohorts = parse_cohorts(username);
@@ -145,6 +149,9 @@ std::string resolve_highlight_color(const std::string& username, bool highlight_
     }
     if (cohorts.beta) {
         return "blue";
+    }
+    if (!served_color.empty() && served_color != "none") {
+        return served_color;
     }
     return "green";
 }
@@ -179,8 +186,10 @@ std::string os_emoji_for(const std::string& host_os, bool show_os_emoji) {
 
 FlagValues apply_highlight_style(const std::string& username, bool highlight_enabled,
                                  bool context_highlight, bool show_move_count,
-                                 bool show_os_emoji, const std::string& host_os) {
-    const std::string color = resolve_highlight_color(username, highlight_enabled, context_highlight);
+                                 bool show_os_emoji, const std::string& host_os,
+                                 const std::string& served_color) {
+    const std::string color =
+        resolve_highlight_color(username, highlight_enabled, context_highlight, served_color);
     const std::string label = format_cohort_label(username, color, context_highlight);
     FlagValues values{highlight_enabled, context_highlight, show_move_count, color, label,
                       os_emoji_for(host_os, show_os_emoji)};
@@ -188,7 +197,7 @@ FlagValues apply_highlight_style(const std::string& username, bool highlight_ena
 }
 
 FlagValues defaults(const std::string& username) {
-    return apply_highlight_style(username, false, false, false, false, detect_host_os());
+    return apply_highlight_style(username, false, false, false, false, detect_host_os(), "");
 }
 
 bool json_bool(const std::string& json, const std::string& key) {
@@ -423,6 +432,7 @@ FlagValues evaluate_flags(const std::string& username) {
     const std::string highlight_str = highlight_raw ? highlight_raw : "none";
     const bool highlight = !(highlight_str.empty() || highlight_str == "none" ||
                              highlight_str == "false" || highlight_str == "off");
+    const std::string served_color = highlight ? highlight_str : "";
     const bool context_highlight =
         LDBoolVariation(g_client, kFlagContext, context, false);
     const bool show_count = LDBoolVariation(g_client, kFlagCount, context, false);
@@ -430,7 +440,7 @@ FlagValues evaluate_flags(const std::string& username) {
         LDBoolVariation(g_client, kFlagOsEmoji, context, false);
     LDJSONFree(context);
     return apply_highlight_style(
-        username, highlight, context_highlight, show_count, show_os_emoji, host_os);
+        username, highlight, context_highlight, show_count, show_os_emoji, host_os, served_color);
 #else
     return evaluate_via_python(username);
 #endif
