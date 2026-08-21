@@ -1,4 +1,4 @@
-// Portal — series shell for 10-code-control (.NET web examples 11–12).
+// Portal — series shell for 10-code-control (.NET web examples 11–13).
 //
 // One process for the user:
 //   - Serves wwwroot/index.html on :8103 (PORTAL_PORT)
@@ -27,7 +27,10 @@ var children = new[]
         "11-flag-enablement.csproj", 8113),
     new Child("12", "Flag variations",
         Path.Combine(seriesRoot, "12-flag-variations", "dotnet"),
-        "12-flag-variations.csproj", 8123)
+        "12-flag-variations.csproj", 8123),
+    new Child("13", "Flag targeting rules",
+        Path.Combine(seriesRoot, "13-flag-targeting-rules", "dotnet"),
+        "13-flag-targeting-rules.csproj", 8133)
 };
 
 var procs = new Dictionary<string, Process>();
@@ -88,7 +91,7 @@ AppDomain.CurrentDomain.ProcessExit += (_, _) => StopChildren();
 
 Console.WriteLine(AppBanner);
 Console.WriteLine($"Open http://127.0.0.1:{portalPort}/");
-Console.WriteLine("Tabs embed .NET examples on 8113 / 8123.");
+Console.WriteLine("Tabs embed .NET examples on 8113 / 8123 / 8133.");
 Console.WriteLine("Ctrl+C stops the portal and all children.");
 
 app.Run();

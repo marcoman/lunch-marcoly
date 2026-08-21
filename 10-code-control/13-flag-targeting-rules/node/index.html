@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grid Navigator — Targeting Rules</title>
+  <style>
+    :root { --ink:#e8e8ec; --muted:#9a9aab; --panel:#2d2d3d; --line:#4a4a5c; --accent:#64b5f6; }
+    * { box-sizing:border-box; }
+    html,body { height:100%; }
+    body { margin:0; background:#1e1e2e; color:var(--ink); font-family:system-ui,sans-serif; }
+    #login-screen { max-width:480px; margin:2rem auto; padding:0 1rem; }
+    h1 { font-size:1.25rem; }
+    label { display:block; margin:.7rem 0 .35rem; }
+    input,select,button { background:#3d3d52; color:var(--ink); border:1px solid #666; padding:.5rem; font:inherit; }
+    input, #team { width:100%; }
+    button { cursor:pointer; }
+    .hidden { display:none!important; }
+    .error { color:#ef5350; }
+    .app-banner,.muted { color:var(--muted); font-size:.85rem; }
+    #app-shell { height:100vh; grid-template-columns:minmax(0,1fr) min(28rem,42vw); grid-template-rows:minmax(0,1fr) auto; }
+    body.grid-active #app-shell { display:grid!important; }
+    #grid-screen { padding:1.5rem 1.25rem; overflow:auto; outline:none; }
+    .header { line-height:1.65; margin-bottom:1.4rem; }
+    .team-plain { color:inherit; }
+    .team-colored-red { color:#ef5350; font-weight:700; }
+    .team-colored-blue { color:#64b5f6; font-weight:700; }
+    .team-colored-yellow { color:#fff176; font-weight:700; }
+    .grid { display:grid; grid-template-columns:repeat(3,80px); gap:6px; }
+    .cell { width:80px; height:80px; border:1px solid #555; background:var(--panel); display:flex; align-items:center; justify-content:center; font-size:1.5rem; }
+    .cell.selected { font-weight:700; }
+    .hint { color:var(--muted); font-size:.875rem; }
+    .ld-rail { grid-column:2; grid-row:1; min-height:0; overflow:hidden; display:flex; flex-direction:column; background:var(--panel); border-left:1px solid var(--line); }
+    .ld-rail-header { padding:.85rem 1.1rem; border-bottom:1px solid var(--line); }
+    .ld-rail-header h2 { margin:0; font-size:1.05rem; }
+    .ld-tabs { display:flex; gap:.35rem; padding:.65rem 1.1rem 0; border-bottom:1px solid var(--line); }
+    .ld-tab { border:0; border-bottom:2px solid transparent; background:transparent; color:var(--muted); }
+    .ld-tab.active { color:var(--ink); border-bottom-color:var(--accent); font-weight:700; }
+    .ld-rail-body { overflow:auto; padding:1rem 1.1rem; }
+    .ld-section { display:none; }
+    .ld-section.active { display:block; }
+    .ld-block-title { margin:1rem 0 .35rem; color:var(--muted); font-size:.8rem; font-weight:700; text-transform:uppercase; }
+    .ld-about-p,.flag-summary { font-size:.86rem; line-height:1.45; }
+    code,.context-v { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+    .controls-warn { border:1px solid #8a3a3a; background:#3a2222; color:#ffcdd2; padding:.55rem; margin-bottom:.7rem; }
+    .flag-card { border:1px solid var(--line); border-radius:8px; background:#252535; padding:.8rem; margin-top:.7rem; }
+    .flag-top { display:flex; justify-content:space-between; gap:.5rem; }
+    .flag-top h3 { margin:0; font-size:.95rem; }
+    .flag-key { color:var(--muted); font: .72rem ui-monospace,monospace; }
+    .flag-toggle.on { background:#2e5a35; color:#c8e6c9; }
+    .flag-toggle.off { background:#5c2b2b; color:#ffcdd2; }
+    .fall-row { display:flex; align-items:center; gap:.5rem; margin-top:.65rem; }
+    .fall-row label { margin:0; }
+    .fall-row select { flex:1; }
+    .context-row { display:grid; grid-template-columns:7rem 1fr; gap:.5rem; margin:.35rem 0; font-size:.85rem; }
+    .context-k { color:var(--muted); }
+    .trace-dock { grid-column:1/-1; grid-row:2; background:#252535; border-top:1px solid var(--line); }
+    .trace-head { display:flex; align-items:center; padding:.35rem .5rem; gap:.35rem; }
+    .trace-toggle { flex:1; text-align:left; border:0; background:transparent; }
+    .trace-dot { display:inline-block; width:.55rem; height:.55rem; border-radius:50%; background:#555; margin-right:.35rem; }
+    .trace-dot.on { background:#81c784; box-shadow:0 0 6px #81c784; }
+    .trace-body { padding:0 .65rem .65rem; }
+    .trace-dock.collapsed .trace-body { display:none; }
+    .trace-console { max-height:7rem; overflow:auto; background:#1a1a24; border:1px solid #3a3a4a; padding:.5rem; font:.78rem/1.45 ui-monospace,monospace; }
+    .trace-dock.expanded .trace-console { max-height:14rem; }
+    .trace-line { margin:.2rem 0; }
+    .kind-eval { color:#64b5f6; } .kind-ok { color:#81c784; } .kind-err { color:#ef9a9a; }
+    .ts { color:#7a7a8a; } .hi { color:#fff176; }
+  </style>
+</head>
+<body>
+  <section id="login-screen">
+    <div class="app-banner">13-flag-targeting-rules[node]</div>
+    <h1>Login</h1>
+    <label for="username">Username</label>
+    <input id="username" type="text" autocomplete="username" autofocus>
+    <label for="team">Team</label>
+    <select id="team">
+      <option value="">No team</option>
+      <option value="red">Team Red</option>
+      <option value="blue">Team Blue</option>
+      <option value="yellow">Team Yellow</option>
+    </select>
+    <p id="login-error" class="error hidden">Username is required.</p>
+    <button id="login-btn" type="button">Continue</button>
+  </section>
+
+  <div id="app-shell" class="hidden">
+    <main id="grid-screen" tabindex="0">
+      <div class="header">
+        <div class="app-banner">13-flag-targeting-rules[node]</div>
+        <div>Name: <span id="hdr-name"></span></div>
+        <div>Team: <span id="hdr-team" class="team-plain">No team</span></div>
+        <div>Current position: <span id="hdr-current"></span></div>
+        <div>Previous position: <span id="hdr-previous"></span></div>
+      </div>
+      <div id="grid" class="grid" aria-label="3 by 3 grid"></div>
+      <p class="hint">Use arrow keys or WASD to move. Press L to log out, Q to quit.</p>
+    </main>
+
+    <aside class="ld-rail" aria-label="LaunchDarkly lab">
+      <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+      <div class="ld-tabs" role="tablist">
+        <button class="ld-tab active" data-tab="controls">Controls</button>
+        <button class="ld-tab" data-tab="context">Context</button>
+        <button class="ld-tab" data-tab="about">About</button>
+      </div>
+      <div class="ld-rail-body">
+        <section id="ld-section-controls" class="ld-section active">
+          <p id="controls-meta" class="muted">Loading flag status…</p>
+          <div id="controls-warn" class="controls-warn hidden"></div>
+          <button id="controls-refresh">Refresh status</button>
+          <div id="controls-list"></div>
+          <p class="ld-about-p muted">This lab changes on/off and fallthrough only. Targeting rules are provisioned via Terraform or REST.</p>
+        </section>
+        <section id="ld-section-context" class="ld-section">
+          <p id="context-meta" class="muted">Log in to see the evaluation context.</p>
+          <div id="context-body"></div>
+        </section>
+        <section id="ld-section-about" class="ld-section">
+          <div class="ld-block-title">What this teaches</div>
+          <p class="ld-about-p">LaunchDarkly <strong>targeting rules</strong> evaluate the public <code>team</code> <strong>context attribute</strong>. Unlike example 11, the application does not parse a username into a cohort.</p>
+          <div class="ld-block-title">Behavior</div>
+          <p class="ld-about-p"><code>red</code>, <code>blue</code>, and <code>yellow</code> rules serve matching colored styles. No team omits the attribute, skips all rules, and receives the plain fallthrough.</p>
+          <div class="ld-block-title">Controls</div>
+          <p class="ld-about-p">Controls intentionally expose only flag on/off and fallthrough. Rules are provisioned via <code>terraform/</code> or <code>rest/create-flags.sh</code>, not edited in this lab.</p>
+          <p class="ld-about-p"><a href="https://launchdarkly.com/docs/home/flags/target-rules" target="_blank">Targeting rules</a> · <a href="https://launchdarkly.com/docs/home/flags/context-attributes" target="_blank">Context attributes</a></p>
+        </section>
+      </div>
+    </aside>
+
+    <section id="trace-dock" class="trace-dock">
+      <div class="trace-head">
+        <button id="trace-collapse" class="trace-toggle"><span id="trace-dot" class="trace-dot"></span>Trace · <span id="trace-meta" class="muted">flag activity</span></button>
+        <button id="trace-expand">Taller</button>
+        <button id="trace-clear">Clear</button>
+      </div>
+      <div class="trace-body"><div id="trace-console" class="trace-console"><div id="trace-empty" class="muted">Login, SDK evaluations, and REST control actions appear here.</div><div id="trace-lines"></div></div></div>
+    </section>
+  </div>
+
+  <script>
+    const ROWS=["t","m","b"], COLS=["l","m","r"];
+    const TRACE_COLLAPSE_KEY="13-trace-dock-collapsed";
+    const TRACE_EXPAND_KEY="13-trace-dock-expanded";
+    let username="", team="", row=1, col=1, previous=null, timer=null, lastEval="", context=null, controlsBusy=false;
+    let flags={team:"",teamLabel:"No team",style:"plain",colored:false,cssColor:null};
+
+    const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    const pos=(r,c)=>`${ROWS[r]}/${COLS[c]}`;
+    function trace(kind,html){
+      document.getElementById("trace-empty").classList.add("hidden");
+      const line=document.createElement("div");
+      line.className=`trace-line kind-${kind}`;
+      line.innerHTML=`<span class="ts">${esc(new Date().toLocaleTimeString())}</span>  ${html}`;
+      document.getElementById("trace-lines").appendChild(line);
+      document.getElementById("trace-dot").classList.add("on");
+      document.getElementById("trace-meta").textContent=kind==="err"?"error":"updated";
+      const consoleEl=document.getElementById("trace-console"); consoleEl.scrollTop=consoleEl.scrollHeight;
+    }
+    function render(){
+      document.getElementById("hdr-name").textContent=username;
+      const teamEl=document.getElementById("hdr-team");
+      teamEl.textContent=flags.teamLabel||"No team";
+      teamEl.className=`team-${flags.style||"plain"}`;
+      teamEl.style.color="";
+      document.getElementById("hdr-current").textContent=pos(row,col);
+      document.getElementById("hdr-previous").textContent=previous?pos(previous.row,previous.col):"—";
+      const grid=document.getElementById("grid"); grid.innerHTML="";
+      for(let r=0;r<3;r++) for(let c=0;c<3;c++){
+        const cell=document.createElement("div"); cell.className="cell"+(r===row&&c===col?" selected":"");
+        cell.textContent=r===row&&c===col?"X":""; grid.appendChild(cell);
+      }
+    }
+    async function refreshFlags(){
+      if(!username)return;
+      try{
+        const response=await fetch(`/api/flags?username=${encodeURIComponent(username)}&team=${encodeURIComponent(team)}`,{cache:"no-store"});
+        if(!response.ok)throw new Error(`HTTP ${response.status}`);
+        flags=await response.json(); context=flags.ldContext;
+        const snapshot=JSON.stringify({team:flags.team,style:flags.style,reason:flags.reason});
+        if(snapshot!==lastEval){
+          lastEval=snapshot;
+          trace("eval",`SDK evaluate team=<span class="hi">${esc(flags.team||"(omitted)")}</span> → style=<span class="hi">${esc(flags.style)}</span> variation=${esc(String(flags.variationIndex??"—"))} reason=${esc(JSON.stringify(flags.reason))}`);
+        }
+        render(); renderContext();
+      }catch(error){trace("err",`SDK evaluation failed: ${esc(error)}`);}
+    }
+    function renderContext(){
+      if(!context)return;
+      document.getElementById("context-meta").textContent="One user context; team is public and available to analytics.";
+      const teamValue=context.teamOmitted?"(omitted — No team)":context.teamAttribute;
+      document.getElementById("context-body").innerHTML=
+        `<div class="ld-block-title">User context</div>`+
+        `<div class="context-row"><div class="context-k">kind</div><div class="context-v">${esc(context.kind)}</div></div>`+
+        `<div class="context-row"><div class="context-k">key</div><div class="context-v">${esc(context.key)}</div></div>`+
+        `<div class="context-row"><div class="context-k">team</div><div class="context-v">${esc(teamValue)}</div></div>`+
+        `<div class="context-row"><div class="context-k">privacy</div><div class="context-v">public (analytics enabled)</div></div>`+
+        `<p class="flag-summary">${esc(context.note)}</p>`;
+    }
+    function start(){
+      const name=document.getElementById("username").value.trim();
+      if(!name){document.getElementById("login-error").classList.remove("hidden");return;}
+      username=name; team=document.getElementById("team").value; row=col=1; previous=null; lastEval="";
+      document.getElementById("login-error").classList.add("hidden");
+      document.getElementById("login-screen").classList.add("hidden");
+      document.body.classList.add("grid-active"); document.getElementById("app-shell").classList.remove("hidden");
+      trace("action",`Logged in as <span class="hi">${esc(username)}</span> with team=<span class="hi">${esc(team||"No team")}</span>`);
+      refreshControls(); refreshFlags(); clearInterval(timer); timer=setInterval(refreshFlags,2000); render();
+      document.getElementById("grid-screen").focus();
+    }
+    function logout(){
+      clearInterval(timer); timer=null; username=""; team=""; context=null; previous=null;
+      flags={team:"",teamLabel:"No team",style:"plain",colored:false,cssColor:null};
+      document.body.classList.remove("grid-active"); document.getElementById("app-shell").classList.add("hidden");
+      document.getElementById("login-screen").classList.remove("hidden"); document.getElementById("username").focus();
+    }
+    function move(dr,dc){
+      const nr=Math.max(0,Math.min(2,row+dr)), nc=Math.max(0,Math.min(2,col+dc));
+      if(nr!==row||nc!==col){previous={row,col};row=nr;col=nc;render();}
+    }
+    function renderControls(data){
+      const warn=document.getElementById("controls-warn"), list=document.getElementById("controls-list");
+      if(!data.configured||data.error){warn.classList.remove("hidden");warn.textContent=data.error||`Controls need ${(data.missing||[]).join(", ")}`;}else warn.classList.add("hidden");
+      document.getElementById("controls-meta").innerHTML=data.configured?`Project <code>${esc(data.projectKey)}</code> · environment <code>${esc(data.environmentKey)}</code>`:"REST controls unavailable.";
+      list.innerHTML="";
+      for(const flag of data.flags||[]){
+        const card=document.createElement("div"), on=flag.on===true;
+        card.className="flag-card";
+        const options=(flag.fallthroughOptions||[]).map(o=>`<option value="${esc(o.token)}"${o.token===flag.fallthroughToken?" selected":""}>${esc(o.label)}</option>`).join("");
+        card.innerHTML=`<div class="flag-top"><div><h3>${esc(flag.label)}</h3><div class="flag-key">${esc(flag.key)}</div></div><button class="flag-toggle ${on?"on":"off"}" data-on="${on?"1":"0"}" ${flag.on==null||controlsBusy?"disabled":""}>${on?"ON":"OFF"}</button></div><p class="flag-summary">${esc(flag.summary||"")}</p><div class="fall-row"><label>Fallthrough</label><select class="fallthrough" ${flag.on==null||controlsBusy?"disabled":""}>${options}</select></div><p class="flag-summary">${esc(flag.targetingHint||"")}</p>`;
+        card.querySelector(".flag-toggle").onclick=()=>postControl({key:flag.key,on:!on},`${!on?"turnFlagOn":"turnFlagOff"} ${flag.key}`);
+        card.querySelector(".fallthrough").onchange=e=>postControl({key:flag.key,fallthrough:e.target.value},`updateFallthroughVariationOrRollout → ${e.target.value}`);
+        list.appendChild(card);
+      }
+    }
+    async function refreshControls(){
+      try{const r=await fetch("/api/flag-controls",{cache:"no-store"});renderControls(await r.json());}
+      catch(error){document.getElementById("controls-warn").textContent=error;document.getElementById("controls-warn").classList.remove("hidden");}
+    }
+    async function postControl(body,message){
+      controlsBusy=true; trace("action",`REST ${esc(message)}`);
+      try{
+        const r=await fetch("/api/flag-controls",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+        const data=await r.json(); if(!r.ok||data.ok===false)throw new Error(data.error||`HTTP ${r.status}`);
+        trace("ok",`REST OK: ${esc((data.instructions||[]).join(", "))}; rules unchanged`);
+        setTimeout(refreshFlags,500);
+      }catch(error){trace("err",`REST failed: ${esc(error.message||error)}`);}
+      finally{controlsBusy=false;refreshControls();}
+    }
+    function selectTab(tab){
+      document.querySelectorAll(".ld-tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===tab));
+      document.querySelectorAll(".ld-section").forEach(x=>x.classList.toggle("active",x.id===`ld-section-${tab}`));
+      if(tab==="controls")refreshControls(); if(tab==="context")renderContext();
+    }
+    document.getElementById("login-btn").onclick=start;
+    document.getElementById("username").onkeydown=e=>{if(e.key==="Enter")start();};
+    document.querySelectorAll(".ld-tab").forEach(x=>x.onclick=()=>selectTab(x.dataset.tab));
+    document.getElementById("controls-refresh").onclick=refreshControls;
+    document.addEventListener("keydown",e=>{
+      if(!username||["INPUT","SELECT","TEXTAREA"].includes(e.target.tagName))return;
+      const k=e.key.toLowerCase(); if(k==="l"){logout();return;} if(k==="q"){window.close();return;}
+      if(e.key==="ArrowUp"||k==="w")move(-1,0);else if(e.key==="ArrowDown"||k==="s")move(1,0);
+      else if(e.key==="ArrowLeft"||k==="a")move(0,-1);else if(e.key==="ArrowRight"||k==="d")move(0,1);else return;
+      e.preventDefault();
+    });
+    const dock=document.getElementById("trace-dock");
+    document.getElementById("trace-collapse").onclick=()=>{dock.classList.toggle("collapsed");localStorage.setItem(TRACE_COLLAPSE_KEY,dock.classList.contains("collapsed")?"1":"0");};
+    document.getElementById("trace-expand").onclick=()=>{dock.classList.toggle("expanded");localStorage.setItem(TRACE_EXPAND_KEY,dock.classList.contains("expanded")?"1":"0");document.getElementById("trace-expand").textContent=dock.classList.contains("expanded")?"Shorter":"Taller";};
+    document.getElementById("trace-clear").onclick=()=>{document.getElementById("trace-lines").innerHTML="";document.getElementById("trace-empty").classList.remove("hidden");document.getElementById("trace-dot").classList.remove("on");};
+    dock.classList.toggle("collapsed",localStorage.getItem(TRACE_COLLAPSE_KEY)==="1");
+    dock.classList.toggle("expanded",localStorage.getItem(TRACE_EXPAND_KEY)==="1");
+    refreshControls();
+  </script>
+</body>
+</html>

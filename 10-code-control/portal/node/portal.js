@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * portal.js — series shell for 10-code-control (Node web examples 11–12).
+ * portal.js — series shell for 10-code-control (Node web examples 11–13).
  *
  * Serves this folder's index.html on :8101 (PORTAL_PORT), spawns each example's
  * existing Node server with its assigned PORT, and stops all children on exit.
@@ -35,6 +35,18 @@ const CHILDREN = [
     script: path.join(SERIES_ROOT, "12-flag-variations", "node", "12-flag-variations.js"),
     cwd: path.join(SERIES_ROOT, "12-flag-variations", "node"),
     port: 8121,
+  },
+  {
+    id: "13",
+    label: "Flag targeting rules",
+    script: path.join(
+      SERIES_ROOT,
+      "13-flag-targeting-rules",
+      "node",
+      "13-flag-targeting-rules.js"
+    ),
+    cwd: path.join(SERIES_ROOT, "13-flag-targeting-rules", "node"),
+    port: 8131,
   },
 ];
 
@@ -240,7 +252,7 @@ async function main() {
   server.listen(PORTAL_PORT, "127.0.0.1", () => {
     console.log(APP_BANNER);
     console.log(`Open http://127.0.0.1:${PORTAL_PORT}/`);
-    console.log("Tabs embed Node examples on 8111 / 8121.");
+    console.log("Tabs embed Node examples on 8111 / 8121 / 8131.");
     console.log("Ctrl+C stops the portal and all children.");
   });
 }

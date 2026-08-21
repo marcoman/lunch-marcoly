@@ -1,22 +1,22 @@
 # 10-code-control portal
 
-One-command series shells for **11-flag-enablement** and **12-flag-variations**.
-Each portal serves a tabbed UI, spawns that language's existing web servers as
-children, and embeds them in **iframes**.
+One-command series shells for **11-flag-enablement**, **12-flag-variations**,
+and **13-flag-targeting-rules**. Each portal serves a tabbed UI, spawns that
+language's existing web servers as children, and embeds them in **iframes**.
 
 | Language | Entry | Portal port | Child ports |
 |----------|-------|-------------|-------------|
-| **Python** | [`python/`](python/) | **8100** | 8110 (11) · 8120 (12) |
-| **Node** | [`node/`](node/) | **8101** | 8111 (11) · 8121 (12) |
-| **Java** | [`java/`](java/) | **8102** | 8112 (11) · 8122 (12) |
-| **.NET** | [`dotnet/`](dotnet/) | **8103** | 8113 (11) · 8123 (12) |
+| **Python** | [`python/`](python/) | **8100** | 8110 (11) · 8120 (12) · 8130 (13) |
+| **Node** | [`node/`](node/) | **8101** | 8111 (11) · 8121 (12) · 8131 (13) |
+| **Java** | [`java/`](java/) | **8102** | 8112 (11) · 8122 (12) · 8132 (13) |
+| **.NET** | [`dotnet/`](dotnet/) | **8103** | 8113 (11) · 8123 (12) · 8133 (13) |
 
 Keywords: **feature flags** · **series portal** · **iframe tabs** · **process supervisor**
 
 ## Prerequisites
 
-Export `LD_SDK_KEY` and provision the flags for both examples. See each language
-folder's README for toolchain details and child dependency setup.
+Export `LD_SDK_KEY` and provision the flags for all three examples. See each
+language folder’s README for toolchain details and child dependency setup.
 
 ## Run
 

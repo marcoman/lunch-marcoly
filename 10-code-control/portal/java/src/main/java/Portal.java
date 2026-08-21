@@ -1,5 +1,5 @@
 /**
- * Portal — series shell for 10-code-control (Java web examples 11–12).
+ * Portal — series shell for 10-code-control (Java web examples 11–13).
  *
  * One process for the user:
  *   - Serves this folder's index.html on :8102 (PORTAL_PORT)
@@ -48,7 +48,10 @@ public final class Portal {
                     "11-flag-enablement.jar", 8112),
             new Child("12", "Flag variations",
                     SERIES_ROOT.resolve("12-flag-variations/java"),
-                    "12-flag-variations.jar", 8122)
+                    "12-flag-variations.jar", 8122),
+            new Child("13", "Flag targeting rules",
+                    SERIES_ROOT.resolve("13-flag-targeting-rules/java"),
+                    "13-flag-targeting-rules.jar", 8132)
     );
 
     private static final Map<String, Process> PROCS = new ConcurrentHashMap<>();
@@ -74,7 +77,7 @@ public final class Portal {
 
         System.out.println(APP_BANNER);
         System.out.println("Open http://127.0.0.1:" + PORTAL_PORT + "/");
-        System.out.println("Tabs embed Java examples on 8112 / 8122.");
+        System.out.println("Tabs embed Java examples on 8112 / 8122 / 8132.");
         System.out.println("Ctrl+C stops the portal and all children.");
     }
 

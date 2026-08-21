@@ -1,7 +1,7 @@
 # 10-code-control
 
 LaunchDarkly **feature flag** examples for the **lunch-marcoly** grid navigator —
-boolean enablement first, then variation types.
+boolean enablement, variation types, then targeting rules.
 
 This series mirrors [20-agent-config](../20-agent-config/): a parent folder with
 numbered children and an optional [portal](portal/) to run them side by side.
@@ -10,6 +10,7 @@ numbered children and an optional [portal](portal/) to run them side by side.
 |---------|--------|-----------------|
 | **11** | [11-flag-enablement/](11-flag-enablement/) | Boolean flags, contexts, private `hostOs` |
 | **12** | [12-flag-variations/](12-flag-variations/) | String, number, JSON, anonymous context |
+| **13** | [13-flag-targeting-rules/](13-flag-targeting-rules/) | Python / Node / Java / .NET web: targeting rules on public `team` context attribute |
 
 Baseline (no LaunchDarkly): [00-reference-code](../00-reference-code/).
 
@@ -18,16 +19,16 @@ Baseline (no LaunchDarkly): [00-reference-code](../00-reference-code/).
 ```bash
 export LD_SDK_KEY="sdk-..."
 
-# Python: portal :8100, children :8110 / :8120
+# Python: portal :8100, children :8110 / :8120 / :8130
 (cd portal/python && python portal.py)
 
-# Node: portal :8101, children :8111 / :8121
+# Node: portal :8101, children :8111 / :8121 / :8131
 (cd portal/node && npm start)
 
-# Java: portal :8102, children :8112 / :8122
+# Java: portal :8102, children :8112 / :8122 / :8132
 (cd portal/java && ./mvnw -q -DskipTests package && java -jar target/portal-java.jar)
 
-# .NET: portal :8103, children :8113 / :8123
+# .NET: portal :8103, children :8113 / :8123 / :8133
 (cd portal/dotnet && dotnet run)
 ```
 

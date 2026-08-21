@@ -2,7 +2,7 @@
   "name": "10-code-control-portal-node",
   "version": "1.0.0",
   "private": true,
-  "description": "Series portal — tabs for Node examples 11–12",
+  "description": "Series portal — tabs for Node examples 11–13",
   "main": "portal.js",
   "scripts": {
     "start": "node portal.js"

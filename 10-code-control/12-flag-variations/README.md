@@ -70,7 +70,7 @@ configure-max-navigation-moves
 
 ## Portal (series)
 
-The [10-code-control portal](../portal/) embeds **11** and **12** in tabs:
+The [10-code-control portal](../portal/) embeds **11**, **12**, and **13** in tabs:
 
 | Language | Entry | URL |
 |----------|-------|-----|
