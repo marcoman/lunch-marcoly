@@ -30,7 +30,7 @@ Single string multivariate flag for selected-cell highlight color:
 
 Variations match the string highlight flag used in [02-segments-by-name](../02-segments-by-name/application.md). This use case does **not** add segment targeting — all users receive the **fallthrough** variation when the flag is on.
 
-> **Note:** [10-flag-enablement](../../10-flag-enablement/) uses the same key as a **boolean** flag. Use a dedicated environment if you run multiple examples in one project.
+> **Note:** [10-code-control/11-flag-enablement](../../10-code-control/11-flag-enablement/) uses the same key as a **boolean** flag. Use a dedicated environment if you run multiple examples in one project.
 
 ### Provisioning default
 
@@ -81,4 +81,4 @@ Toggling the flag or changing fallthrough in LaunchDarkly (UI or REST) updates w
 
 - [README.md](README.md) — step-by-step UI and curl toggle walkthrough
 - [02-segments-by-name/application.md](../02-segments-by-name/application.md) — same flag key with segment targeting
-- [10-flag-enablement/application.md](../../10-flag-enablement/application.md) — boolean highlight flag reference
+- [10-code-control/11-flag-enablement/application.md](../../10-code-control/11-flag-enablement/application.md) — boolean highlight flag reference

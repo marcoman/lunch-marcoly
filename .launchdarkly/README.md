@@ -2,7 +2,7 @@
 
 Repo-root contract for **what LaunchDarkly resources this collection expects**, and a thin CLI to compare that inventory to live LaunchDarkly state and to the codebase.
 
-This phase is **inventory + visibility + declare helpers**. Create, delete, toggle, Terraform apply, and GitHub Actions provisioning are deferred. Example [`rest/`](../10-flag-enablement/rest/) and [`terraform/`](../10-flag-enablement/terraform/) folders remain the customer-facing provisioners.
+This phase is **inventory + visibility + declare helpers**. Create, delete, toggle, Terraform apply, and GitHub Actions provisioning are deferred. Example [`rest/`](../10-code-control/11-flag-enablement/rest/) and [`terraform/`](../10-code-control/11-flag-enablement/terraform/) folders remain the customer-facing provisioners.
 
 ## Declare loop
 

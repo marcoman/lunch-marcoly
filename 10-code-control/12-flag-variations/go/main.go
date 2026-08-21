@@ -35,7 +35,7 @@ const (
 )
 
 var rows = [3]string{"t", "m", "b"}
-const appBanner = "11-flag-variations[go]"
+const appBanner = "12-flag-variations[go]"
 
 var cols = [3]string{"l", "m", "r"}
 

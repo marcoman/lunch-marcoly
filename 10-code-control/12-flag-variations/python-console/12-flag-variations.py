@@ -17,7 +17,7 @@ from host_os import HOST_OS_ATTR, detect_host_os  # noqa: E402
 ROWS = ("t", "m", "b")
 COLS = ("l", "m", "r")
 
-APP_BANNER = "11-flag-variations[python-console]"
+APP_BANNER = "12-flag-variations[python-console]"
 
 _ld_client: LDClient | None = None
 _host_os = detect_host_os()

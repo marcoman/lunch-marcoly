@@ -142,5 +142,5 @@ Exact AI SDK package names and init snippets live in each language README when i
 
 - [20-agent-config README](../README.md) — shared Ollama / AWS / LaunchDarkly setup
 - [01-reference-agent/application.md](../../01-reference-agent/application.md) — baseline without LaunchDarkly
-- [11-flag-variations](../../11-flag-variations/) — classic feature-flag variation types (grid navigator)
+- [10-code-control/12-flag-variations](../../10-code-control/12-flag-variations/) — classic feature-flag variation types (grid navigator)
 - [AgentControl quickstart](https://launchdarkly.com/docs/home/agentcontrol/quickstart)

@@ -28,7 +28,7 @@ const (
 )
 
 var rows = [3]string{"t", "m", "b"}
-const appBanner = "10-flag-enablement[go]"
+const appBanner = "11-flag-enablement[go]"
 
 var cols = [3]string{"l", "m", "r"}
 

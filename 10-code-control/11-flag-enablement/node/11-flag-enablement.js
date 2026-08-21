@@ -10,6 +10,7 @@ const {
   FLAG_CONTEXT,
   FLAG_COUNT,
   buildFlagResponse,
+  interpretHighlightVariation,
 } = require("../highlight-style");
 const { detectHostOs, HOST_OS_ATTR, FLAG_OS_EMOJI } = require("../host-os");
 
@@ -51,17 +52,20 @@ async function evaluateFlags(username) {
     return buildFlagResponse(username, false, false, false, false, HOST_OS);
   }
   const context = buildContext(username);
-  const highlightEnabled = await ldClient.variation(FLAG_HIGHLIGHT, context, false);
+  const highlightRaw = await ldClient.variation(FLAG_HIGHLIGHT, context, false);
+  const { enabled: highlightEnabled, servedColor } =
+    interpretHighlightVariation(highlightRaw);
   const contextHighlight = await ldClient.variation(FLAG_CONTEXT, context, false);
   const showMoveCount = await ldClient.variation(FLAG_COUNT, context, false);
   const showOsEmoji = await ldClient.variation(FLAG_OS_EMOJI, context, false);
   return buildFlagResponse(
     username,
-    Boolean(highlightEnabled),
+    highlightEnabled,
     Boolean(contextHighlight),
     Boolean(showMoveCount),
     Boolean(showOsEmoji),
-    HOST_OS
+    HOST_OS,
+    servedColor
   );
 }
 

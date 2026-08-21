@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Serve the grid navigator web UI on a local HTTP server."""
 
+import os
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 
@@ -13,7 +14,8 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 def main() -> None:
-    port = 8080
+    # Optional PORT override for local multi-app runs (solo default remains 8080).
+    port = int(os.environ.get("PORT") or "8080")
     server = HTTPServer(("127.0.0.1", port), Handler)
     print(f"Grid navigator running at http://127.0.0.1:{port}/")
     print("Press Ctrl+C to stop.")

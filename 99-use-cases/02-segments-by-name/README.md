@@ -38,7 +38,7 @@ Highlight string variations: `none`, `yellow`, `red`, `blue`, `green`, `purple`.
 
 VIP boolean variations: `true` / `false` (default **off** / `false`). Turn the VIP flag **on** in LaunchDarkly to show the badge for usernames containing `vip`.
 
-> This use case provisions the highlight flag as **string** for segment targeting. [10-flag-enablement](../../10-flag-enablement/) uses the same key as **boolean** — use a dedicated environment if both exist.
+> This use case provisions the highlight flag as **string** for segment targeting. [10-code-control/11-flag-enablement](../../10-code-control/11-flag-enablement/) uses the same key as **boolean** — use a dedicated environment if both exist.
 
 ## Prerequisites
 
@@ -104,5 +104,5 @@ Shared modules: [`segment_context.py`](segment_context.py) / [`segment-context.j
 ## Related examples
 
 - [00-reference-code](../../00-reference-code/) — baseline grid
-- [10-flag-enablement](../../10-flag-enablement/) — boolean highlight + app-side cohort parsing
+- [10-code-control/11-flag-enablement](../../10-code-control/11-flag-enablement/) — boolean highlight + app-side cohort parsing
 - [01-abcd-test](../01-abcd-test/) — percentage rollout A/B/C/D test

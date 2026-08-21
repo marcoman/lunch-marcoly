@@ -1,10 +1,10 @@
-# 10-flag-enablement
+# 11-flag-enablement
 
 Feature flag naming, provisioning, and enablement for the **lunch-marcoly** grid navigator.
 
 ## What this demonstrates
 
-This example is the **only** place LaunchDarkly is used in the repository. The [00-reference-code](../00-reference-code/) app is reference-only — it has no LaunchDarkly integration and serves as the baseline behavior described in [application.md](../00-reference-code/application.md) (`X` only, no colors).
+This example teaches LaunchDarkly **boolean feature flags** on the grid navigator. The [00-reference-code](../../00-reference-code/) app is reference-only — it has no LaunchDarkly integration and serves as the baseline behavior described in [application.md](../../00-reference-code/application.md) (`X` only, no colors). For variation types (string / number / JSON), see sibling [12-flag-variations](../12-flag-variations/).
 
 Here you define three boolean feature flags that extend the grid navigator. See [application.md](application.md) for the full flag specification and desired effects. Provision flags with:
 
@@ -33,7 +33,7 @@ Naming follows the **action: subject** pattern from the [flag conventions guide]
 | **Tags** | `grid-navigator`, `configure`, `ui` |
 | **Default (off)** | `false` — `X` only, no colors (matches 00-reference-code) |
 | **When `true`** | Pink highlight by default; username colored to match |
-| **When `false`** | `X` only — same as [00-reference-code/application.md](../00-reference-code/application.md) |
+| **When `false`** | `X` only — same as [00-reference-code/application.md](../../00-reference-code/application.md) |
 
 **Variation labels**
 
@@ -98,7 +98,7 @@ Implementations use a **dark background** (web: `#1e1e2e`; console: dark gray AN
 - API access token with permission to manage feature flags
 - For Terraform: Terraform 1.5+ and the [LaunchDarkly provider](https://registry.terraform.io/providers/launchdarkly/launchdarkly/latest)
 
-Set environment variables before provisioning (see [project.md](../project.md#environment-variables)):
+Set environment variables before provisioning (see [project.md](../../project.md#environment-variables)):
 
 ```bash
 export LD_API_HOST="https://app.launchdarkly.com"   # optional
@@ -144,10 +144,20 @@ show-host-os-emoji
 
 All implementations require `LD_SDK_KEY` and provisioned flags. See each language README for build and run commands.
 
+## Portal (series)
+
+The [10-code-control portal](../portal/) embeds **11** and **12** in tabs:
+
+| Language | Entry | URL |
+|----------|-------|-----|
+| Python | [../portal/python/](../portal/python/) | http://127.0.0.1:8100/ |
+
+See [../portal/README.md](../portal/README.md).
+
 ## Further reading
 
 - [Flag conventions](https://launchdarkly.com/docs/guides/flags/flag-conventions)
 - [Using the LaunchDarkly REST API](https://launchdarkly.com/docs/guides/api/rest-api)
 - [Managing flags with Terraform](https://launchdarkly.com/docs/guides/infrastructure/terraform)
 - [application.md](application.md) — flag specification and desired effects
-- [00-reference-code/application.md](../00-reference-code/application.md) — baseline grid navigator behavior
+- [00-reference-code/application.md](../../00-reference-code/application.md) — baseline grid navigator behavior

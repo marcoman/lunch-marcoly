@@ -28,7 +28,7 @@ const DEFAULT_LUCKY_NUMBER: i64 = 0;
 const DEFAULT_MAX_MOVES: i32 = 100;
 
 const ROWS: [&str; 3] = ["t", "m", "b"];
-const APP_BANNER: &str = "11-flag-variations[rust]";
+const APP_BANNER: &str = "12-flag-variations[rust]";
 
 const COLS: [&str; 3] = ["l", "m", "r"];
 const BG: &str = "\x1b[48;5;236m";

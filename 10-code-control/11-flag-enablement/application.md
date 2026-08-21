@@ -1,14 +1,14 @@
 # Flag Enablement Application Specification
 
-This document defines the feature flags and their **desired effects** for the **10-flag-enablement** example.
+This document defines the feature flags and their **desired effects** for the **11-flag-enablement** example.
 
-Baseline grid navigator behavior (login, grid layout, navigation, header fields, and selection styling) is defined in [00-reference-code/application.md](../00-reference-code/application.md). Implementations in this folder start from that baseline and add LaunchDarkly flag evaluation on top.
+Baseline grid navigator behavior (login, grid layout, navigation, header fields, and selection styling) is defined in [00-reference-code/application.md](../../00-reference-code/application.md). Implementations in this folder start from that baseline and add LaunchDarkly flag evaluation on top.
 
-Repository layout and provisioning conventions are in [project.md](../project.md).
+Repository layout and provisioning conventions are in [project.md](../../project.md).
 
 ## Overview
 
-**10-flag-enablement** extends the reference grid navigator with four boolean feature flags. All flags apply to every language implementation in this folder (web and console).
+**11-flag-enablement** extends the reference grid navigator with four boolean feature flags. All flags apply to every language implementation in this folder (web and console).
 
 | Flag key | Purpose |
 |----------|---------|
@@ -21,7 +21,7 @@ Flags are provisioned in [terraform/](terraform/) and [rest/](rest/). Applicatio
 
 ## Relationship to 00-reference-code
 
-| Aspect | 00-reference-code | 10-flag-enablement |
+| Aspect | 00-reference-code | 11-flag-enablement |
 |--------|--------------|-------------------|
 | LaunchDarkly | None | Required |
 | Baseline behavior | Full spec | Inherits from 00-reference-code |
@@ -31,7 +31,7 @@ Flags are provisioned in [terraform/](terraform/) and [rest/](rest/). Applicatio
 | Navigation counter | Not present | Controlled by show flag |
 | Screen background | Light (web) / default terminal | Dark background for contrast with light and dark highlight colors |
 
-When a flag is **off** (default), behavior must match [00-reference-code/application.md](../00-reference-code/application.md) for the aspect that flag controls.
+When a flag is **off** (default), behavior must match [00-reference-code/application.md](../../00-reference-code/application.md) for the aspect that flag controls.
 
 ## Flag naming
 
@@ -60,7 +60,7 @@ The first highlight flag retains the historical key `configure-grid-selection-gr
 | Value | Label | Application behavior |
 |-------|-------|----------------------|
 | `true` | Highlight enabled | Selected cell shows **`X` with a colored highlight** — background (web) or colored outline (console) |
-| `false` | X only | Selected cell shows **`X` only** — no colors; same as [00-reference-code/application.md](../00-reference-code/application.md#presentation) |
+| `false` | X only | Selected cell shows **`X` only** — no colors; same as [00-reference-code/application.md](../../00-reference-code/application.md#presentation) |
 
 ### Desired effects
 
@@ -395,7 +395,7 @@ Refresh flag values when the LaunchDarkly SDK reports a change (streaming) or on
 
 ## Acceptance criteria
 
-An implementation in **10-flag-enablement** is correct when it satisfies all [00-reference-code acceptance criteria](../00-reference-code/application.md#acceptance-criteria) **and**:
+An implementation in **11-flag-enablement** is correct when it satisfies all [00-reference-code acceptance criteria](../../00-reference-code/application.md#acceptance-criteria) **and**:
 
 ### Flag 1 — selection highlight
 
@@ -450,6 +450,6 @@ show-host-os-emoji
 ## Further reading
 
 - [README.md](README.md) — example overview and provisioning links
-- [00-reference-code/application.md](../00-reference-code/application.md) — baseline grid navigator behavior
+- [00-reference-code/application.md](../../00-reference-code/application.md) — baseline grid navigator behavior
 - [Flag conventions](https://launchdarkly.com/docs/guides/flags/flag-conventions) — naming and tagging guidance
-- [project.md](../project.md) — repository conventions and environment variables
+- [project.md](../../project.md) — repository conventions and environment variables

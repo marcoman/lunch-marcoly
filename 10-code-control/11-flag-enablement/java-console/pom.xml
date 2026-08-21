@@ -18,7 +18,7 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>10-flag-enablement</finalName>
+        <finalName>11-flag-enablement</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

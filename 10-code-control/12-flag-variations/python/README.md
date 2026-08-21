@@ -1,6 +1,6 @@
 # Python (web)
 
-Web application for [11-flag-variations](../application.md).
+Web application for [12-flag-variations](../application.md).
 
 ## Prerequisites
 
@@ -20,7 +20,7 @@ No compile step.
 ## Run
 
 ```bash
-python 11-flag-variations.py
+python 12-flag-variations.py
 ```
 
 Open http://127.0.0.1:8080/

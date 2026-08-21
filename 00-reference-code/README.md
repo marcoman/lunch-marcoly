@@ -14,7 +14,7 @@ How examples are organized — numbering, language directories, web vs console a
 
 ## Prerequisites
 
-No LaunchDarkly account required. This example is **reference-only** — it does not integrate with LaunchDarkly. Feature flags live in [10-flag-enablement](../10-flag-enablement/).
+No LaunchDarkly account required. This example is **reference-only** — it does not integrate with LaunchDarkly. Feature flags live in [10-code-control/11-flag-enablement](../10-code-control/11-flag-enablement/).
 
 Set up the repository once ([pyenv](https://github.com/pyenv/pyenv) for Python, [nvm](https://github.com/nvm-sh/nvm) for Node, other toolchains) using the [root README](../README.md#building-code).
 

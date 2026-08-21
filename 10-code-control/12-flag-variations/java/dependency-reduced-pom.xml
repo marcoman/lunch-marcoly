@@ -10,7 +10,7 @@
         <directory>src/main/resources</directory>
       </resource>
     </resources>
-    <finalName>11-flag-variations</finalName>
+    <finalName>12-flag-variations</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>

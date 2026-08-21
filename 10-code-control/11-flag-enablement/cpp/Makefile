@@ -1,11 +1,11 @@
-# Build the 10-flag-enablement console binary locally in this directory.
-TARGET := 10-flag-enablement
+# Build the 11-flag-enablement console binary locally in this directory.
+TARGET := 11-flag-enablement
 CXX ?= c++
 CXXFLAGS := -std=c++20 -Wall -Wextra
 
 # Optional: link the LaunchDarkly C server SDK when LDSDK_PREFIX is set.
 # See: https://launchdarkly.com/docs/sdk/server-side/c
-REPO_ROOT := $(abspath $(CURDIR)/../..)
+REPO_ROOT := $(abspath $(CURDIR)/../../..)
 VENV_PYTHON := $(REPO_ROOT)/.venv/bin/python3
 CXXFLAGS += -DEVALUATE_FLAGS_SCRIPT=\"$(CURDIR)/evaluate_flags.py\"
 ifneq ($(wildcard $(VENV_PYTHON)),)

@@ -12,7 +12,7 @@ const { detectHostOs, HOST_OS_ATTR } = require("../host-os");
 
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
-const APP_BANNER = "11-flag-variations[node-console]";
+const APP_BANNER = "12-flag-variations[node-console]";
 const HOST_OS = detectHostOs();
 const BG = "\x1b[48;5;236m";
 

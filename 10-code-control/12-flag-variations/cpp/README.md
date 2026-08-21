@@ -1,6 +1,6 @@
 # C++
 
-Console application version of the [11-flag-variations grid navigator](../application.md).
+Console application version of the [12-flag-variations grid navigator](../application.md).
 
 ## Prerequisites
 
@@ -35,11 +35,11 @@ From this directory (the Python helper path is baked in at build time):
 ```bash
 source ../../.venv/bin/activate   # or export LD_SDK_KEY and rely on repo .venv auto-detection
 export LD_SDK_KEY="sdk-..."
-./11-flag-variations
+./12-flag-variations
 ```
 
 The build embeds the path to `.venv/bin/python3` when present. You can also set `PYTHON` explicitly or activate `.venv` (`VIRTUAL_ENV`).
 
 ## What to expect
 
-Same flag behavior as [python-console/11-flag-variations.py](../python-console/11-flag-variations.py). Press `L` to log out or `Q` to quit.
+Same flag behavior as [python-console/12-flag-variations.py](../python-console/12-flag-variations.py). Press `L` to log out or `Q` to quit.

@@ -10,7 +10,7 @@
         <directory>src/main/resources</directory>
       </resource>
     </resources>
-    <finalName>10-flag-enablement</finalName>
+    <finalName>11-flag-enablement</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>

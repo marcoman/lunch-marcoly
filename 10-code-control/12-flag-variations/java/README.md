@@ -1,6 +1,6 @@
 # Java (web)
 
-Web application version of the [11-flag-variations grid navigator](../application.md).
+Web application version of the [12-flag-variations grid navigator](../application.md).
 
 ## Prerequisites
 
@@ -22,11 +22,11 @@ Web application version of the [11-flag-variations grid navigator](../applicatio
 ## Run
 
 ```bash
-java -jar target/11-flag-variations.jar
+java -jar target/12-flag-variations.jar
 ```
 
 Open [http://127.0.0.1:8080/](http://127.0.0.1:8080/).
 
 ## What to expect
 
-Same as [python/11-flag-variations.py](../python/11-flag-variations.py): string count label, lucky number, JSON move limit, and anonymous-context OS emoji are controlled by LaunchDarkly flags.
+Same as [python/12-flag-variations.py](../python/12-flag-variations.py): string count label, lucky number, JSON move limit, and anonymous-context OS emoji are controlled by LaunchDarkly flags.

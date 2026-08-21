@@ -14,7 +14,7 @@
 namespace {
 
 constexpr std::array<const char*, 3> kRows = {"t", "m", "b"};
-constexpr const char* kAppBanner = "11-flag-variations[cpp]";
+constexpr const char* kAppBanner = "12-flag-variations[cpp]";
 constexpr std::array<const char*, 3> kCols = {"l", "m", "r"};
 constexpr const char* kBg = "\033[48;5;236m";
 

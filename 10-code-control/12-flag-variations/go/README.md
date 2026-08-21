@@ -1,6 +1,6 @@
 # Go
 
-Console application version of the [11-flag-variations grid navigator](../application.md).
+Console application version of the [12-flag-variations grid navigator](../application.md).
 
 ## Prerequisites
 
@@ -17,15 +17,15 @@ Console application version of the [11-flag-variations grid navigator](../applic
 
 ```bash
 go mod tidy
-go build -o 11-flag-variations .
+go build -o 12-flag-variations .
 ```
 
 ## Run
 
 ```bash
-./11-flag-variations
+./12-flag-variations
 ```
 
 ## What to expect
 
-Same flag behavior as [python-console/11-flag-variations.py](../python-console/11-flag-variations.py). Press `L` to log out or `Q` to quit.
+Same flag behavior as [python-console/12-flag-variations.py](../python-console/12-flag-variations.py). Press `L` to log out or `Q` to quit.

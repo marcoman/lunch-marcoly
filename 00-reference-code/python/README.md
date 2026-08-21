@@ -34,6 +34,8 @@ python 00-reference-code.py
 
 Open [http://127.0.0.1:8080/](http://127.0.0.1:8080/) in a browser. Press Ctrl+C to stop the server.
 
+Optional: set `PORT` to listen on another port.
+
 ## What to expect
 
 1. Enter a username on the login screen (empty names are rejected).

@@ -1,6 +1,6 @@
 # Java (console)
 
-Console application version of the [10-flag-enablement grid navigator](../application.md).
+Console application version of the [11-flag-enablement grid navigator](../application.md).
 
 ## Prerequisites
 
@@ -23,7 +23,7 @@ Console application version of the [10-flag-enablement grid navigator](../applic
 ## Run
 
 ```bash
-java -jar target/10-flag-enablement.jar
+java -jar target/11-flag-enablement.jar
 ```
 
 ## What to expect

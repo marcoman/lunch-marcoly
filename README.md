@@ -25,6 +25,11 @@ lunch-marcoly/
 │   ├── python/ · node/ · java/ · dotnet/         # web apps
 │   ├── python-console/ · node-console/ · java-console/
 │   └── go/ · rust/ · cpp/                        # console-only languages
+├── 10-code-control/             # Feature-flag series
+│   ├── README.md
+│   ├── portal/                   # Series shell: Python :8100
+│   ├── 11-flag-enablement/       # Boolean flags + contexts
+│   └── 12-flag-variations/       # String / number / JSON / anonymous
 ├── 20-agent-config/             # AgentControl series (shared setup)
 │   ├── README.md
 │   ├── portal/                   # Series shell: Python :8200 · Node :8201
@@ -65,8 +70,9 @@ Each example may include implementations in any of these languages. Python, Node
 |---|-----------|-------------|
 | 00 | [00-reference-code](00-reference-code/) | Grid navigator reference app (all languages, no LaunchDarkly) |
 | 01 | [01-reference-agent](01-reference-agent/) | News headlines → AI equity briefing (Python / Node / Java / .NET web + consoles; LaunchDarkly comes in later examples) |
-| 10 | [10-flag-enablement](10-flag-enablement/) | Grid navigator with LaunchDarkly flags (all languages, Terraform + REST) |
-| 11 | [11-flag-variations](11-flag-variations/) | Grid navigator with string, number, JSON, and anonymous flags (all languages) |
+| 10 | [10-code-control](10-code-control/) | Feature-flag series (portal + 11 / 12) |
+| 11 | [11-flag-enablement](10-code-control/11-flag-enablement/) | Grid navigator with LaunchDarkly boolean flags (all languages, Terraform + REST) |
+| 12 | [12-flag-variations](10-code-control/12-flag-variations/) | Grid navigator with string, number, JSON, and anonymous flags (all languages) |
 | 20 | [20-agent-config](20-agent-config/) | AgentControl series (shared LLM / AWS / LD setup); [portal](20-agent-config/portal/) Python **:8200** · Node **:8201** |
 | 21 | [21-agent-completion-config](20-agent-config/21-agent-completion-config/) | Completion config: model + system/user prompts (web + Go console) |
 | 22 | [22-config-outside-code](20-agent-config/22-config-outside-code/) | Tracked completion: metrics + thumbs feedback (web + Go console) |

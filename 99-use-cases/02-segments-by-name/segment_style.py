@@ -67,7 +67,7 @@ def resolve_variation_color(raw: object, info: SegmentInfo) -> str:
     color = normalize_highlight_color(raw)
     if color != "none":
         return color
-    # Legacy boolean flag from 10-flag-enablement: true = highlight on, no color string.
+    # Legacy boolean flag from 10-code-control/11-flag-enablement: true = highlight on, no color string.
     if raw is True:
         return expected_color_for_segment(info)
     return "none"

@@ -15,6 +15,7 @@ from highlight_style import (  # noqa: E402
     FLAG_COUNT,
     FLAG_HIGHLIGHT,
     build_flag_response,
+    interpret_highlight_variation,
 )
 from host_os import (  # noqa: E402
     FLAG_OS_EMOJI,
@@ -37,13 +38,17 @@ def main() -> None:
         print(json.dumps(build_flag_response(username, False, False, False, False, host_os), ensure_ascii=False))
         return
     context, host_os = build_evaluation_context(username)
+    highlight, served_color = interpret_highlight_variation(
+        client.variation(FLAG_HIGHLIGHT, context, False)
+    )
     result = build_flag_response(
         username,
-        bool(client.variation(FLAG_HIGHLIGHT, context, False)),
+        highlight,
         bool(client.variation(FLAG_CONTEXT, context, False)),
         bool(client.variation(FLAG_COUNT, context, False)),
         bool(client.variation(FLAG_OS_EMOJI, context, False)),
         host_os,
+        served_color,
     )
     print(json.dumps(result, ensure_ascii=False))
     client.close()

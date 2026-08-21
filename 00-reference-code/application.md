@@ -2,7 +2,7 @@
 
 This document defines the behavior of the **00-reference-code** application — a simple grid navigator used as the canonical example every language implementation must match.
 
-Repository layout and README format are in [project.md](../project.md). Feature flag behavior is in [10-flag-enablement/application.md](../10-flag-enablement/application.md).
+Repository layout and README format are in [project.md](../project.md). Feature flag behavior is in [10-code-control/11-flag-enablement/application.md](../10-code-control/11-flag-enablement/application.md).
 
 ## Overview
 

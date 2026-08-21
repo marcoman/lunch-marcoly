@@ -16,6 +16,7 @@ from highlight_style import (  # noqa: E402
     FLAG_COUNT,
     FLAG_HIGHLIGHT,
     build_flag_response,
+    interpret_highlight_variation,
 )
 from host_os import (  # noqa: E402
     FLAG_OS_EMOJI,
@@ -31,7 +32,7 @@ from host_os import (  # noqa: E402
 ROWS = ("t", "m", "b")
 COLS = ("l", "m", "r")
 
-APP_BANNER = "10-flag-enablement[python-console]"
+APP_BANNER = "11-flag-enablement[python-console]"
 
 COLOR_PAIRS = {
     "pink": 1,
@@ -59,12 +60,20 @@ def evaluate_flags(username: str) -> dict[str, object]:
     if _ld_client is None or not _ld_client.is_initialized():
         return build_flag_response(username, False, False, False, False, _host_os)
     context, host_os = build_evaluation_context(username)
-    highlight = bool(_ld_client.variation(FLAG_HIGHLIGHT, context, False))
+    highlight, served_color = interpret_highlight_variation(
+        _ld_client.variation(FLAG_HIGHLIGHT, context, False)
+    )
     context_highlight = bool(_ld_client.variation(FLAG_CONTEXT, context, False))
     show_count = bool(_ld_client.variation(FLAG_COUNT, context, False))
     show_os_emoji = bool(_ld_client.variation(FLAG_OS_EMOJI, context, False))
     return build_flag_response(
-        username, highlight, context_highlight, show_count, show_os_emoji, host_os
+        username,
+        highlight,
+        context_highlight,
+        show_count,
+        show_os_emoji,
+        host_os,
+        served_color,
     )
 
 

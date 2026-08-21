@@ -18,7 +18,7 @@ Baseline grid navigator behavior is defined in [00-reference-code/application.md
 | Off variation | `none` — no highlight |
 | Rollout target | `green` — green highlight on selected cell and username |
 
-This use case uses only the **`none`** and **`green`** variations for the rollout. Other color variations exist on the flag for consistency with [11-flag-variations](../../11-flag-variations/) but are not part of the rollout schedule.
+This use case uses only the **`none`** and **`green`** variations for the rollout. Other color variations exist on the flag for consistency with [10-code-control/12-flag-variations](../../10-code-control/12-flag-variations/) but are not part of the rollout schedule.
 
 ### Rollout schedule
 

@@ -215,4 +215,4 @@ curl -X PATCH "${LD_API_HOST:-https://app.launchdarkly.com}/api/v2/projects/${LD
 
 - [PROVISIONING.md](../PROVISIONING.md) — UI fallback checklist
 - [application.md](../application.md) — app behavior when generate uses this config
-- [10-flag-enablement/rest](../../../10-flag-enablement/rest/) — same REST script pattern for feature flags
+- [10-code-control/11-flag-enablement/rest](../../../10-code-control/11-flag-enablement/rest/) — same REST script pattern for feature flags

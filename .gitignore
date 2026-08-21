@@ -23,8 +23,15 @@ obj/
 01-reference-agent/cpp/01-reference-agent
 01-reference-agent/cpp/01-reference-agent.exe
 01-reference-agent/cpp/third_party/
-10-flag-enablement/**/10-flag-enablement
-10-flag-enablement/**/10-flag-enablement.exe
+10-code-control/11-flag-enablement/**/11-flag-enablement
+10-code-control/11-flag-enablement/**/11-flag-enablement.exe
+10-code-control/12-flag-variations/**/12-flag-variations
+10-code-control/12-flag-variations/**/12-flag-variations.exe
+# legacy local build names (pre-rename)
+10-code-control/**/10-flag-enablement
+10-code-control/**/11-flag-variations
+10-code-control/**/flag-enablement
+10-code-control/**/flag-variations
 20-agent-config/21-agent-completion-config/go/21-agent-completion-config
 20-agent-config/21-agent-completion-config/go/21-agent-completion-config.exe
 20-agent-config/22-config-outside-code/go/22-config-outside-code

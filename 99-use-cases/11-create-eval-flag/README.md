@@ -25,7 +25,7 @@ The header also shows **`Flag value:`** — the raw string the SDK received. Whe
 
 The console app **re-evaluates every 500 ms**. Leave it running, toggle the flag in LaunchDarkly, and watch the highlight change within about a second — no restart required.
 
-> **Same flag key, different examples:** [10-flag-enablement](../10-flag-enablement/) uses this key as a **boolean**. [02-segments-by-name](02-segments-by-name/) uses it as a **string** with segment targeting. Use a dedicated environment if you run multiple examples in one project.
+> **Same flag key, different examples:** [10-code-control/11-flag-enablement](../../10-code-control/11-flag-enablement/) uses this key as a **boolean**. [02-segments-by-name](02-segments-by-name/) uses it as a **string** with segment targeting. Use a dedicated environment if you run multiple examples in one project.
 
 ## Prerequisites
 
@@ -248,6 +248,6 @@ All console and web apps support `--evaluate-once <username>`. Console apps re-e
 
 - [application.md](application.md) — specification and acceptance criteria
 - [02-segments-by-name](02-segments-by-name/) — same flag with segment-based color targeting
-- [10-flag-enablement](../10-flag-enablement/) — boolean highlight flag reference
+- [10-code-control/11-flag-enablement](../../10-code-control/11-flag-enablement/) — boolean highlight flag reference
 - [Flag targeting](https://launchdarkly.com/docs/home/flags/targeting-rules)
 - [REST API semantic patch](https://launchdarkly.com/docs/api#updates-using-semantic-patch)

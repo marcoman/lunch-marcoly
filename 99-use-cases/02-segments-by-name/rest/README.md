@@ -18,7 +18,7 @@ chmod +x *.sh
 ./get-flag.sh
 ```
 
-**Note:** This use case defines `configure-grid-selection-green-highlight` as a **string** flag. If you already provisioned it as boolean from [10-flag-enablement](../../../10-flag-enablement/), `create-all.sh` replaces it automatically.
+**Note:** This use case defines `configure-grid-selection-green-highlight` as a **string** flag. If you already provisioned it as boolean from [10-code-control/11-flag-enablement](../../../10-code-control/11-flag-enablement/), `create-all.sh` replaces it automatically.
 
 `create-all.sh` also creates the **`VIP`** boolean flag (default **off** / `false`) with targeting for segment `seg-by-name-vip` (`name` contains `vip`, case-insensitive).
 

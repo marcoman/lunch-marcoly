@@ -5,7 +5,7 @@
   <artifactId>flag-enablement-console</artifactId>
   <version>1.0.0</version>
   <build>
-    <finalName>10-flag-enablement</finalName>
+    <finalName>11-flag-enablement</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>

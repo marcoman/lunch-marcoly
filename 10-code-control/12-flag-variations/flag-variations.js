@@ -1,4 +1,4 @@
-/** Flag variation keys, defaults, and response building for 11-flag-variations. */
+/** Flag variation keys, defaults, and response building for 12-flag-variations. */
 
 const {
   FLAG_ANON_OS_EMOJI,

@@ -1,6 +1,6 @@
 # Go
 
-Console application version of the [10-flag-enablement grid navigator](../application.md).
+Console application version of the [11-flag-enablement grid navigator](../application.md).
 
 ## Prerequisites
 
@@ -17,13 +17,13 @@ Console application version of the [10-flag-enablement grid navigator](../applic
 
 ```bash
 go mod tidy
-go build -o 10-flag-enablement .
+go build -o 11-flag-enablement .
 ```
 
 ## Run
 
 ```bash
-./10-flag-enablement
+./11-flag-enablement
 ```
 
 ## What to expect

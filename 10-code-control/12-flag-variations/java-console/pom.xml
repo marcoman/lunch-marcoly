@@ -18,7 +18,7 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>11-flag-variations</finalName>
+        <finalName>12-flag-variations</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

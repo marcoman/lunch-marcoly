@@ -1,14 +1,14 @@
 # Flag Variations Application Specification
 
-This document defines the feature flags and their **desired effects** for the **11-flag-variations** example.
+This document defines the feature flags and their **desired effects** for the **12-flag-variations** example.
 
-Baseline grid navigator behavior (login, grid layout, navigation, header fields, session control, and selection styling) is defined in [00-reference-code/application.md](../00-reference-code/application.md). Implementations in this folder start from that baseline and add LaunchDarkly flag evaluation demonstrating **four variation types**: anonymous context, string, number, and JSON.
+Baseline grid navigator behavior (login, grid layout, navigation, header fields, session control, and selection styling) is defined in [00-reference-code/application.md](../../00-reference-code/application.md). Implementations in this folder start from that baseline and add LaunchDarkly flag evaluation demonstrating **four variation types**: anonymous context, string, number, and JSON.
 
-Repository layout and provisioning conventions are in [project.md](../project.md).
+Repository layout and provisioning conventions are in [project.md](../../project.md).
 
 ## Overview
 
-**11-flag-variations** extends the reference grid navigator with four flags — one per LaunchDarkly multivariate type (plus anonymous context for the boolean flag). Unlike [10-flag-enablement](../10-flag-enablement/), this example does **not** include highlight or cohort flags; it focuses on variation types and their runtime effects.
+**12-flag-variations** extends the reference grid navigator with four flags — one per LaunchDarkly multivariate type (plus anonymous context for the boolean flag). Unlike [11-flag-enablement](../11-flag-enablement/), this example does **not** include highlight or cohort flags; it focuses on variation types and their runtime effects.
 
 | Flag key | Variation type | Purpose |
 |----------|----------------|---------|
@@ -21,7 +21,7 @@ Flags are provisioned in [terraform/](terraform/) and [rest/](rest/). Applicatio
 
 ## Relationship to other examples
 
-| Aspect | 00-reference-code | 10-flag-enablement | 11-flag-variations |
+| Aspect | 00-reference-code | 11-flag-enablement | 12-flag-variations |
 |--------|--------------|--------------------|--------------------|
 | LaunchDarkly | None | Boolean flags + private attributes | String, number, JSON, anonymous context |
 | Baseline behavior | Full spec | Inherits from 00-reference-code | Inherits from 00-reference-code |
@@ -30,7 +30,7 @@ Flags are provisioned in [terraform/](terraform/) and [rest/](rest/). Applicatio
 | Header extras | Name, Current, Previous | Cohort label, optional count, optional emoji | Lucky number, optional anonymous OS emoji |
 | Move limit | None | None | JSON `maxMoves` caps successful moves |
 
-When a flag uses its **default variation**, behavior must match [00-reference-code/application.md](../00-reference-code/application.md) for the aspect that flag controls (except the move counter is always shown with the default label `Count`).
+When a flag uses its **default variation**, behavior must match [00-reference-code/application.md](../../00-reference-code/application.md) for the aspect that flag controls (except the move counter is always shown with the default label `Count`).
 
 ## Flag naming
 
@@ -40,7 +40,7 @@ Names and keys follow [LaunchDarkly flag conventions](https://launchdarkly.com/d
 
 ## Flag 1: Anonymous host OS emoji
 
-Demonstrates evaluation with an **anonymous** LaunchDarkly context and a **private** `hostOs` attribute — the same OS detection and emoji mapping as [10-flag-enablement/application.md](../10-flag-enablement/application.md#flag-4-host-os-emoji-private-attribute), but the flag is evaluated against an anonymous context rather than the logged-in username context.
+Demonstrates evaluation with an **anonymous** LaunchDarkly context and a **private** `hostOs` attribute — the same OS detection and emoji mapping as [11-flag-enablement/application.md](../11-flag-enablement/application.md#flag-4-host-os-emoji-private-attribute), but the flag is evaluated against an anonymous context rather than the logged-in username context.
 
 ### Metadata
 
@@ -69,7 +69,7 @@ Other flags (string, number, JSON) use the **logged-in username** as the context
 
 ### Emoji mapping
 
-Same as 10-flag-enablement:
+Same as 11-flag-enablement:
 
 | `hostOs` | Emoji |
 |----------|-------|
@@ -94,7 +94,7 @@ Same as 10-flag-enablement:
 
 ## Flag 2: Navigation count label (string)
 
-Replaces the boolean show/hide count from 10-flag-enablement with a **string** flag that controls the **label text** for the move counter. The counter is always visible; only the label prefix changes.
+Replaces the boolean show/hide count from 11-flag-enablement with a **string** flag that controls the **label text** for the move counter. The counter is always visible; only the label prefix changes.
 
 ### Metadata
 
@@ -244,7 +244,7 @@ Refresh flag values when the LaunchDarkly SDK reports a change (streaming) or on
 
 ## Acceptance criteria
 
-An implementation in **11-flag-variations** is correct when it satisfies all [00-reference-code acceptance criteria](../00-reference-code/application.md#acceptance-criteria) **and**:
+An implementation in **12-flag-variations** is correct when it satisfies all [00-reference-code acceptance criteria](../../00-reference-code/application.md#acceptance-criteria) **and**:
 
 ### Flag 1 — anonymous OS emoji
 
@@ -283,7 +283,7 @@ configure-max-navigation-moves
 ## Further reading
 
 - [README.md](README.md) — example overview and provisioning links
-- [00-reference-code/application.md](../00-reference-code/application.md) — baseline grid navigator behavior
-- [10-flag-enablement/application.md](../10-flag-enablement/application.md) — boolean flags and host OS emoji reference
+- [00-reference-code/application.md](../../00-reference-code/application.md) — baseline grid navigator behavior
+- [11-flag-enablement/application.md](../11-flag-enablement/application.md) — boolean flags and host OS emoji reference
 - [Flag conventions](https://launchdarkly.com/docs/guides/flags/flag-conventions) — naming and tagging guidance
 - [Multivariate flags](https://launchdarkly.com/docs/sdk/features/flag-types) — string, number, and JSON variation types

@@ -37,7 +37,7 @@ LaunchDarkly assigns each username (context key) to a bucket. As the percentage 
 
 The header shows **`Flag value:`** — the raw string the SDK returned (`green` or `none`).
 
-> **Same flag key, different examples:** [10-flag-enablement](../10-flag-enablement/) uses this key as a **boolean**. [02-segments-by-name](02-segments-by-name/) uses segment targeting. Use a dedicated environment if you run multiple examples in one project.
+> **Same flag key, different examples:** [10-code-control/11-flag-enablement](../../10-code-control/11-flag-enablement/) uses this key as a **boolean**. [02-segments-by-name](02-segments-by-name/) uses segment targeting. Use a dedicated environment if you run multiple examples in one project.
 
 ## Prerequisites
 

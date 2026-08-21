@@ -5,7 +5,7 @@
   <artifactId>flag-variations-console</artifactId>
   <version>1.0.0</version>
   <build>
-    <finalName>11-flag-variations</finalName>
+    <finalName>12-flag-variations</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>

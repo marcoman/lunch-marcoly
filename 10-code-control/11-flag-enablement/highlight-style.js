@@ -1,19 +1,39 @@
-/** Resolve grid selection highlight color and cohort label from username context. */
+/** Resolve grid selection highlight color and cohort label from username context.
+ *
+ * Supports both shapes of configure-grid-selection-green-highlight:
+ *   - boolean: true/false
+ *   - string:  "none" / color names (shared with use-case examples)
+ *
+ * LaunchDarkly: feature flags — boolean vs multivariate string variations
+ * https://launchdarkly.com/docs/home/flags/concepts
+ */
 
 const { osEmojiFor } = require("./host-os");
 
-// LaunchDarkly: flag key=configure-grid-selection-green-highlight name="Configure: grid selection green highlight" kind=boolean
+// LaunchDarkly: flag key=configure-grid-selection-green-highlight
 // https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-grid-selection-green-highlight
 
 const FLAG_HIGHLIGHT = "configure-grid-selection-green-highlight";
-// LaunchDarkly: flag key=configure-grid-selection-context-highlight name="Configure: grid selection context highlight" kind=boolean
+// LaunchDarkly: flag key=configure-grid-selection-context-highlight
 // https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-grid-selection-context-highlight
 
 const FLAG_CONTEXT = "configure-grid-selection-context-highlight";
-// LaunchDarkly: flag key=show-navigation-move-count name="Show: navigation move count" kind=boolean
+// LaunchDarkly: flag key=show-navigation-move-count
 // https://app.launchdarkly.com/projects/lunch-marcoly/features/show-navigation-move-count
 
 const FLAG_COUNT = "show-navigation-move-count";
+
+const VALID_COLORS = new Set([
+  "pink",
+  "yellow",
+  "red",
+  "blue",
+  "green",
+  "purple",
+  "none",
+]);
+
+const DEFAULT_STRING_ON_COLOR = "green";
 
 function parseCohorts(username) {
   const lower = username.toLowerCase();
@@ -43,21 +63,53 @@ function formatCohortLabel(username, highlightColor, contextHighlight) {
   return `(${colorName})`;
 }
 
-function resolveHighlightColor(username, highlightEnabled, contextHighlight) {
+function isHighlightOffValue(value) {
+  if (value === false || value == null) return true;
+  if (typeof value === "string") {
+    return ["", "none", "false", "off"].includes(value.trim().toLowerCase());
+  }
+  return false;
+}
+
+function interpretHighlightVariation(raw) {
+  if (typeof raw === "boolean") return { enabled: raw, servedColor: null };
+  if (isHighlightOffValue(raw)) return { enabled: false, servedColor: null };
+  if (typeof raw === "string") {
+    const color = raw.trim().toLowerCase();
+    if (VALID_COLORS.has(color) && color !== "none") {
+      return { enabled: true, servedColor: color };
+    }
+    return { enabled: true, servedColor: null };
+  }
+  return { enabled: Boolean(raw), servedColor: null };
+}
+
+function resolveHighlightColor(
+  username,
+  highlightEnabled,
+  contextHighlight,
+  servedColor = null
+) {
   if (!highlightEnabled) {
     return "none";
   }
-  if (!contextHighlight) {
+
+  if (contextHighlight) {
+    const { isHuman, isRobot, isBeta } = parseCohorts(username);
+    if (isHuman && isBeta) return "green";
+    if (isRobot && isBeta) return "purple";
+    if (isHuman) return "yellow";
+    if (isRobot) return "red";
+    if (isBeta) return "blue";
+    if (servedColor && VALID_COLORS.has(servedColor) && servedColor !== "none") {
+      return servedColor;
+    }
     return "pink";
   }
 
-  const { isHuman, isRobot, isBeta } = parseCohorts(username);
-
-  if (isHuman && isBeta) return "green";
-  if (isRobot && isBeta) return "purple";
-  if (isHuman) return "yellow";
-  if (isRobot) return "red";
-  if (isBeta) return "blue";
+  if (servedColor && VALID_COLORS.has(servedColor) && servedColor !== "none") {
+    return servedColor;
+  }
   return "pink";
 }
 
@@ -67,12 +119,14 @@ function buildFlagResponse(
   contextHighlight,
   showMoveCount,
   showOsEmoji,
-  hostOs
+  hostOs,
+  servedColor = null
 ) {
   const highlightColor = resolveHighlightColor(
     username,
     highlightEnabled,
-    contextHighlight
+    contextHighlight,
+    servedColor
   );
   const cohortLabel = formatCohortLabel(
     username,
@@ -86,6 +140,8 @@ function buildFlagResponse(
     highlightColor,
     cohortLabel,
     osEmoji: osEmojiFor(hostOs, showOsEmoji),
+    highlightServedValue:
+      servedColor != null ? servedColor : highlightEnabled,
   };
 }
 
@@ -93,6 +149,8 @@ module.exports = {
   FLAG_HIGHLIGHT,
   FLAG_CONTEXT,
   FLAG_COUNT,
+  DEFAULT_STRING_ON_COLOR,
+  interpretHighlightVariation,
   resolveHighlightColor,
   formatCohortLabel,
   buildFlagResponse,

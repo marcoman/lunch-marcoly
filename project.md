@@ -61,18 +61,15 @@ lunch-marcoly/
 │   ├── python/ · node/ · java/ · dotnet/   # Web apps
 │   ├── python-console/ · node-console/ · java-console/
 │   └── go/ · rust/ · cpp/     # Console-only languages
-├── 10-flag-enablement/        # Feature flags for the grid navigator
+├── 10-code-control/             # Feature-flag series (shared portal)
 │   ├── README.md
-│   ├── application.md         # Flag specification and desired effects
-│   ├── rest/                  # REST API provisioning
-│   ├── terraform/             # Terraform provisioning
-│   └── <language[-console]>/  # Future: flag evaluation implementations
-├── 11-flag-variations/        # String, number, JSON, and anonymous flag types
-│   ├── README.md
-│   ├── application.md
-│   ├── rest/
-│   ├── terraform/
-│   └── <language[-console]>/
+│   ├── portal/                  # Series shell: Python :8100 → 8110 · 8120
+│   ├── 11-flag-enablement/      # Boolean flags, contexts, private hostOs
+│   │   ├── README.md · application.md · rest/ · terraform/
+│   │   └── <language[-console]>/
+│   └── 12-flag-variations/      # String, number, JSON, anonymous context
+│       ├── README.md · application.md · rest/ · terraform/
+│       └── <language[-console]>/
 ├── 20-agent-config/             # AgentControl series (shared setup README)
 │   ├── README.md                # Ollama, AWS SSO, LD env — landing page
 │   ├── portal/                  # Series shell: Python :8200 · Node :8201
@@ -124,8 +121,9 @@ lunch-marcoly/
 - `23-agent-tools` adds **Library tools**, a tool loop, and `TrackToolCall`.
 - `24-agent-judges` adds **custom Judges** as a runtime quality gate (draft → scores → one Charlie rewrite).
 - AgentControl **web** ports: Python / Node / Java / .NET. **Go** is console-only under this series (raw-terminal TUI).
-- `10-flag-enablement` demonstrates feature flag naming, provisioning, and enablement for the grid navigator.
-- `11-flag-variations` demonstrates string, number, JSON, and anonymous-context flag variation types.
+- `10-code-control` groups grid-navigator **feature flag** examples; shared portal lives in its `portal/`.
+- `11-flag-enablement` (under `10-code-control/`) demonstrates feature flag naming, provisioning, and boolean enablement.
+- `12-flag-variations` (under `10-code-control/`) demonstrates string, number, JSON, and anonymous-context flag variation types.
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive and guarded rollouts).
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author

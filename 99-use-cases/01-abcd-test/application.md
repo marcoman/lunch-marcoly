@@ -10,7 +10,7 @@ Baseline grid navigator behavior is defined in [00-reference-code/application.md
 
 ## Flag
 
-Uses the same key and variations as [11-flag-variations](../../11-flag-variations/application.md#flag-2-navigation-count-label-string):
+Uses the same key and variations as [10-code-control/12-flag-variations](../../10-code-control/12-flag-variations/application.md#flag-2-navigation-count-label-string):
 
 | Key | `configure-navigation-count-label` |
 |-----|-----------------------------------|

@@ -1,6 +1,6 @@
 # Node.js (console)
 
-Console application version of the [10-flag-enablement grid navigator](../application.md).
+Console application version of the [11-flag-enablement grid navigator](../application.md).
 
 ## Prerequisites
 
@@ -22,7 +22,7 @@ npm install
 ## Run
 
 ```bash
-node 10-flag-enablement.js
+node 11-flag-enablement.js
 ```
 
 ## What to expect

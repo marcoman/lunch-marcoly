@@ -10,7 +10,7 @@ Baseline grid navigator behavior is defined in [00-reference-code/application.md
 
 ## Flag
 
-Reuses the highlight flag key from [10-flag-enablement](../../10-flag-enablement/application.md):
+Reuses the highlight flag key from [10-code-control/11-flag-enablement](../../10-code-control/11-flag-enablement/application.md):
 
 | Key | `configure-grid-selection-green-highlight` |
 |-----|-------------------------------------------|
@@ -26,7 +26,7 @@ Reuses the highlight flag key from [10-flag-enablement](../../10-flag-enablement
 | `green` | Green highlight |
 | `purple` | Purple highlight |
 
-> **Note:** In [10-flag-enablement](../../10-flag-enablement/), this key is a **boolean** flag. This use case provisions it as a **string** multivariate flag for segment targeting. Use a dedicated environment or project if both examples share an account.
+> **Note:** In [10-code-control/11-flag-enablement](../../10-code-control/11-flag-enablement/), this key is a **boolean** flag. This use case provisions it as a **string** multivariate flag for segment targeting. Use a dedicated environment or project if both examples share an account.
 
 ### Provisioning default
 

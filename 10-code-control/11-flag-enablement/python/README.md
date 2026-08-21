@@ -1,10 +1,10 @@
 # Python (web)
 
-Web application version of the [10-flag-enablement grid navigator](../application.md) with server-side LaunchDarkly flag evaluation.
+Web application version of the [11-flag-enablement grid navigator](../application.md) with server-side LaunchDarkly flag evaluation.
 
 ## Prerequisites
 
-- Python **3.12+** via [pyenv](https://github.com/pyenv/pyenv) (see [root README](../../README.md#python-and-pyenv))
+- Python **3.12+** via [pyenv](https://github.com/pyenv/pyenv) (see [root README](../../../README.md#python-and-pyenv))
 - Repository virtual environment activated
 - LaunchDarkly flags provisioned ([terraform/](../terraform/) or [rest/](../rest/))
 - `LD_SDK_KEY` for the target environment
@@ -23,8 +23,9 @@ pip install -r requirements.txt
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `LD_SDK_KEY` | Yes | Server-side SDK key for flag evaluation |
-| `LD_PROJECT_KEY` | For provisioning | Used by terraform/rest, not this app |
-| `LD_ENVIRONMENT_KEY` | For provisioning | Used by terraform/rest, not this app |
+| `LD_API_ACCESS_TOKEN` | For **LD lab → Controls** | REST API token (`turnFlagOn` / `turnFlagOff`) |
+| `LD_PROJECT_KEY` | For Controls + provisioning | Project key (e.g. `lunch-marcoly`) |
+| `LD_ENVIRONMENT_KEY` | For Controls + provisioning | Environment key (e.g. `production`) |
 
 ```bash
 export LD_SDK_KEY="sdk-..."
@@ -39,15 +40,26 @@ No compile step. Install dependencies from the repository root `requirements.txt
 From this directory, with pyenv and `.venv` active:
 
 ```bash
-python 10-flag-enablement.py
+python 11-flag-enablement.py
 ```
 
 Open [http://127.0.0.1:8080/](http://127.0.0.1:8080/) in a browser. Press Ctrl+C to stop the server.
 
+Optional: `PORT=8110` to listen on another port (used by the [series portal](../../portal/python/)).
+
+## Portal (11 + 12)
+
+```bash
+cd ../../portal/python && python portal.py
+```
+
+Open [http://127.0.0.1:8100/](http://127.0.0.1:8100/). See [portal/python/README.md](../../portal/python/README.md).
+
 ## What to expect
 
 1. Enter a username on the login screen (empty names are rejected).
-2. The grid matches [00-reference-code](../../00-reference-code/application.md) when both flags are off (`X` only, no count).
-3. Turn on `configure-grid-selection-green-highlight` for a pink highlight on the selected cell (or enable `configure-grid-selection-context-highlight` for cohort-based colors).
+2. The grid matches [00-reference-code](../../../00-reference-code/application.md) when both flags are off (`X` only, no count).
+3. Turn on `configure-grid-selection-green-highlight` for a colored highlight. In this project the flag is often a **string** variation (`none` / colors); off serves `none`, on serves the fallthrough color (Controls uses `green` when fallthrough was still `none`). Enable `configure-grid-selection-context-highlight` for cohort-based colors from the username.
 4. Turn on `show-navigation-move-count` to display `Count: N` in the header (starts at 0, increments on each move).
 5. Flag changes appear within ~2 seconds without navigating.
+6. Open **LD lab** (upper right): **Controls** (REST on/off), **Context** (current user evaluation context), and **About**. The bottom **Trace** dock stays visible (collapse / taller) while you navigate.

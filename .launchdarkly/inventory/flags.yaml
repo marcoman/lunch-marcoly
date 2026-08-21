@@ -7,7 +7,7 @@ flags:
   name: 'Configure: grid selection green highlight'
   kind: boolean
   examples:
-  - path: 10-flag-enablement
+  - path: 10-code-control/11-flag-enablement
     kind: boolean
   - path: 99-use-cases/11-create-eval-flag
     kind: string
@@ -18,16 +18,16 @@ flags:
   - path: 99-use-cases/02-segments-by-name
     kind: string
   notes: >
-    Same key is boolean in 10-flag-enablement and string in use cases.
+    Same key is boolean in 10-code-control/11-flag-enablement and string in use cases.
     Use separate projects or environments to avoid collisions.
   sources:
-  - path: 10-flag-enablement/highlight-style.js
+  - path: 10-code-control/11-flag-enablement/highlight-style.js
     role: evaluation
-  - path: 10-flag-enablement/highlight_style.py
+  - path: 10-code-control/11-flag-enablement/highlight_style.py
     role: evaluation
-  - path: 10-flag-enablement/java/src/main/java/HighlightStyle.java
+  - path: 10-code-control/11-flag-enablement/java/src/main/java/HighlightStyle.java
     role: evaluation
-  - path: 10-flag-enablement/java-console/src/main/java/HighlightStyle.java
+  - path: 10-code-control/11-flag-enablement/java-console/src/main/java/HighlightStyle.java
     role: evaluation
   - path: 99-use-cases/02-segments-by-name/java/src/main/java/SegmentStyle.java
     role: evaluation
@@ -35,78 +35,78 @@ flags:
   name: 'Configure: grid selection context highlight'
   kind: boolean
   examples:
-  - path: 10-flag-enablement
+  - path: 10-code-control/11-flag-enablement
   sources:
-  - path: 10-flag-enablement/highlight-style.js
+  - path: 10-code-control/11-flag-enablement/highlight-style.js
     role: evaluation
-  - path: 10-flag-enablement/highlight_style.py
+  - path: 10-code-control/11-flag-enablement/highlight_style.py
     role: evaluation
-  - path: 10-flag-enablement/java/src/main/java/HighlightStyle.java
+  - path: 10-code-control/11-flag-enablement/java/src/main/java/HighlightStyle.java
     role: evaluation
-  - path: 10-flag-enablement/java-console/src/main/java/HighlightStyle.java
+  - path: 10-code-control/11-flag-enablement/java-console/src/main/java/HighlightStyle.java
     role: evaluation
 - key: show-navigation-move-count
   name: 'Show: navigation move count'
   kind: boolean
   examples:
-  - path: 10-flag-enablement
+  - path: 10-code-control/11-flag-enablement
   sources:
-  - path: 10-flag-enablement/highlight-style.js
+  - path: 10-code-control/11-flag-enablement/highlight-style.js
     role: evaluation
-  - path: 10-flag-enablement/highlight_style.py
+  - path: 10-code-control/11-flag-enablement/highlight_style.py
     role: evaluation
-  - path: 10-flag-enablement/java/src/main/java/HighlightStyle.java
+  - path: 10-code-control/11-flag-enablement/java/src/main/java/HighlightStyle.java
     role: evaluation
-  - path: 10-flag-enablement/java-console/src/main/java/HighlightStyle.java
+  - path: 10-code-control/11-flag-enablement/java-console/src/main/java/HighlightStyle.java
     role: evaluation
-  - path: 10-flag-enablement/rest/create-flags.sh
+  - path: 10-code-control/11-flag-enablement/rest/create-flags.sh
     role: provisioning
 - key: show-host-os-emoji
   name: 'Show: host OS emoji'
   kind: boolean
   examples:
-  - path: 10-flag-enablement
+  - path: 10-code-control/11-flag-enablement
   sources:
-  - path: 10-flag-enablement/host-os.js
+  - path: 10-code-control/11-flag-enablement/host-os.js
     role: evaluation
-  - path: 10-flag-enablement/host_os.py
+  - path: 10-code-control/11-flag-enablement/host_os.py
     role: evaluation
-  - path: 10-flag-enablement/java/src/main/java/HostOs.java
+  - path: 10-code-control/11-flag-enablement/java/src/main/java/HostOs.java
     role: evaluation
-  - path: 10-flag-enablement/java-console/src/main/java/HostOs.java
+  - path: 10-code-control/11-flag-enablement/java-console/src/main/java/HostOs.java
     role: evaluation
-  - path: 10-flag-enablement/rest/create-flags.sh
+  - path: 10-code-control/11-flag-enablement/rest/create-flags.sh
     role: provisioning
 - key: show-anonymous-host-os-emoji
   name: 'Show: anonymous host OS emoji'
   kind: boolean
   examples:
-  - path: 11-flag-variations
+  - path: 10-code-control/12-flag-variations
   sources:
-  - path: 11-flag-variations/host-os.js
+  - path: 10-code-control/12-flag-variations/host-os.js
     role: evaluation
-  - path: 11-flag-variations/host_os.py
+  - path: 10-code-control/12-flag-variations/host_os.py
     role: evaluation
-  - path: 11-flag-variations/java/src/main/java/HostOs.java
+  - path: 10-code-control/12-flag-variations/java/src/main/java/HostOs.java
     role: evaluation
-  - path: 11-flag-variations/java-console/src/main/java/HostOs.java
+  - path: 10-code-control/12-flag-variations/java-console/src/main/java/HostOs.java
     role: evaluation
-  - path: 11-flag-variations/rest/create-flags.sh
+  - path: 10-code-control/12-flag-variations/rest/create-flags.sh
     role: provisioning
 - key: configure-navigation-count-label
   name: 'Configure: navigation count label'
   kind: string
   examples:
-  - path: 11-flag-variations
+  - path: 10-code-control/12-flag-variations
   - path: 99-use-cases/01-abcd-test
   sources:
-  - path: 11-flag-variations/flag-variations.js
+  - path: 10-code-control/12-flag-variations/flag-variations.js
     role: evaluation
-  - path: 11-flag-variations/flag_variations.py
+  - path: 10-code-control/12-flag-variations/flag_variations.py
     role: evaluation
-  - path: 11-flag-variations/java/src/main/java/FlagEvaluator.java
+  - path: 10-code-control/12-flag-variations/java/src/main/java/FlagEvaluator.java
     role: evaluation
-  - path: 11-flag-variations/java-console/src/main/java/FlagEvaluator.java
+  - path: 10-code-control/12-flag-variations/java-console/src/main/java/FlagEvaluator.java
     role: evaluation
   - path: 99-use-cases/01-abcd-test/abcd-eval.js
     role: evaluation
@@ -114,29 +114,29 @@ flags:
   name: 'Configure: lucky number'
   kind: number
   examples:
-  - path: 11-flag-variations
+  - path: 10-code-control/12-flag-variations
   sources:
-  - path: 11-flag-variations/flag-variations.js
+  - path: 10-code-control/12-flag-variations/flag-variations.js
     role: evaluation
-  - path: 11-flag-variations/flag_variations.py
+  - path: 10-code-control/12-flag-variations/flag_variations.py
     role: evaluation
-  - path: 11-flag-variations/java/src/main/java/FlagEvaluator.java
+  - path: 10-code-control/12-flag-variations/java/src/main/java/FlagEvaluator.java
     role: evaluation
-  - path: 11-flag-variations/java-console/src/main/java/FlagEvaluator.java
+  - path: 10-code-control/12-flag-variations/java-console/src/main/java/FlagEvaluator.java
     role: evaluation
 - key: configure-max-navigation-moves
   name: 'Configure: max navigation moves'
   kind: json
   examples:
-  - path: 11-flag-variations
+  - path: 10-code-control/12-flag-variations
   sources:
-  - path: 11-flag-variations/flag-variations.js
+  - path: 10-code-control/12-flag-variations/flag-variations.js
     role: evaluation
-  - path: 11-flag-variations/flag_variations.py
+  - path: 10-code-control/12-flag-variations/flag_variations.py
     role: evaluation
-  - path: 11-flag-variations/java/src/main/java/FlagEvaluator.java
+  - path: 10-code-control/12-flag-variations/java/src/main/java/FlagEvaluator.java
     role: evaluation
-  - path: 11-flag-variations/java-console/src/main/java/FlagEvaluator.java
+  - path: 10-code-control/12-flag-variations/java-console/src/main/java/FlagEvaluator.java
     role: evaluation
 - key: VIP
   name: VIP

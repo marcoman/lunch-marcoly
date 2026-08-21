@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class GridNavigator {
     private static final String[] ROWS = {"t", "m", "b"};
     private static final String[] COLS = {"l", "m", "r"};
-    private static final String APP_BANNER = "11-flag-variations[java-console]";
+    private static final String APP_BANNER = "12-flag-variations[java-console]";
     private static final String BG = "\u001B[48;5;236m";
 
     private static final class Position {

@@ -1,6 +1,6 @@
 # Java (web)
 
-Web application version of the [10-flag-enablement grid navigator](../application.md).
+Web application version of the [11-flag-enablement grid navigator](../application.md).
 
 ## Prerequisites
 
@@ -22,7 +22,7 @@ Web application version of the [10-flag-enablement grid navigator](../applicatio
 ## Run
 
 ```bash
-java -jar target/10-flag-enablement.jar
+java -jar target/11-flag-enablement.jar
 ```
 
 Open [http://127.0.0.1:8080/](http://127.0.0.1:8080/).

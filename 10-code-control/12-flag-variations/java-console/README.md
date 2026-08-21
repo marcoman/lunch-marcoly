@@ -1,6 +1,6 @@
 # Java (console)
 
-Console application version of the [11-flag-variations grid navigator](../application.md).
+Console application version of the [12-flag-variations grid navigator](../application.md).
 
 ## Prerequisites
 
@@ -23,9 +23,9 @@ Console application version of the [11-flag-variations grid navigator](../applic
 ## Run
 
 ```bash
-java -jar target/11-flag-variations.jar
+java -jar target/12-flag-variations.jar
 ```
 
 ## What to expect
 
-Same flag behavior as [python-console/11-flag-variations.py](../python-console/11-flag-variations.py). Press `L` to log out or `Q` to quit.
+Same flag behavior as [python-console/12-flag-variations.py](../python-console/12-flag-variations.py). Press `L` to log out or `Q` to quit.

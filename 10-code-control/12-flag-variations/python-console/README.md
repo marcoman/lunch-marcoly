@@ -1,6 +1,6 @@
 # Python (console)
 
-Console application for [11-flag-variations](../application.md) — string, number, JSON, and anonymous-context flags.
+Console application for [12-flag-variations](../application.md) — string, number, JSON, and anonymous-context flags.
 
 ## Prerequisites
 
@@ -21,7 +21,7 @@ No compile step. Dependencies from repository root `requirements.txt`.
 ## Run
 
 ```bash
-python 11-flag-variations.py
+python 12-flag-variations.py
 ```
 
 Press `L` to log out or `Q` to quit.
