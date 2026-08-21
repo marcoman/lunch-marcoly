@@ -17,7 +17,7 @@ Web application for [12-flag-variations](../application.md) with an in-app **Lau
 | `LD_PROJECT_KEY` | For Controls | Project key |
 | `LD_ENVIRONMENT_KEY` | For Controls | Environment key |
 | `LD_API_HOST` | No | LaunchDarkly API host (default `https://app.launchdarkly.com`) |
-| `PORT` | No | Listen port (default `8080`; portal often uses `8120`) |
+| `PORT` | No | Listen port (default `8080`; Node portal uses `8121`) |
 
 ## Build
 

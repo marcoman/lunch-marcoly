@@ -14,7 +14,7 @@ import java.util.Map;
  * Serve the flag-enabled grid navigator web UI on a local HTTP server.
  */
 public class WebServer {
-    private static final int PORT = 8080;
+    private static final int PORT = readPort();
 
     public static void main(String[] args) throws IOException {
         FlagEvaluator.init();
@@ -105,5 +105,21 @@ public class WebServer {
             out.write(buffer, 0, read);
         }
         return out.toByteArray();
+    }
+
+    private static int readPort() {
+        String raw = System.getenv("PORT");
+        if (raw == null || raw.isBlank()) {
+            return 8080;
+        }
+        try {
+            int port = Integer.parseInt(raw);
+            if (port < 1 || port > 65535) {
+                throw new NumberFormatException();
+            }
+            return port;
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException("PORT must be an integer from 1 to 65535");
+        }
     }
 }

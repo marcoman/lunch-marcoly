@@ -17,7 +17,7 @@ Unlike [11-flag-enablement](../11-flag-enablement/), this example does **not** i
 
 See [application.md](application.md) for the full specification and acceptance criteria.
 
-The Python, Node.js, and Java web implementations share the same permanent
+The Python, Node.js, Java, and .NET web implementations share the same permanent
 **LaunchDarkly lab** (Controls / Context / About) and bottom **Trace** chrome.
 Console implementations remain terminal-only examples.
 
@@ -61,11 +61,25 @@ configure-max-navigation-moves
 | Python | [python-console/](python-console/) | Console application | Done |
 | Node.js | [node/](node/) | Web application | Done |
 | Node.js | [node-console/](node-console/) | Console application | Done |
+| .NET | [dotnet/](dotnet/) | Web application | Done |
 | Java | [java/](java/) | Web application | Done |
 | Java | [java-console/](java-console/) | Console application | Done |
 | C++ | [cpp/](cpp/) | Console application | Done |
 | Go | [go/](go/) | Console application | Done |
 | Rust | [rust/](rust/) | Console application | Done |
+
+## Portal (series)
+
+The [10-code-control portal](../portal/) embeds **11** and **12** in tabs:
+
+| Language | Entry | URL |
+|----------|-------|-----|
+| Python | [../portal/python/](../portal/python/) | http://127.0.0.1:8100/ |
+| Node.js | [../portal/node/](../portal/node/) | http://127.0.0.1:8101/ |
+| Java | [../portal/java/](../portal/java/) | http://127.0.0.1:8102/ |
+| .NET | [../portal/dotnet/](../portal/dotnet/) | http://127.0.0.1:8103/ |
+
+See [../portal/README.md](../portal/README.md).
 
 ## Further reading
 

@@ -7,7 +7,7 @@ One process for the user:
   - Spawns each example's existing Python server as a child
   - Embeds those pages in iframes (see index.html)
 
-Twin language portals can follow later (Node/Java/.NET).
+Twin of ../node (:8101) and ../java (:8102).
 Standalone entrypoints under each example's python/ still work alone (default :8080).
 Ctrl+C / SIGTERM stops the portal and all children.
 """

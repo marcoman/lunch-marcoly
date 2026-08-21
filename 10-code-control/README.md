@@ -13,12 +13,22 @@ numbered children and an optional [portal](portal/) to run them side by side.
 
 Baseline (no LaunchDarkly): [00-reference-code](../00-reference-code/).
 
-## Portal (Python)
+## Portals
 
 ```bash
 export LD_SDK_KEY="sdk-..."
-cd portal/python && python portal.py
-# → http://127.0.0.1:8100/  (tabs: 11 on :8110 · 12 on :8120)
+
+# Python: portal :8100, children :8110 / :8120
+(cd portal/python && python portal.py)
+
+# Node: portal :8101, children :8111 / :8121
+(cd portal/node && npm start)
+
+# Java: portal :8102, children :8112 / :8122
+(cd portal/java && ./mvnw -q -DskipTests package && java -jar target/portal-java.jar)
+
+# .NET: portal :8103, children :8113 / :8123
+(cd portal/dotnet && dotnet run)
 ```
 
 See [portal/README.md](portal/README.md).

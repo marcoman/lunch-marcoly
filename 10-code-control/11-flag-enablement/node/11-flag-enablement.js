@@ -17,7 +17,7 @@ const { detectHostOs, HOST_OS_ATTR, FLAG_OS_EMOJI } = require("../host-os");
 // LaunchDarkly capability: Boolean flag evaluation + private context attributes
 // See: https://launchdarkly.com/docs/sdk/features/private-attributes
 
-const PORT = 8080;
+const PORT = Number(process.env.PORT || 8080);
 const ROOT = __dirname;
 const HOST_OS = detectHostOs();
 

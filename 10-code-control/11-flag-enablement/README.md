@@ -138,6 +138,7 @@ show-host-os-emoji
 | Python | [python-console/](python-console/) | Console application | Done |
 | Node.js | [node/](node/) | Web application | Done |
 | Node.js | [node-console/](node-console/) | Console application | Done |
+| .NET | [dotnet/](dotnet/) | Web application | Done |
 | Java | [java/](java/) | Web application | Done |
 | Java | [java-console/](java-console/) | Console application | Done |
 | C++ | [cpp/](cpp/) | Console application | Done |
@@ -153,6 +154,9 @@ The [10-code-control portal](../portal/) embeds **11** and **12** in tabs:
 | Language | Entry | URL |
 |----------|-------|-----|
 | Python | [../portal/python/](../portal/python/) | http://127.0.0.1:8100/ |
+| Node.js | [../portal/node/](../portal/node/) | http://127.0.0.1:8101/ |
+| Java | [../portal/java/](../portal/java/) | http://127.0.0.1:8102/ |
+| .NET | [../portal/dotnet/](../portal/dotnet/) | http://127.0.0.1:8103/ |
 
 See [../portal/README.md](../portal/README.md).
 

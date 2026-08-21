@@ -12,6 +12,7 @@ Web application version of the [11-flag-enablement grid navigator](../applicatio
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `LD_SDK_KEY` | Yes | Server-side SDK key for flag evaluation |
+| `PORT` | No | Listen port (default `8080`; Java portal uses `8112`) |
 
 ## Build
 

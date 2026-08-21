@@ -28,6 +28,7 @@ Each implementation builds **locally** in its language folder. Artifacts are nam
 | Python (console) | [python-console/](python-console/) | *(see README)* | `python 00-reference-code.py` |
 | Node.js (web) | [node/](node/) | `npm install` | `node 00-reference-code.js` |
 | Node.js (console) | [node-console/](node-console/) | `npm install` | `node 00-reference-code.js` |
+| .NET (web) | [dotnet/](dotnet/) | `dotnet build` | `dotnet run` |
 | Java (web) | [java/](java/) | `./mvnw clean install` | `java -jar target/00-reference-code.jar` |
 | Java (console) | [java-console/](java-console/) | `./mvnw clean install` | `java -jar target/00-reference-code.jar` |
 | C++ | [cpp/](cpp/) | `make clean && make all` | `./00-reference-code` |
@@ -44,6 +45,7 @@ Open the language README for full **Build**, **Run**, and **What to expect** sec
 | Python | [python-console/](python-console/) | Console application | Done |
 | Node.js | [node/](node/) | Web application | Done |
 | Node.js | [node-console/](node-console/) | Console application | Done |
+| .NET | [dotnet/](dotnet/) | Web application | Done |
 | Java | [java/](java/) | Web application | Done |
 | Java | [java-console/](java-console/) | Console application | Done |
 | C++ | [cpp/](cpp/) | Console application | Done |

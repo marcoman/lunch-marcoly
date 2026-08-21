@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid Navigator — Flag Enablement</title>
+  <style>
+    html, body {
+      height: 100%;
+    }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #1e1e2e;
+      color: #e8e8ec;
+      margin: 0;
+      min-height: 100%;
+    }
+    #login-screen {
+      max-width: 480px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    #app-shell {
+      display: none;
+      height: 100vh;
+      box-sizing: border-box;
+      grid-template-columns: minmax(0, 1fr) min(28rem, 42vw);
+      grid-template-rows: minmax(0, 1fr) auto;
+    }
+    body.grid-active #app-shell {
+      display: grid;
+    }
+    #grid-screen {
+      grid-column: 1;
+      grid-row: 1;
+      box-sizing: border-box;
+      min-width: 0;
+      min-height: 0;
+      overflow: auto;
+      padding: 1.5rem 1.25rem;
+      outline: none;
+    }
+    h1 { font-size: 1.25rem; margin-bottom: 1rem; }
+    label { display: block; margin-bottom: 0.5rem; }
+    input[type="text"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      box-sizing: border-box;
+      background: #2d2d3d;
+      color: #e8e8ec;
+      border: 1px solid #555;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      background: #3d3d52;
+      color: #e8e8ec;
+      border: 1px solid #666;
+    }
+    .error { color: #ef5350; margin-bottom: 0.5rem; }
+    .app-banner { font-size: 0.875rem; color: #666; margin-bottom: 0.5rem; }
+    body.highlight-on .app-banner { color: #aaa; }
+    .header { margin-bottom: 1.5rem; line-height: 1.6; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      gap: 6px;
+    }
+    .cell {
+      width: 80px;
+      height: 80px;
+      border: 1px solid #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #2d2d3d;
+      font-size: 1.5rem;
+      user-select: none;
+    }
+    .cell.selected { font-weight: bold; }
+    .cell.selected.highlight-pink {
+      background: #e91e63;
+      color: #fff;
+      border-color: #c2185b;
+    }
+    .cell.selected.highlight-yellow {
+      background: #fdd835;
+      color: #1a1a1a;
+      border-color: #f9a825;
+    }
+    .cell.selected.highlight-red {
+      background: #e53935;
+      color: #fff;
+      border-color: #c62828;
+    }
+    .cell.selected.highlight-blue {
+      background: #1e88e5;
+      color: #fff;
+      border-color: #1565c0;
+    }
+    .cell.selected.highlight-green {
+      background: #43a047;
+      color: #fff;
+      border-color: #2e7d32;
+    }
+    .cell.selected.highlight-purple {
+      background: #8e24aa;
+      color: #fff;
+      border-color: #6a1b9a;
+    }
+    .hint { margin-top: 1rem; color: #aaa; font-size: 0.875rem; }
+    .hidden { display: none !important; }
+    .color-pink { color: #f48fb1; }
+    .color-yellow { color: #fff176; }
+    .color-red { color: #ef5350; }
+    .color-blue { color: #64b5f6; }
+    .color-green { color: #81c784; }
+    .color-purple { color: #ce93d8; }
+
+    /* Persistent LD lab — right column of the app shell (always visible) */
+    :root {
+      --about-ink: #e8e8ec;
+      --about-muted: #9a9aab;
+      --about-panel: #2d2d3d;
+      --about-line: #4a4a5c;
+      --about-accent: #64b5f6;
+    }
+    .ld-rail {
+      grid-column: 2;
+      grid-row: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background: var(--about-panel);
+      border-left: 1px solid var(--about-line);
+      color: var(--about-ink);
+      box-sizing: border-box;
+    }
+    .ld-rail-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.85rem 1.1rem;
+      border-bottom: 1px solid var(--about-line);
+      flex: 0 0 auto;
+    }
+    .ld-rail-header h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+    .ld-tabs {
+      display: flex;
+      gap: 0.35rem;
+      padding: 0.65rem 1.1rem 0;
+      border-bottom: 1px solid var(--about-line);
+      flex: 0 0 auto;
+    }
+    .ld-tab {
+      border: none;
+      background: transparent;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      padding: 0.45rem 0.65rem;
+      color: var(--about-muted);
+      font: inherit;
+      cursor: pointer;
+    }
+    .ld-tab.active {
+      color: var(--about-ink);
+      border-bottom-color: var(--about-accent);
+      font-weight: 600;
+    }
+    .ld-rail-body {
+      flex: 1 1 auto;
+      overflow: auto;
+      padding: 1rem 1.1rem 1.5rem;
+      min-height: 0;
+    }
+    .ld-block-title {
+      margin: 0 0 0.4rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--about-accent);
+    }
+    .ld-about-p {
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--about-ink);
+    }
+    .ld-about-p strong { font-weight: 650; }
+    .ld-section { display: none; }
+    .ld-section.active { display: block; }
+    .context-kv {
+      margin: 0 0 0.85rem;
+      border: 1px solid var(--about-line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #252535;
+    }
+    .context-row {
+      display: grid;
+      grid-template-columns: 7.5rem 1fr;
+      gap: 0.5rem;
+      padding: 0.45rem 0.65rem;
+      border-top: 1px solid var(--about-line);
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+    .context-row:first-child { border-top: none; }
+    .context-row .k {
+      color: var(--about-muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.78rem;
+    }
+    .context-row .v {
+      color: var(--about-ink);
+      word-break: break-word;
+    }
+    .context-row .v code {
+      font-size: 0.78rem;
+      color: #c5cae9;
+    }
+    .context-badge {
+      display: inline-block;
+      margin-right: 0.35rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 650;
+      background: rgba(100, 181, 246, 0.2);
+      color: #90caf9;
+    }
+    .context-badge.private {
+      background: rgba(206, 147, 216, 0.2);
+      color: #ce93d8;
+    }
+    .context-pre {
+      margin: 0.35rem 0 0;
+      padding: 0.55rem 0.65rem;
+      background: #1a1a28;
+      border-radius: 6px;
+      border: 1px solid var(--about-line);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.75rem;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #c8d0da;
+      overflow: auto;
+    }
+    .ld-controls-meta {
+      font-size: 0.8rem;
+      color: var(--about-muted);
+      margin: 0 0 1rem;
+      line-height: 1.45;
+    }
+    .ld-controls-meta code {
+      font-size: 0.78rem;
+      color: #c5cae9;
+    }
+    .ld-controls-warn {
+      margin: 0 0 1rem;
+      padding: 0.65rem 0.75rem;
+      border: 1px solid #c45c5c;
+      border-radius: 6px;
+      background: rgba(196, 92, 92, 0.15);
+      color: #ffcdd2;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+    .flag-card {
+      border: 1px solid var(--about-line);
+      border-radius: 8px;
+      padding: 0.75rem 0.85rem;
+      margin: 0 0 0.75rem;
+      background: #252535;
+    }
+    .flag-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .flag-card h3 {
+      margin: 0 0 0.25rem;
+      font-size: 0.95rem;
+      font-weight: 650;
+    }
+    .flag-key {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.72rem;
+      color: var(--about-muted);
+      word-break: break-all;
+    }
+    .flag-summary {
+      margin: 0.45rem 0 0;
+      font-size: 0.82rem;
+      color: var(--about-muted);
+      line-height: 1.4;
+    }
+    .flag-hint {
+      margin: 0.55rem 0 0;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      color: var(--about-ink);
+      padding: 0.45rem 0.55rem;
+      border-left: 3px solid var(--about-accent);
+      background: rgba(100, 181, 246, 0.08);
+    }
+    .flag-vars {
+      margin: 0.5rem 0 0;
+      font-size: 0.78rem;
+      color: var(--about-muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .flag-vars .hi-on { color: #81c784; }
+    .flag-vars .hi-off { color: #ef9a9a; }
+    .flag-toggle {
+      flex: 0 0 auto;
+      min-width: 4.5rem;
+      padding: 0.4rem 0.65rem;
+      border-radius: 6px;
+      border: 1px solid #666;
+      background: #3d3d52;
+      color: var(--about-ink);
+      font: inherit;
+      font-size: 0.8rem;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    .flag-toggle.on {
+      background: rgba(61, 154, 106, 0.35);
+      border-color: #3d9a6a;
+      color: #c8e6c9;
+    }
+    .flag-toggle.off {
+      background: rgba(196, 92, 92, 0.25);
+      border-color: #c45c5c;
+      color: #ffcdd2;
+    }
+    .flag-toggle:disabled {
+      opacity: 0.55;
+      cursor: wait;
+    }
+    .flag-color-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.65rem;
+      flex-wrap: wrap;
+    }
+    .flag-color-row label {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--about-muted);
+    }
+    .flag-color-select {
+      flex: 1 1 auto;
+      min-width: 8rem;
+      padding: 0.35rem 0.5rem;
+      background: #2d2d3d;
+      color: var(--about-ink);
+      border: 1px solid #666;
+      font: inherit;
+      font-size: 0.85rem;
+    }
+    .flag-color-select:disabled {
+      opacity: 0.55;
+      cursor: wait;
+    }
+    .ld-toolbar {
+      display: flex;
+      gap: 0.5rem;
+      margin: 0 0 0.75rem;
+    }
+    .ld-toolbar button {
+      padding: 0.35rem 0.65rem;
+      background: #3d3d52;
+      color: var(--about-ink);
+      border: 1px solid #666;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.8rem;
+    }
+
+    /* Trace — bottom row of the app shell (full width under grid + lab) */
+    .trace-dock {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      display: flex;
+      flex-direction: column;
+      background: #252535;
+      border-top: 1px solid #4a4a5c;
+      color: #e8e8ec;
+      min-width: 0;
+    }
+    .trace-dock-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.55rem 0.35rem 0.35rem;
+      flex: 0 0 auto;
+    }
+    .trace-dock-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex: 1 1 auto;
+      border: none;
+      background: transparent;
+      font: inherit;
+      color: #e8e8ec;
+      cursor: pointer;
+      text-align: left;
+      padding: 0.35rem 0.45rem;
+      border-radius: 0.45rem;
+    }
+    .trace-dock-toggle:hover { background: rgba(255, 255, 255, 0.06); }
+    .trace-dock-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-weight: 650;
+      font-size: 0.92rem;
+    }
+    .trace-dock-meta {
+      color: #9a9aab;
+      font-size: 0.8rem;
+      margin-left: 0.15rem;
+      font-weight: 500;
+    }
+    .trace-dot {
+      display: inline-block;
+      width: 0.45rem;
+      height: 0.45rem;
+      border-radius: 50%;
+      background: transparent;
+      flex: 0 0 auto;
+    }
+    .trace-dot.on {
+      background: #64b5f6;
+      box-shadow: 0 0 0 2px rgba(100, 181, 246, 0.25);
+    }
+    .trace-dock-chevron {
+      color: #9a9aab;
+      font-size: 0.85rem;
+      transition: transform 0.15s ease;
+    }
+    .trace-dock:not(.collapsed) .trace-dock-chevron {
+      transform: rotate(180deg);
+    }
+    .trace-dock-body {
+      border-top: 1px solid #4a4a5c;
+      padding: 0.45rem 0.55rem 0.55rem;
+    }
+    .trace-dock.collapsed .trace-dock-body { display: none; }
+    .trace-expand-btn,
+    .trace-clear-btn {
+      border: 1px solid #555;
+      background: #3d3d52;
+      border-radius: 999px;
+      padding: 0.2rem 0.65rem;
+      font: inherit;
+      font-size: 0.75rem;
+      color: #9a9aab;
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
+    .trace-expand-btn:hover,
+    .trace-clear-btn:hover {
+      color: #e8e8ec;
+      border-color: #64b5f6;
+    }
+    .trace-dock.expanded .trace-expand-btn {
+      color: #64b5f6;
+      border-color: #64b5f6;
+    }
+    .trace-console {
+      margin: 0;
+      padding: 0.45rem 0.4rem 0.55rem;
+      background: #1a1a28;
+      color: #c8d0da;
+      border-radius: 8px;
+      border: 1px solid #4a4a5c;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      max-height: 5.6rem;
+      overflow: auto;
+    }
+    .trace-dock.expanded .trace-console {
+      max-height: min(40vh, 18rem);
+    }
+    .trace-empty {
+      color: #9a9aab;
+      font-style: italic;
+      margin: 0;
+    }
+    .trace-line {
+      margin: 0 0 0.45rem;
+      padding: 0.3rem 0.4rem;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .trace-line.kind-action { background: rgba(100, 181, 246, 0.12); border-left: 3px solid #64b5f6; }
+    .trace-line.kind-ok { background: rgba(129, 199, 132, 0.12); border-left: 3px solid #81c784; }
+    .trace-line.kind-err { background: rgba(239, 83, 80, 0.15); border-left: 3px solid #ef5350; }
+    .trace-line.kind-eval { background: rgba(206, 147, 216, 0.12); border-left: 3px solid #ce93d8; }
+    .trace-line .ts { color: #9a9aab; }
+    .trace-line .hi { color: #fff176; font-weight: 650; }
+    .trace-line .on { color: #81c784; font-weight: 650; }
+    .trace-line .off { color: #ef9a9a; font-weight: 650; }
+  </style>
+</head>
+<body>
+  <section id="login-screen">
+    <div class="app-banner">11-flag-enablement[dotnet]</div>
+    <h1>Login</h1>
+    <label for="username">Username</label>
+    <input id="username" type="text" autocomplete="username" autofocus>
+    <p id="login-error" class="error hidden">Username is required.</p>
+    <button id="login-btn" type="button">Continue</button>
+  </section>
+
+  <div id="app-shell" class="hidden">
+    <section id="grid-screen" tabindex="0">
+      <div class="header">
+        <div class="app-banner">11-flag-enablement[dotnet]</div>
+        <div>Name: <span id="hdr-name"></span><span id="hdr-cohort"></span></div>
+        <div>Current position: <span id="hdr-current"></span></div>
+        <div>Previous position: <span id="hdr-previous"></span></div>
+        <div id="hdr-count-row" class="hidden">Count: <span id="hdr-count"></span></div>
+      </div>
+      <div id="grid" class="grid" aria-label="3 by 3 grid"></div>
+      <p class="hint">Use arrow keys or WASD to move. Press L to log out, Q to quit.</p>
+    </section>
+
+    <aside id="ld-rail" class="ld-rail" aria-label="LaunchDarkly lab">
+      <div class="ld-rail-header">
+        <h2>LaunchDarkly · lab</h2>
+      </div>
+      <div class="ld-tabs" role="tablist">
+        <button type="button" class="ld-tab active" data-tab="controls" role="tab" aria-selected="true">Controls</button>
+        <button type="button" class="ld-tab" data-tab="context" role="tab" aria-selected="false">Context</button>
+        <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
+      </div>
+      <div class="ld-rail-body">
+        <div id="ld-section-controls" class="ld-section active">
+          <p class="ld-controls-meta" id="controls-meta">Loading flag status…</p>
+          <div id="controls-warn" class="ld-controls-warn hidden"></div>
+          <div class="ld-toolbar">
+            <button type="button" id="btn-controls-refresh">Refresh status</button>
+          </div>
+          <div id="controls-list"></div>
+          <p class="ld-about-p" style="margin-top:1rem;color:var(--about-muted);font-size:0.82rem;">
+            Toggles call the LaunchDarkly REST API (<code>turnFlagOn</code> / <code>turnFlagOff</code>).
+            For the highlight <strong>string</strong> flag, use the color dropdown to set fallthrough
+            (<code>updateFallthroughVariationOrRollout</code>) — variation definitions stay unchanged.
+            Watch the bottom <strong>Trace</strong> dock; the grid stays navigable.
+          </p>
+        </div>
+        <div id="ld-section-context" class="ld-section">
+          <p class="ld-controls-meta" id="context-meta">Log in to see the evaluation context for the current user.</p>
+          <div id="context-body"></div>
+        </div>
+        <div id="ld-section-about" class="ld-section">
+          <div class="ld-block-title">What this example is</div>
+          <p class="ld-about-p">This example teaches LaunchDarkly <strong>feature flags</strong> on the grid navigator: a <strong>string</strong> highlight flag, a boolean <strong>color override</strong>, move count, and a host OS emoji—without hardcoding those behaviors in the UI.</p>
+          <div class="ld-block-title">What we show</div>
+          <p class="ld-about-p">Log in, move on the grid, and use <strong>Controls</strong> to turn flags on/off via the REST API. <strong>Context</strong> shows what the SDK evaluates against. The bottom <strong>Trace</strong> dock logs each change.</p>
+          <div class="ld-block-title">Color override (app logic)</div>
+          <p class="ld-about-p">
+            <code>enable-grid-highlight-color-override</code> is a boolean <strong>gate</strong>:
+            LaunchDarkly only says on/off. When on, <strong>this application</strong> looks for
+            <code>human</code> / <code>robot</code> / <code>beta</code> in the login name and chooses the color:
+            human→yellow, robot→red, beta→blue, human+beta→green, robot+beta→purple.
+            Try logging in as <code>human-beta</code>.
+          </p>
+          <div class="ld-block-title">Why it matters</div>
+          <p class="ld-about-p">You ship the app once and enable features in LaunchDarkly—so product and ops can change behavior without a redeploy. Keywords: <strong>string variations</strong>, <strong>boolean variations</strong>, <strong>contexts</strong>, <strong>private attributes</strong>, <strong>semantic patch</strong>.</p>
+        </div>
+      </div>
+    </aside>
+
+    <section class="trace-dock" id="trace-dock" aria-label="Flag activity trace">
+      <div class="trace-dock-header">
+        <button
+          type="button"
+          class="trace-dock-toggle"
+          id="btn-trace-collapse"
+          aria-expanded="true"
+          aria-controls="trace-dock-body"
+        >
+          <span class="trace-dock-title">
+            <span class="trace-dot" id="trace-dot" aria-hidden="true"></span>
+            Trace
+            <span class="trace-dock-meta" id="trace-meta">flag activity</span>
+          </span>
+          <span class="trace-dock-chevron" aria-hidden="true">▾</span>
+        </button>
+        <button type="button" class="trace-expand-btn" id="btn-trace-expand" title="Toggle taller trace">
+          Taller
+        </button>
+        <button type="button" class="trace-clear-btn" id="btn-trace-clear" title="Clear trace">
+          Clear
+        </button>
+      </div>
+      <div class="trace-dock-body" id="trace-dock-body">
+        <div class="trace-console" id="trace-console" aria-live="polite">
+          <p class="trace-empty" id="trace-empty">
+            Toggle a flag in LD lab → Controls. REST and SDK evaluation lines show up here.
+          </p>
+          <div id="trace-lines" hidden></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const ROWS = ["t", "m", "b"];
+    const COLS = ["l", "m", "r"];
+
+    let username = "";
+    let row = 1;
+    let col = 1;
+    let previous = null;
+    let moveCount = 0;
+    let flags = {
+      highlightEnabled: false,
+      contextHighlight: false,
+      showMoveCount: false,
+      highlightColor: "none",
+      cohortLabel: "",
+      osEmoji: "",
+    };
+    let flagPollTimer = null;
+    let lastEvalSnapshot = "";
+    let ldTab = "controls";
+    let controlsBusyKey = null;
+    let ldContext = null;
+
+    const TRACE_COLLAPSE_KEY = "11-trace-dock-collapsed";
+    const TRACE_EXPAND_KEY = "11-trace-dock-expanded";
+    const traceDock = document.getElementById("trace-dock");
+    const traceDot = document.getElementById("trace-dot");
+    const traceMeta = document.getElementById("trace-meta");
+    const appShell = document.getElementById("app-shell");
+
+    function setTraceCollapsed(collapsed) {
+      traceDock.classList.toggle("collapsed", !!collapsed);
+      document.getElementById("btn-trace-collapse").setAttribute(
+        "aria-expanded",
+        collapsed ? "false" : "true"
+      );
+      try {
+        localStorage.setItem(TRACE_COLLAPSE_KEY, collapsed ? "1" : "0");
+      } catch (_) {}
+    }
+
+    function setTraceExpanded(expanded) {
+      traceDock.classList.toggle("expanded", !!expanded);
+      document.getElementById("btn-trace-expand").textContent = expanded
+        ? "Shorter"
+        : "Taller";
+      try {
+        localStorage.setItem(TRACE_EXPAND_KEY, expanded ? "1" : "0");
+      } catch (_) {}
+    }
+
+    function focusGrid() {
+      const grid = document.getElementById("grid-screen");
+      if (document.body.classList.contains("grid-active")) {
+        grid.focus({ preventScroll: true });
+      }
+    }
+
+    function setGridActive(active) {
+      document.body.classList.toggle("grid-active", !!active);
+      appShell.classList.toggle("hidden", !active);
+      if (active) {
+        selectLdTab(ldTab || "controls");
+        refreshControls();
+      }
+    }
+
+    function formatPos(r, c) {
+      return `${ROWS[r]}/${COLS[c]}`;
+    }
+
+    function colorClass(color) {
+      return color && color !== "none" ? `color-${color}` : "";
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function traceAppend(kind, html) {
+      const empty = document.getElementById("trace-empty");
+      const lines = document.getElementById("trace-lines");
+      empty.hidden = true;
+      lines.hidden = false;
+      const ts = new Date().toLocaleTimeString();
+      const row = document.createElement("div");
+      row.className = `trace-line kind-${kind}`;
+      row.innerHTML = `<span class="ts">${escapeHtml(ts)}</span>  ${html}`;
+      lines.appendChild(row);
+      traceDot.classList.add("on");
+      traceMeta.textContent = kind === "err" ? "error" : "updated";
+      const consoleEl = document.getElementById("trace-console");
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function evalSnapshot(f) {
+      return JSON.stringify({
+        highlightEnabled: !!f.highlightEnabled,
+        contextHighlight: !!f.contextHighlight,
+        showMoveCount: !!f.showMoveCount,
+        highlightColor: f.highlightColor || "none",
+        cohortLabel: f.cohortLabel || "",
+        osEmoji: f.osEmoji || "",
+      });
+    }
+
+    function maybeLogEval(f) {
+      const snap = evalSnapshot(f);
+      if (snap === lastEvalSnapshot) return;
+      const prev = lastEvalSnapshot;
+      lastEvalSnapshot = snap;
+      if (!prev) {
+        traceAppend(
+          "eval",
+          `SDK evaluate <span class="hi">${escapeHtml(username || "(no user)")}</span> → ` +
+            `highlight=<span class="hi">${escapeHtml(String(f.highlightEnabled))}</span> ` +
+            `context=<span class="hi">${escapeHtml(String(f.contextHighlight))}</span> ` +
+            `count=<span class="hi">${escapeHtml(String(f.showMoveCount))}</span> ` +
+            `color=<span class="hi">${escapeHtml(f.highlightColor || "none")}</span>`
+        );
+        return;
+      }
+      traceAppend(
+        "eval",
+        `SDK evaluate changed for <span class="hi">${escapeHtml(username)}</span> → ` +
+          `color <span class="hi">${escapeHtml(f.highlightColor || "none")}</span>, ` +
+          `count <span class="hi">${escapeHtml(String(f.showMoveCount))}</span>, ` +
+          `emoji <span class="hi">${escapeHtml(f.osEmoji || "(none)")}</span>`
+      );
+    }
+
+    function renderContextPanel() {
+      const meta = document.getElementById("context-meta");
+      const body = document.getElementById("context-body");
+      if (!username || !ldContext) {
+        meta.textContent = "Log in to see the evaluation context for the current user.";
+        body.innerHTML = "";
+        return;
+      }
+      meta.innerHTML =
+        `SDK evaluation context for <code>${escapeHtml(username)}</code> · refreshed with flag polling`;
+      const attrs = ldContext.attributes || {};
+      const privateAttrs = ldContext.privateAttributes || [];
+      const cohorts = (ldContext.appDerived && ldContext.appDerived.cohortWords) || {};
+      const attrRows = Object.keys(attrs)
+        .map((k) => {
+          const priv = privateAttrs.includes(k)
+            ? '<span class="context-badge private">private</span>'
+            : "";
+          return (
+            `<div class="context-row"><div class="k">${escapeHtml(k)}</div>` +
+            `<div class="v">${priv}<code>${escapeHtml(JSON.stringify(attrs[k]))}</code></div></div>`
+          );
+        })
+        .join("");
+      const cohortBits = ["human", "robot", "beta"]
+        .map((w) => `${w}=${cohorts[w] ? "yes" : "no"}`)
+        .join(" · ");
+      body.innerHTML =
+        `<div class="ld-block-title">LaunchDarkly context</div>` +
+        `<div class="context-kv">` +
+        `<div class="context-row"><div class="k">kind</div><div class="v"><code>${escapeHtml(ldContext.kind || "user")}</code></div></div>` +
+        `<div class="context-row"><div class="k">key</div><div class="v"><code>${escapeHtml(ldContext.key || username)}</code></div></div>` +
+        attrRows +
+        `</div>` +
+        `<p class="flag-hint">${escapeHtml(ldContext.note || "")}</p>` +
+        `<div class="ld-block-title" style="margin-top:1rem">App-derived (not LD attributes)</div>` +
+        `<div class="context-kv">` +
+        `<div class="context-row"><div class="k">cohort words</div><div class="v">${escapeHtml(cohortBits)}</div></div>` +
+        `</div>` +
+        `<p class="flag-summary">${escapeHtml((ldContext.appDerived && ldContext.appDerived.note) || "")}</p>` +
+        `<div class="ld-block-title" style="margin-top:1rem">JSON</div>` +
+        `<pre class="context-pre">${escapeHtml(JSON.stringify({
+          kind: ldContext.kind,
+          key: ldContext.key,
+          attributes: ldContext.attributes,
+          privateAttributes: ldContext.privateAttributes,
+        }, null, 2))}</pre>`;
+    }
+
+    async function refreshFlags() {
+      if (!username) return;
+      try {
+        const res = await fetch(
+          `/api/flags?username=${encodeURIComponent(username)}`
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        flags = data;
+        ldContext = data.ldContext || null;
+        maybeLogEval(flags);
+        renderGrid();
+        renderContextPanel();
+      } catch (_) {
+        // Keep last-known flag values when the server is unreachable.
+      }
+    }
+
+    function tryMove(dr, dc) {
+      const nr = Math.max(0, Math.min(2, row + dr));
+      const nc = Math.max(0, Math.min(2, col + dc));
+      if (nr === row && nc === col) return false;
+      previous = { row, col };
+      row = nr;
+      col = nc;
+      moveCount += 1;
+      return true;
+    }
+
+    function renderNameLine() {
+      const nameEl = document.getElementById("hdr-name");
+      const cohortEl = document.getElementById("hdr-cohort");
+      const cls = colorClass(flags.highlightColor);
+      const prefix = flags.osEmoji ? `${flags.osEmoji} ` : "";
+      nameEl.textContent = prefix + username;
+      nameEl.className = cls;
+      cohortEl.textContent = flags.cohortLabel ? ` ${flags.cohortLabel}` : "";
+      cohortEl.className = cls;
+    }
+
+    function renderGrid() {
+      renderNameLine();
+      document.getElementById("hdr-current").textContent = formatPos(row, col);
+      document.getElementById("hdr-previous").textContent =
+        previous ? formatPos(previous.row, previous.col) : "—";
+
+      const countRow = document.getElementById("hdr-count-row");
+      if (flags.showMoveCount) {
+        countRow.classList.remove("hidden");
+        document.getElementById("hdr-count").textContent = String(moveCount);
+      } else {
+        countRow.classList.add("hidden");
+      }
+
+      const grid = document.getElementById("grid");
+      grid.innerHTML = "";
+      const highlightColor = flags.highlightColor;
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          const selected = r === row && c === col;
+          const cell = document.createElement("div");
+          let cls = "cell";
+          if (selected) {
+            cls += " selected";
+            if (highlightColor && highlightColor !== "none") {
+              cls += ` highlight-${highlightColor}`;
+            }
+          }
+          cell.className = cls;
+          cell.textContent = selected ? "X" : "";
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    function logout() {
+      username = "";
+      row = 1;
+      col = 1;
+      previous = null;
+      moveCount = 0;
+      flags = {
+        highlightEnabled: false,
+        contextHighlight: false,
+        showMoveCount: false,
+        highlightColor: "none",
+        cohortLabel: "",
+        osEmoji: "",
+      };
+      lastEvalSnapshot = "";
+      ldContext = null;
+      if (flagPollTimer) clearInterval(flagPollTimer);
+      flagPollTimer = null;
+      setGridActive(false);
+      renderContextPanel();
+
+      document.getElementById("username").value = "";
+      document.getElementById("login-error").classList.add("hidden");
+      document.getElementById("login-screen").classList.remove("hidden");
+      document.getElementById("username").focus();
+    }
+
+    function quit() {
+      if (flagPollTimer) clearInterval(flagPollTimer);
+      window.close();
+      document.body.innerHTML = "<p>Application closed. You may close this tab.</p>";
+    }
+
+    function startGrid(name) {
+      username = name;
+      row = 1;
+      col = 1;
+      previous = null;
+      moveCount = 0;
+      flags = {
+        highlightEnabled: false,
+        contextHighlight: false,
+        showMoveCount: false,
+        highlightColor: "none",
+        cohortLabel: "",
+        osEmoji: "",
+      };
+      lastEvalSnapshot = "";
+      document.getElementById("login-screen").classList.add("hidden");
+      setGridActive(true);
+      refreshFlags();
+      if (flagPollTimer) clearInterval(flagPollTimer);
+      flagPollTimer = setInterval(refreshFlags, 2000);
+      renderGrid();
+      focusGrid();
+      traceAppend("action", `Logged in as <span class="hi">${escapeHtml(name)}</span>`);
+    }
+
+    function renderControls(data) {
+      const meta = document.getElementById("controls-meta");
+      const warn = document.getElementById("controls-warn");
+      const list = document.getElementById("controls-list");
+      if (!data.configured) {
+        warn.classList.remove("hidden");
+        warn.textContent =
+          "Controls need " + (data.missing || []).join(", ") + " on the server.";
+      } else {
+        warn.classList.add("hidden");
+        warn.textContent = "";
+      }
+      meta.innerHTML =
+        data.configured
+          ? `Project <code>${escapeHtml(data.projectKey)}</code> · environment <code>${escapeHtml(data.environmentKey)}</code> · on/off (+ fallthrough color for string highlight)`
+          : "REST controls unavailable until the server has write credentials.";
+
+      list.innerHTML = "";
+      for (const f of data.flags || []) {
+        const card = document.createElement("div");
+        card.className = "flag-card";
+        const on = f.on;
+        const busy = controlsBusyKey === f.key;
+        let toggleLabel = "—";
+        let toggleClass = "flag-toggle";
+        if (on === true) {
+          toggleLabel = "ON";
+          toggleClass += " on";
+        } else if (on === false) {
+          toggleLabel = "OFF";
+          toggleClass += " off";
+        }
+        const vars =
+          on === null
+            ? ""
+            : `<div class="flag-vars">off → <span class="hi-off">${escapeHtml(JSON.stringify(f.servedWhenOff))}</span>` +
+              ` · fallthrough → <span class="hi-on">${escapeHtml(JSON.stringify(f.servedWhenOnFallthrough))}</span></div>`;
+
+        let colorRow = "";
+        const colors = Array.isArray(f.colorOptions) ? f.colorOptions : [];
+        if (f.variationKind === "string" && colors.length) {
+          const current =
+            typeof f.servedWhenOnFallthrough === "string" &&
+            colors.includes(f.servedWhenOnFallthrough)
+              ? f.servedWhenOnFallthrough
+              : colors[0];
+          const opts = colors
+            .map(
+              (c) =>
+                `<option value="${escapeHtml(c)}"${c === current ? " selected" : ""}>${escapeHtml(c)}</option>`
+            )
+            .join("");
+          colorRow =
+            `<div class="flag-color-row">` +
+            `<label for="color-${escapeHtml(f.key)}">Fallthrough color</label>` +
+            `<select id="color-${escapeHtml(f.key)}" class="flag-color-select" data-key="${escapeHtml(f.key)}" ` +
+            `${on === null || busy || !data.configured ? "disabled" : ""}>${opts}</select>` +
+            `</div>`;
+        }
+
+        card.innerHTML =
+          `<div class="flag-card-top">` +
+          `<div><h3>${escapeHtml(f.label || f.name || f.key)}</h3>` +
+          `<div class="flag-key">${escapeHtml(f.key)}</div></div>` +
+          `<button type="button" class="${toggleClass}" data-key="${escapeHtml(f.key)}" data-on="${on === true ? "1" : "0"}" ${on === null || busy || !data.configured ? "disabled" : ""}>${busy ? "…" : toggleLabel}</button>` +
+          `</div>` +
+          `<p class="flag-summary">${escapeHtml(f.summary || "")}</p>` +
+          vars +
+          colorRow +
+          `<p class="flag-hint">${escapeHtml(f.targetingHint || "")}</p>`;
+        list.appendChild(card);
+      }
+
+      list.querySelectorAll("button.flag-toggle").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const key = btn.getAttribute("data-key");
+          const currentlyOn = btn.getAttribute("data-on") === "1";
+          const select = list.querySelector(`select.flag-color-select[data-key="${CSS.escape(key)}"]`);
+          const fallthrough = select ? select.value : null;
+          toggleFlag(key, !currentlyOn, fallthrough);
+        });
+      });
+      list.querySelectorAll("select.flag-color-select").forEach((sel) => {
+        sel.addEventListener("change", () => {
+          setFallthroughColor(sel.getAttribute("data-key"), sel.value);
+        });
+      });
+    }
+
+    async function refreshControls() {
+      try {
+        const res = await fetch("/api/flag-controls", { cache: "no-store" });
+        const data = await res.json();
+        renderControls(data);
+      } catch (err) {
+        document.getElementById("controls-warn").classList.remove("hidden");
+        document.getElementById("controls-warn").textContent =
+          "Could not load flag status: " + err;
+      }
+    }
+
+    async function postFlagControl(body, pendingMessage) {
+      const key = body.key;
+      controlsBusyKey = key;
+      await refreshControls();
+      traceAppend("action", pendingMessage);
+      try {
+        const res = await fetch("/api/flag-controls", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json();
+        if (!res.ok || data.ok === false) {
+          throw new Error(data.error || `HTTP ${res.status}`);
+        }
+        const flag = data.flag || {};
+        const kinds = (data.instructions || []).join(", ") || data.action;
+        traceAppend(
+          "ok",
+          `REST OK (<span class="hi">${escapeHtml(kinds)}</span>) · now ` +
+            `<span class="${flag.on ? "on" : "off"}">${flag.on ? "ON" : "OFF"}</span> · ` +
+            `off=${escapeHtml(JSON.stringify(flag.servedWhenOff))} fallthrough=${escapeHtml(JSON.stringify(flag.servedWhenOnFallthrough))}`
+        );
+        if (flag.targetingHint) {
+          traceAppend("action", escapeHtml(flag.targetingHint));
+        }
+        setTimeout(refreshFlags, 400);
+        setTimeout(refreshFlags, 1200);
+      } catch (err) {
+        traceAppend("err", `REST failed: ${escapeHtml(String(err.message || err))}`);
+      } finally {
+        controlsBusyKey = null;
+        await refreshControls();
+        focusGrid();
+      }
+    }
+
+    async function toggleFlag(key, turnOn, fallthrough) {
+      const action = turnOn ? "turnFlagOn" : "turnFlagOff";
+      let msg =
+        `Sending REST call to <span class="${turnOn ? "on" : "off"}">${action}</span> ` +
+        `for the <span class="hi">${escapeHtml(key)}</span> flag.`;
+      const body = { key, on: turnOn };
+      if (turnOn && fallthrough) {
+        body.fallthrough = fallthrough;
+        msg +=
+          ` Fallthrough color will be <span class="hi">${escapeHtml(fallthrough)}</span>.`;
+      }
+      await postFlagControl(body, msg);
+    }
+
+    async function setFallthroughColor(key, color) {
+      await postFlagControl(
+        { key, fallthrough: color },
+        `Sending REST call to updateFallthroughVariationOrRollout for the ` +
+          `<span class="hi">${escapeHtml(key)}</span> flag ` +
+          `(fallthrough → <span class="hi">${escapeHtml(color)}</span>).`
+      );
+    }
+
+    function selectLdTab(tab) {
+      ldTab = tab;
+      document.querySelectorAll(".ld-tab").forEach((btn) => {
+        const on = btn.getAttribute("data-tab") === tab;
+        btn.classList.toggle("active", on);
+        btn.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      document.querySelectorAll(".ld-section").forEach((sec) => {
+        sec.classList.toggle("active", sec.id === `ld-section-${tab}`);
+      });
+      if (tab === "controls") refreshControls();
+      if (tab === "context") renderContextPanel();
+    }
+
+    document.getElementById("login-btn").addEventListener("click", () => {
+      const name = document.getElementById("username").value.trim();
+      const err = document.getElementById("login-error");
+      if (!name) {
+        err.classList.remove("hidden");
+        return;
+      }
+      err.classList.add("hidden");
+      startGrid(name);
+    });
+
+    document.getElementById("username").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") document.getElementById("login-btn").click();
+    });
+
+    // Arrow/WASD stay live even when LD lab or Trace has focus.
+    document.addEventListener("keydown", (e) => {
+      if (!username) return;
+      const tag = (e.target && e.target.tagName) || "";
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      handleNavKey(e);
+    });
+
+    function handleNavKey(e) {
+      if (!username) return;
+      const key = e.key.toLowerCase();
+      if (key === "q") {
+        e.preventDefault();
+        quit();
+        return;
+      }
+      if (key === "l") {
+        e.preventDefault();
+        logout();
+        return;
+      }
+      let moved = false;
+      if (e.key === "ArrowUp" || key === "w") moved = tryMove(-1, 0);
+      else if (e.key === "ArrowDown" || key === "s") moved = tryMove(1, 0);
+      else if (e.key === "ArrowLeft" || key === "a") moved = tryMove(0, -1);
+      else if (e.key === "ArrowRight" || key === "d") moved = tryMove(0, 1);
+      else return;
+      e.preventDefault();
+      if (moved) renderGrid();
+    }
+
+    document.querySelectorAll(".ld-tab").forEach((btn) => {
+      btn.addEventListener("click", () => selectLdTab(btn.getAttribute("data-tab")));
+    });
+    document.getElementById("btn-controls-refresh").addEventListener("click", refreshControls);
+
+    document.getElementById("btn-trace-collapse").addEventListener("click", () => {
+      const collapsed = !traceDock.classList.contains("collapsed");
+      setTraceCollapsed(collapsed);
+      focusGrid();
+    });
+    document.getElementById("btn-trace-expand").addEventListener("click", () => {
+      if (traceDock.classList.contains("collapsed")) setTraceCollapsed(false);
+      setTraceExpanded(!traceDock.classList.contains("expanded"));
+      focusGrid();
+    });
+    document.getElementById("btn-trace-clear").addEventListener("click", () => {
+      document.getElementById("trace-lines").innerHTML = "";
+      document.getElementById("trace-lines").hidden = true;
+      document.getElementById("trace-empty").hidden = false;
+      traceDot.classList.remove("on");
+      traceMeta.textContent = "flag activity";
+      focusGrid();
+    });
+
+    try {
+      setTraceCollapsed(localStorage.getItem(TRACE_COLLAPSE_KEY) === "1");
+      setTraceExpanded(localStorage.getItem(TRACE_EXPAND_KEY) === "1");
+    } catch (_) {
+      setTraceCollapsed(false);
+      setTraceExpanded(false);
+    }
+
+    refreshControls();
+  </script>
+</body>
+</html>
