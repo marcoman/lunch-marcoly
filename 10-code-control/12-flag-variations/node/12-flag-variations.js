@@ -7,12 +7,17 @@ const path = require("path");
 const LaunchDarkly = require("@launchdarkly/node-server-sdk");
 const { evaluateFlags } = require("../flag-variations");
 const { detectHostOs, HOST_OS_ATTR } = require("../host-os");
+const {
+  api_config,
+  listFlagControls,
+  applyFlagControl,
+} = require("../ld-flag-controls");
 
 // LaunchDarkly capability: Multivariate flag evaluation + anonymous contexts
 // See: https://launchdarkly.com/docs/sdk/features/flag-types
 // See: https://launchdarkly.com/docs/sdk/features/anonymous
 
-const PORT = 8080;
+const PORT = Number(process.env.PORT || 8080);
 const ROOT = __dirname;
 const HOST_OS = detectHostOs();
 
@@ -29,6 +34,7 @@ async function initLaunchDarkly() {
     await ldClient.waitForInitialization({ timeout: 5 });
   } catch (err) {
     console.warn("Warning: LaunchDarkly SDK did not initialize — flags use defaults.");
+    ldClient.close();
     ldClient = null;
   }
 }
@@ -36,22 +42,90 @@ async function initLaunchDarkly() {
 function sendJson(res, status, body) {
   const payload = JSON.stringify(body);
   res.writeHead(status, {
-    "Content-Type": "application/json",
+    "Content-Type": "application/json; charset=utf-8",
     "Content-Length": Buffer.byteLength(payload),
+    "Cache-Control": "no-store",
   });
   res.end(payload);
+}
+
+function readJson(req) {
+  return new Promise((resolve, reject) => {
+    let raw = "";
+    req.setEncoding("utf8");
+    req.on("data", (chunk) => {
+      raw += chunk;
+      if (raw.length > 1024 * 1024) {
+        reject(new Error("Request body is too large"));
+        req.destroy();
+      }
+    });
+    req.on("end", () => {
+      try {
+        const parsed = JSON.parse(raw || "{}");
+        if (!parsed || Array.isArray(parsed) || typeof parsed !== "object") {
+          throw new Error("Request body must be a JSON object");
+        }
+        resolve(parsed);
+      } catch (error) {
+        reject(
+          error instanceof SyntaxError
+            ? new Error("Request body must be JSON")
+            : error
+        );
+      }
+    });
+    req.on("error", reject);
+  });
 }
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://127.0.0.1:${PORT}`);
 
-  if (url.pathname === "/api/flags") {
+  if (req.method === "GET" && url.pathname === "/api/flags") {
     const username = (url.searchParams.get("username") || "").trim();
     if (!username) {
       sendJson(res, 400, { error: "username query parameter is required" });
       return;
     }
     sendJson(res, 200, await evaluateFlags(ldClient, username, HOST_OS));
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/flag-controls") {
+    sendJson(res, 200, await listFlagControls());
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/bootstrap") {
+    sendJson(res, 200, {
+      appBanner: "12-flag-variations[node]",
+      hostOs: HOST_OS,
+      controls: api_config(),
+    });
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/flag-controls") {
+    try {
+      const body = await readJson(req);
+      const key = String(body.key || "").trim();
+      if (!key) throw new Error('"key" is required');
+      const options = {};
+      if (Object.prototype.hasOwnProperty.call(body, "on")) {
+        if (typeof body.on !== "boolean") throw new Error('"on" must be a boolean');
+        options.on = body.on;
+      }
+      if (Object.prototype.hasOwnProperty.call(body, "fallthrough")) {
+        options.fallthrough = body.fallthrough;
+      }
+      sendJson(res, 200, await applyFlagControl(key, options));
+    } catch (error) {
+      const status = /required|must be|not allowed|Provide|No variation/.test(error.message)
+        ? 400
+        : 502;
+      sendJson(res, status, { ok: false, error: error.message || String(error) });
+    }
     return;
   }
 

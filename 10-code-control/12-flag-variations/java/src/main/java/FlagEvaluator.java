@@ -4,6 +4,9 @@ import com.launchdarkly.sdk.server.LDClient;
 import com.launchdarkly.sdk.server.LDConfig;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * LaunchDarkly capability: Multivariate flag evaluation + anonymous contexts
@@ -69,7 +72,7 @@ public final class FlagEvaluator {
 
     static FlagValues evaluate(String username) {
         if (client == null || username == null || username.isBlank()) {
-            return FlagValues.defaults();
+            return FlagValues.defaults(username);
         }
         LDContext anonContext = HostOs.buildAnonymousContext(HOST_OS);
         LDContext userContext = HostOs.buildUserContext(username);
@@ -88,7 +91,8 @@ public final class FlagEvaluator {
                 countLabel == null || countLabel.isBlank() ? DEFAULT_COUNT_LABEL : countLabel,
                 luckyNumber,
                 maxMoves,
-                osEmoji);
+                osEmoji,
+                username);
     }
 
     private static int parseMaxMoves(LDValue raw) {
@@ -98,23 +102,47 @@ public final class FlagEvaluator {
         return raw.get("maxMoves").intValue();
     }
 
-    record FlagValues(String countLabel, int luckyNumber, int maxMoves, String osEmoji) {
-        static FlagValues defaults() {
-            return new FlagValues(DEFAULT_COUNT_LABEL, DEFAULT_LUCKY_NUMBER, DEFAULT_MAX_MOVES, "");
+    record FlagValues(String countLabel, int luckyNumber, int maxMoves, String osEmoji, String username) {
+        static FlagValues defaults(String username) {
+            return new FlagValues(
+                    DEFAULT_COUNT_LABEL,
+                    DEFAULT_LUCKY_NUMBER,
+                    DEFAULT_MAX_MOVES,
+                    "",
+                    username == null ? "" : username);
         }
 
+        /**
+         * Include both evaluated values and the user/anonymous contexts shown by the lab.
+         * LaunchDarkly contexts + private attributes:
+         * https://launchdarkly.com/docs/home/observability/contexts
+         */
         String toJson() {
-            return "{\"countLabel\":\"" + escapeJson(countLabel) + "\""
-                    + ",\"luckyNumber\":" + luckyNumber
-                    + ",\"maxMoves\":" + maxMoves
-                    + ",\"osEmoji\":\"" + escapeJson(osEmoji) + "\"}";
-        }
+            Map<String, Object> user = new LinkedHashMap<>();
+            user.put("kind", "user");
+            user.put("key", username);
+            user.put("note", "String, number, and JSON flags evaluate against this user context.");
 
-        private static String escapeJson(String value) {
-            if (value == null) {
-                return "";
-            }
-            return value.replace("\\", "\\\\").replace("\"", "\\\"");
+            Map<String, Object> anonymous = new LinkedHashMap<>();
+            anonymous.put("kind", "user");
+            anonymous.put("key", HostOs.ANONYMOUS_CONTEXT_KEY);
+            anonymous.put("anonymous", true);
+            anonymous.put("attributes", Map.of(HostOs.HOST_OS_ATTR, HOST_OS));
+            anonymous.put("privateAttributes", List.of(HostOs.HOST_OS_ATTR));
+            anonymous.put("flagKey", HostOs.FLAG_ANON_OS_EMOJI);
+            anonymous.put(
+                    "note",
+                    HostOs.FLAG_ANON_OS_EMOJI + " uses this anonymous context. "
+                            + HostOs.HOST_OS_ATTR
+                            + " is private (targeting only; redacted from analytics).");
+
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("countLabel", countLabel);
+            response.put("luckyNumber", luckyNumber);
+            response.put("maxMoves", maxMoves);
+            response.put("osEmoji", osEmoji);
+            response.put("ldContext", Map.of("user", user, "anonymous", anonymous));
+            return Json.stringify(response);
         }
     }
 }

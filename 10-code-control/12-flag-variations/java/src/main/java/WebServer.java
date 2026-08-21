@@ -14,7 +14,8 @@ import java.util.Map;
  * Serve the flag-variations grid navigator web UI on a local HTTP server.
  */
 public class WebServer {
-    private static final int PORT = 8080;
+    private static final int PORT = readPort();
+    private static final String HOST_OS = HostOs.detectHostOs();
 
     public static void main(String[] args) throws IOException {
         FlagEvaluator.init();
@@ -30,7 +31,27 @@ public class WebServer {
     private static void handle(HttpExchange exchange) throws IOException {
         String path = exchange.getRequestURI().getPath();
         if ("/api/flags".equals(path)) {
+            if (!"GET".equals(exchange.getRequestMethod())) {
+                sendJson(exchange, 405, Map.of("error", "Method not allowed"));
+                return;
+            }
             handleFlags(exchange);
+            return;
+        }
+        if ("/api/flag-controls".equals(path)) {
+            handleFlagControls(exchange);
+            return;
+        }
+        if ("/api/bootstrap".equals(path)) {
+            if (!"GET".equals(exchange.getRequestMethod())) {
+                sendJson(exchange, 405, Map.of("error", "Method not allowed"));
+                return;
+            }
+            Map<String, Object> bootstrap = new java.util.LinkedHashMap<>();
+            bootstrap.put("appBanner", "12-flag-variations[java]");
+            bootstrap.put("hostOs", HOST_OS);
+            bootstrap.put("controls", FlagControls.apiConfig());
+            sendJson(exchange, 200, bootstrap);
             return;
         }
 
@@ -66,17 +87,57 @@ public class WebServer {
         Map<String, String> params = parseQuery(exchange.getRequestURI().getRawQuery());
         String username = params.getOrDefault("username", "").trim();
         if (username.isEmpty()) {
-            byte[] body = "{\"error\":\"username query parameter is required\"}".getBytes(StandardCharsets.UTF_8);
-            exchange.getResponseHeaders().set("Content-Type", "application/json");
-            exchange.sendResponseHeaders(400, body.length);
-            exchange.getResponseBody().write(body);
-            exchange.close();
+            sendJson(exchange, 400, Map.of("error", "username query parameter is required"));
             return;
         }
         FlagEvaluator.FlagValues flags = FlagEvaluator.evaluate(username);
-        byte[] body = flags.toJson().getBytes(StandardCharsets.UTF_8);
-        exchange.getResponseHeaders().set("Content-Type", "application/json");
-        exchange.sendResponseHeaders(200, body.length);
+        sendJsonText(exchange, 200, flags.toJson());
+    }
+
+    private static void handleFlagControls(HttpExchange exchange) throws IOException {
+        if ("GET".equals(exchange.getRequestMethod())) {
+            sendJson(exchange, 200, FlagControls.listFlagControls());
+            return;
+        }
+        if (!"POST".equals(exchange.getRequestMethod())) {
+            sendJson(exchange, 405, Map.of("error", "Method not allowed"));
+            return;
+        }
+
+        try {
+            String raw = new String(readBytes(exchange.getRequestBody()), StandardCharsets.UTF_8);
+            Map<String, Object> request = Json.parseObject(raw.isBlank() ? "{}" : raw);
+            String key = request.get("key") == null ? "" : request.get("key").toString().trim();
+            if (key.isEmpty()) {
+                throw new IllegalArgumentException("\"key\" is required");
+            }
+            Boolean turnOn = null;
+            if (request.containsKey("on")) {
+                if (!(request.get("on") instanceof Boolean)) {
+                    throw new IllegalArgumentException("\"on\" must be a boolean");
+                }
+                turnOn = (Boolean) request.get("on");
+            }
+            boolean hasFallthrough = request.containsKey("fallthrough");
+            Map<String, Object> result = FlagControls.applyFlagControl(
+                    key, turnOn, hasFallthrough, request.get("fallthrough"));
+            sendJson(exchange, 200, result);
+        } catch (IllegalArgumentException exception) {
+            sendJson(exchange, 400, Map.of("ok", false, "error", exception.getMessage()));
+        } catch (RuntimeException exception) {
+            sendJson(exchange, 502, Map.of("ok", false, "error", exception.getMessage()));
+        }
+    }
+
+    private static void sendJson(HttpExchange exchange, int status, Object value) throws IOException {
+        sendJsonText(exchange, status, Json.stringify(value));
+    }
+
+    private static void sendJsonText(HttpExchange exchange, int status, String json) throws IOException {
+        byte[] body = json.getBytes(StandardCharsets.UTF_8);
+        exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
+        exchange.getResponseHeaders().set("Cache-Control", "no-store");
+        exchange.sendResponseHeaders(status, body.length);
         try (OutputStream out = exchange.getResponseBody()) {
             out.write(body);
         }
@@ -105,5 +166,19 @@ public class WebServer {
             out.write(buffer, 0, read);
         }
         return out.toByteArray();
+    }
+
+    private static int readPort() {
+        String raw = System.getenv("PORT");
+        if (raw == null || raw.isBlank()) {
+            return 8080;
+        }
+        try {
+            int port = Integer.parseInt(raw);
+            if (port < 1 || port > 65535) throw new NumberFormatException();
+            return port;
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException("PORT must be an integer from 1 to 65535");
+        }
     }
 }

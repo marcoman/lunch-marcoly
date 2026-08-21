@@ -1,6 +1,8 @@
 /** Flag variation keys, defaults, and response building for 12-flag-variations. */
 
 const {
+  HOST_OS_ATTR,
+  ANONYMOUS_CONTEXT_KEY,
   FLAG_ANON_OS_EMOJI,
   buildAnonymousContext,
   buildUserContext,
@@ -56,13 +58,34 @@ function buildFlagResponse(countLabel, luckyNumber, maxMoves, osEmoji) {
 
 async function evaluateFlags(client, username, hostOs) {
   const host = hostOs || detectHostOs();
+  const ldContext = {
+    user: {
+      kind: "user",
+      key: username,
+      note: "String, number, and JSON flags evaluate against this user context.",
+    },
+    anonymous: {
+      kind: "user",
+      key: ANONYMOUS_CONTEXT_KEY,
+      anonymous: true,
+      attributes: { [HOST_OS_ATTR]: host },
+      privateAttributes: [HOST_OS_ATTR],
+      flagKey: FLAG_ANON_OS_EMOJI,
+      note:
+        `${FLAG_ANON_OS_EMOJI} uses this anonymous context. ` +
+        `${HOST_OS_ATTR} is private (targeting only; redacted from analytics).`,
+    },
+  };
   if (!client) {
-    return buildFlagResponse(
-      DEFAULT_COUNT_LABEL,
-      DEFAULT_LUCKY_NUMBER,
-      DEFAULT_MAX_MOVES,
-      ""
-    );
+    return {
+      ...buildFlagResponse(
+        DEFAULT_COUNT_LABEL,
+        DEFAULT_LUCKY_NUMBER,
+        DEFAULT_MAX_MOVES,
+        ""
+      ),
+      ldContext,
+    };
   }
 
   const anonContext = buildAnonymousContext(host);
@@ -83,12 +106,15 @@ async function evaluateFlags(client, username, hostOs) {
     maxMoves: DEFAULT_MAX_MOVES,
   });
 
-  return buildFlagResponse(
-    String(countLabel),
-    luckyNumber,
-    parseMaxMoves(maxMovesRaw),
-    osEmojiFor(host, Boolean(showEmoji))
-  );
+  return {
+    ...buildFlagResponse(
+      String(countLabel),
+      luckyNumber,
+      parseMaxMoves(maxMovesRaw),
+      osEmojiFor(host, Boolean(showEmoji))
+    ),
+    ldContext,
+  };
 }
 
 module.exports = {

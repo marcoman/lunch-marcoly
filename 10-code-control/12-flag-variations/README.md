@@ -17,6 +17,10 @@ Unlike [11-flag-enablement](../11-flag-enablement/), this example does **not** i
 
 See [application.md](application.md) for the full specification and acceptance criteria.
 
+The Python, Node.js, and Java web implementations share the same permanent
+**LaunchDarkly lab** (Controls / Context / About) and bottom **Trace** chrome.
+Console implementations remain terminal-only examples.
+
 ## Prerequisites
 
 - A LaunchDarkly account with a project and environment
