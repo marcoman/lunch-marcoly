@@ -16,7 +16,7 @@ import (
 
 const (
 	appBanner        = "11-create-eval-flag[go]"
-	flagHighlight    = "configure-grid-selection-green-highlight"
+	flagHighlight    = "enable-grid-selection-highlight"
 	defaultHighlight = "none"
 )
 

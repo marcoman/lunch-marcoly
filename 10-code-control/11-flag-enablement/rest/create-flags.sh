@@ -16,48 +16,68 @@ create_flag() {
     -d "$body"
 }
 
-echo "Creating configure-grid-selection-green-highlight..."
+echo "Creating enable-grid-selection-highlight..."
 create_flag '{
-  "key": "configure-grid-selection-green-highlight",
-  "name": "Configure: grid selection green highlight",
-  "description": "When enabled, the selected grid cell shows a colored highlight (default pink) in addition to the X marker. Default is X only with no colors.",
+  "key": "enable-grid-selection-highlight",
+  "name": "Enable: grid selection highlight",
+  "description": "When on, the selected grid cell shows a colored highlight in addition to the X marker. When off, evaluations receive none (X only, no color). Fallthrough chooses the base color; enable-grid-highlight-color-override can replace that with cohort colors from the login name.",
   "temporary": false,
-  "tags": ["grid-navigator", "configure", "ui"],
+  "tags": ["grid-navigator", "enable", "ui", "string"],
   "variations": [
     {
-      "value": true,
-      "name": "Highlight enabled",
-      "description": "Selected cell shows X with colored highlight (pink by default, or context color when context flag is on)"
+      "value": "none",
+      "name": "No highlight",
+      "description": "X only — no colors (matches 00-reference-code)"
     },
     {
-      "value": false,
-      "name": "X only",
-      "description": "Selected cell shows X with no colors (matches 00-reference-code)"
+      "value": "green",
+      "name": "Green",
+      "description": "Green selection highlight"
+    },
+    {
+      "value": "yellow",
+      "name": "Yellow",
+      "description": "Yellow selection highlight"
+    },
+    {
+      "value": "red",
+      "name": "Red",
+      "description": "Red selection highlight"
+    },
+    {
+      "value": "blue",
+      "name": "Blue",
+      "description": "Blue selection highlight"
+    },
+    {
+      "value": "purple",
+      "name": "Purple",
+      "description": "Purple selection highlight"
     }
   ],
   "defaults": {
-    "onVariation": 0,
-    "offVariation": 1
+    "onVariation": 1,
+    "offVariation": 0
   }
 }' | jq '{key, name, tags, temporary}'
 
-echo "Creating configure-grid-selection-context-highlight..."
+echo "Creating enable-grid-highlight-color-override..."
 create_flag '{
-  "key": "configure-grid-selection-context-highlight",
-  "name": "Configure: grid selection context highlight",
-  "description": "When enabled with the highlight flag, selection and username colors follow cohort rules parsed from the login name (human, robot, beta). When off, highlight uses pink.",
+  "key": "enable-grid-highlight-color-override",
+  "name": "Enable: grid highlight color override",
+  "description": "When on (and enable-grid-selection-highlight serves a color), selection and username colors follow cohort rules parsed from the login name (human, robot, beta). When off, highlight uses the base fallthrough color from enable-grid-selection-highlight.",
   "temporary": false,
-  "tags": ["grid-navigator", "configure", "ui", "context"],
+  "tags": ["grid-navigator", "enable", "ui", "context", "override"],
   "variations": [
     {
       "value": true,
-      "name": "Context colors",
+      "name": "Override on",
       "description": "Apply cohort-based highlight and username colors from login name"
     },
     {
       "value": false,
-      "name": "Default pink",
-      "description": "Use pink highlight when highlight flag is on"
+      "name": "Override off",
+      "description": "Use the base fallthrough color from enable-grid-selection-highlight"
     }
   ],
   "defaults": {
@@ -135,17 +155,17 @@ if [[ -n "${LD_ENVIRONMENT_KEY:-}" ]]; then
       \"instructions\": [{\"kind\": \"turnFlagOff\"}]
     }" | jq ".environments.\"${LD_ENVIRONMENT_KEY}\" | {on, fallthrough, offVariation}"
 
-  echo "Setting configure-grid-selection-context-highlight to OFF in environment ${LD_ENVIRONMENT_KEY}..."
-  api PATCH "/flags/${LD_PROJECT_KEY}/configure-grid-selection-context-highlight" \
+  echo "Setting enable-grid-highlight-color-override to OFF in environment ${LD_ENVIRONMENT_KEY}..."
+  api PATCH "/flags/${LD_PROJECT_KEY}/enable-grid-highlight-color-override" \
     -H "Content-Type: application/json; domain-model=launchdarkly.semanticpatch" \
     -d "{
       \"environmentKey\": \"${LD_ENVIRONMENT_KEY}\",
-      \"comment\": \"Default: context colors off (pink when highlight on)\",
+      \"comment\": \"Default: color override off (use base fallthrough color)\",
       \"instructions\": [{\"kind\": \"turnFlagOff\"}]
     }" | jq ".environments.\"${LD_ENVIRONMENT_KEY}\" | {on, fallthrough, offVariation}"
 
-  echo "Setting configure-grid-selection-green-highlight to OFF in environment ${LD_ENVIRONMENT_KEY}..."
-  api PATCH "/flags/${LD_PROJECT_KEY}/configure-grid-selection-green-highlight" \
+  echo "Setting enable-grid-selection-highlight to OFF in environment ${LD_ENVIRONMENT_KEY}..."
+  api PATCH "/flags/${LD_PROJECT_KEY}/enable-grid-selection-highlight" \
     -H "Content-Type: application/json; domain-model=launchdarkly.semanticpatch" \
     -d "{
       \"environmentKey\": \"${LD_ENVIRONMENT_KEY}\",

@@ -31,5 +31,5 @@ VIP flag is **off** (`false`) after apply. Turn it **on** in LaunchDarkly to sho
 ## Resources
 
 - 8 rule-based segments (`seg-by-name-*`, including `seg-by-name-vip`)
-- `configure-grid-selection-green-highlight` as a **string** flag (6 color variations + `none`)
+- `enable-grid-selection-highlight` as a **string** flag (6 color variations + `none`)
 - `VIP` as a **boolean** flag (default `false`)

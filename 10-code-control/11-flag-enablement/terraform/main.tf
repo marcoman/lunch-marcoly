@@ -41,37 +41,46 @@ variable "environment_key" {
   description = "LaunchDarkly environment key for per-environment defaults (set LD_ENVIRONMENT_KEY)"
 }
 
-# Configure flag: enable highlight on the selected grid cell (default off = X only).
-resource "launchdarkly_feature_flag" "configure_grid_selection_green_highlight" {
+locals {
+  # String multivariate colors for enable-grid-selection-highlight (shared with 99-use-cases).
+  highlight_colors = ["green", "yellow", "red", "blue", "purple"]
+}
+
+# Enable flag: colored highlight on the selected grid cell (string: none | colors).
+resource "launchdarkly_feature_flag" "enable_grid_selection_highlight" {
   project_key = var.project_key
-  key         = "configure-grid-selection-green-highlight"
-  name        = "Configure: grid selection green highlight"
-  description = "When enabled, the selected grid cell shows a colored highlight (default pink) in addition to the X marker. Default is X only with no colors."
+  key         = "enable-grid-selection-highlight"
+  name        = "Enable: grid selection highlight"
+  description = "When on, the selected grid cell shows a colored highlight in addition to the X marker. When off, evaluations receive none (X only, no color). Fallthrough chooses the base color; enable-grid-highlight-color-override can replace that with cohort colors from the login name."
   temporary   = false
 
-  variation_type = "boolean"
+  variation_type = "string"
 
   variations {
-    value       = true
-    name        = "Highlight enabled"
-    description = "Selected cell shows X with colored highlight (pink by default, or context color when context flag is on)"
+    value       = "none"
+    name        = "No highlight"
+    description = "X only — no colors (matches 00-reference-code)"
   }
 
-  variations {
-    value       = false
-    name        = "X only"
-    description = "Selected cell shows X with no colors (matches 00-reference-code)"
+  dynamic "variations" {
+    for_each = local.highlight_colors
+    content {
+      value       = variations.value
+      name        = title(variations.value)
+      description = "${title(variations.value)} selection highlight"
+    }
   }
 
   defaults {
-    on_variation  = 0
-    off_variation = 1
+    on_variation  = 1 # green
+    off_variation = 0 # none
   }
 
   tags = [
     "grid-navigator",
-    "configure",
+    "enable",
     "ui",
+    "string",
     "managed-by-terraform",
   ]
 }
@@ -111,26 +120,26 @@ resource "launchdarkly_feature_flag" "show_navigation_move_count" {
   ]
 }
 
-# Configure flag: context-based highlight colors derived from the logged-in username.
-resource "launchdarkly_feature_flag" "configure_grid_selection_context_highlight" {
+# Enable flag: override highlight color using cohort words in the login name.
+resource "launchdarkly_feature_flag" "enable_grid_highlight_color_override" {
   project_key = var.project_key
-  key         = "configure-grid-selection-context-highlight"
-  name        = "Configure: grid selection context highlight"
-  description = "When enabled with the highlight flag, selection and username colors follow cohort rules parsed from the login name (human, robot, beta). When off, highlight uses pink."
+  key         = "enable-grid-highlight-color-override"
+  name        = "Enable: grid highlight color override"
+  description = "When on (and enable-grid-selection-highlight serves a color), selection and username colors follow cohort rules parsed from the login name (human, robot, beta). When off, highlight uses the base fallthrough color from enable-grid-selection-highlight."
   temporary   = false
 
   variation_type = "boolean"
 
   variations {
     value       = true
-    name        = "Context colors"
+    name        = "Override on"
     description = "Apply cohort-based highlight and username colors from login name"
   }
 
   variations {
     value       = false
-    name        = "Default pink"
-    description = "Use pink highlight when highlight flag is on"
+    name        = "Override off"
+    description = "Use the base fallthrough color from enable-grid-selection-highlight"
   }
 
   defaults {
@@ -140,9 +149,10 @@ resource "launchdarkly_feature_flag" "configure_grid_selection_context_highlight
 
   tags = [
     "grid-navigator",
-    "configure",
+    "enable",
     "ui",
     "context",
+    "override",
     "managed-by-terraform",
   ]
 }
@@ -161,9 +171,23 @@ resource "launchdarkly_feature_flag_environment" "show_navigation_move_count_env
   off_variation = 1
 }
 
-# Default configure flag to OFF (X only, no colors) in the target environment.
-resource "launchdarkly_feature_flag_environment" "configure_grid_selection_green_highlight_env" {
-  flag_id = launchdarkly_feature_flag.configure_grid_selection_green_highlight.id
+# Default highlight flag to OFF (none) in the target environment.
+resource "launchdarkly_feature_flag_environment" "enable_grid_selection_highlight_env" {
+  flag_id = launchdarkly_feature_flag.enable_grid_selection_highlight.id
+  env_key = var.environment_key
+
+  on = false
+
+  fallthrough {
+    variation = 1 # green when turned on
+  }
+
+  off_variation = 0 # none
+}
+
+# Default color-override flag to OFF in the target environment.
+resource "launchdarkly_feature_flag_environment" "enable_grid_highlight_color_override_env" {
+  flag_id = launchdarkly_feature_flag.enable_grid_highlight_color_override.id
   env_key = var.environment_key
 
   on = false
@@ -173,20 +197,6 @@ resource "launchdarkly_feature_flag_environment" "configure_grid_selection_green
   }
 
   off_variation = 1
-}
-
-# Default context highlight flag to OFF (pink default) in the target environment.
-resource "launchdarkly_feature_flag_environment" "configure_grid_selection_context_highlight_env" {
-  flag_id = launchdarkly_feature_flag.configure_grid_selection_context_highlight.id
-  env_key = var.environment_key
-
-  on = false
-
-  fallthrough {
-    variation = 1
-  }
-
-  ]
 }
 
 # Show flag: host OS emoji beside username (uses private hostOs context attribute).
@@ -242,8 +252,8 @@ resource "launchdarkly_feature_flag_environment" "show_host_os_emoji_env" {
 output "flag_keys" {
   description = "Feature flag keys provisioned by this configuration"
   value = [
-    launchdarkly_feature_flag.configure_grid_selection_green_highlight.key,
-    launchdarkly_feature_flag.configure_grid_selection_context_highlight.key,
+    launchdarkly_feature_flag.enable_grid_selection_highlight.key,
+    launchdarkly_feature_flag.enable_grid_highlight_color_override.key,
     launchdarkly_feature_flag.show_navigation_move_count.key,
     launchdarkly_feature_flag.show_host_os_emoji.key,
   ]

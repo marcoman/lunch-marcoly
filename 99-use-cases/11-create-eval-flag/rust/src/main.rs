@@ -13,7 +13,7 @@ use std::io::{self, Write};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-const FLAG_HIGHLIGHT: &str = "configure-grid-selection-green-highlight";
+const FLAG_HIGHLIGHT: &str = "enable-grid-selection-highlight";
 const DEFAULT_HIGHLIGHT: &str = "none";
 
 const ROWS: [&str; 3] = ["t", "m", "b"];

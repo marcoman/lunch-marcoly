@@ -28,4 +28,4 @@ java -jar target/02-segments-by-name.jar
 
 ## What to expect
 
-Same flag behavior as [python-console/02-segments-by-name.py](../python-console/02-segments-by-name.py). Header shows `Name: {username} ({segment-label})` with highlight color from `configure-grid-selection-green-highlight`. Press `L` to log out or `Q` to quit.
+Same flag behavior as [python-console/02-segments-by-name.py](../python-console/02-segments-by-name.py). Header shows `Name: {username} ({segment-label})` with highlight color from `enable-grid-selection-highlight`. Press `L` to log out or `Q` to quit.

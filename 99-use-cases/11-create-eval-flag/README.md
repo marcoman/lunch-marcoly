@@ -8,7 +8,7 @@ See [application.md](application.md) for the full specification.
 
 ## What you are seeing
 
-The app evaluates a single string flag — `configure-grid-selection-green-highlight` — and uses the returned value as the **highlight color** for the selected grid cell and the username in the header.
+The app evaluates a single string flag — `enable-grid-selection-highlight` — and uses the returned value as the **highlight color** for the selected grid cell and the username in the header.
 
 ```text
 Username → SDK variation() → highlight color → colored X on selected cell
@@ -88,7 +88,7 @@ These steps mirror what the REST scripts do programmatically.
 ### Turn the flag **on** (green highlight)
 
 1. Open your project in [LaunchDarkly](https://app.launchdarkly.com).
-2. Go to **Flags** → **`configure-grid-selection-green-highlight`**.
+2. Go to **Flags** → **`enable-grid-selection-highlight`**.
 3. Select the target environment (e.g. **Production**).
 4. Flip the toggle to **On**.
 5. Under **Default rule** (fallthrough), set the variation to **Green**.
@@ -127,7 +127,7 @@ export LD_ENVIRONMENT_KEY="production"
 ### Check current state
 
 ```bash
-curl -sS "${LD_API_HOST}/api/v2/flags/${LD_PROJECT_KEY}/configure-grid-selection-green-highlight" \
+curl -sS "${LD_API_HOST}/api/v2/flags/${LD_PROJECT_KEY}/enable-grid-selection-highlight" \
   -H "Authorization: ${LD_API_ACCESS_TOKEN}" \
   -H "LD-API-Version: ${LD_API_VERSION}" \
   | jq '{
@@ -144,13 +144,13 @@ Or use the helper: `./rest/get-flag.sh`
 Semantic patches require each variation's `_id` (UUID), not its index or string value. Fetch it first:
 
 ```bash
-FLAG_JSON=$(curl -sS "${LD_API_HOST}/api/v2/flags/${LD_PROJECT_KEY}/configure-grid-selection-green-highlight" \
+FLAG_JSON=$(curl -sS "${LD_API_HOST}/api/v2/flags/${LD_PROJECT_KEY}/enable-grid-selection-highlight" \
   -H "Authorization: ${LD_API_ACCESS_TOKEN}" \
   -H "LD-API-Version: ${LD_API_VERSION}")
 
 GREEN_ID=$(echo "${FLAG_JSON}" | jq -r '.variations[] | select(.value == "green") | ._id')
 
-curl -sS -X PATCH "${LD_API_HOST}/api/v2/flags/${LD_PROJECT_KEY}/configure-grid-selection-green-highlight" \
+curl -sS -X PATCH "${LD_API_HOST}/api/v2/flags/${LD_PROJECT_KEY}/enable-grid-selection-highlight" \
   -H "Authorization: ${LD_API_ACCESS_TOKEN}" \
   -H "LD-API-Version: ${LD_API_VERSION}" \
   -H "Content-Type: application/json; domain-model=launchdarkly.semanticpatch" \
@@ -171,7 +171,7 @@ Or: `./rest/turn-flag-on.sh green`
 ```bash
 RED_ID=$(echo "${FLAG_JSON}" | jq -r '.variations[] | select(.value == "red") | ._id')
 
-curl -sS -X PATCH "${LD_API_HOST}/api/v2/flags/${LD_PROJECT_KEY}/configure-grid-selection-green-highlight" \
+curl -sS -X PATCH "${LD_API_HOST}/api/v2/flags/${LD_PROJECT_KEY}/enable-grid-selection-highlight" \
   -H "Authorization: ${LD_API_ACCESS_TOKEN}" \
   -H "LD-API-Version: ${LD_API_VERSION}" \
   -H "Content-Type: application/json; domain-model=launchdarkly.semanticpatch" \
@@ -189,7 +189,7 @@ Or: `./rest/set-highlight-color.sh red`
 ### Turn the flag **off**
 
 ```bash
-curl -sS -X PATCH "${LD_API_HOST}/api/v2/flags/${LD_PROJECT_KEY}/configure-grid-selection-green-highlight" \
+curl -sS -X PATCH "${LD_API_HOST}/api/v2/flags/${LD_PROJECT_KEY}/enable-grid-selection-highlight" \
   -H "Authorization: ${LD_API_ACCESS_TOKEN}" \
   -H "LD-API-Version: ${LD_API_VERSION}" \
   -H "Content-Type: application/json; domain-model=launchdarkly.semanticpatch" \
@@ -207,7 +207,7 @@ After each curl, run `--evaluate-once` or watch the interactive app to confirm t
 ## Flag key
 
 ```text
-configure-grid-selection-green-highlight
+enable-grid-selection-highlight
 ```
 
 String variations: `none`, `green`, `yellow`, `red`, `blue`, `purple`.

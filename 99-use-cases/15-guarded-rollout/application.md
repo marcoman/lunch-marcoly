@@ -4,7 +4,7 @@ This document defines **15-guarded-rollout** under [99-use-cases](../README.md).
 
 ## Goal
 
-Release a **green grid highlight** to production gradually using a **guarded rollout** on a single string flag — `configure-grid-selection-green-highlight`, with simulated guardrail metrics in the application and test harness.
+Release a **grid selection highlight** to production gradually using a **guarded rollout** on a single string flag — `enable-grid-selection-highlight`, with simulated guardrail metrics in the application and test harness.
 
 > In this example, we have a guarded rollout over **12 minutes** in **four equal stages**: **10%**, **20%**, **30%**, and **50%** of users receive the green highlight. Each stage lasts **3 minutes**.
 
@@ -12,7 +12,7 @@ Baseline grid navigator behavior is defined in [00-reference-code/application.md
 
 ## Flag
 
-| Key | `configure-grid-selection-green-highlight` |
+| Key | `enable-grid-selection-highlight` |
 |-----|-------------------------------------------|
 | Type | **String** |
 | Off variation | `none` — no highlight |
@@ -50,7 +50,7 @@ After [terraform/](terraform/) or [rest/](rest/) provisioning:
 ## Application behavior
 
 1. User logs in with a username (LaunchDarkly context key)
-2. Application evaluates `configure-grid-selection-green-highlight`
+2. Application evaluates `enable-grid-selection-highlight`
 3. Header shows `Name:`, `Flag value:`, positions
 4. When flag serves **`green`**:
    - Each navigation waits a random **0–1000 ms** before updating the display

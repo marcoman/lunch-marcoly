@@ -20,8 +20,8 @@ import (
 // See: https://launchdarkly.com/docs/sdk/features/private-attributes
 
 const (
-	flagHighlight = "configure-grid-selection-green-highlight"
-	flagContext   = "configure-grid-selection-context-highlight"
+	flagHighlight = "enable-grid-selection-highlight"
+	flagContext   = "enable-grid-highlight-color-override"
 	flagCount     = "show-navigation-move-count"
 	flagOsEmoji   = "show-host-os-emoji"
 	hostOsAttr    = "hostOs"
@@ -140,7 +140,7 @@ func resolveHighlightColor(username string, highlightEnabled, contextHighlight b
 		return "none"
 	}
 	if !contextHighlight {
-		return "pink"
+		return "green"
 	}
 	c := parseCohorts(username)
 	switch {
@@ -155,7 +155,7 @@ func resolveHighlightColor(username string, highlightEnabled, contextHighlight b
 	case c.beta:
 		return "blue"
 	default:
-		return "pink"
+		return "green"
 	}
 }
 
@@ -197,7 +197,8 @@ func evaluateFlags(username string) flagValues {
 		SetString(hostOsAttr, hostOS).
 		Private(hostOsAttr).
 		Build()
-	highlight, _ := ldClient.BoolVariation(flagHighlight, context, false)
+	highlightRaw, _ := ldClient.StringVariation(flagHighlight, context, "none")
+	highlight := highlightRaw != "" && highlightRaw != "none" && highlightRaw != "false" && highlightRaw != "off"
 	contextHighlight, _ := ldClient.BoolVariation(flagContext, context, false)
 	showCount, _ := ldClient.BoolVariation(flagCount, context, false)
 	showOsEmoji, _ := ldClient.BoolVariation(flagOsEmoji, context, false)

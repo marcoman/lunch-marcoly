@@ -15,8 +15,8 @@ use std::time::Duration;
 // LaunchDarkly capability: Boolean flag evaluation (server-side SDK)
 // See: https://launchdarkly.com/docs/sdk/features/evaluating
 
-const FLAG_HIGHLIGHT: &str = "configure-grid-selection-green-highlight";
-const FLAG_CONTEXT: &str = "configure-grid-selection-context-highlight";
+const FLAG_HIGHLIGHT: &str = "enable-grid-selection-highlight";
+const FLAG_CONTEXT: &str = "enable-grid-highlight-color-override";
 const FLAG_COUNT: &str = "show-navigation-move-count";
 const FLAG_OS_EMOJI: &str = "show-host-os-emoji";
 const HOST_OS_ATTR: &str = "hostOs";
@@ -137,7 +137,7 @@ fn resolve_highlight_color(username: &str, highlight_enabled: bool, context_high
         return "none".to_string();
     }
     if !context_highlight {
-        return "pink".to_string();
+        return "green".to_string();
     }
     let cohorts = parse_cohorts(username);
     if cohorts.human && cohorts.beta {
@@ -155,7 +155,7 @@ fn resolve_highlight_color(username: &str, highlight_enabled: bool, context_high
     if cohorts.beta {
         return "blue".to_string();
     }
-    "pink".to_string()
+    "green".to_string()
 }
 
 fn build_flag_response(
@@ -240,7 +240,11 @@ impl App {
             .add_private_attribute(HOST_OS_ATTR)
             .build()
             .unwrap_or_else(|_| ContextBuilder::new("anonymous").build().unwrap());
-        let highlight = client.bool_variation(&context, FLAG_HIGHLIGHT, false);
+        let highlight_raw = client.str_variation(&context, FLAG_HIGHLIGHT, "none");
+        let highlight = match highlight_raw.as_str() {
+            "" | "none" | "false" | "off" => false,
+            _ => true,
+        };
         let context_highlight = client.bool_variation(&context, FLAG_CONTEXT, false);
         let show_count = client.bool_variation(&context, FLAG_COUNT, false);
         let show_os_emoji = client.bool_variation(&context, FLAG_OS_EMOJI, false);

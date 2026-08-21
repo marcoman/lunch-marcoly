@@ -6,7 +6,7 @@ set -euo pipefail
 : "${LD_API_HOST:=https://app.launchdarkly.com}"
 : "${LD_API_VERSION:=20240415}"
 
-FLAG_KEY="configure-grid-selection-green-highlight"
+FLAG_KEY="enable-grid-selection-highlight"
 
 if [[ -z "${LD_API_ACCESS_TOKEN:-}" ]]; then
   echo "error: LD_API_ACCESS_TOKEN is required" >&2

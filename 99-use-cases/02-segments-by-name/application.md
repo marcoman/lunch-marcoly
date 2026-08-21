@@ -4,7 +4,7 @@ This document defines **02-segments-by-name** under [99-use-cases](../README.md)
 
 ## Goal
 
-Demonstrate **LaunchDarkly segments** driven by **context attributes** the application supplies at login. Selection highlight color comes from the `configure-grid-selection-green-highlight` flag, targeted by segment membership rather than application-side color rules.
+Demonstrate **LaunchDarkly segments** driven by **context attributes** the application supplies at login. Selection highlight color comes from the `enable-grid-selection-highlight` flag, targeted by segment membership rather than application-side color rules.
 
 Baseline grid navigator behavior is defined in [00-reference-code/application.md](../../00-reference-code/application.md).
 
@@ -12,7 +12,7 @@ Baseline grid navigator behavior is defined in [00-reference-code/application.md
 
 Reuses the highlight flag key from [10-code-control/11-flag-enablement](../../10-code-control/11-flag-enablement/application.md):
 
-| Key | `configure-grid-selection-green-highlight` |
+| Key | `enable-grid-selection-highlight` |
 |-----|-------------------------------------------|
 | Type | **String** (this use case) |
 | Default (off) | `"none"` — no highlight colors |
@@ -107,7 +107,7 @@ Highlight flag targeting rules (first match wins) map each color segment to its 
 
 1. User logs in with a username
 2. Application builds LaunchDarkly context per rules above (including `name`)
-3. Evaluate `configure-grid-selection-green-highlight` for that context
+3. Evaluate `enable-grid-selection-highlight` for that context
 4. Evaluate `VIP` for that context
 5. Header shows `Name: {username} [**VIP**] ({segment-label})` — `**VIP**` only when the VIP flag is on and the user is in the VIP segment
 6. Selected grid cell uses the highlight color

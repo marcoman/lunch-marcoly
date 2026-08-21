@@ -1,23 +1,24 @@
 /** Resolve grid selection highlight color and cohort label from username context.
  *
- * Supports both shapes of configure-grid-selection-green-highlight:
- *   - boolean: true/false
- *   - string:  "none" / color names (shared with use-case examples)
+ * enable-grid-selection-highlight is a string flag (none | colors).
+ * Legacy boolean true/false is still accepted by interpretHighlightVariation.
  *
- * LaunchDarkly: feature flags — boolean vs multivariate string variations
+ * LaunchDarkly: feature flags — multivariate string variations
  * https://launchdarkly.com/docs/home/flags/concepts
  */
 
 const { osEmojiFor } = require("./host-os");
 
-// LaunchDarkly: flag key=configure-grid-selection-green-highlight
-// https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-grid-selection-green-highlight
+// LaunchDarkly: flag key=enable-grid-selection-highlight
+// name="Enable: grid selection highlight" kind=string
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-grid-selection-highlight
 
-const FLAG_HIGHLIGHT = "configure-grid-selection-green-highlight";
-// LaunchDarkly: flag key=configure-grid-selection-context-highlight
-// https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-grid-selection-context-highlight
+const FLAG_HIGHLIGHT = "enable-grid-selection-highlight";
+// LaunchDarkly: flag key=enable-grid-highlight-color-override
+// name="Enable: grid highlight color override" kind=boolean
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-grid-highlight-color-override
 
-const FLAG_CONTEXT = "configure-grid-selection-context-highlight";
+const FLAG_CONTEXT = "enable-grid-highlight-color-override";
 // LaunchDarkly: flag key=show-navigation-move-count
 // https://app.launchdarkly.com/projects/lunch-marcoly/features/show-navigation-move-count
 

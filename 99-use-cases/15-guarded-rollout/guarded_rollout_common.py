@@ -13,10 +13,10 @@ import urllib.request
 # LaunchDarkly capability: Guarded rollout with metric guardrails
 # See: https://launchdarkly.com/docs/home/releases/guarded-rollouts
 
-# LaunchDarkly: flag key=configure-grid-selection-green-highlight name="Configure: grid selection green highlight" kind=boolean
-# https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-grid-selection-green-highlight
+# LaunchDarkly: flag key=enable-grid-selection-highlight name="Enable: grid selection highlight" kind=string
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-grid-selection-highlight
 
-FLAG_KEY = "configure-grid-selection-green-highlight"
+FLAG_KEY = "enable-grid-selection-highlight"
 ROLLOUT_COLOR = "green"
 BASELINE_COLOR = "none"
 

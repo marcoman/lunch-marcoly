@@ -34,9 +34,9 @@ ensure_string_flag() {
   api POST "/flags/${LD_PROJECT_KEY}" \
     -H "Content-Type: application/json" \
     -d '{
-      "key": "configure-grid-selection-green-highlight",
-      "name": "Configure: grid selection green highlight",
-      "description": "Create/eval example: highlight color for selected grid cell.",
+      "key": "enable-grid-selection-highlight",
+      "name": "Enable: grid selection highlight",
+      "description": "When on, the selected grid cell shows a colored highlight in addition to the X marker. When off, evaluations receive none (X only, no color). Fallthrough chooses the base color.",
       "temporary": false,
       "tags": ["grid-navigator", "use-case", "create-eval-flag", "configure", "string"],
       "variations": [

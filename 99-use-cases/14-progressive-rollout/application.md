@@ -4,7 +4,7 @@ This document defines **14-progressive-rollout** under [99-use-cases](../README.
 
 ## Goal
 
-Release a **green grid highlight** to production gradually using a **progressive rollout** on a single string flag — `configure-grid-selection-green-highlight`.
+Release a **grid selection highlight** to production gradually using a **progressive rollout** on a single string flag — `enable-grid-selection-highlight`.
 
 > In this example, we have a progressive rollout over **15 minutes** in **five equal stages**: **10%**, **20%**, **40%**, **60%**, and **100%** of users receive the green highlight. Each stage lasts **3 minutes**.
 
@@ -12,7 +12,7 @@ Baseline grid navigator behavior is defined in [00-reference-code/application.md
 
 ## Flag
 
-| Key | `configure-grid-selection-green-highlight` |
+| Key | `enable-grid-selection-highlight` |
 |-----|-------------------------------------------|
 | Type | **String** |
 | Off variation | `none` — no highlight |
@@ -45,7 +45,7 @@ After [terraform/](terraform/) or [rest/](rest/) provisioning:
 Same as [11-create-eval-flag](../11-create-eval-flag/application.md):
 
 1. User logs in with a username (LaunchDarkly context key)
-2. Application evaluates `configure-grid-selection-green-highlight`
+2. Application evaluates `enable-grid-selection-highlight`
 3. Header shows `Name: {username} ({color-label})` and `Flag value:`
 4. Selected grid cell uses the resolved highlight color
 5. Re-evaluates every 500 ms in console apps

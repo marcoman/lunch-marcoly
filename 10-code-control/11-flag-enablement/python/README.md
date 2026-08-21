@@ -59,7 +59,7 @@ Open [http://127.0.0.1:8100/](http://127.0.0.1:8100/). See [portal/python/README
 
 1. Enter a username on the login screen (empty names are rejected).
 2. The grid matches [00-reference-code](../../../00-reference-code/application.md) when both flags are off (`X` only, no count).
-3. Turn on `configure-grid-selection-green-highlight` for a colored highlight. In this project the flag is often a **string** variation (`none` / colors); off serves `none`, on serves the fallthrough color. Use the **Fallthrough color** dropdown in Controls to pick among existing color variations (does not invent new ones). Enable `configure-grid-selection-context-highlight` for cohort-based colors from the username.
+3. Turn on `enable-grid-selection-highlight` for a colored highlight (**string** flag: off → `none`, on → fallthrough color). Use the **Fallthrough color** dropdown in Controls to pick among existing color variations. Enable `enable-grid-highlight-color-override` for cohort-based colors from the username.
 4. Turn on `show-navigation-move-count` to display `Count: N` in the header (starts at 0, increments on each move).
 5. Flag changes appear within ~2 seconds without navigating.
 6. After login the screen is a fixed lab layout: grid on the left, **LD lab** on the right, **Trace** across the bottom (taller / shorter / collapse).

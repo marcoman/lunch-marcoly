@@ -19,7 +19,7 @@ import (
 
 const (
 	appBanner        = "02-segments-by-name[go]"
-	flagHighlight    = "configure-grid-selection-green-highlight"
+	flagHighlight    = "enable-grid-selection-highlight"
 	flagVIP          = "VIP"
 	defaultHighlight = "none"
 	vipBadge         = "**VIP**"

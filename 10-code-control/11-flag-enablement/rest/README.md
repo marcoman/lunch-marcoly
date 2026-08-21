@@ -43,8 +43,8 @@ Creates all four grid navigator flags. When `LD_ENVIRONMENT_KEY` is set, all fou
 
 ```bash
 ./get-flag.sh show-navigation-move-count
-./get-flag.sh configure-grid-selection-green-highlight
-./get-flag.sh configure-grid-selection-context-highlight
+./get-flag.sh enable-grid-selection-highlight
+./get-flag.sh enable-grid-highlight-color-override
 ./get-flag.sh show-host-os-emoji
 ```
 

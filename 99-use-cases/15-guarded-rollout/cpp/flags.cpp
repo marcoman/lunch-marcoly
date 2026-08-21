@@ -15,7 +15,7 @@ extern "C" {
 namespace {
 
 #if defined(HAS_LAUNCHDARKLY)
-constexpr const char* kFlagHighlight = "configure-grid-selection-green-highlight";
+constexpr const char* kFlagHighlight = "enable-grid-selection-highlight";
 LDClient* g_client = nullptr;
 #endif
 

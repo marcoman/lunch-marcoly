@@ -1,6 +1,6 @@
 # Terraform provisioning
 
-Provisions `configure-grid-selection-green-highlight` as a **string** flag for the create/eval use case.
+Provisions `enable-grid-selection-highlight` as a **string** flag for the create/eval use case.
 
 The flag is **off** in the target environment by default. Use `./rest/turn-flag-on.sh` or the LaunchDarkly UI to turn it on after apply.
 

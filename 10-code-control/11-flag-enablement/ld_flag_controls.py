@@ -30,16 +30,22 @@ from host_os import FLAG_OS_EMOJI
 CONTROLLED_FLAGS: list[dict[str, str]] = [
     {
         "key": FLAG_HIGHLIGHT,
-        "label": "Selection highlight",
+        "label": "Enable grid selection highlight",
         "summary": (
-            "Colored X on the selected cell. String flag: off→none, on→green "
-            "(or the current fallthrough color). Boolean flag: true/false."
+            "String flag: off → none (X only); on → fallthrough color. "
+            "Use the color dropdown to set fallthrough among existing variations."
         ),
     },
     {
         "key": FLAG_CONTEXT,
-        "label": "Context highlight colors",
-        "summary": "Cohort colors from words in the username (human / robot / beta).",
+        "label": "Enable grid highlight color override",
+        "summary": (
+            "Boolean gate only — LaunchDarkly does not pick the colors. "
+            "When on (with a colored highlight), the app parses human / robot / beta "
+            "in the username and maps them to yellow / red / blue "
+            "(human+beta → green, robot+beta → purple). "
+            "Try a login like human-beta."
+        ),
     },
     {
         "key": FLAG_COUNT,

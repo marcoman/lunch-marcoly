@@ -1,14 +1,14 @@
-/** Evaluate configure-grid-selection-green-highlight for grid highlight color. */
+/** Evaluate enable-grid-selection-highlight for grid highlight color. */
 
 const LaunchDarkly = require("@launchdarkly/node-server-sdk");
 
 // LaunchDarkly capability: String flag evaluation (server-side SDK)
 // See: https://launchdarkly.com/docs/sdk/features/evaluations
 
-// LaunchDarkly: flag key=configure-grid-selection-green-highlight name="Configure: grid selection green highlight" kind=boolean
-// https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-grid-selection-green-highlight
+// LaunchDarkly: flag key=enable-grid-selection-highlight name="Enable: grid selection highlight" kind=string
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-grid-selection-highlight
 
-const FLAG_HIGHLIGHT = "configure-grid-selection-green-highlight";
+const FLAG_HIGHLIGHT = "enable-grid-selection-highlight";
 const VALID_COLORS = new Set(["yellow", "red", "blue", "green", "purple"]);
 
 function buildContext(username) {

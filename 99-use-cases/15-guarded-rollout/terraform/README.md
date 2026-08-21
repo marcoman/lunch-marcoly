@@ -1,6 +1,6 @@
 # Terraform provisioning
 
-Provisions `configure-grid-selection-green-highlight` as a **string** flag and the three guardrail metrics for the guarded rollout use case.
+Provisions `enable-grid-selection-highlight` as a **string** flag and the three guardrail metrics for the guarded rollout use case.
 
 The flag is **off** in the target environment by default. Use `./rest/start-guarded-rollout.sh` or the LaunchDarkly UI to begin the guarded rollout after apply.
 

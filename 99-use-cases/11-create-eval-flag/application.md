@@ -14,7 +14,7 @@ Baseline grid navigator behavior is defined in [00-reference-code/application.md
 
 Single string multivariate flag for selected-cell highlight color:
 
-| Key | `configure-grid-selection-green-highlight` |
+| Key | `enable-grid-selection-highlight` |
 |-----|-------------------------------------------|
 | Type | **String** |
 | Default (off) | `"none"` — no highlight colors |
@@ -45,7 +45,7 @@ When **on**, the fallthrough rule serves one color variation to every user conte
 ## Application behavior
 
 1. User logs in with a username (LaunchDarkly context key)
-2. Application evaluates `configure-grid-selection-green-highlight` for that user
+2. Application evaluates `enable-grid-selection-highlight` for that user
 3. Header shows **`Name: {username} ({color-label})`** — label is `(no-color)` when variation is `none`
 4. Selected grid cell uses the same highlight color (colored `X` outline in console)
 5. Standard 00-reference-code navigation, logout (`L`), quit (`Q`)

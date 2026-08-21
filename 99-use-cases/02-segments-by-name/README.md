@@ -6,7 +6,7 @@ LaunchDarkly **segments** driven by **context attributes** parsed from the login
 
 - **Context attributes** the application supplies (`name`, `segmentType`, `namedColor`, `userKind`, `beta`, `generic`)
 - **Rule-based segments** that match those attributes
-- **Segment-targeted flag** — `configure-grid-selection-green-highlight` returns a highlight **color** variation
+- **Segment-targeted flag** — `enable-grid-selection-highlight` returns a highlight **color** variation
 - **VIP boolean flag** — when on, users whose `name` contains `vip` (any case) show `**VIP**` next to the username
 - [00-reference-code](../../00-reference-code/) grid navigator with colored selection when flagged on
 
@@ -30,7 +30,7 @@ Username → application builds LD context → segment match → flag variation 
 ## Flag key
 
 ```text
-configure-grid-selection-green-highlight
+enable-grid-selection-highlight
 VIP
 ```
 

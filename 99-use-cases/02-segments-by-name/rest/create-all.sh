@@ -7,7 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=common.sh
 source "${SCRIPT_DIR}/common.sh"
 
-FLAG_KEY="configure-grid-selection-green-highlight"
+FLAG_KEY="enable-grid-selection-highlight"
 VIP_FLAG_KEY="VIP"
 
 variation_id() {
@@ -44,8 +44,8 @@ ensure_string_flag() {
   api POST "/flags/${LD_PROJECT_KEY}" \
     -H "Content-Type: application/json" \
     -d '{
-      "key": "configure-grid-selection-green-highlight",
-      "name": "Configure: grid selection green highlight",
+      "key": "enable-grid-selection-highlight",
+      "name": "Enable: grid selection highlight",
       "description": "Segments-by-name: highlight color from segment targeting.",
       "temporary": false,
       "tags": ["grid-navigator", "use-case", "segments-by-name", "configure", "string"],

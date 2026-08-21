@@ -43,11 +43,11 @@ locals {
   highlight_colors = ["green", "yellow", "red", "blue", "purple"]
 }
 
-resource "launchdarkly_feature_flag" "configure_grid_selection_green_highlight" {
+resource "launchdarkly_feature_flag" "enable_grid_selection_highlight" {
   project_key = var.project_key
-  key         = "configure-grid-selection-green-highlight"
-  name        = "Configure: grid selection green highlight"
-  description = "Create/eval example: highlight color for selected grid cell."
+  key         = "enable-grid-selection-highlight"
+  name        = "Enable: grid selection highlight"
+  description = "When on, the selected grid cell shows a colored highlight in addition to the X marker. When off, evaluations receive none (X only, no color). Fallthrough chooses the base color."
   temporary   = false
 
   variation_type = "string"
@@ -82,8 +82,8 @@ resource "launchdarkly_feature_flag" "configure_grid_selection_green_highlight" 
   ]
 }
 
-resource "launchdarkly_feature_flag_environment" "configure_grid_selection_green_highlight_env" {
-  flag_id = launchdarkly_feature_flag.configure_grid_selection_green_highlight.id
+resource "launchdarkly_feature_flag_environment" "enable_grid_selection_highlight_env" {
+  flag_id = launchdarkly_feature_flag.enable_grid_selection_highlight.id
   env_key = var.environment_key
 
   on = false
@@ -96,5 +96,5 @@ resource "launchdarkly_feature_flag_environment" "configure_grid_selection_green
 }
 
 output "flag_key" {
-  value = launchdarkly_feature_flag.configure_grid_selection_green_highlight.key
+  value = launchdarkly_feature_flag.enable_grid_selection_highlight.key
 }

@@ -1,6 +1,6 @@
 # Terraform provisioning
 
-Provisions `configure-grid-selection-green-highlight` as a **string** flag for the progressive rollout use case.
+Provisions `enable-grid-selection-highlight` as a **string** flag for the progressive rollout use case.
 
 The flag is **off** in the target environment by default. Use `./rest/start-progressive-rollout.sh` or the LaunchDarkly UI to begin the rollout after apply.
 

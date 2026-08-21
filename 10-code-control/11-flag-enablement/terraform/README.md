@@ -66,8 +66,8 @@ Terraform creates two boolean feature flags:
 
 | Key | Name | Default in target environment |
 |-----|------|-------------------------------|
-| `configure-grid-selection-green-highlight` | Configure: grid selection green highlight | Off (`false` — X only, no colors) |
-| `configure-grid-selection-context-highlight` | Configure: grid selection context highlight | Off (`false` — pink when highlight on) |
+| `enable-grid-selection-highlight` | Enable: grid selection highlight | Off (`none` — X only, no colors); string colors when on |
+| `enable-grid-highlight-color-override` | Enable: grid highlight color override | Off (`false` — use base fallthrough color) |
 | `show-navigation-move-count` | Show: navigation move count | Off (`false` — hidden) |
 | `show-host-os-emoji` | Show: host OS emoji | Off (`false` — no emoji) |
 

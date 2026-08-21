@@ -3,12 +3,12 @@
 # sources: filled by ldctl instrument --write (evaluation + provisioning hits).
 
 flags:
-- key: configure-grid-selection-green-highlight
-  name: 'Configure: grid selection green highlight'
-  kind: boolean
+- key: enable-grid-selection-highlight
+  name: 'Enable: grid selection highlight'
+  kind: string
   examples:
   - path: 10-code-control/11-flag-enablement
-    kind: boolean
+    kind: string
   - path: 99-use-cases/11-create-eval-flag
     kind: string
   - path: 99-use-cases/14-progressive-rollout
@@ -18,8 +18,8 @@ flags:
   - path: 99-use-cases/02-segments-by-name
     kind: string
   notes: >
-    Same key is boolean in 10-code-control/11-flag-enablement and string in use cases.
-    Use separate projects or environments to avoid collisions.
+    Shared string multivariate flag (none | green | yellow | red | blue | purple)
+    across 11-flag-enablement and 99-use-cases.
   sources:
   - path: 10-code-control/11-flag-enablement/highlight-style.js
     role: evaluation
@@ -31,8 +31,8 @@ flags:
     role: evaluation
   - path: 99-use-cases/02-segments-by-name/java/src/main/java/SegmentStyle.java
     role: evaluation
-- key: configure-grid-selection-context-highlight
-  name: 'Configure: grid selection context highlight'
+- key: enable-grid-highlight-color-override
+  name: 'Enable: grid highlight color override'
   kind: boolean
   examples:
   - path: 10-code-control/11-flag-enablement

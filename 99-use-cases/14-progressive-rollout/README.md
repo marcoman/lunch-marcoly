@@ -1,6 +1,6 @@
 # 14-progressive-rollout
 
-Gradually release a **green grid highlight** using a **progressive rollout** on one LaunchDarkly flag — `configure-grid-selection-green-highlight`.
+Gradually release a **grid selection highlight** using a **progressive rollout** on one LaunchDarkly flag — `enable-grid-selection-highlight`.
 
 > In this example, we have a progressive rollout over **15 minutes** in **five equal stages**: **10%**, **20%**, **40%**, **60%**, and **100%** of users receive the green highlight. Each stage lasts **3 minutes**.
 
@@ -98,7 +98,7 @@ Example output:
 
 ```text
 Test: 14-progressive-rollout-monitor
-Flag: configure-grid-selection-green-highlight
+Flag: enable-grid-selection-highlight
 
 Progressive rollout: 15 minutes, 5 equal stages (3 min each)
   ...
@@ -155,7 +155,7 @@ The script turns the flag on with off variation `none` and writes `progressive-r
 Or configure manually in the UI:
 
 1. Open your project in [LaunchDarkly](https://app.launchdarkly.com).
-2. Go to **Flags** → **`configure-grid-selection-green-highlight`**.
+2. Go to **Flags** → **`enable-grid-selection-highlight`**.
 3. Select the target environment (e.g. **Production**).
 4. Flip the toggle to **On**.
 5. Under **Default rule**, select **Progressive rollout**.
@@ -216,14 +216,14 @@ This turns the flag on and advances through 10% → 20% → 40% → 60% → 100%
 Semantic patches require variation `_id` UUIDs:
 
 ```bash
-FLAG_JSON=$(curl -sS "${LD_API_HOST}/api/v2/flags/${LD_PROJECT_KEY}/configure-grid-selection-green-highlight" \
+FLAG_JSON=$(curl -sS "${LD_API_HOST}/api/v2/flags/${LD_PROJECT_KEY}/enable-grid-selection-highlight" \
   -H "Authorization: ${LD_API_ACCESS_TOKEN}" \
   -H "LD-API-Version: ${LD_API_VERSION}")
 
 GREEN_ID=$(echo "${FLAG_JSON}" | jq -r '.variations[] | select(.value == "green") | ._id')
 NONE_ID=$(echo "${FLAG_JSON}" | jq -r '.variations[] | select(.value == "none") | ._id')
 
-curl -sS -X PATCH "${LD_API_HOST}/api/v2/flags/${LD_PROJECT_KEY}/configure-grid-selection-green-highlight" \
+curl -sS -X PATCH "${LD_API_HOST}/api/v2/flags/${LD_PROJECT_KEY}/enable-grid-selection-highlight" \
   -H "Authorization: ${LD_API_ACCESS_TOKEN}" \
   -H "LD-API-Version: ${LD_API_VERSION}" \
   -H "Content-Type: application/json; domain-model=launchdarkly.semanticpatch" \
@@ -253,7 +253,7 @@ After each curl, run `--evaluate-once` or watch the monitor script to confirm th
 ## Flag key
 
 ```text
-configure-grid-selection-green-highlight
+enable-grid-selection-highlight
 ```
 
 Rollout uses `none` (no highlight) and `green` (green highlight).

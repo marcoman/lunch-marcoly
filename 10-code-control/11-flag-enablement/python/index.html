@@ -575,11 +575,19 @@
         </div>
         <div id="ld-section-about" class="ld-section">
           <div class="ld-block-title">What this example is</div>
-          <p class="ld-about-p">This example teaches LaunchDarkly <strong>feature flags</strong> on the grid navigator: boolean variations control highlight, context-based colors, move count, and a host OS emoji—without hardcoding those behaviors in the UI.</p>
+          <p class="ld-about-p">This example teaches LaunchDarkly <strong>feature flags</strong> on the grid navigator: a <strong>string</strong> highlight flag, a boolean <strong>color override</strong>, move count, and a host OS emoji—without hardcoding those behaviors in the UI.</p>
           <div class="ld-block-title">What we show</div>
           <p class="ld-about-p">Log in, move on the grid, and use <strong>Controls</strong> to turn flags on/off via the REST API. <strong>Context</strong> shows what the SDK evaluates against. The bottom <strong>Trace</strong> dock logs each change.</p>
+          <div class="ld-block-title">Color override (app logic)</div>
+          <p class="ld-about-p">
+            <code>enable-grid-highlight-color-override</code> is a boolean <strong>gate</strong>:
+            LaunchDarkly only says on/off. When on, <strong>this application</strong> looks for
+            <code>human</code> / <code>robot</code> / <code>beta</code> in the login name and chooses the color:
+            human→yellow, robot→red, beta→blue, human+beta→green, robot+beta→purple.
+            Try logging in as <code>human-beta</code>.
+          </p>
           <div class="ld-block-title">Why it matters</div>
-          <p class="ld-about-p">You ship the app once and enable features in LaunchDarkly—so product and ops can change behavior without a redeploy. Keywords: <strong>boolean variations</strong>, <strong>contexts</strong>, <strong>private attributes</strong>, <strong>semantic patch</strong>.</p>
+          <p class="ld-about-p">You ship the app once and enable features in LaunchDarkly—so product and ops can change behavior without a redeploy. Keywords: <strong>string variations</strong>, <strong>boolean variations</strong>, <strong>contexts</strong>, <strong>private attributes</strong>, <strong>semantic patch</strong>.</p>
         </div>
       </div>
     </aside>

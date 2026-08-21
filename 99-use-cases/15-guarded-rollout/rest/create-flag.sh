@@ -34,8 +34,8 @@ ensure_string_flag() {
   api POST "/flags/${LD_PROJECT_KEY}" \
     -H "Content-Type: application/json" \
     -d '{
-      "key": "configure-grid-selection-green-highlight",
-      "name": "Configure: grid selection green highlight",
+      "key": "enable-grid-selection-highlight",
+      "name": "Enable: grid selection highlight",
       "description": "Guarded rollout example: highlight color for selected grid cell.",
       "temporary": false,
       "tags": ["grid-navigator", "use-case", "guarded-rollout", "configure", "string"],

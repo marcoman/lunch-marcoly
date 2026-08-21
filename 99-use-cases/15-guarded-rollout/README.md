@@ -1,6 +1,6 @@
 # 15-guarded-rollout
 
-Gradually release a **green grid highlight** using a **guarded rollout** on one LaunchDarkly flag — `configure-grid-selection-green-highlight`.
+Gradually release a **grid selection highlight** using a **guarded rollout** on one LaunchDarkly flag — `enable-grid-selection-highlight`.
 
 > In this example, we have a guarded rollout over **12 minutes** in **four equal stages**: **10%**, **20%**, **30%**, and **50%** of users receive the green highlight. Each stage lasts **3 minutes**.
 
@@ -80,7 +80,7 @@ python python-console/15-guarded-rollout.py --exercise-once guard-probe-001-00 -
 
 [15-guarded-rollout-monitor.py](15-guarded-rollout-monitor.py) exercises guardrails and reports batch metrics:
 
-- Prints **Test:** `15-guarded-rollout-monitor` and **Flag:** `configure-grid-selection-green-highlight`
+- Prints **Test:** `15-guarded-rollout-monitor` and **Flag:** `enable-grid-selection-highlight`
 - Runs **20 exercises** per batch every **30 seconds**
 - Each exercise performs **5 navigations** (5% randomly skip navigation)
 - Reports `latencyFail`, `errorFail`, `movementFail` counts per batch
@@ -90,7 +90,7 @@ Example output:
 
 ```text
 Test: 15-guarded-rollout-monitor
-Flag: configure-grid-selection-green-highlight
+Flag: enable-grid-selection-highlight
 
 Guarded rollout: 12 minutes, 4 equal stages (3 min each)
   ...
@@ -140,7 +140,7 @@ The script creates the three guardrail metrics (if needed), turns the flag on wi
 Or configure manually in the UI:
 
 1. Open your project in [LaunchDarkly](https://app.launchdarkly.com).
-2. Go to **Flags** → **`configure-grid-selection-green-highlight`**.
+2. Go to **Flags** → **`enable-grid-selection-highlight`**.
 3. Select the target environment (e.g. **Production**).
 4. Flip the toggle to **On**.
 5. Under **Default rule**, select **Guarded rollout**.
@@ -202,14 +202,14 @@ export LD_ENVIRONMENT_KEY="production"
 ### Set 40% green via curl directly
 
 ```bash
-FLAG_JSON=$(curl -sS "${LD_API_HOST}/api/v2/flags/${LD_PROJECT_KEY}/configure-grid-selection-green-highlight" \
+FLAG_JSON=$(curl -sS "${LD_API_HOST}/api/v2/flags/${LD_PROJECT_KEY}/enable-grid-selection-highlight" \
   -H "Authorization: ${LD_API_ACCESS_TOKEN}" \
   -H "LD-API-Version: ${LD_API_VERSION}")
 
 GREEN_ID=$(echo "${FLAG_JSON}" | jq -r '.variations[] | select(.value == "green") | ._id')
 NONE_ID=$(echo "${FLAG_JSON}" | jq -r '.variations[] | select(.value == "none") | ._id')
 
-curl -sS -X PATCH "${LD_API_HOST}/api/v2/flags/${LD_PROJECT_KEY}/configure-grid-selection-green-highlight" \
+curl -sS -X PATCH "${LD_API_HOST}/api/v2/flags/${LD_PROJECT_KEY}/enable-grid-selection-highlight" \
   -H "Authorization: ${LD_API_ACCESS_TOKEN}" \
   -H "LD-API-Version: ${LD_API_VERSION}" \
   -H "Content-Type: application/json; domain-model=launchdarkly.semanticpatch" \
@@ -235,7 +235,7 @@ Or: `./rest/set-rollout-percent.sh 40`
 ## Flag key
 
 ```text
-configure-grid-selection-green-highlight
+enable-grid-selection-highlight
 ```
 
 Rollout uses `none` (no highlight) and `green` (green highlight).

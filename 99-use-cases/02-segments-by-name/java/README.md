@@ -29,4 +29,4 @@ Open [http://127.0.0.1:8080/](http://127.0.0.1:8080/).
 
 ## What to expect
 
-Same as [python-console/02-segments-by-name.py](../python-console/02-segments-by-name.py): segment context attributes drive highlight color from `configure-grid-selection-green-highlight`. Header shows `Name: {username} ({segment-label})`.
+Same as [python-console/02-segments-by-name.py](../python-console/02-segments-by-name.py): segment context attributes drive highlight color from `enable-grid-selection-highlight`. Header shows `Name: {username} ({segment-label})`.

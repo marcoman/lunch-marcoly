@@ -16,7 +16,7 @@ use std::time::Duration;
 // LaunchDarkly capability: String flag variation from segment targeting
 // See: https://launchdarkly.com/docs/home/flags/segments
 
-const FLAG_HIGHLIGHT: &str = "configure-grid-selection-green-highlight";
+const FLAG_HIGHLIGHT: &str = "enable-grid-selection-highlight";
 const FLAG_VIP: &str = "VIP";
 const DEFAULT_HIGHLIGHT: &str = "none";
 const VIP_BADGE: &str = "**VIP**";

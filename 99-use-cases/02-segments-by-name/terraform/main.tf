@@ -164,10 +164,10 @@ resource "launchdarkly_segment" "vip" {
   }
 }
 
-resource "launchdarkly_feature_flag" "configure_grid_selection_green_highlight" {
+resource "launchdarkly_feature_flag" "enable_grid_selection_highlight" {
   project_key = var.project_key
-  key         = "configure-grid-selection-green-highlight"
-  name        = "Configure: grid selection green highlight"
+  key         = "enable-grid-selection-highlight"
+  name        = "Enable: grid selection highlight"
   description = "Segments-by-name: string highlight color from segment targeting (none, yellow, red, blue, green, purple)."
   temporary   = false
 
@@ -225,7 +225,7 @@ resource "launchdarkly_feature_flag" "configure_grid_selection_green_highlight" 
 }
 
 resource "launchdarkly_feature_flag_environment" "highlight_env" {
-  flag_id = launchdarkly_feature_flag.configure_grid_selection_green_highlight.id
+  flag_id = launchdarkly_feature_flag.enable_grid_selection_highlight.id
   env_key = var.environment_key
 
   on            = true
@@ -365,7 +365,7 @@ resource "launchdarkly_feature_flag_environment" "vip_env" {
 }
 
 output "flag_key" {
-  value = launchdarkly_feature_flag.configure_grid_selection_green_highlight.key
+  value = launchdarkly_feature_flag.enable_grid_selection_highlight.key
 }
 
 output "vip_flag_key" {

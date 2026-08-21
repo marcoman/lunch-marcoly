@@ -1,6 +1,6 @@
 # REST API provisioning
 
-Creates `configure-grid-selection-green-highlight` as a **string** flag and helper scripts to toggle it.
+Creates `enable-grid-selection-highlight` as a **string** flag and helper scripts to toggle it.
 
 ## Environment variables
 

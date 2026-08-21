@@ -4,9 +4,9 @@ Feature flag naming, provisioning, and enablement for the **lunch-marcoly** grid
 
 ## What this demonstrates
 
-This example teaches LaunchDarkly **boolean feature flags** on the grid navigator. The [00-reference-code](../../00-reference-code/) app is reference-only — it has no LaunchDarkly integration and serves as the baseline behavior described in [application.md](../../00-reference-code/application.md) (`X` only, no colors). For variation types (string / number / JSON), see sibling [12-flag-variations](../12-flag-variations/).
+This example teaches LaunchDarkly **feature flags** on the grid navigator. The [00-reference-code](../../00-reference-code/) app is reference-only — it has no LaunchDarkly integration and serves as the baseline behavior described in [application.md](../../00-reference-code/application.md) (`X` only, no colors). For other variation types (number / JSON), see sibling [12-flag-variations](../12-flag-variations/).
 
-Here you define three boolean feature flags that extend the grid navigator. See [application.md](application.md) for the full flag specification and desired effects. Provision flags with:
+Here you define flags that extend the grid navigator — including a **string** highlight color flag and **boolean** enable/show flags. See [application.md](application.md) for the full flag specification and desired effects. Provision flags with:
 
 - **Terraform** ([terraform/](terraform/))
 - **REST API** scripts ([rest/](rest/))
@@ -19,32 +19,33 @@ Summary below. Full behavior, acceptance criteria, and combined flag effects are
 
 Naming follows the **action: subject** pattern from the [flag conventions guide](https://launchdarkly.com/docs/guides/flags/flag-conventions). Keys use **kebab-case**, matching the auto-generated key style.
 
-### 1. Selection highlight on selected cell
+### 1. Enable grid selection highlight
 
-00-reference-code uses **`X` only** with no colors. This flag **enables** colored highlight when turned on (default **pink**).
+00-reference-code uses **`X` only** with no colors. This **string** flag enables colored highlight when on (fallthrough color) and serves `none` when off.
 
 | Attribute | Value |
 |-----------|-------|
-| **Kind** | Configure (operational) |
-| **Name** | `Configure: grid selection green highlight` |
-| **Key** | `configure-grid-selection-green-highlight` |
+| **Kind** | Enable (operational) |
+| **Name** | `Enable: grid selection highlight` |
+| **Key** | `enable-grid-selection-highlight` |
+| **Variation type** | string |
 | **Interpretation** | Enable colored highlight on the selected grid cell |
 | **Temporary** | No |
-| **Tags** | `grid-navigator`, `configure`, `ui` |
-| **Default (off)** | `false` — `X` only, no colors (matches 00-reference-code) |
-| **When `true`** | Pink highlight by default; username colored to match |
-| **When `false`** | `X` only — same as [00-reference-code/application.md](../../00-reference-code/application.md) |
+| **Tags** | `grid-navigator`, `enable`, `ui`, `string` |
+| **Default (off)** | `none` — `X` only, no colors (matches 00-reference-code) |
+| **When on** | Fallthrough color (default green); username colored to match |
+| **When off** | `none` — `X` only — same as [00-reference-code/application.md](../../00-reference-code/application.md) |
 
 **Variation labels**
 
 | Variation | Label | Description |
 |-----------|-------|-------------|
-| `true` | Highlight enabled | Selected cell shows `X` with colored highlight |
-| `false` | X only | Selected cell shows `X` with no colors (default) |
+| `none` | No highlight | Selected cell shows `X` with no colors |
+| `green` / `yellow` / `red` / `blue` / `purple` | Color name | Selected cell shows `X` with that highlight |
 
-### 2. Context-based highlight colors
+### 2. Enable grid highlight color override
 
-When enabled together with the highlight flag, colors are derived from **words in the login name**:
+When enabled together with a non-`none` highlight, colors are derived from **words in the login name**:
 
 | Word in name | Cohort | Color |
 |--------------|--------|-------|
@@ -54,16 +55,17 @@ When enabled together with the highlight flag, colors are derived from **words i
 | human + beta | human-beta | green |
 | robot + beta | robot-beta | purple |
 
-The header shows a cohort label in parentheses (e.g. `(human-beta-green)` or `(no-color)`) after the username. The label always includes the color name; cohort identifiers appear when the context flag is on.
+The header shows a cohort label in parentheses (e.g. `(human-beta-green)` or `(no-color)`) after the username. The label always includes the color name; cohort identifiers appear when the override flag is on.
 
 | Attribute | Value |
 |-----------|-------|
-| **Kind** | Configure (operational) |
-| **Name** | `Configure: grid selection context highlight` |
-| **Key** | `configure-grid-selection-context-highlight` |
-| **Default (off)** | `false` — pink highlight when highlight flag is on |
+| **Kind** | Enable (operational) |
+| **Name** | `Enable: grid highlight color override` |
+| **Key** | `enable-grid-highlight-color-override` |
+| **Variation type** | boolean |
+| **Default (off)** | `false` — use base fallthrough color from the highlight flag |
 | **When `true`** | Cohort-based colors; label like `(human-yellow)` or `(human-beta-green)` |
-| **When `false`** | Pink highlight; label `(pink)` |
+| **When `false`** | Base fallthrough color; label like `(green)` |
 
 ### 3. Navigation move count in header
 
@@ -122,8 +124,8 @@ Run provisioning **before** adding language implementations in this folder.
 When implementations evaluate these flags, use the keys exactly as shown:
 
 ```text
-configure-grid-selection-green-highlight
-configure-grid-selection-context-highlight
+enable-grid-selection-highlight
+enable-grid-highlight-color-override
 show-navigation-move-count
 show-host-os-emoji
 ```

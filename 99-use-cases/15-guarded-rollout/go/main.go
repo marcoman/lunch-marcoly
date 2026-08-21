@@ -16,7 +16,7 @@ import (
 
 const (
 	appBanner        = "15-guarded-rollout[go]"
-	flagHighlight    = "configure-grid-selection-green-highlight"
+	flagHighlight    = "enable-grid-selection-highlight"
 	defaultHighlight = "none"
 )
 

@@ -19,8 +19,8 @@ extern "C" {
 namespace {
 
 #if defined(HAS_LAUNCHDARKLY)
-constexpr const char* kFlagHighlight = "configure-grid-selection-green-highlight";
-constexpr const char* kFlagContext = "configure-grid-selection-context-highlight";
+constexpr const char* kFlagHighlight = "enable-grid-selection-highlight";
+constexpr const char* kFlagContext = "enable-grid-highlight-color-override";
 constexpr const char* kFlagCount = "show-navigation-move-count";
 constexpr const char* kFlagOsEmoji = "show-host-os-emoji";
 constexpr const char* kHostOsAttr = "hostOs";
@@ -128,7 +128,7 @@ std::string resolve_highlight_color(const std::string& username, bool highlight_
         return "none";
     }
     if (!context_highlight) {
-        return "pink";
+        return "green";
     }
     const Cohorts cohorts = parse_cohorts(username);
     if (cohorts.human && cohorts.beta) {
@@ -146,7 +146,7 @@ std::string resolve_highlight_color(const std::string& username, bool highlight_
     if (cohorts.beta) {
         return "blue";
     }
-    return "pink";
+    return "green";
 }
 
 std::string detect_host_os() {
@@ -418,8 +418,11 @@ FlagValues evaluate_flags(const std::string& username) {
     if (context == nullptr) {
         return defaults(username);
     }
-    const bool highlight =
-        LDBoolVariation(g_client, kFlagHighlight, context, false);
+    const char* highlight_raw =
+        LDStringVariation(g_client, kFlagHighlight, context, "none");
+    const std::string highlight_str = highlight_raw ? highlight_raw : "none";
+    const bool highlight = !(highlight_str.empty() || highlight_str == "none" ||
+                             highlight_str == "false" || highlight_str == "off");
     const bool context_highlight =
         LDBoolVariation(g_client, kFlagContext, context, false);
     const bool show_count = LDBoolVariation(g_client, kFlagCount, context, false);

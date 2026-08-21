@@ -6,7 +6,7 @@ set -euo pipefail
 : "${LD_API_HOST:=https://app.launchdarkly.com}"
 : "${LD_API_VERSION:=20240415}"
 
-FLAG_KEY="configure-grid-selection-green-highlight"
+FLAG_KEY="enable-grid-selection-highlight"
 
 METRIC_KEY_LATENCY="grid-nav-latency"
 METRIC_KEY_ERROR_RATE="grid-highlight-error-rate"

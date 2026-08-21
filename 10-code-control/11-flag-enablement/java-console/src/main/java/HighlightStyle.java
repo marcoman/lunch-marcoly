@@ -2,14 +2,14 @@
  * Resolve grid selection highlight color and cohort label from username context.
  */
 public final class HighlightStyle {
-    // LaunchDarkly: flag key=configure-grid-selection-green-highlight name="Configure: grid selection green highlight" kind=boolean
-    // https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-grid-selection-green-highlight
+    // LaunchDarkly: flag key=enable-grid-selection-highlight name="Enable: grid selection highlight" kind=string
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-grid-selection-highlight
 
-    static final String FLAG_HIGHLIGHT = "configure-grid-selection-green-highlight";
-    // LaunchDarkly: flag key=configure-grid-selection-context-highlight name="Configure: grid selection context highlight" kind=boolean
-    // https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-grid-selection-context-highlight
+    static final String FLAG_HIGHLIGHT = "enable-grid-selection-highlight";
+    // LaunchDarkly: flag key=enable-grid-highlight-color-override name="Enable: grid highlight color override" kind=boolean
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-grid-highlight-color-override
 
-    static final String FLAG_CONTEXT = "configure-grid-selection-context-highlight";
+    static final String FLAG_CONTEXT = "enable-grid-highlight-color-override";
     // LaunchDarkly: flag key=show-navigation-move-count name="Show: navigation move count" kind=boolean
     // https://app.launchdarkly.com/projects/lunch-marcoly/features/show-navigation-move-count
 
@@ -63,12 +63,27 @@ public final class HighlightStyle {
         return "(" + colorName + ")";
     }
 
-    static String resolveHighlightColor(String username, boolean highlightEnabled, boolean contextHighlight) {
+    static boolean isHighlightOff(String raw) {
+        if (raw == null) {
+            return true;
+        }
+        String v = raw.trim().toLowerCase();
+        return v.isEmpty() || "none".equals(v) || "false".equals(v) || "off".equals(v);
+    }
+
+    static String resolveHighlightColor(
+            String username,
+            boolean highlightEnabled,
+            boolean contextHighlight,
+            String servedColor) {
         if (!highlightEnabled) {
             return "none";
         }
         if (!contextHighlight) {
-            return "pink";
+            if (servedColor != null && !isHighlightOff(servedColor)) {
+                return servedColor;
+            }
+            return "green";
         }
         Cohorts cohorts = parseCohorts(username);
         if (cohorts.human() && cohorts.beta()) {
@@ -86,11 +101,22 @@ public final class HighlightStyle {
         if (cohorts.beta()) {
             return "blue";
         }
-        return "pink";
+        if (servedColor != null && !isHighlightOff(servedColor)) {
+            return servedColor;
+        }
+        return "green";
     }
 
     static Style resolve(String username, boolean highlightEnabled, boolean contextHighlight) {
-        String color = resolveHighlightColor(username, highlightEnabled, contextHighlight);
+        return resolve(username, highlightEnabled, contextHighlight, null);
+    }
+
+    static Style resolve(
+            String username,
+            boolean highlightEnabled,
+            boolean contextHighlight,
+            String servedColor) {
+        String color = resolveHighlightColor(username, highlightEnabled, contextHighlight, servedColor);
         String label = formatCohortLabel(username, color, contextHighlight);
         return new Style(color, label);
     }
