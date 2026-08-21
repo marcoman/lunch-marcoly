@@ -11,7 +11,7 @@ This lab teaches **targeting rules** on a public **context attribute**. It contr
 - [Targeting rules](https://launchdarkly.com/docs/home/flags/target-rules)
 - [Context attributes](https://launchdarkly.com/docs/home/flags/context-attributes)
 
-Python, Node.js, and Java are also available as console applications. They keep the login, team targeting, live flag refresh, and grid navigation behavior, but intentionally omit the web lab and REST Controls.
+Python, Node.js, Java, C++, Go, and Rust are also available as console applications. They keep the login, team targeting, live flag refresh, and grid navigation behavior, but intentionally omit the web lab and REST Controls.
 
 ## Flag
 

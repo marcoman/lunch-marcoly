@@ -32,6 +32,9 @@ See [application.md](application.md) for the full specification.
 | Python console | [python-console/](python-console/) | Done |
 | Node.js console | [node-console/](node-console/) | Done |
 | Java console | [java-console/](java-console/) | Done |
+| C++ console | [cpp/](cpp/) | Done |
+| Go console | [go/](go/) | Done |
+| Rust console | [rust/](rust/) | Done |
 
 ## Portal (series)
 
@@ -78,6 +81,15 @@ cd node-console && npm install && npm start
 
 # Java console
 cd java-console && ./mvnw -q -DskipTests package && java -jar target/13-flag-targeting-rules.jar
+
+# C++ console
+cd cpp && make && ./13-flag-targeting-rules
+
+# Go console
+cd go && go build -o 13-flag-targeting-rules . && ./13-flag-targeting-rules
+
+# Rust console
+cd rust && cargo build --release && ./target/release/13-flag-targeting-rules
 ```
 
 See each language folder’s README for toolchain notes.
