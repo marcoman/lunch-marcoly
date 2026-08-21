@@ -2,7 +2,7 @@
 
 LaunchDarkly **targeting rules** for the lunch-marcoly grid navigator.
 
-The web implementations evaluate `configure-team-label-style` against a public `team` [context attribute](https://launchdarkly.com/docs/home/flags/context-attributes). Provisioned [targeting rules](https://launchdarkly.com/docs/home/flags/target-rules) map Red, Blue, and Yellow teams to matching label styles; No team omits the attribute and receives `plain` fallthrough.
+The web and console implementations evaluate `configure-team-label-style` against a public `team` [context attribute](https://launchdarkly.com/docs/home/flags/context-attributes). Provisioned [targeting rules](https://launchdarkly.com/docs/home/flags/target-rules) map Red, Blue, and Yellow teams to matching label styles; No team omits the attribute and receives `plain` fallthrough.
 
 See [application.md](application.md) for the full specification.
 
@@ -29,6 +29,9 @@ See [application.md](application.md) for the full specification.
 | Node.js web | [node/](node/) | Done |
 | Java web | [java/](java/) | Done |
 | .NET web | [dotnet/](dotnet/) | Done |
+| Python console | [python-console/](python-console/) | Done |
+| Node.js console | [node-console/](node-console/) | Done |
+| Java console | [java-console/](java-console/) | Done |
 
 ## Portal (series)
 
@@ -66,6 +69,15 @@ cd java && ./mvnw -q -DskipTests package && java -jar target/13-flag-targeting-r
 
 # .NET
 cd dotnet && dotnet run
+
+# Python console
+cd python-console && python 13-flag-targeting-rules.py
+
+# Node console
+cd node-console && npm install && npm start
+
+# Java console
+cd java-console && ./mvnw -q -DskipTests package && java -jar target/13-flag-targeting-rules.jar
 ```
 
 See each language folder’s README for toolchain notes.

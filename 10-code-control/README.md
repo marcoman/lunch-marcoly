@@ -10,7 +10,7 @@ numbered children and an optional [portal](portal/) to run them side by side.
 |---------|--------|-----------------|
 | **11** | [11-flag-enablement/](11-flag-enablement/) | Boolean flags, contexts, private `hostOs` |
 | **12** | [12-flag-variations/](12-flag-variations/) | String, number, JSON, anonymous context |
-| **13** | [13-flag-targeting-rules/](13-flag-targeting-rules/) | Python / Node / Java / .NET web: targeting rules on public `team` context attribute |
+| **13** | [13-flag-targeting-rules/](13-flag-targeting-rules/) | Web plus Python / Node / Java consoles: targeting rules on public `team` context attribute |
 
 Baseline (no LaunchDarkly): [00-reference-code](../00-reference-code/).
 

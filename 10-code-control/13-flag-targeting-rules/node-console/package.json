@@ -1,0 +1,13 @@
+{
+  "name": "targeting-rules-grid-navigator-console",
+  "version": "1.0.0",
+  "private": true,
+  "description": "13-flag-targeting-rules grid navigator console app",
+  "main": "13-flag-targeting-rules.js",
+  "scripts": {
+    "start": "node 13-flag-targeting-rules.js"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0"
+  }
+}
