@@ -5,13 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Grid Navigator — Flag Enablement</title>
   <style>
+    html, body {
+      height: 100%;
+    }
     body {
       font-family: system-ui, sans-serif;
       background: #1e1e2e;
       color: #e8e8ec;
+      margin: 0;
+      min-height: 100%;
+    }
+    #login-screen {
       max-width: 480px;
       margin: 2rem auto;
       padding: 0 1rem;
+    }
+    #app-shell {
+      display: none;
+      height: 100vh;
+      box-sizing: border-box;
+      grid-template-columns: minmax(0, 1fr) min(28rem, 42vw);
+      grid-template-rows: minmax(0, 1fr) auto;
+    }
+    body.grid-active #app-shell {
+      display: grid;
+    }
+    #grid-screen {
+      grid-column: 1;
+      grid-row: 1;
+      box-sizing: border-box;
+      min-width: 0;
+      min-height: 0;
+      overflow: auto;
+      padding: 1.5rem 1.25rem;
+      outline: none;
     }
     h1 { font-size: 1.25rem; margin-bottom: 1rem; }
     label { display: block; margin-bottom: 0.5rem; }
@@ -83,7 +110,7 @@
       border-color: #6a1b9a;
     }
     .hint { margin-top: 1rem; color: #aaa; font-size: 0.875rem; }
-    .hidden { display: none; }
+    .hidden { display: none !important; }
     .color-pink { color: #f48fb1; }
     .color-yellow { color: #fff176; }
     .color-red { color: #ef5350; }
@@ -91,7 +118,7 @@
     .color-green { color: #81c784; }
     .color-purple { color: #ce93d8; }
 
-    /* About drawer — same narrative shape as 20-series LD Details → About */
+    /* Persistent LD lab — right column of the app shell (always visible) */
     :root {
       --about-ink: #e8e8ec;
       --about-muted: #9a9aab;
@@ -99,75 +126,39 @@
       --about-line: #4a4a5c;
       --about-accent: #64b5f6;
     }
-    .ld-fab {
-      position: fixed;
-      top: 1rem;
-      right: 1.25rem;
-      bottom: auto;
-      z-index: 50;
-      padding: 0.65rem 1rem;
-      border-radius: 999px;
-      border: 1px solid var(--about-line);
-      background: var(--about-panel);
-      color: var(--about-ink);
-      font: inherit;
-      font-weight: 600;
-      font-size: 0.875rem;
-      cursor: pointer;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-    }
-    .ld-fab:hover { border-color: var(--about-accent); }
-    .ld-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.45);
-      z-index: 55;
-    }
-    .ld-backdrop.open { display: block; }
-    .ld-drawer {
-      position: fixed;
-      top: 0;
-      right: 0;
-      height: 100vh;
-      width: min(28rem, 92vw);
-      max-width: 92vw;
-      background: var(--about-panel);
-      border-left: 1px solid var(--about-line);
-      z-index: 60;
-      transform: translateX(100%);
-      transition: transform 0.2s ease;
+    .ld-rail {
+      grid-column: 2;
+      grid-row: 1;
       display: flex;
       flex-direction: column;
-      box-shadow: -8px 0 24px rgba(0, 0, 0, 0.4);
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background: var(--about-panel);
+      border-left: 1px solid var(--about-line);
       color: var(--about-ink);
+      box-sizing: border-box;
     }
-    .ld-drawer.open { transform: translateX(0); }
-    .ld-drawer-header {
+    .ld-rail-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 0.75rem;
-      padding: 1rem 1.1rem;
+      padding: 0.85rem 1.1rem;
       border-bottom: 1px solid var(--about-line);
+      flex: 0 0 auto;
     }
-    .ld-drawer-header h2 {
+    .ld-rail-header h2 {
       margin: 0;
       font-size: 1.05rem;
       font-weight: 600;
-    }
-    .ld-drawer-header button {
-      padding: 0.35rem 0.75rem;
-      background: #3d3d52;
-      color: var(--about-ink);
-      border: 1px solid #666;
-      cursor: pointer;
     }
     .ld-tabs {
       display: flex;
       gap: 0.35rem;
       padding: 0.65rem 1.1rem 0;
       border-bottom: 1px solid var(--about-line);
+      flex: 0 0 auto;
     }
     .ld-tab {
       border: none;
@@ -184,10 +175,11 @@
       border-bottom-color: var(--about-accent);
       font-weight: 600;
     }
-    .ld-drawer-body {
+    .ld-rail-body {
       flex: 1 1 auto;
       overflow: auto;
-      padding: 1rem 1.1rem 2rem;
+      padding: 1rem 1.1rem 1.5rem;
+      min-height: 0;
     }
     .ld-block-title {
       margin: 0 0 0.4rem;
@@ -358,6 +350,32 @@
       opacity: 0.55;
       cursor: wait;
     }
+    .flag-color-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.65rem;
+      flex-wrap: wrap;
+    }
+    .flag-color-row label {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--about-muted);
+    }
+    .flag-color-select {
+      flex: 1 1 auto;
+      min-width: 8rem;
+      padding: 0.35rem 0.5rem;
+      background: #2d2d3d;
+      color: var(--about-ink);
+      border: 1px solid #666;
+      font: inherit;
+      font-size: 0.85rem;
+    }
+    .flag-color-select:disabled {
+      opacity: 0.55;
+      cursor: wait;
+    }
     .ld-toolbar {
       display: flex;
       gap: 0.5rem;
@@ -373,29 +391,16 @@
       font-size: 0.8rem;
     }
 
-    /* Bottom trace dock — always visible on the grid (tall / short / collapsed) */
+    /* Trace — bottom row of the app shell (full width under grid + lab) */
     .trace-dock {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 40;
-      display: none;
+      grid-column: 1 / -1;
+      grid-row: 2;
+      display: flex;
       flex-direction: column;
       background: #252535;
       border-top: 1px solid #4a4a5c;
-      box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.35);
       color: #e8e8ec;
-    }
-    body.grid-active .trace-dock { display: flex; }
-    body.grid-active #grid-screen {
-      padding-bottom: 7.5rem;
-    }
-    body.grid-active.trace-expanded #grid-screen {
-      padding-bottom: 16rem;
-    }
-    body.grid-active.trace-collapsed #grid-screen {
-      padding-bottom: 3.25rem;
+      min-width: 0;
     }
     .trace-dock-header {
       display: flex;
@@ -527,94 +532,91 @@
     <button id="login-btn" type="button">Continue</button>
   </section>
 
-  <section id="grid-screen" class="hidden" tabindex="0">
-    <div class="header">
-      <div class="app-banner">11-flag-enablement[python]</div>
-      <div>Name: <span id="hdr-name"></span><span id="hdr-cohort"></span></div>
-      <div>Current position: <span id="hdr-current"></span></div>
-      <div>Previous position: <span id="hdr-previous"></span></div>
-      <div id="hdr-count-row" class="hidden">Count: <span id="hdr-count"></span></div>
-    </div>
-    <div id="grid" class="grid" aria-label="3 by 3 grid"></div>
-    <p class="hint">Use arrow keys or WASD to move. Press L to log out, Q to quit.</p>
-  </section>
+  <div id="app-shell" class="hidden">
+    <section id="grid-screen" tabindex="0">
+      <div class="header">
+        <div class="app-banner">11-flag-enablement[python]</div>
+        <div>Name: <span id="hdr-name"></span><span id="hdr-cohort"></span></div>
+        <div>Current position: <span id="hdr-current"></span></div>
+        <div>Previous position: <span id="hdr-previous"></span></div>
+        <div id="hdr-count-row" class="hidden">Count: <span id="hdr-count"></span></div>
+      </div>
+      <div id="grid" class="grid" aria-label="3 by 3 grid"></div>
+      <p class="hint">Use arrow keys or WASD to move. Press L to log out, Q to quit.</p>
+    </section>
 
-  <button id="btn-ld-lab" class="ld-fab" type="button" title="Flag controls and about">
-    LD lab
-  </button>
-  <div id="ld-backdrop" class="ld-backdrop" hidden></div>
-  <aside id="ld-drawer" class="ld-drawer" aria-hidden="true">
-    <div class="ld-drawer-header">
-      <h2>LaunchDarkly · lab</h2>
-      <button id="btn-ld-close" type="button">Close</button>
-    </div>
-    <div class="ld-tabs" role="tablist">
-      <button type="button" class="ld-tab active" data-tab="controls" role="tab" aria-selected="true">Controls</button>
-      <button type="button" class="ld-tab" data-tab="context" role="tab" aria-selected="false">Context</button>
-      <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
-    </div>
-    <div class="ld-drawer-body">
-      <div id="ld-section-controls" class="ld-section active">
-        <p class="ld-controls-meta" id="controls-meta">Loading flag status…</p>
-        <div id="controls-warn" class="ld-controls-warn hidden"></div>
-        <div class="ld-toolbar">
-          <button type="button" id="btn-controls-refresh">Refresh status</button>
+    <aside id="ld-rail" class="ld-rail" aria-label="LaunchDarkly lab">
+      <div class="ld-rail-header">
+        <h2>LaunchDarkly · lab</h2>
+      </div>
+      <div class="ld-tabs" role="tablist">
+        <button type="button" class="ld-tab active" data-tab="controls" role="tab" aria-selected="true">Controls</button>
+        <button type="button" class="ld-tab" data-tab="context" role="tab" aria-selected="false">Context</button>
+        <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
+      </div>
+      <div class="ld-rail-body">
+        <div id="ld-section-controls" class="ld-section active">
+          <p class="ld-controls-meta" id="controls-meta">Loading flag status…</p>
+          <div id="controls-warn" class="ld-controls-warn hidden"></div>
+          <div class="ld-toolbar">
+            <button type="button" id="btn-controls-refresh">Refresh status</button>
+          </div>
+          <div id="controls-list"></div>
+          <p class="ld-about-p" style="margin-top:1rem;color:var(--about-muted);font-size:0.82rem;">
+            Toggles call the LaunchDarkly REST API (<code>turnFlagOn</code> / <code>turnFlagOff</code>).
+            For the highlight <strong>string</strong> flag, use the color dropdown to set fallthrough
+            (<code>updateFallthroughVariationOrRollout</code>) — variation definitions stay unchanged.
+            Watch the bottom <strong>Trace</strong> dock; the grid stays navigable.
+          </p>
         </div>
-        <div id="controls-list"></div>
-        <p class="ld-about-p" style="margin-top:1rem;color:var(--about-muted);font-size:0.82rem;">
-          Toggles call the LaunchDarkly REST API (<code>turnFlagOn</code> / <code>turnFlagOff</code>).
-          For the highlight flag as a <strong>string</strong> variation, turning ON also sets fallthrough to
-          <code>green</code> when it was still <code>none</code> (variation definitions are unchanged).
-          Watch the bottom <strong>Trace</strong> dock; the grid stays navigable.
-        </p>
+        <div id="ld-section-context" class="ld-section">
+          <p class="ld-controls-meta" id="context-meta">Log in to see the evaluation context for the current user.</p>
+          <div id="context-body"></div>
+        </div>
+        <div id="ld-section-about" class="ld-section">
+          <div class="ld-block-title">What this example is</div>
+          <p class="ld-about-p">This example teaches LaunchDarkly <strong>feature flags</strong> on the grid navigator: boolean variations control highlight, context-based colors, move count, and a host OS emoji—without hardcoding those behaviors in the UI.</p>
+          <div class="ld-block-title">What we show</div>
+          <p class="ld-about-p">Log in, move on the grid, and use <strong>Controls</strong> to turn flags on/off via the REST API. <strong>Context</strong> shows what the SDK evaluates against. The bottom <strong>Trace</strong> dock logs each change.</p>
+          <div class="ld-block-title">Why it matters</div>
+          <p class="ld-about-p">You ship the app once and enable features in LaunchDarkly—so product and ops can change behavior without a redeploy. Keywords: <strong>boolean variations</strong>, <strong>contexts</strong>, <strong>private attributes</strong>, <strong>semantic patch</strong>.</p>
+        </div>
       </div>
-      <div id="ld-section-context" class="ld-section">
-        <p class="ld-controls-meta" id="context-meta">Log in to see the evaluation context for the current user.</p>
-        <div id="context-body"></div>
-      </div>
-      <div id="ld-section-about" class="ld-section">
-        <div class="ld-block-title">What this example is</div>
-        <p class="ld-about-p">This example teaches LaunchDarkly <strong>feature flags</strong> on the grid navigator: boolean variations control highlight, context-based colors, move count, and a host OS emoji—without hardcoding those behaviors in the UI.</p>
-        <div class="ld-block-title">What we show</div>
-        <p class="ld-about-p">Log in, move on the grid, and use <strong>Controls</strong> to turn flags on/off via the REST API. <strong>Context</strong> shows what the SDK evaluates against. The bottom <strong>Trace</strong> dock logs each change.</p>
-        <div class="ld-block-title">Why it matters</div>
-        <p class="ld-about-p">You ship the app once and enable features in LaunchDarkly—so product and ops can change behavior without a redeploy. Keywords: <strong>boolean variations</strong>, <strong>contexts</strong>, <strong>private attributes</strong>, <strong>semantic patch</strong>.</p>
-      </div>
-    </div>
-  </aside>
+    </aside>
 
-  <section class="trace-dock" id="trace-dock" aria-label="Flag activity trace">
-    <div class="trace-dock-header">
-      <button
-        type="button"
-        class="trace-dock-toggle"
-        id="btn-trace-collapse"
-        aria-expanded="true"
-        aria-controls="trace-dock-body"
-      >
-        <span class="trace-dock-title">
-          <span class="trace-dot" id="trace-dot" aria-hidden="true"></span>
-          Trace
-          <span class="trace-dock-meta" id="trace-meta">flag activity</span>
-        </span>
-        <span class="trace-dock-chevron" aria-hidden="true">▾</span>
-      </button>
-      <button type="button" class="trace-expand-btn" id="btn-trace-expand" title="Toggle taller trace">
-        Taller
-      </button>
-      <button type="button" class="trace-clear-btn" id="btn-trace-clear" title="Clear trace">
-        Clear
-      </button>
-    </div>
-    <div class="trace-dock-body" id="trace-dock-body">
-      <div class="trace-console" id="trace-console" aria-live="polite">
-        <p class="trace-empty" id="trace-empty">
-          Toggle a flag in LD lab → Controls. REST and SDK evaluation lines show up here.
-        </p>
-        <div id="trace-lines" hidden></div>
+    <section class="trace-dock" id="trace-dock" aria-label="Flag activity trace">
+      <div class="trace-dock-header">
+        <button
+          type="button"
+          class="trace-dock-toggle"
+          id="btn-trace-collapse"
+          aria-expanded="true"
+          aria-controls="trace-dock-body"
+        >
+          <span class="trace-dock-title">
+            <span class="trace-dot" id="trace-dot" aria-hidden="true"></span>
+            Trace
+            <span class="trace-dock-meta" id="trace-meta">flag activity</span>
+          </span>
+          <span class="trace-dock-chevron" aria-hidden="true">▾</span>
+        </button>
+        <button type="button" class="trace-expand-btn" id="btn-trace-expand" title="Toggle taller trace">
+          Taller
+        </button>
+        <button type="button" class="trace-clear-btn" id="btn-trace-clear" title="Clear trace">
+          Clear
+        </button>
       </div>
-    </div>
-  </section>
+      <div class="trace-dock-body" id="trace-dock-body">
+        <div class="trace-console" id="trace-console" aria-live="polite">
+          <p class="trace-empty" id="trace-empty">
+            Toggle a flag in LD lab → Controls. REST and SDK evaluation lines show up here.
+          </p>
+          <div id="trace-lines" hidden></div>
+        </div>
+      </div>
+    </section>
+  </div>
 
   <script>
     const ROWS = ["t", "m", "b"];
@@ -644,10 +646,10 @@
     const traceDock = document.getElementById("trace-dock");
     const traceDot = document.getElementById("trace-dot");
     const traceMeta = document.getElementById("trace-meta");
+    const appShell = document.getElementById("app-shell");
 
     function setTraceCollapsed(collapsed) {
       traceDock.classList.toggle("collapsed", !!collapsed);
-      document.body.classList.toggle("trace-collapsed", !!collapsed);
       document.getElementById("btn-trace-collapse").setAttribute(
         "aria-expanded",
         collapsed ? "false" : "true"
@@ -659,7 +661,6 @@
 
     function setTraceExpanded(expanded) {
       traceDock.classList.toggle("expanded", !!expanded);
-      document.body.classList.toggle("trace-expanded", !!expanded);
       document.getElementById("btn-trace-expand").textContent = expanded
         ? "Shorter"
         : "Taller";
@@ -670,13 +671,18 @@
 
     function focusGrid() {
       const grid = document.getElementById("grid-screen");
-      if (!grid.classList.contains("hidden")) {
+      if (document.body.classList.contains("grid-active")) {
         grid.focus({ preventScroll: true });
       }
     }
 
     function setGridActive(active) {
       document.body.classList.toggle("grid-active", !!active);
+      appShell.classList.toggle("hidden", !active);
+      if (active) {
+        selectLdTab(ldTab || "controls");
+        refreshControls();
+      }
     }
 
     function formatPos(r, c) {
@@ -704,11 +710,11 @@
       const row = document.createElement("div");
       row.className = `trace-line kind-${kind}`;
       row.innerHTML = `<span class="ts">${escapeHtml(ts)}</span>  ${html}`;
-      lines.prepend(row);
+      lines.appendChild(row);
       traceDot.classList.add("on");
       traceMeta.textContent = kind === "err" ? "error" : "updated";
       const consoleEl = document.getElementById("trace-console");
-      consoleEl.scrollTop = 0;
+      consoleEl.scrollTop = consoleEl.scrollHeight;
     }
 
     function evalSnapshot(f) {
@@ -894,7 +900,6 @@
 
       document.getElementById("username").value = "";
       document.getElementById("login-error").classList.add("hidden");
-      document.getElementById("grid-screen").classList.add("hidden");
       document.getElementById("login-screen").classList.remove("hidden");
       document.getElementById("username").focus();
     }
@@ -921,7 +926,6 @@
       };
       lastEvalSnapshot = "";
       document.getElementById("login-screen").classList.add("hidden");
-      document.getElementById("grid-screen").classList.remove("hidden");
       setGridActive(true);
       refreshFlags();
       if (flagPollTimer) clearInterval(flagPollTimer);
@@ -945,7 +949,7 @@
       }
       meta.innerHTML =
         data.configured
-          ? `Project <code>${escapeHtml(data.projectKey)}</code> · environment <code>${escapeHtml(data.environmentKey)}</code> · on/off only (no variation edits)`
+          ? `Project <code>${escapeHtml(data.projectKey)}</code> · environment <code>${escapeHtml(data.environmentKey)}</code> · on/off (+ fallthrough color for string highlight)`
           : "REST controls unavailable until the server has write credentials.";
 
       list.innerHTML = "";
@@ -968,6 +972,29 @@
             ? ""
             : `<div class="flag-vars">off → <span class="hi-off">${escapeHtml(JSON.stringify(f.servedWhenOff))}</span>` +
               ` · fallthrough → <span class="hi-on">${escapeHtml(JSON.stringify(f.servedWhenOnFallthrough))}</span></div>`;
+
+        let colorRow = "";
+        const colors = Array.isArray(f.colorOptions) ? f.colorOptions : [];
+        if (f.variationKind === "string" && colors.length) {
+          const current =
+            typeof f.servedWhenOnFallthrough === "string" &&
+            colors.includes(f.servedWhenOnFallthrough)
+              ? f.servedWhenOnFallthrough
+              : colors[0];
+          const opts = colors
+            .map(
+              (c) =>
+                `<option value="${escapeHtml(c)}"${c === current ? " selected" : ""}>${escapeHtml(c)}</option>`
+            )
+            .join("");
+          colorRow =
+            `<div class="flag-color-row">` +
+            `<label for="color-${escapeHtml(f.key)}">Fallthrough color</label>` +
+            `<select id="color-${escapeHtml(f.key)}" class="flag-color-select" data-key="${escapeHtml(f.key)}" ` +
+            `${on === null || busy || !data.configured ? "disabled" : ""}>${opts}</select>` +
+            `</div>`;
+        }
+
         card.innerHTML =
           `<div class="flag-card-top">` +
           `<div><h3>${escapeHtml(f.label || f.name || f.key)}</h3>` +
@@ -976,6 +1003,7 @@
           `</div>` +
           `<p class="flag-summary">${escapeHtml(f.summary || "")}</p>` +
           vars +
+          colorRow +
           `<p class="flag-hint">${escapeHtml(f.targetingHint || "")}</p>`;
         list.appendChild(card);
       }
@@ -984,7 +1012,14 @@
         btn.addEventListener("click", () => {
           const key = btn.getAttribute("data-key");
           const currentlyOn = btn.getAttribute("data-on") === "1";
-          toggleFlag(key, !currentlyOn);
+          const select = list.querySelector(`select.flag-color-select[data-key="${CSS.escape(key)}"]`);
+          const fallthrough = select ? select.value : null;
+          toggleFlag(key, !currentlyOn, fallthrough);
+        });
+      });
+      list.querySelectorAll("select.flag-color-select").forEach((sel) => {
+        sel.addEventListener("change", () => {
+          setFallthroughColor(sel.getAttribute("data-key"), sel.value);
         });
       });
     }
@@ -1001,34 +1036,32 @@
       }
     }
 
-    async function toggleFlag(key, turnOn) {
+    async function postFlagControl(body, pendingMessage) {
+      const key = body.key;
       controlsBusyKey = key;
       await refreshControls();
-      traceAppend(
-        "action",
-        `REST ${turnOn ? '<span class="on">turnFlagOn</span>' : '<span class="off">turnFlagOff</span>'} ` +
-          `<span class="hi">${escapeHtml(key)}</span>…`
-      );
+      traceAppend("action", pendingMessage);
       try {
         const res = await fetch("/api/flag-controls", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ key, on: turnOn }),
+          body: JSON.stringify(body),
         });
         const data = await res.json();
         if (!res.ok || data.ok === false) {
           throw new Error(data.error || `HTTP ${res.status}`);
         }
         const flag = data.flag || {};
+        const kinds = (data.instructions || []).join(", ") || data.action;
         traceAppend(
           "ok",
-          `${escapeHtml(data.action)} OK · now <span class="${flag.on ? "on" : "off"}">${flag.on ? "ON" : "OFF"}</span> · ` +
+          `REST OK (<span class="hi">${escapeHtml(kinds)}</span>) · now ` +
+            `<span class="${flag.on ? "on" : "off"}">${flag.on ? "ON" : "OFF"}</span> · ` +
             `off=${escapeHtml(JSON.stringify(flag.servedWhenOff))} fallthrough=${escapeHtml(JSON.stringify(flag.servedWhenOnFallthrough))}`
         );
         if (flag.targetingHint) {
           traceAppend("action", escapeHtml(flag.targetingHint));
         }
-        // Prompt an evaluation refresh soon after streaming updates.
         setTimeout(refreshFlags, 400);
         setTimeout(refreshFlags, 1200);
       } catch (err) {
@@ -1038,6 +1071,29 @@
         await refreshControls();
         focusGrid();
       }
+    }
+
+    async function toggleFlag(key, turnOn, fallthrough) {
+      const action = turnOn ? "turnFlagOn" : "turnFlagOff";
+      let msg =
+        `Sending REST call to <span class="${turnOn ? "on" : "off"}">${action}</span> ` +
+        `for the <span class="hi">${escapeHtml(key)}</span> flag.`;
+      const body = { key, on: turnOn };
+      if (turnOn && fallthrough) {
+        body.fallthrough = fallthrough;
+        msg +=
+          ` Fallthrough color will be <span class="hi">${escapeHtml(fallthrough)}</span>.`;
+      }
+      await postFlagControl(body, msg);
+    }
+
+    async function setFallthroughColor(key, color) {
+      await postFlagControl(
+        { key, fallthrough: color },
+        `Sending REST call to updateFallthroughVariationOrRollout for the ` +
+          `<span class="hi">${escapeHtml(key)}</span> flag ` +
+          `(fallthrough → <span class="hi">${escapeHtml(color)}</span>).`
+      );
     }
 
     function selectLdTab(tab) {
@@ -1073,7 +1129,7 @@
     document.addEventListener("keydown", (e) => {
       if (!username) return;
       const tag = (e.target && e.target.tagName) || "";
-      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
       handleNavKey(e);
     });
 
@@ -1100,35 +1156,6 @@
       if (moved) renderGrid();
     }
 
-    const labFab = document.getElementById("btn-ld-lab");
-    const labBackdrop = document.getElementById("ld-backdrop");
-    const labDrawer = document.getElementById("ld-drawer");
-    const labClose = document.getElementById("btn-ld-close");
-
-    function openLab() {
-      labBackdrop.hidden = false;
-      labBackdrop.classList.add("open");
-      labDrawer.classList.add("open");
-      labDrawer.setAttribute("aria-hidden", "false");
-      selectLdTab(ldTab || "controls");
-    }
-
-    function closeLab() {
-      labBackdrop.classList.remove("open");
-      labDrawer.classList.remove("open");
-      labDrawer.setAttribute("aria-hidden", "true");
-      labBackdrop.hidden = true;
-      focusGrid();
-    }
-
-    labFab.addEventListener("click", openLab);
-    labClose.addEventListener("click", closeLab);
-    labBackdrop.addEventListener("click", closeLab);
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && labDrawer.classList.contains("open")) {
-        closeLab();
-      }
-    });
     document.querySelectorAll(".ld-tab").forEach((btn) => {
       btn.addEventListener("click", () => selectLdTab(btn.getAttribute("data-tab")));
     });

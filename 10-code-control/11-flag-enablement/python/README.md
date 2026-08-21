@@ -23,7 +23,7 @@ pip install -r requirements.txt
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `LD_SDK_KEY` | Yes | Server-side SDK key for flag evaluation |
-| `LD_API_ACCESS_TOKEN` | For **LD lab → Controls** | REST API token (`turnFlagOn` / `turnFlagOff`) |
+| `LD_API_ACCESS_TOKEN` | For **LD lab → Controls** | REST API token (`turnFlagOn` / `turnFlagOff` / fallthrough color) |
 | `LD_PROJECT_KEY` | For Controls + provisioning | Project key (e.g. `lunch-marcoly`) |
 | `LD_ENVIRONMENT_KEY` | For Controls + provisioning | Environment key (e.g. `production`) |
 
@@ -59,7 +59,7 @@ Open [http://127.0.0.1:8100/](http://127.0.0.1:8100/). See [portal/python/README
 
 1. Enter a username on the login screen (empty names are rejected).
 2. The grid matches [00-reference-code](../../../00-reference-code/application.md) when both flags are off (`X` only, no count).
-3. Turn on `configure-grid-selection-green-highlight` for a colored highlight. In this project the flag is often a **string** variation (`none` / colors); off serves `none`, on serves the fallthrough color (Controls uses `green` when fallthrough was still `none`). Enable `configure-grid-selection-context-highlight` for cohort-based colors from the username.
+3. Turn on `configure-grid-selection-green-highlight` for a colored highlight. In this project the flag is often a **string** variation (`none` / colors); off serves `none`, on serves the fallthrough color. Use the **Fallthrough color** dropdown in Controls to pick among existing color variations (does not invent new ones). Enable `configure-grid-selection-context-highlight` for cohort-based colors from the username.
 4. Turn on `show-navigation-move-count` to display `Count: N` in the header (starts at 0, increments on each move).
 5. Flag changes appear within ~2 seconds without navigating.
-6. Open **LD lab** (upper right): **Controls** (REST on/off), **Context** (current user evaluation context), and **About**. The bottom **Trace** dock stays visible (collapse / taller) while you navigate.
+6. After login the screen is a fixed lab layout: grid on the left, **LD lab** on the right, **Trace** across the bottom (taller / shorter / collapse).

@@ -166,12 +166,26 @@ def _summarize_flag(flag: dict[str, Any], environment_key: str, meta: dict[str, 
             f"({off_value!r}), regardless of fallthrough."
         )
 
+    variation_kind = "string" if _is_string_variations(flag) else (
+        "boolean"
+        if variations_out and all(isinstance(v.get("value"), bool) for v in variations_out)
+        else "other"
+    )
+    color_options: list[str] = []
+    if variation_kind == "string" and (flag.get("key") or meta["key"]) == FLAG_HIGHLIGHT:
+        for variation in flag.get("variations") or []:
+            val = variation.get("value")
+            if isinstance(val, str) and val.strip() and not is_highlight_off_value(val):
+                color_options.append(val)
+
     return {
         "key": flag.get("key") or meta["key"],
         "name": flag.get("name") or meta["label"],
         "label": meta["label"],
         "summary": meta["summary"],
         "on": on,
+        "variationKind": variation_kind,
+        "colorOptions": color_options,
         "variations": variations_out,
         "offVariation": off_idx,
         "fallthroughVariation": fall_idx,
@@ -231,10 +245,20 @@ def list_flag_controls() -> dict[str, Any]:
 
 def _variation_id_for_value(flag: dict[str, Any], wanted: object) -> str | None:
     for variation in flag.get("variations") or []:
-        if variation.get("value") == wanted:
-            vid = variation.get("_id") or variation.get("id")
-            if isinstance(vid, str) and vid:
-                return vid
+        val = variation.get("value")
+        if val == wanted:
+            pass
+        elif (
+            isinstance(val, str)
+            and isinstance(wanted, str)
+            and val.strip().lower() == wanted.strip().lower()
+        ):
+            pass
+        else:
+            continue
+        vid = variation.get("_id") or variation.get("id")
+        if isinstance(vid, str) and vid:
+            return vid
     return None
 
 
@@ -243,60 +267,95 @@ def _is_string_variations(flag: dict[str, Any]) -> bool:
     return bool(values) and all(isinstance(v, str) for v in values)
 
 
-def _highlight_on_instructions(flag: dict[str, Any]) -> list[dict[str, Any]]:
+def _fallthrough_instruction(
+    flag: dict[str, Any],
+    preferred: str | None,
+    *,
+    only_if_off: bool,
+) -> dict[str, Any] | None:
     """
-    turnFlagOn, and for string highlight flags ensure fallthrough is not "none".
+    Build updateFallthroughVariationOrRollout for an existing string variation.
 
-    Does not add/remove variations — only picks an existing color variation as fallthrough.
+    Does not invent variations — only picks an id that already exists on the flag.
     """
-    instructions: list[dict[str, Any]] = [{"kind": "turnFlagOn"}]
     if flag.get("key") != FLAG_HIGHLIGHT or not _is_string_variations(flag):
-        return instructions
+        return None
 
-    envs = flag.get("environments") or {}
-    # Environment block may be missing on unfiltered GET; still set fallthrough.
-    preferred = DEFAULT_STRING_ON_COLOR
-    color_id = _variation_id_for_value(flag, preferred)
+    color = (preferred or DEFAULT_STRING_ON_COLOR).strip().lower()
+    color_id = _variation_id_for_value(flag, color)
+    chosen = color
     if not color_id:
         for variation in flag.get("variations") or []:
             val = variation.get("value")
             if isinstance(val, str) and not is_highlight_off_value(val):
                 color_id = variation.get("_id") or variation.get("id")
-                preferred = val
+                chosen = val
                 break
     if not color_id:
-        return instructions
+        return None
 
-    # Only rewrite fallthrough when it currently serves an off-like value.
-    # (Caller passes a freshly fetched flag; fallthrough index may be absent.)
-    fall_idx = None
-    for env in envs.values():
-        fall_idx = (env.get("fallthrough") or {}).get("variation")
-        if fall_idx is not None:
-            break
-    fall_value = _variation_value(flag, fall_idx if isinstance(fall_idx, int) else None)
-    if fall_value is not None and not is_highlight_off_value(fall_value):
-        return instructions
+    if only_if_off and preferred is None:
+        envs = flag.get("environments") or {}
+        fall_idx = None
+        for env in envs.values():
+            fall_idx = (env.get("fallthrough") or {}).get("variation")
+            if fall_idx is not None:
+                break
+        fall_value = _variation_value(flag, fall_idx if isinstance(fall_idx, int) else None)
+        if fall_value is not None and not is_highlight_off_value(fall_value):
+            return None
 
-    instructions.append(
-        {
-            "kind": "updateFallthroughVariationOrRollout",
-            "variationId": color_id,
-        }
+    return {
+        "kind": "updateFallthroughVariationOrRollout",
+        "variationId": color_id,
+        "_chosenValue": chosen,  # stripped before PATCH
+    }
+
+
+def _highlight_on_instructions(
+    flag: dict[str, Any],
+    fallthrough_value: str | None = None,
+) -> list[dict[str, Any]]:
+    """
+    turnFlagOn, and for string highlight flags set fallthrough to a color variation.
+
+    Does not add/remove variations — only picks an existing color as fallthrough.
+    """
+    instructions: list[dict[str, Any]] = [{"kind": "turnFlagOn"}]
+    fall = _fallthrough_instruction(
+        flag,
+        fallthrough_value,
+        only_if_off=fallthrough_value is None,
     )
+    if fall:
+        instructions.append(fall)
     return instructions
 
 
-def set_flag_on(flag_key: str, turn_on: bool) -> dict[str, Any]:
-    """
-    Turn a controlled flag on or off in LD_ENVIRONMENT_KEY via semantic patch.
+def _strip_internal_instruction_fields(instructions: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [{k: v for k, v in inst.items() if not k.startswith("_")} for inst in instructions]
 
-    LaunchDarkly: turnFlagOn / turnFlagOff — does not change variation definitions.
-    For the string highlight flag, turning ON also sets fallthrough to a color
-    when fallthrough is still "none" (otherwise on/off look identical).
+
+def apply_flag_control(
+    flag_key: str,
+    *,
+    turn_on: bool | None = None,
+    fallthrough_value: str | None = None,
+) -> dict[str, Any]:
+    """
+    Apply semantic-patch controls for a lab flag.
+
+    LaunchDarkly: turnFlagOn / turnFlagOff / updateFallthroughVariationOrRollout
+    https://launchdarkly.com/docs/api/feature-flags/patch-feature-flag
+
+    - turn_on True/False → on/off
+    - fallthrough_value → set fallthrough color on the string highlight flag
+      (variation definitions unchanged)
     """
     if flag_key not in _ALLOWED_KEYS:
         raise ValueError(f"Flag key not allowed for controls: {flag_key}")
+    if turn_on is None and fallthrough_value is None:
+        raise ValueError('Provide "on" and/or "fallthrough"')
 
     cfg = api_config()
     if not cfg["configured"]:
@@ -310,20 +369,41 @@ def set_flag_on(flag_key: str, turn_on: bool) -> dict[str, Any]:
     query = urllib.parse.urlencode({"env": environment})
     flag = _request("GET", f"/flags/{project}/{flag_key}?{query}")
 
-    if turn_on:
-        kind = "turnFlagOn"
-        instructions = _highlight_on_instructions(flag)
-    else:
-        kind = "turnFlagOff"
-        instructions = [{"kind": kind}]
+    instructions: list[dict[str, Any]] = []
+    action_parts: list[str] = []
+
+    if turn_on is True:
+        action_parts.append("turnFlagOn")
+        instructions.extend(_highlight_on_instructions(flag, fallthrough_value))
+    elif turn_on is False:
+        action_parts.append("turnFlagOff")
+        instructions.append({"kind": "turnFlagOff"})
+        # Fallthrough can still be updated while off (affects next ON).
+        if fallthrough_value is not None:
+            fall = _fallthrough_instruction(flag, fallthrough_value, only_if_off=False)
+            if fall:
+                instructions.append(fall)
+                action_parts.append("updateFallthrough")
+    elif fallthrough_value is not None:
+        fall = _fallthrough_instruction(flag, fallthrough_value, only_if_off=False)
+        if not fall:
+            raise ValueError(
+                f'No string variation matching fallthrough={fallthrough_value!r} '
+                f"on {flag_key}"
+            )
+        instructions.append(fall)
+        action_parts.append("updateFallthrough")
+
+    patch_instructions = _strip_internal_instruction_fields(instructions)
+    action = "+".join(action_parts) if action_parts else "noop"
 
     _request(
         "PATCH",
         f"/flags/{project}/{flag_key}",
         {
             "environmentKey": environment,
-            "comment": f"11-flag-enablement UI: {kind}",
-            "instructions": instructions,
+            "comment": f"11-flag-enablement UI: {action}",
+            "instructions": patch_instructions,
         },
     )
 
@@ -332,9 +412,14 @@ def set_flag_on(flag_key: str, turn_on: bool) -> dict[str, Any]:
     summary = _summarize_flag(flag, environment, meta)
     return {
         "ok": True,
-        "action": kind,
-        "instructions": [i.get("kind") for i in instructions],
+        "action": action,
+        "instructions": [i.get("kind") for i in patch_instructions],
         "projectKey": project,
         "environmentKey": environment,
         "flag": summary,
     }
+
+
+def set_flag_on(flag_key: str, turn_on: bool) -> dict[str, Any]:
+    """Turn a controlled flag on or off (compat wrapper)."""
+    return apply_flag_control(flag_key, turn_on=turn_on)

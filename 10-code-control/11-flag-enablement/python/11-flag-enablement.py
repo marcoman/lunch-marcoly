@@ -31,8 +31,8 @@ from host_os import (  # noqa: E402
 )
 from ld_flag_controls import (  # noqa: E402
     api_config,
+    apply_flag_control,
     list_flag_controls,
-    set_flag_on,
 )
 
 # LaunchDarkly capability: Boolean flag evaluation (server-side SDK)
@@ -178,12 +178,20 @@ class Handler(SimpleHTTPRequestHandler):
         try:
             data = _read_json(self)
             key = str(data.get("key") or "").strip()
-            if "on" not in data:
-                raise ValueError('"on" (boolean) is required')
-            turn_on = bool(data["on"])
             if not key:
                 raise ValueError('"key" is required')
-            result = set_flag_on(key, turn_on)
+            turn_on: bool | None
+            if "on" in data:
+                turn_on = bool(data["on"])
+            else:
+                turn_on = None
+            fallthrough = data.get("fallthrough")
+            fallthrough_value = (
+                str(fallthrough).strip() if fallthrough is not None else None
+            ) or None
+            result = apply_flag_control(
+                key, turn_on=turn_on, fallthrough_value=fallthrough_value
+            )
             _json_response(self, 200, result)
         except ValueError as exc:
             _json_response(self, 400, {"ok": False, "error": str(exc)})
