@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid Navigator</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #fafafa;
+      color: #222;
+      max-width: 480px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    h1 { font-size: 1.25rem; margin-bottom: 1rem; }
+    label { display: block; margin-bottom: 0.5rem; }
+    input[type="text"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      box-sizing: border-box;
+    }
+    button { padding: 0.5rem 1rem; cursor: pointer; }
+    .error { color: #c62828; margin-bottom: 0.5rem; }
+    .app-banner { font-size: 0.875rem; color: #666; margin-bottom: 0.5rem; }
+    .header { margin-bottom: 1.5rem; line-height: 1.6; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      gap: 6px;
+    }
+    .cell {
+      width: 80px;
+      height: 80px;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      font-size: 1.5rem;
+      user-select: none;
+    }
+    .cell.selected {
+      font-weight: bold;
+    }
+    .hint { margin-top: 1rem; color: #666; font-size: 0.875rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <!-- Login screen: username only, no password -->
+  <section id="login-screen">
+    <div class="app-banner">02-reference-client-code[javascript]</div>
+    <h1>Login</h1>
+    <label for="username">Username</label>
+    <input id="username" type="text" autocomplete="username" autofocus>
+    <p id="login-error" class="error hidden">Username is required.</p>
+    <button id="login-btn" type="button">Continue</button>
+  </section>
+
+  <!-- Grid screen: header + 3×3 navigator -->
+  <section id="grid-screen" class="hidden" tabindex="0">
+    <div class="header">
+      <div class="app-banner">02-reference-client-code[javascript]</div>
+      <div>Name: <span id="hdr-name"></span></div>
+      <div>Current position: <span id="hdr-current"></span></div>
+      <div>Previous position: <span id="hdr-previous"></span></div>
+    </div>
+    <div id="grid" class="grid" aria-label="3 by 3 grid"></div>
+    <p class="hint">Use arrow keys or WASD to move. Press L to log out, Q to quit.</p>
+  </section>
+
+  <script src="grid-navigator.js"></script>
+</body>
+</html>

@@ -25,6 +25,10 @@ lunch-marcoly/
 │   ├── python/ · node/ · java/ · dotnet/         # web apps
 │   ├── python-console/ · node-console/ · java-console/
 │   └── go/ · rust/ · cpp/                        # console-only languages
+├── 02-reference-client-code/
+│   ├── README.md
+│   ├── application.md
+│   └── javascript/          # browser grid (static files, no LaunchDarkly)
 ├── 10-code-control/             # Feature-flag series
 │   ├── README.md
 │   ├── portal/                   # Series shell: Python :8100
@@ -49,7 +53,7 @@ Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control
 
 ## Languages
 
-Each example may include implementations in any of these languages. Python, Node.js, Java, and **.NET** default to **web applications** with a browser UI. Go, Rust, and C++ are **console applications**. Optional `-console` variants exist for Python, Node.js, and Java when a terminal-based version is also needed.
+Each example may include implementations in any of these languages. Python, Node.js, Java, and **.NET** default to **web applications** with a browser UI. **JavaScript** (`javascript/`) is a **browser application**: the page owns the logic. Go, Rust, and C++ are **console applications**. Optional `-console` variants exist for Python, Node.js, and Java when a terminal-based version is also needed.
 
 | Language | Directory | Application type |
 |----------|-----------|------------------|
@@ -63,6 +67,7 @@ Each example may include implementations in any of these languages. Python, Node
 | C++      | `cpp/`    | Console application |
 | Go       | `go/`     | Console application |
 | Rust     | `rust/`   | Console application |
+| JavaScript | `javascript/` | Browser application (static files) |
 
 ## Examples
 
@@ -70,6 +75,7 @@ Each example may include implementations in any of these languages. Python, Node
 |---|-----------|-------------|
 | 00 | [00-reference-code](00-reference-code/) | Grid navigator reference app (all languages, no LaunchDarkly) |
 | 01 | [01-reference-agent](01-reference-agent/) | News headlines → AI equity briefing (Python / Node / Java / .NET web + consoles; LaunchDarkly comes in later examples) |
+| 02 | [02-reference-client-code](02-reference-client-code/) | Browser grid navigator (JavaScript in the page, no LaunchDarkly) |
 | 10 | [10-code-control](10-code-control/) | Feature-flag series (portal + 11 / 12) |
 | 11 | [11-flag-enablement](10-code-control/11-flag-enablement/) | Grid navigator with LaunchDarkly boolean flags (all languages, Terraform + REST) |
 | 12 | [12-flag-variations](10-code-control/12-flag-variations/) | Grid navigator with string, number, JSON, and anonymous flags (all languages) |

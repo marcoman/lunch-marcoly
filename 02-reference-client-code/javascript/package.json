@@ -1,0 +1,10 @@
+{
+  "name": "reference-client-grid-navigator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "02-reference-client-code browser grid navigator (static files, no LaunchDarkly)",
+  "main": "02-reference-client-code.js",
+  "scripts": {
+    "start": "node 02-reference-client-code.js"
+  }
+}

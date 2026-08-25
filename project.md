@@ -2,7 +2,7 @@
 
 This document defines the structure, conventions, and standards for **lunch-marcoly** — a collection of small, self-contained programming examples, each implemented across multiple languages.
 
-For the reference grid navigator application behavior, see [00-reference-code/application.md](00-reference-code/application.md). For the reference agent UI, see [01-reference-agent/application.md](01-reference-agent/application.md).
+For the reference grid navigator application behavior, see [00-reference-code/application.md](00-reference-code/application.md). For the browser-side twin, see [02-reference-client-code/application.md](02-reference-client-code/application.md). For the reference agent UI, see [01-reference-agent/application.md](01-reference-agent/application.md).
 
 ## Purpose
 
@@ -24,8 +24,11 @@ Supported languages and application types:
 | C++      | `cpp/`    | Console application | Make                         |
 | Go       | `go/`     | Console application | go modules                   |
 | Rust     | `rust/`   | Console application | Cargo                     |
+| JavaScript | `javascript/` | Browser application (static files) | nvm + npm (optional static server) |
 
 **Web applications** (`python/`, `node/`, `java/`, `dotnet/`) include a graphical component served in the browser. Each README should document how to start the local server and which URL to open.
+
+**Browser applications** (`javascript/`) put login and grid logic in client JavaScript. A local process may serve the files; it must not evaluate the navigator on the server. Used by [02-reference-client-code](02-reference-client-code/).
 
 **Console applications** (`python-console/`, `node-console/`, `java-console/`, `go/`, `cpp/`, `rust/`) run in the terminal with text-based input and output.
 
@@ -61,6 +64,10 @@ lunch-marcoly/
 │   ├── python/ · node/ · java/ · dotnet/   # Web apps
 │   ├── python-console/ · node-console/ · java-console/
 │   └── go/ · rust/ · cpp/     # Console-only languages
+├── 02-reference-client-code/       # Browser grid navigator — no LaunchDarkly
+│   ├── README.md
+│   ├── application.md         # Same navigator; logic runs in the page
+│   └── javascript/            # Static files + optional Node file server :8020
 ├── 10-code-control/             # Feature-flag series (shared portal)
 │   ├── README.md
 │   ├── portal/                  # Series shell: Python :8100 → 8110 · 8120
@@ -114,6 +121,7 @@ lunch-marcoly/
 - Follow the number with a **kebab-case** name describing the concept
 - Use the next available number when adding a new example (`03`, `04`, …)
 - `00-reference-code` is reserved for the reference grid navigator app and repository conventions. It does **not** include LaunchDarkly integration.
+- `02-reference-client-code` is the same navigator **in the browser** (client JavaScript). It does **not** include LaunchDarkly. Later client-SDK examples (series **30**) build on this shape.
 - `01-reference-agent` is the baseline news → prompt → LLM agent UI (config/env and a prompt file only).
 - `20-agent-config` groups LaunchDarkly **AgentControl** examples; shared LLM/AWS/LD setup lives in its README.
 - `21-agent-completion-config` (under `20-agent-config/`) adds a **completion config**: runtime **model**, **system prompt**, and **user prompt** on the agent shape from `01`.
@@ -132,6 +140,7 @@ lunch-marcoly/
 
 - Use the fixed directory names from the table above
 - Web implementations: `python/`, `node/`, `java/`, `dotnet/`
+- Browser implementations: `javascript/` (client-side logic; static file host)
 - Console implementations: `python-console/`, `node-console/`, `java-console/`, `go/`, `cpp/`, `rust/`
 - Only create a language folder when that implementation exists
 - Do not nest `-console` folders inside their web counterparts — each is a sibling directory at the example root
@@ -144,6 +153,7 @@ Follow the idiomatic naming style of each language:
 |----------|-----------|--------------------------|----------------------|
 | Python   | `python/`, `python-console/` | `{example-name}.py` | `00-reference-code.py` |
 | Node.js  | `node/`, `node-console/` | `{example-name}.js` | `00-reference-code.js` |
+| JavaScript | `javascript/` | `{example-name}.js` (static server) + `index.html` | `02-reference-client-code.js` |
 | Java     | `java/`, `java-console/` | PascalCase (classes) | `WebServer.java` |
 | .NET     | `dotnet/` | `{example-name}.csproj` + PascalCase classes | `01-reference-agent.csproj`, `Program.cs`, `AgentCore.cs` |
 | C++      | `cpp/`    | `main.cpp` + Makefile | binary `00-reference-code` |
@@ -231,6 +241,7 @@ Repository-wide and per-language dependency conventions:
 | Repository root | `.venv/` | Shared Python virtual environment (create locally; not committed) |
 | Repository root | `.nvmrc` | Node.js version pin for [nvm](https://github.com/nvm-sh/nvm) |
 | Node.js | `node/`, `node-console/` → `package.json` | Per-folder Node metadata and scripts |
+| JavaScript | `javascript/` → `package.json` | Optional static file server; the app is `index.html` + client JS |
 | Java | `java/`, `java-console/` → `pom.xml` | Maven build; use `./mvnw` (Maven Wrapper) |
 | Java | `mvnw`, `.mvn/wrapper/` | Maven Wrapper — preferred over a system `mvn` install |
 | .NET | `dotnet/` → `{example-name}.csproj` | Per-folder .NET project file; use `dotnet restore` / `dotnet build` |
@@ -305,6 +316,19 @@ node 00-reference-code.js
 # or
 npm start
 ```
+
+### JavaScript (browser)
+
+Used by [02-reference-client-code](02-reference-client-code/). Same Node version pin as above. The runnable artifact is a static file server; **grid behavior is in the page**.
+
+- **Dependencies:** optional `package.json` in `javascript/` (no SDK packages for 02).
+- **Run:** from the language folder:
+
+```bash
+node 02-reference-client-code.js
+```
+
+Default URL: [http://127.0.0.1:8020/](http://127.0.0.1:8020/). `PORT` overrides the listen port.
 
 ### Java
 

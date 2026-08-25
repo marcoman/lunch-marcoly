@@ -1,17 +1,21 @@
-# Reference Application Specification
+# Reference Client Application Specification
 
-This document defines the behavior of the **00-reference-code** application — a simple grid navigator used as the canonical example every language implementation must match.
+This document defines the behavior of the **02-reference-client-code** application — the browser-side twin of [00-reference-code](../00-reference-code/application.md).
 
-Repository layout and README format are in [project.md](../project.md). Feature flag behavior is in [10-code-control/11-flag-enablement/application.md](../10-code-control/11-flag-enablement/application.md).
+Navigation, login, and selection rules are **the same as 00**. The difference is *where the program runs*: the grid lives in the page. A local HTTP server only delivers static files.
+
+Repository layout is in [project.md](../project.md). LaunchDarkly client SDK examples will live in a later **30-client-sdk** series; this example has **no LaunchDarkly**.
 
 ## Overview
 
-A two-screen application:
+A two-screen application implemented in **browser JavaScript**:
 
 1. **Login** — collect a username (no password)
 2. **Grid** — navigate a 3×3 grid with keyboard input
 
-All implementations must produce equivalent behavior. Differences are limited to platform-appropriate presentation (terminal box drawing vs browser layout). Selection is indicated by **`X` only** — no highlight colors.
+Selection is indicated by **`X` only** — no highlight colors.
+
+Python, Java, and .NET may later host the same static page; they must not move evaluation into the server. The language that *decides* login, moves, and quit is JavaScript in the browser.
 
 ## Login screen
 
@@ -21,7 +25,7 @@ All implementations must produce equivalent behavior. Differences are limited to
 | Validation | Username must be non-empty before continuing |
 | On submit | Proceed to the grid screen; display the username in the grid header |
 
-The username persists for the session until logout. Re-launching the application returns to the login screen.
+The username persists for the session until logout. Reloading the page returns to the login screen.
 
 ## Grid screen
 
@@ -78,7 +82,7 @@ While on the grid screen:
 | `Q` or `q` | Quit the application |
 | `L` or `l` | Log out — return to the login screen |
 
-**Quit:** the application exits (console) or closes (web; if the browser blocks closing the tab, show that the application has closed).
+**Quit:** close the tab if the browser allows it; otherwise show that the application has closed.
 
 **Logout:**
 
@@ -89,11 +93,7 @@ While on the grid screen:
 
 ### Screen layout
 
-The grid screen has two sections:
-
 #### Header
-
-Displays three fields:
 
 | Field | Content |
 |-------|---------|
@@ -107,57 +107,26 @@ After each successful move, **Previous position** updates to the position held b
 
 #### Main section
 
-Renders the 3×3 grid. The selected cell is marked with an **`X`**.
-
-Unselected cells are empty (no marker).
-
-Example at `m/m`:
-
-```
-┌───┬───┬───┐
-│   │   │   │
-├───┼───┼───┤
-│   │ X │   │
-├───┼───┼───┤
-│   │   │   │
-└───┴───┴───┘
-```
-
-(Exact borders and spacing may vary by platform; cell contents and selection state must not.)
+Renders the 3×3 grid. The selected cell is marked with an **`X`**. Unselected cells are empty.
 
 ## Presentation
-
-### Console applications
-
-Directories: `python-console/`, `node-console/`, `java-console/`, `cpp/`, `go/`, `rust/`
-
-- **No colors** — do not use ANSI color codes or terminal color pairs for selection
-- **Selected cell:** `X` inside the cell (heavy box characters such as `┏━━━┓` / `┃ X ┃` / `┗━━━┛` are acceptable for layout; they must not be colored)
-- **Unselected cells:** empty (no marker), default terminal styling
-- Header fields use default terminal styling
-
-### Web applications
-
-Directories: `python/`, `node/`, `java/`
 
 - Default color scheme: **light mode**
 - **No selection colors** — the selected cell is not highlighted with a background or border color
 - **Unselected cells:** default (white or near-white) background, empty
 - **Selected cell:** `X` centered in the cell on the same background as unselected cells
-- Header: readable contrast against the page background (page chrome may use neutral text colors; the grid selection itself has no highlight color)
+
+This baseline does **not** expose host OS, CPU model, or `/proc` attributes. Those belong to server-side 10-series examples. Browser-only attributes (for later client SDK demos) are out of scope here.
 
 ## Input mapping
 
 | Platform | Up | Down | Left | Right | Log out | Quit |
 |----------|----|------|------|-------|---------|------|
-| Console | ↑ or `w` | ↓ or `s` | ← or `a` | → or `d` | `L` or `l` | `Q` or `q` |
-| Web | ↑ or `w` | ↓ or `s` | ← or `a` | → or `d` | `L` or `l` | `Q` or `q` |
+| Browser | ↑ or `w` | ↓ or `s` | ← or `a` | → or `d` | `L` or `l` | `Q` or `q` |
 
-Implementations may support additional aliases if idiomatic for the platform, but arrow keys and WASD must work.
+Arrow keys and WASD must work.
 
 ## State model
-
-Implementations should model at least:
 
 | State | Type | Notes |
 |-------|------|-------|
@@ -181,13 +150,13 @@ An implementation is correct when:
 4. Boundary keypresses leave the position unchanged and do not update Previous position
 5. Header shows Name, Current position, and Previous position accurately after every change
 6. Selected cell displays `X`; unselected cells do not
-7. Console: selected cell has no color highlight — `X` only
-8. Web: selected cell has no background or border color highlight — `X` only on the default cell background
-9. `Q` or `q` on the grid screen quits the application
-10. `L` or `l` on the grid screen returns to the login screen with the username field cleared and grid state reset
+7. Selected cell has no background or border color highlight — `X` only on the default cell background
+8. `Q` or `q` on the grid screen quits (or shows the closed state)
+9. `L` or `l` on the grid screen returns to login with the username field cleared and grid state reset
+10. Flag evaluation, SDK keys, and LaunchDarkly scripts are absent
 
 ## Further reading
 
+- [00-reference-code/application.md](../00-reference-code/application.md) — same navigator on the server / console
 - [project.md](../project.md) — repository layout and conventions
-- [README.md](README.md) — example overview and implementation index
-- [02-reference-client-code](../02-reference-client-code/) — same navigator with logic in the browser
+- [README.md](README.md) — example overview
