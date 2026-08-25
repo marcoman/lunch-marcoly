@@ -42,6 +42,9 @@ lunch-marcoly/
 │   ├── 22-config-outside-code/       # web + Go console
 │   ├── 23-agent-tools/               # web + Go console
 │   └── 24-agent-judges/              # Judges gate (Python/Node/Java/.NET + Go console)
+├── 30-client-sdk/               # Browser JavaScript SDK
+│   ├── README.md
+│   └── 31-client-evaluation/    # initialize · variation · change: (:8310)
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -84,6 +87,8 @@ Each example may include implementations in any of these languages. Python, Node
 | 22 | [22-config-outside-code](20-agent-config/22-config-outside-code/) | Tracked completion: metrics + thumbs feedback (web + Go console) |
 | 23 | [23-agent-tools](20-agent-config/23-agent-tools/) | Library tools + tool loop + `track_tool_call` (web + Go console) |
 | 24 | [24-agent-judges](20-agent-config/24-agent-judges/) | Judges runtime gate + rewrite (Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console) |
+| 30 | [30-client-sdk](30-client-sdk/) | Browser JavaScript SDK series (client-side ID) |
+| 31 | [31-client-evaluation](30-client-sdk/31-client-evaluation/) | Initialize, client-side availability, `variation`, `change:` (**:8310**) |
 | 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (A-B-C-D test, segments, …) |
 
 ## Building code

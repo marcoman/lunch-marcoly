@@ -1,0 +1,13 @@
+{
+  "name": "31-client-evaluation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser grid with LaunchDarkly JavaScript SDK evaluation",
+  "main": "31-client-evaluation.js",
+  "scripts": {
+    "start": "node 31-client-evaluation.js"
+  },
+  "dependencies": {
+    "launchdarkly-js-client-sdk": "^3.5.0"
+  }
+}

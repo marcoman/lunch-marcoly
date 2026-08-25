@@ -8,7 +8,7 @@ The **application is client JavaScript**. A tiny Node process only serves static
 
 See [application.md](application.md) for behavior and acceptance criteria. Selection is **`X` only** — no highlight colors.
 
-This example is the baseline for a later **30-client-sdk** series (client-side ID, `variation`, `identify`, synced segments). Those examples are not in this folder.
+This example is the baseline for [30-client-sdk](../30-client-sdk/) (client-side ID, `variation`, `identify`, synced segments).
 
 ## Prerequisites
 

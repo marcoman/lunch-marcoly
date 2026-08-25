@@ -93,7 +93,11 @@ lunch-marcoly/
 │   └── 24-agent-judges/             # Judges runtime gate + rewrite
 │       ├── README.md · application.md · rest/
 │       └── python/ · node/ · java/ · dotnet/ · go/  # Web :8240–:8243; Go console
-
+├── 30-client-sdk/               # Browser JavaScript SDK (client-side ID)
+│   ├── README.md
+│   └── 31-client-evaluation/    # initialize · variation · change:  :8310
+│       ├── README.md · application.md · rest/ · terraform/
+│       └── javascript/
 ├── 99-use-cases/              # Focused LaunchDarkly use-case examples
 │   ├── README.md
 │   └── 01-abcd-test/          # A-B-C-D test on navigation count label
@@ -132,6 +136,8 @@ lunch-marcoly/
 - `10-code-control` groups grid-navigator **feature flag** examples; shared portal lives in its `portal/`.
 - `11-flag-enablement` (under `10-code-control/`) demonstrates feature flag naming, provisioning, and boolean enablement.
 - `12-flag-variations` (under `10-code-control/`) demonstrates string, number, JSON, and anonymous-context flag variation types.
+- `30-client-sdk` groups **browser** JavaScript SDK examples (client-side ID, not `LD_SDK_KEY`).
+- `31-client-evaluation` (under `30-client-sdk/`) demonstrates initialize, client-side availability, `variation`, and `change:`.
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive and guarded rollouts).
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author
@@ -550,6 +556,7 @@ export LD_API_HOST="https://app.launchdarkly.com"
 export LD_PROJECT_KEY="default"
 export LD_ENVIRONMENT_KEY="test"
 export LD_SDK_KEY="sdk-..."
+export LD_CLIENT_SIDE_ID="..."         # client-side SDKs only (31+)
 export LD_API_ACCESS_TOKEN="api-..."   # rest/ examples
 export LD_ACCESS_TOKEN="api-..."       # terraform/ examples
 ```
