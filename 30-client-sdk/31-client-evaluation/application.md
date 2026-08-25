@@ -41,6 +41,11 @@ When a flag is **off**, that aspect matches 02 (aside from the dark theme).
 | `variation` | Read each flag after init and after `change:` |
 | `change:` / `change` | Re-render when targeting changes — no page reload |
 
+The lab **SDK calls** log (and the browser console, prefix `[31 evaluation]`)
+records `initialize`, streaming `change:`, and `close`. It does **not** log
+`variation` on every navigation keypress. Counters survive logout; a second
+login shows `initialize ×2`.
+
 JavaScript SDK: [client-side JavaScript](https://launchdarkly.com/docs/sdk/client-side/javascript).
 Boolean flags: [boolean flags](https://launchdarkly.com/docs/home/flags/boolean).
 Client-side availability: [client-side and mobile flags](https://launchdarkly.com/docs/home/flags/creating-flags#make-flags-available-to-client-side-and-mobile-sdks).
@@ -105,11 +110,12 @@ A local Node process may proxy REST `turnFlagOn` / `turnFlagOff` /
 2. Navigation matches 02 (no wrap)
 3. Missing `LD_CLIENT_SIDE_ID` or failed init: highlight `none`, count hidden
 4. With a valid client-side ID and provisioned flags, `variation` matches the dashboard for that user
-5. Toggling a flag (UI or Controls) updates the grid via `change:` without reload
+5. Toggling a flag (UI or Controls) updates the grid via `change:` without reload; the SDK call log records that `change:` (not WASD `variation`)
 6. Highlight off → `X` only; on → fallthrough color
 7. Count flag off → no Count row; on → Count increments on successful moves
 8. Page source and `/api/config` never include a server SDK key or API token
 9. Flags have client-side SDK availability; otherwise document that evaluations stay at defaults
+10. Logout then login again increments `initialize` in the SDK call log (count is kept)
 
 ## Further reading
 

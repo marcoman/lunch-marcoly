@@ -36,7 +36,10 @@ Open [http://127.0.0.1:8310/](http://127.0.0.1:8310/). `PORT` overrides the list
 
 ## What to expect
 
-1. Log in. The SDK initializes with `{ kind: "user", key: username }`.
+1. Log in. The SDK initializes with `{ kind: "user", key: username }`. The lab
+   **SDK calls** log (and the console, prefix `[31 evaluation]`) records
+   `initialize`.
 2. Flags off → `X` only, no Count (dark theme).
-3. Turn on highlight / count in Controls or the dashboard; the grid updates via `change:` without reload.
+3. Turn on highlight / count in Controls or the dashboard; the grid updates via
+   `change:` without reload. The log adds `change:` — WASD does not.
 4. `/api/config` returns the client-side ID only — never the server SDK key.

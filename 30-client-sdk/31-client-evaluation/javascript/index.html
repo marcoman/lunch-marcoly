@@ -107,6 +107,24 @@
     }
     .ld-about-p { font-size: 0.85rem; line-height: 1.45; color: #c8d0da; }
     .ld-toolbar { margin-bottom: 0.75rem; }
+    .sdk-log {
+      margin: 0.5rem 0 1rem;
+      padding: 0.45rem 0.5rem;
+      max-height: 9rem;
+      overflow: auto;
+      background: #1a1a28;
+      border: 1px solid #4a4a5c;
+      border-radius: 6px;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 0.72rem;
+      line-height: 1.45;
+      color: #c8d0da;
+    }
+    .sdk-log-line { white-space: pre-wrap; word-break: break-word; }
+    .sdk-log-line.kind-initialize { color: #fff176; }
+    .sdk-log-line.kind-change { color: #64b5f6; }
+    .sdk-log-line.kind-close, .sdk-log-line.kind-skip, .sdk-log-line.kind-session { color: #ef9a9a; }
+    .sdk-call-counts { font-size: 0.78rem; color: #9a9aab; margin: 0.35rem 0 0; }
   </style>
 </head>
 <body>
@@ -134,6 +152,9 @@
 
     <aside class="ld-rail" aria-label="LaunchDarkly lab">
       <h2>LaunchDarkly · lab</h2>
+      <div class="ld-block-title" style="font-weight:650;">SDK calls</div>
+      <p class="sdk-call-counts" id="sdk-call-counts">initialize ×0 · change ×0</p>
+      <div class="sdk-log" id="sdk-call-log" aria-live="polite">No SDK client calls yet.</div>
       <p class="ld-controls-meta" id="sdk-meta">Loading client-side ID…</p>
       <p class="ld-controls-meta" id="controls-meta">Loading flag status…</p>
       <div id="controls-warn" class="ld-controls-warn hidden"></div>
@@ -142,7 +163,9 @@
       </div>
       <div id="controls-list"></div>
       <p class="ld-about-p">
-        The page calls <code>variation</code> and listens for <code>change:</code>.
+        The page calls <code>variation</code> on render and listens for
+        <code>change:</code>. The SDK call log records <code>initialize</code>
+        and streaming <code>change:</code> — not every keypress.
         Toggles use the REST API from the <strong>Node host</strong>, not from this page.
         Client-side ID docs:
         <a href="https://launchdarkly.com/docs/home/account/environment/keys" style="color:#64b5f6">environment keys</a>.
