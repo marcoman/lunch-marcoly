@@ -22,6 +22,39 @@ let showCount = false;
 let ldClient = null;
 let clientSideId = null;
 let identifyBusy = false;
+let sdkCallLog = [];
+let initializeCount = 0;
+let identifyCount = 0;
+
+/**
+ * Record SDK client lifecycle so the lab shows initialize vs identify.
+ * Also mirrors to the browser console. Login should log initialize once;
+ * Alice/Bob should log identify only.
+ */
+function logSdkCall(kind, detail) {
+  const line = { t: new Date().toISOString().slice(11, 23), kind, detail };
+  sdkCallLog.push(line);
+  if (sdkCallLog.length > 40) sdkCallLog.shift();
+  console.log(`[32 identify] ${kind}${detail ? " " + detail : ""}`);
+  const el = document.getElementById("sdk-call-log");
+  if (!el) return;
+  el.innerHTML = "";
+  if (!sdkCallLog.length) {
+    el.textContent = "No SDK client calls yet.";
+    return;
+  }
+  for (const entry of sdkCallLog) {
+    const row = document.createElement("div");
+    row.className = "sdk-log-line kind-" + entry.kind;
+    row.textContent = `${entry.t}  ${entry.kind}${entry.detail ? "  " + entry.detail : ""}`;
+    el.appendChild(row);
+  }
+  el.scrollTop = el.scrollHeight;
+  const counts = document.getElementById("sdk-call-counts");
+  if (counts) {
+    counts.textContent = `initialize ×${initializeCount} · identify ×${identifyCount}`;
+  }
+}
 
 function formatPos(r, c) {
   return `${ROWS[r]}/${COLS[c]}`;
@@ -112,6 +145,7 @@ function renderGrid() {
 
 function closeLdClient() {
   if (ldClient) {
+    logSdkCall("close", "client discarded (logout / re-init)");
     try {
       ldClient.close();
     } catch (_err) {
@@ -129,10 +163,13 @@ function closeLdClient() {
 async function startLdClient(name) {
   closeLdClient();
   if (!clientSideId || typeof LDClient === "undefined") {
+    logSdkCall("skip", "no client-side ID — did not call initialize");
     readFlagsFromClient();
     return;
   }
   const context = { kind: "user", key: name };
+  initializeCount += 1;
+  logSdkCall("initialize", `key=${name}  (client #${initializeCount})`);
   ldClient = LDClient.initialize(clientSideId, context);
   /**
    * Streaming updates — re-read variation() when targeting changes.
@@ -167,6 +204,8 @@ async function identifyUser(name) {
   }
   identifyBusy = true;
   try {
+    identifyCount += 1;
+    logSdkCall("identify", `key=${next}  (no initialize)`);
     await ldClient.identify({ kind: "user", key: next });
     username = next;
     readFlagsFromClient();
@@ -182,6 +221,7 @@ async function identifyUser(name) {
 
 function logout() {
   closeLdClient();
+  logSdkCall("session", "logged out — next login will initialize again (count kept)");
   username = "";
   row = 1;
   col = 1;

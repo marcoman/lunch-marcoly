@@ -75,6 +75,10 @@ Move count is **app state**. Identify does not reset it. The flag only controls 
 After identify, `variation` and the Context pane must reflect the new key.
 Grid `m/m` start still applies only on **login**, not on identify.
 
+The lab **SDK calls** log (and the browser console, prefix `[32 identify]`)
+records each `initialize` / `identify` / `close`. Switching users must add
+`identify` lines without a new `initialize`.
+
 ## Lab Controls
 
 Same as 31: REST proxy on the Node host. Turning these flags **off** hides
@@ -87,8 +91,9 @@ targeting (everyone gets off variations). Leave them **on** for the identify dem
 3. Grid position and move count persist across identify
 4. `alice` vs `bob` vs other keys match the table above when flags are on
 5. `change:` still updates the grid if targeting is edited while identified
-6. `L` logs out and closes the client; `Q` quits
-7. No server SDK key or API token in the page
+6. The SDK call log shows `initialize` on login and `identify` on switch — not a second initialize
+7. `L` logs out and closes the client; `Q` quits
+8. No server SDK key or API token in the page
 
 ## Further reading
 

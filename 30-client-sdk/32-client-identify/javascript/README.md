@@ -34,7 +34,8 @@ Open [http://127.0.0.1:8320/](http://127.0.0.1:8320/). `PORT` overrides the list
 
 ## What to expect
 
-1. Log in as any name (SDK `initialize`).
-2. Click **Alice** or **Bob** (or type a key and **Identify**). The page calls
-   `identify` — no reload. Grid position and Count persist.
+1. Log in as any name (SDK `initialize`). The lab **SDK calls** log (and the
+   console, prefix `[32 identify]`) records that call.
+2. Click **Alice** or **Bob** (or type a key and **Identify**). The log adds
+   `identify` — not another `initialize`. Grid position and Count persist.
 3. `alice` → green + Count; `bob` → blue, Count hidden; other keys → `X` only.

@@ -119,6 +119,24 @@
       margin: 0;
     }
     .identify-row button { padding: 0.35rem 0.65rem; font-size: 0.85rem; }
+    .sdk-log {
+      margin: 0.5rem 0 0;
+      padding: 0.45rem 0.5rem;
+      max-height: 9rem;
+      overflow: auto;
+      background: #1a1a28;
+      border: 1px solid #4a4a5c;
+      border-radius: 6px;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 0.72rem;
+      line-height: 1.45;
+      color: #c8d0da;
+    }
+    .sdk-log-line { white-space: pre-wrap; word-break: break-word; }
+    .sdk-log-line.kind-initialize { color: #fff176; }
+    .sdk-log-line.kind-identify { color: #81c784; }
+    .sdk-log-line.kind-close, .sdk-log-line.kind-skip { color: #ef9a9a; }
+    .sdk-call-counts { font-size: 0.78rem; color: #9a9aab; margin: 0.35rem 0 0; }
   </style>
 </head>
 <body>
@@ -157,6 +175,9 @@
         <button type="button" id="btn-alice">Alice</button>
         <button type="button" id="btn-bob">Bob</button>
       </div>
+      <div class="ld-block-title" style="font-weight:650;">SDK calls</div>
+      <p class="sdk-call-counts" id="sdk-call-counts">initialize ×0 · identify ×0</p>
+      <div class="sdk-log" id="sdk-call-log" aria-live="polite">No SDK client calls yet.</div>
       <p class="ld-controls-meta" id="sdk-meta">Loading client-side ID…</p>
       <p class="ld-controls-meta" id="controls-meta">Loading flag status…</p>
       <div id="controls-warn" class="ld-controls-warn hidden"></div>
