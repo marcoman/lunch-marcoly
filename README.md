@@ -44,7 +44,8 @@ lunch-marcoly/
 │   └── 24-agent-judges/              # Judges gate (Python/Node/Java/.NET + Go console)
 ├── 30-client-sdk/               # Browser JavaScript SDK
 │   ├── README.md
-│   └── 31-client-evaluation/    # initialize · variation · change: (:8310)
+│   ├── 31-client-evaluation/    # initialize · variation · change: (:8310)
+│   └── 32-client-identify/      # identify() without reload (:8320)
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -89,6 +90,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 24 | [24-agent-judges](20-agent-config/24-agent-judges/) | Judges runtime gate + rewrite (Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console) |
 | 30 | [30-client-sdk](30-client-sdk/) | Browser JavaScript SDK series (client-side ID) |
 | 31 | [31-client-evaluation](30-client-sdk/31-client-evaluation/) | Initialize, client-side availability, `variation`, `change:` (**:8310**) |
+| 32 | [32-client-identify](30-client-sdk/32-client-identify/) | `identify()` context switch without reload (**:8320**) |
 | 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (A-B-C-D test, segments, …) |
 
 ## Building code

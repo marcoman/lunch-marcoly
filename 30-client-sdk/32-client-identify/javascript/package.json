@@ -1,0 +1,13 @@
+{
+  "name": "32-client-identify",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser grid with LaunchDarkly identify() context switch",
+  "main": "32-client-identify.js",
+  "scripts": {
+    "start": "node 32-client-identify.js"
+  },
+  "dependencies": {
+    "launchdarkly-js-client-sdk": "^3.5.0"
+  }
+}

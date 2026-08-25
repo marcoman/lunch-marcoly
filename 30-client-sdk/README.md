@@ -10,6 +10,7 @@ Server-side flags live in [10-code-control](../10-code-control/).
 | Example | Folder | What it teaches |
 |---------|--------|-----------------|
 | **31** | [31-client-evaluation/](31-client-evaluation/) | Initialize, **client-side availability**, `variation`, `change:` |
+| **32** | [32-client-identify/](32-client-identify/) | **`identify()`** — switch context without reload |
 
 ## Credentials
 

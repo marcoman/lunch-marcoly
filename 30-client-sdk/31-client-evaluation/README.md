@@ -58,4 +58,5 @@ Run provisioning before opening the app.
 
 - [application.md](application.md)
 - [30-client-sdk](../README.md)
+- [32-client-identify](../32-client-identify/) — `identify()` without reload
 - [02-reference-client-code](../../02-reference-client-code/)

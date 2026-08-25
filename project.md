@@ -95,7 +95,10 @@ lunch-marcoly/
 │       └── python/ · node/ · java/ · dotnet/ · go/  # Web :8240–:8243; Go console
 ├── 30-client-sdk/               # Browser JavaScript SDK (client-side ID)
 │   ├── README.md
-│   └── 31-client-evaluation/    # initialize · variation · change:  :8310
+│   ├── 31-client-evaluation/    # initialize · variation · change:  :8310
+│   │   ├── README.md · application.md · rest/ · terraform/
+│   │   └── javascript/
+│   └── 32-client-identify/      # identify() context switch  :8320
 │       ├── README.md · application.md · rest/ · terraform/
 │       └── javascript/
 ├── 99-use-cases/              # Focused LaunchDarkly use-case examples
@@ -138,6 +141,7 @@ lunch-marcoly/
 - `12-flag-variations` (under `10-code-control/`) demonstrates string, number, JSON, and anonymous-context flag variation types.
 - `30-client-sdk` groups **browser** JavaScript SDK examples (client-side ID, not `LD_SDK_KEY`).
 - `31-client-evaluation` (under `30-client-sdk/`) demonstrates initialize, client-side availability, `variation`, and `change:`.
+- `32-client-identify` (under `30-client-sdk/`) demonstrates `identify()` (switch user without reload).
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive and guarded rollouts).
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author
