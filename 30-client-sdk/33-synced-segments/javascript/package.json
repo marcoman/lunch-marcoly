@@ -1,0 +1,13 @@
+{
+  "name": "33-synced-segments",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser grid with inner-circle badge from a synced/big segment",
+  "main": "33-synced-segments.js",
+  "scripts": {
+    "start": "node 33-synced-segments.js"
+  },
+  "dependencies": {
+    "launchdarkly-js-client-sdk": "^3.5.0"
+  }
+}
