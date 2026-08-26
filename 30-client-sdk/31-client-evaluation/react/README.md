@@ -35,8 +35,8 @@ npm start
 
 Open [http://127.0.0.1:8311/](http://127.0.0.1:8311/). `PORT` overrides the Vite port.
 
-This is a different process from [javascript/](../javascript/) (** :8310 **). Both
-can run at once.
+This is a different process from [javascript/](../javascript/) (** :8310 **). Vue is
+[../vue/](../vue/) (** :8312 **). All three can run at once.
 
 ## What to expect
 

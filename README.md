@@ -44,9 +44,9 @@ lunch-marcoly/
 │   └── 24-agent-judges/              # Judges gate (Python/Node/Java/.NET + Go console)
 ├── 30-client-sdk/               # Browser JavaScript SDK
 │   ├── README.md
-│   ├── 31-client-evaluation/    # initialize · variation · change: (:8310 JS · :8311 React)
-│   ├── 32-client-identify/      # identify() without reload (:8320 JS · :8321 React)
-│   └── 33-synced-segments/      # synced/big segment badge (:8330 JS · :8331 React)
+│   ├── 31-client-evaluation/    # initialize · variation · change: (:8310 JS · :8311 React · :8312 Vue)
+│   ├── 32-client-identify/      # identify() without reload (:8320 JS · :8321 React · :8322 Vue)
+│   └── 33-synced-segments/      # synced/big segment badge (:8330 JS · :8331 React · :8332 Vue)
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -58,7 +58,7 @@ Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control
 
 ## Languages
 
-Each example may include implementations in any of these languages. Python, Node.js, Java, and **.NET** default to **web applications** with a browser UI. **JavaScript** (`javascript/`) and **React Web** (`react/`) are **browser applications**: the page owns the logic. Go, Rust, and C++ are **console applications**. Optional `-console` variants exist for Python, Node.js, and Java when a terminal-based version is also needed.
+Each example may include implementations in any of these languages. Python, Node.js, Java, and **.NET** default to **web applications** with a browser UI. **JavaScript** (`javascript/`), **React Web** (`react/`), and **Vue** (`vue/`) are **browser applications**: the page owns the logic. Go, Rust, and C++ are **console applications**. Optional `-console` variants exist for Python, Node.js, and Java when a terminal-based version is also needed.
 
 | Language | Directory | Application type |
 |----------|-----------|------------------|
@@ -74,6 +74,7 @@ Each example may include implementations in any of these languages. Python, Node
 | Rust     | `rust/`   | Console application |
 | JavaScript | `javascript/` | Browser application (static files) |
 | React Web | `react/` | Browser application (Vite + React Web SDK) |
+| Vue       | `vue/` | Browser application (Vite + Vue SDK) |
 
 ## Examples
 
@@ -91,9 +92,9 @@ Each example may include implementations in any of these languages. Python, Node
 | 23 | [23-agent-tools](20-agent-config/23-agent-tools/) | Library tools + tool loop + `track_tool_call` (web + Go console) |
 | 24 | [24-agent-judges](20-agent-config/24-agent-judges/) | Judges runtime gate + rewrite (Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console) |
 | 30 | [30-client-sdk](30-client-sdk/) | Browser JavaScript SDK series (client-side ID) |
-| 31 | [31-client-evaluation](30-client-sdk/31-client-evaluation/) | Initialize, client-side availability, `variation`, `change:` (**JS :8310** · **React :8311**) |
-| 32 | [32-client-identify](30-client-sdk/32-client-identify/) | `identify()` context switch without reload (**JS :8320** · **React :8321**) |
-| 33 | [33-synced-segments](30-client-sdk/33-synced-segments/) | Synced/big segment inner-circle badge (**JS :8330** · **React :8331**) |
+| 31 | [31-client-evaluation](30-client-sdk/31-client-evaluation/) | Initialize, client-side availability, `variation`, `change:` (**JS :8310** · **React :8311** · **Vue :8312**) |
+| 32 | [32-client-identify](30-client-sdk/32-client-identify/) | `identify()` context switch without reload (**JS :8320** · **React :8321** · **Vue :8322**) |
+| 33 | [33-synced-segments](30-client-sdk/33-synced-segments/) | Synced/big segment inner-circle badge (**JS :8330** · **React :8331** · **Vue :8332**) |
 | 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (A-B-C-D test, segments, …) |
 
 ## Building code
@@ -158,6 +159,7 @@ Run `nvm use` whenever you open a new shell before working on Node examples.
 | Node.js | `npm install` *(when deps exist)* | `node 00-reference-code.js` |
 | JavaScript | `npm install` *(when deps exist)* | `npm start` (static server) |
 | React Web | `npm install` | `npm start` (Vite; 31 is **:8311**) |
+| Vue | `npm install` | `npm start` (Vite; 31 is **:8312**) |
 | Java | `./mvnw clean install` | `java -jar target/00-reference-code.jar` |
 | .NET | `export PATH="/usr/local/share/dotnet:$PATH"` · `dotnet restore` · `dotnet build` | `dotnet run` (TFM **net10.0**) |
 | C++ | `make clean && make all` | `./00-reference-code` |

@@ -36,7 +36,8 @@ Docs: [Segments](https://launchdarkly.com/docs/home/flags/segments) ·
 [Synced segments](https://launchdarkly.com/docs/home/flags/synced-segments) ·
 [Update big segment targets](https://launchdarkly.com/docs/api/segments/update-big-segment-targets) ·
 [JavaScript SDK](https://launchdarkly.com/docs/sdk/client-side/javascript) ·
-[React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web)
+[React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web) ·
+[Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue)
 
 ## Flag: Show inner circle badge
 

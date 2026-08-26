@@ -1,0 +1,19 @@
+{
+  "name": "32-client-identify-vue",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Vue SDK grid with identify() context switch",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "launchdarkly-vue-client-sdk": "^2.4.0",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "vite": "^6.0.3"
+  }
+}

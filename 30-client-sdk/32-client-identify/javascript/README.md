@@ -33,6 +33,7 @@ npm start
 Open [http://127.0.0.1:8320/](http://127.0.0.1:8320/). `PORT` overrides the listen port.
 
 React Web twin: [../react/](../react/) (** :8321 **).
+Vue twin: [../vue/](../vue/) (** :8322 **).
 
 ## What to expect
 

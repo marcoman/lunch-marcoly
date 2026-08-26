@@ -49,6 +49,8 @@ login shows `initialize ×2`.
 JavaScript SDK: [client-side JavaScript](https://launchdarkly.com/docs/sdk/client-side/javascript).
 React Web SDK: [React Web](https://launchdarkly.com/docs/sdk/client-side/react/react-web)
 (`useStringVariation`, `useBoolVariation` — same flag keys).
+Vue SDK: [Vue](https://launchdarkly.com/docs/sdk/client-side/vue)
+(`ldInit`, `useLDFlag` — same flag keys).
 Boolean flags: [boolean flags](https://launchdarkly.com/docs/home/flags/boolean).
 Client-side availability: [client-side and mobile flags](https://launchdarkly.com/docs/home/flags/creating-flags#make-flags-available-to-client-side-and-mobile-sdks).
 
@@ -125,3 +127,4 @@ A local Node process may proxy REST `turnFlagOn` / `turnFlagOff` /
 - [SDK credentials](https://launchdarkly.com/docs/home/account/environment/keys)
 - [JavaScript SDK](https://launchdarkly.com/docs/sdk/client-side/javascript)
 - [React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web)
+- [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue)

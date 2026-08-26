@@ -35,6 +35,7 @@ npm start
 Open [http://127.0.0.1:8330/](http://127.0.0.1:8330/).
 
 React Web twin: [../react/](../react/) (** :8331 **).
+Vue twin: [../vue/](../vue/) (** :8332 **).
 
 ## What to expect
 

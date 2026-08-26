@@ -8,8 +8,9 @@ __pycache__/
 # Node
 node_modules/
 
-# Vite build output (React Web examples)
+# Vite build output (React Web / Vue examples)
 **/react/dist/
+**/vue/dist/
 
 # Java / Maven
 target/

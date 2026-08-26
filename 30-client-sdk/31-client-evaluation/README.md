@@ -2,16 +2,18 @@
 
 Browser **feature flags**: initialize a client-side SDK, mark flags **client-side
 available**, evaluate variations, and listen for `change:`. JavaScript uses the
-JS SDK; React Web uses typed variation hooks on the same flags.
+JS SDK; React Web uses typed variation hooks on the same flags; Vue uses
+`ldInit` / `useLDFlag`.
 
 Baseline UI: [02-reference-client-code](../../02-reference-client-code/).
 Behavior spec: [application.md](application.md).
 
 Keywords: **feature flags** · **client-side ID** · **boolean variation** ·
-**string variation** · **streaming `change:`** · **React Web SDK**
+**string variation** · **streaming `change:`** · **React Web SDK** · **Vue SDK**
 
 Docs: [JavaScript SDK](https://launchdarkly.com/docs/sdk/client-side/javascript) ·
 [React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web) ·
+[Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue) ·
 [environment keys](https://launchdarkly.com/docs/home/account/environment/keys) ·
 [client-side availability](https://launchdarkly.com/docs/home/flags/creating-flags#make-flags-available-to-client-side-and-mobile-sdks)
 
@@ -56,6 +58,7 @@ Run provisioning before opening the app.
 |----------|-----------|-----|-----|
 | JavaScript | [javascript/](javascript/) | `npm start` | [http://127.0.0.1:8310/](http://127.0.0.1:8310/) |
 | React Web | [react/](react/) | `npm start` | [http://127.0.0.1:8311/](http://127.0.0.1:8311/) |
+| Vue | [vue/](vue/) | `npm start` | [http://127.0.0.1:8312/](http://127.0.0.1:8312/) |
 
 ## Further reading
 

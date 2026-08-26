@@ -1,7 +1,7 @@
-# React Web
+# Vue
 
 Same [33-synced-segments](../application.md) flag and segment, evaluated with the
-[React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web).
+[Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue).
 Vite proxies membership writes. The page never sees `LD_API_ACCESS_TOKEN`.
 
 [Synced segments](https://launchdarkly.com/docs/home/flags/synced-segments) ·
@@ -31,7 +31,7 @@ npm install
 npm start
 ```
 
-Open [http://127.0.0.1:8331/](http://127.0.0.1:8331/). JavaScript is **:8330**. Vue is **:8332**.
+Open [http://127.0.0.1:8332/](http://127.0.0.1:8332/). JavaScript is **:8330**. React is **:8331**.
 
 ## What to expect
 

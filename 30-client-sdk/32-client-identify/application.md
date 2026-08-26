@@ -28,6 +28,7 @@ rules for demo users `alice` and `bob`. Fallthrough matches 02 (`none` / hidden)
 
 JavaScript SDK identify: [changing contexts](https://launchdarkly.com/docs/sdk/features/identify).
 React Web: [React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web) (`identify` on the client from `useLDClient`).
+Vue: [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue) (`identify` on the client from `useLDClient`).
 Targeting rules: [target with rules](https://launchdarkly.com/docs/home/flags/target-rules).
 
 ## Demo users (context key)

@@ -11,7 +11,8 @@ Docs: [synced segments](https://launchdarkly.com/docs/home/flags/synced-segments
 [update big segment targets](https://launchdarkly.com/docs/api/segments/update-big-segment-targets) ·
 [identify](https://launchdarkly.com/docs/sdk/features/identify) ·
 [JavaScript SDK](https://launchdarkly.com/docs/sdk/client-side/javascript) ·
-[React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web)
+[React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web) ·
+[Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue)
 
 Baseline: [32-client-identify](../32-client-identify/) ·
 [31-client-evaluation](../31-client-evaluation/).
@@ -57,6 +58,7 @@ export LD_API_ACCESS_TOKEN="api-..."
 |----------|-----------|-----|-----|
 | JavaScript | [javascript/](javascript/) | `npm start` | [http://127.0.0.1:8330/](http://127.0.0.1:8330/) |
 | React Web | [react/](react/) | `npm start` | [http://127.0.0.1:8331/](http://127.0.0.1:8331/) |
+| Vue | [vue/](vue/) | `npm start` | [http://127.0.0.1:8332/](http://127.0.0.1:8332/) |
 
 ## Further reading
 

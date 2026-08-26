@@ -26,13 +26,15 @@ Supported languages and application types:
 | Rust     | `rust/`   | Console application | Cargo                     |
 | JavaScript | `javascript/` | Browser application (static files) | nvm + npm (optional static server) |
 | React Web | `react/` | Browser application (Vite + React Web SDK) | nvm + npm |
+| Vue       | `vue/`   | Browser application (Vite + Vue SDK) | nvm + npm |
 
 **Web applications** (`python/`, `node/`, `java/`, `dotnet/`) include a graphical component served in the browser. Each README should document how to start the local server and which URL to open.
 
-**Browser applications** (`javascript/`, `react/`) put login and grid logic in the
+**Browser applications** (`javascript/`, `react/`, `vue/`) put login and grid logic in the
 page. A local process may serve the files; it must not evaluate the navigator on
 the server. `javascript/` is the vanilla JS SDK. `react/` is the
 [React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web).
+`vue/` is the [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue).
 Used by [02-reference-client-code](02-reference-client-code/) (`javascript/` only)
 and [30-client-sdk](30-client-sdk/).
 
@@ -101,15 +103,15 @@ lunch-marcoly/
 │       └── python/ · node/ · java/ · dotnet/ · go/  # Web :8240–:8243; Go console
 ├── 30-client-sdk/               # Browser JavaScript SDK (client-side ID)
 │   ├── README.md
-│   ├── 31-client-evaluation/    # initialize · variation · change:  :8310 JS · :8311 React
+│   ├── 31-client-evaluation/    # initialize · variation · change:  :8310 JS · :8311 React · :8312 Vue
 │   │   ├── README.md · application.md · rest/ · terraform/
-│   │   └── javascript/ · react/
-│   ├── 32-client-identify/      # identify() context switch  :8320 JS · :8321 React
+│   │   └── javascript/ · react/ · vue/
+│   ├── 32-client-identify/      # identify() context switch  :8320 JS · :8321 React · :8322 Vue
 │   │   ├── README.md · application.md · rest/ · terraform/
-│   │   └── javascript/ · react/
-│   └── 33-synced-segments/      # synced/big segment badge  :8330 JS · :8331 React
+│   │   └── javascript/ · react/ · vue/
+│   └── 33-synced-segments/      # synced/big segment badge  :8330 JS · :8331 React · :8332 Vue
 │       ├── README.md · application.md · rest/ · terraform/
-│       └── javascript/ · react/
+│       └── javascript/ · react/ · vue/
 ├── 99-use-cases/              # Focused LaunchDarkly use-case examples
 │   ├── README.md
 │   └── 01-abcd-test/          # A-B-C-D test on navigation count label
@@ -149,9 +151,9 @@ lunch-marcoly/
 - `11-flag-enablement` (under `10-code-control/`) demonstrates feature flag naming, provisioning, and boolean enablement.
 - `12-flag-variations` (under `10-code-control/`) demonstrates string, number, JSON, and anonymous-context flag variation types.
 - `30-client-sdk` groups **browser** client-side SDK examples (client-side ID, not `LD_SDK_KEY`).
-- `31-client-evaluation` (under `30-client-sdk/`) demonstrates initialize, client-side availability, variation, and `change:` (JavaScript **:8310**, React Web **:8311**).
-- `32-client-identify` (under `30-client-sdk/`) demonstrates `identify()` (switch user without reload; JavaScript **:8320**, React Web **:8321**).
-- `33-synced-segments` (under `30-client-sdk/`) demonstrates a boolean flag targeted by a synced/big-style segment (inner-circle badge; JavaScript **:8330**, React Web **:8331**).
+- `31-client-evaluation` (under `30-client-sdk/`) demonstrates initialize, client-side availability, variation, and `change:` (JavaScript **:8310**, React Web **:8311**, Vue **:8312**).
+- `32-client-identify` (under `30-client-sdk/`) demonstrates `identify()` (switch user without reload; JavaScript **:8320**, React Web **:8321**, Vue **:8322**).
+- `33-synced-segments` (under `30-client-sdk/`) demonstrates a boolean flag targeted by a synced/big-style segment (inner-circle badge; JavaScript **:8330**, React Web **:8331**, Vue **:8332**).
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive and guarded rollouts).
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author
@@ -160,7 +162,7 @@ lunch-marcoly/
 
 - Use the fixed directory names from the table above
 - Web implementations: `python/`, `node/`, `java/`, `dotnet/`
-- Browser implementations: `javascript/` (vanilla JS SDK), `react/` (React Web SDK)
+- Browser implementations: `javascript/` (vanilla JS SDK), `react/` (React Web SDK), `vue/` (Vue SDK)
 - Console implementations: `python-console/`, `node-console/`, `java-console/`, `go/`, `cpp/`, `rust/`
 - Only create a language folder when that implementation exists
 - Do not nest `-console` folders inside their web counterparts — each is a sibling directory at the example root
@@ -175,6 +177,7 @@ Follow the idiomatic naming style of each language:
 | Node.js  | `node/`, `node-console/` | `{example-name}.js` | `00-reference-code.js` |
 | JavaScript | `javascript/` | `{example-name}.js` (static server) + `index.html` | `02-reference-client-code.js` |
 | React Web | `react/` | Vite `index.html` + `src/` | `31-client-evaluation/react` |
+| Vue       | `vue/`   | Vite `index.html` + `src/` | `31-client-evaluation/vue` |
 | Java     | `java/`, `java-console/` | PascalCase (classes) | `WebServer.java` |
 | .NET     | `dotnet/` | `{example-name}.csproj` + PascalCase classes | `01-reference-agent.csproj`, `Program.cs`, `AgentCore.cs` |
 | C++      | `cpp/`    | `main.cpp` + Makefile | binary `00-reference-code` |
@@ -264,6 +267,7 @@ Repository-wide and per-language dependency conventions:
 | Node.js | `node/`, `node-console/` → `package.json` | Per-folder Node metadata and scripts |
 | JavaScript | `javascript/` → `package.json` | Optional static file server; the app is `index.html` + client JS |
 | React Web | `react/` → `package.json` | Vite app; `@launchdarkly/react-sdk`; lab API in `vite.config.js` |
+| Vue       | `vue/` → `package.json` | Vite app; `launchdarkly-vue-client-sdk`; lab API in `vite.config.js` |
 | Java | `java/`, `java-console/` → `pom.xml` | Maven build; use `./mvnw` (Maven Wrapper) |
 | Java | `mvnw`, `.mvn/wrapper/` | Maven Wrapper — preferred over a system `mvn` install |
 | .NET | `dotnet/` → `{example-name}.csproj` | Per-folder .NET project file; use `dotnet restore` / `dotnet build` |
@@ -366,6 +370,21 @@ npm start
 ```
 
 Default URL for 31: [http://127.0.0.1:8311/](http://127.0.0.1:8311/). `PORT` overrides the Vite port. Do not put `LD_SDK_KEY` in the page; the Vite process proxies lab Controls.
+
+### Vue (browser)
+
+Used by [31-client-evaluation](30-client-sdk/31-client-evaluation/vue/),
+[32-client-identify](30-client-sdk/32-client-identify/vue/), and
+[33-synced-segments](30-client-sdk/33-synced-segments/vue/). Same Node version pin. The app is a Vite + Vue SPA; **flag evaluation is in the page** via the [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue).
+
+- **Dependencies:** `package.json` in `vue/` (`launchdarkly-vue-client-sdk`).
+- **Run:** from the language folder:
+
+```bash
+npm start
+```
+
+Default URL for 31: [http://127.0.0.1:8312/](http://127.0.0.1:8312/). `PORT` overrides the Vite port. Do not put `LD_SDK_KEY` in the page; the Vite process proxies lab Controls.
 
 ### Java
 
@@ -519,7 +538,7 @@ Install only what you need for the language and provisioning approach you are wo
 | Language / tool | Minimum version | Notes |
 |-----------------|-----------------|-------|
 | Python          | 3.12+           | [pyenv](https://github.com/pyenv/pyenv) and `.python-version`; pip in `.venv` |
-| Node.js         | 20 LTS+         | [nvm](https://github.com/nvm-sh/nvm) and `.nvmrc` at repository root; also Vite React Web examples |
+| Node.js         | 20 LTS+         | [nvm](https://github.com/nvm-sh/nvm) and `.nvmrc` at repository root; also Vite React Web and Vue examples |
 | Java            | 21+             | Maven Wrapper (`./mvnw`) in each Java folder |
 | .NET            | SDK 10+         | `dotnet` CLI (`dotnet restore` / `dotnet build`) in each `dotnet/` folder |
 | C++             | C++20           | Make and a C++20-capable compiler |
