@@ -43,3 +43,5 @@ Open [http://127.0.0.1:8310/](http://127.0.0.1:8310/). `PORT` overrides the list
 3. Turn on highlight / count in Controls or the dashboard; the grid updates via
    `change:` without reload. The log adds `change:` — WASD does not.
 4. `/api/config` returns the client-side ID only — never the server SDK key.
+
+React Web twin: [../react/](../react/) (** :8311 **).

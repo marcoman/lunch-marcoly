@@ -1,0 +1,20 @@
+{
+  "name": "31-client-evaluation-react",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "React Web SDK grid with client-side evaluation and lab Controls",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@launchdarkly/react-sdk": "^4.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.3"
+  }
+}

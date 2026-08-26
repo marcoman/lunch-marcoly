@@ -35,7 +35,8 @@ Keywords: **synced segments** · **big segments** · **unbounded** · **segment 
 Docs: [Segments](https://launchdarkly.com/docs/home/flags/segments) ·
 [Synced segments](https://launchdarkly.com/docs/home/flags/synced-segments) ·
 [Update big segment targets](https://launchdarkly.com/docs/api/segments/update-big-segment-targets) ·
-[JavaScript SDK](https://launchdarkly.com/docs/sdk/client-side/javascript)
+[JavaScript SDK](https://launchdarkly.com/docs/sdk/client-side/javascript) ·
+[React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web)
 
 ## Flag: Show inner circle badge
 

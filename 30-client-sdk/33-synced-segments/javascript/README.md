@@ -34,6 +34,8 @@ npm start
 
 Open [http://127.0.0.1:8330/](http://127.0.0.1:8330/).
 
+React Web twin: [../react/](../react/) (** :8331 **).
+
 ## What to expect
 
 1. Log in. SDK **initialize**. Badge off unless that key is already in the segment.
