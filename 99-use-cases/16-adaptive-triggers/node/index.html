@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid Navigator — Adaptive Triggers</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #1e1e2e; color: #e8e8ec; }
+    button, input { font: inherit; }
+    button {
+      padding: .55rem .8rem; cursor: pointer; border: 1px solid #666;
+      border-radius: 5px; background: #3d3d52; color: #fff;
+    }
+    button:hover { background: #4b4b65; }
+    button:disabled { opacity: .6; cursor: wait; }
+    #login-screen { width: min(28rem, calc(100% - 2rem)); margin: 3rem auto; }
+    #login-screen input {
+      width: 100%; padding: .6rem; margin: .4rem 0 .7rem;
+      background: #2d2d3d; color: #fff; border: 1px solid #555;
+    }
+    #app-shell { display: grid; height: 100vh; grid-template-columns: minmax(0, 1fr) min(30rem, 44vw); }
+    #grid-screen { padding: 2rem; min-width: 0; outline: none; }
+    .header { line-height: 1.65; margin-bottom: 1.5rem; }
+    .app-banner { color: #aaa; font-size: .875rem; margin-bottom: .35rem; }
+    .grid { display: grid; grid-template-columns: repeat(3, 80px); gap: 6px; }
+    .cell {
+      width: 80px; height: 80px; display: grid; place-items: center;
+      border: 1px solid #555; background: #2d2d3d; font-size: 1.5rem;
+    }
+    .cell.selected { font-weight: 700; }
+    .cell.highlight-green { background: #43a047; border-color: #81c784; }
+    .color-green { color: #81c784; }
+    .hint, .meta { color: #aaa; font-size: .875rem; }
+    .hidden { display: none !important; }
+    .error { color: #ef6c6c; }
+    .success { color: #81c784; }
+    .ld-rail {
+      overflow: auto; padding: 1.4rem; border-left: 1px solid #4a4a5c;
+      background: #252535;
+    }
+    .ld-rail h2 { margin-top: 0; }
+    .control-card {
+      padding: 1rem; margin: 1rem 0; border: 1px solid #4a4a5c;
+      border-radius: 7px; background: #2d2d3d;
+    }
+    .control-card h3 { margin: 0 0 .6rem; font-size: 1rem; }
+    .range-row { display: grid; grid-template-columns: 1fr auto; gap: .8rem; align-items: center; }
+    input[type="range"] { width: 100%; }
+    .value { font-variant-numeric: tabular-nums; min-width: 4.8rem; text-align: right; }
+    .threshold-high { color: #ff8a80; font-weight: 700; }
+    .event-log {
+      height: 10rem; overflow: auto; padding: .6rem; border: 1px solid #4a4a5c;
+      background: #191923; font: .78rem/1.45 ui-monospace, monospace;
+    }
+    .context { white-space: pre-wrap; color: #c9d1d9; }
+    @media (max-width: 760px) {
+      #app-shell { height: auto; grid-template-columns: 1fr; }
+      .ld-rail { border-left: 0; border-top: 1px solid #4a4a5c; }
+    }
+  </style>
+</head>
+<body>
+  <section id="login-screen">
+    <div class="app-banner">16-adaptive-triggers[node]</div>
+    <h1>Login</h1>
+    <label for="username">Username</label>
+    <input id="username" type="text" autocomplete="username" autofocus>
+    <p id="login-error" class="error hidden">Username is required.</p>
+    <button id="login-btn" type="button">Continue</button>
+  </section>
+
+  <div id="app-shell" class="hidden">
+    <section id="grid-screen" tabindex="0">
+      <div class="header">
+        <div class="app-banner">16-adaptive-triggers[node]</div>
+        <div>Name: <span id="hdr-name"></span></div>
+        <div>Flag value: <strong id="hdr-flag-value">none</strong></div>
+        <div>Current position: <span id="hdr-current"></span></div>
+        <div>Previous position: <span id="hdr-previous">—</span></div>
+        <div>Reported latency: <span id="hdr-latency">50</span> ms</div>
+      </div>
+      <div id="grid" class="grid" aria-label="3 by 3 grid"></div>
+      <p class="hint">
+        Arrow keys / WASD move and track the slider value. L logs out; Q quits.
+      </p>
+    </section>
+
+    <aside class="ld-rail" aria-label="LaunchDarkly adaptive trigger lab">
+      <h2>LaunchDarkly · Adaptive Trigger</h2>
+      <p class="meta">
+        Start <code>green</code>, then report latency above the trigger threshold.
+        LaunchDarkly switches the default rule to <code>none</code>.
+      </p>
+
+      <div class="control-card">
+        <h3>1 · Start live variation</h3>
+        <button id="start-live" type="button">Start live (green)</button>
+        <p id="start-message" class="meta">Requires REST credentials on the Node host.</p>
+      </div>
+
+      <div class="control-card">
+        <h3>2 · Report navigation latency</h3>
+        <div class="range-row">
+          <input id="latency" type="range" min="0" max="500" step="10" value="50">
+          <span id="latency-value" class="value">50 ms</span>
+        </div>
+        <p class="meta">
+          Trigger lab default: <strong>Above 200 ms</strong>. The slider reports
+          a number; it does not delay navigation or change the flag.
+        </p>
+      </div>
+
+      <div class="control-card">
+        <h3>Status</h3>
+        <div id="flag-status" class="meta">Loading…</div>
+        <button id="refresh-status" type="button">Refresh</button>
+      </div>
+
+      <h3>Metric events</h3>
+      <div id="event-log" class="event-log" aria-live="polite">No moves tracked yet.</div>
+
+      <h3>Context</h3>
+      <pre id="context" class="context"></pre>
+
+      <p class="meta">
+        Adaptive triggers: custom numeric metric · constant threshold · switch
+        variation. The SDK fallback remains <code>none</code> but is not the
+        trigger action.
+      </p>
+    </aside>
+  </div>
+
+  <script>
+    const ROWS = ["t", "m", "b"];
+    const COLS = ["l", "m", "r"];
+    const THRESHOLD_MS = 200;
+
+    let username = "";
+    let row = 1;
+    let col = 1;
+    let previous = null;
+    let latencyMs = 50;
+    let pollTimer = null;
+    let highlight = { flagValue: "none", highlightColor: "none" };
+    let eventLines = [];
+
+    const byId = (id) => document.getElementById(id);
+    const formatPos = (r, c) => `${ROWS[r]}/${COLS[c]}`;
+
+    async function jsonFetch(url, options) {
+      const response = await fetch(url, options);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || response.statusText);
+      return data;
+    }
+
+    async function loadHighlight() {
+      if (!username) return;
+      try {
+        highlight = await jsonFetch(`/api/highlight?username=${encodeURIComponent(username)}`);
+        render();
+      } catch (_) {
+        /* keep last-known variation */
+      }
+    }
+
+    async function refreshStatus() {
+      try {
+        const status = await jsonFetch("/api/status");
+        if (!status.configured) {
+          byId("flag-status").textContent =
+            `REST controls need ${(status.missing || []).join(", ")} on the Node host.`;
+          return;
+        }
+        byId("flag-status").textContent = status.flag
+          ? `Flag ${status.flag.on ? "ON" : "OFF"} · default ${status.flag.fallthrough || "—"}`
+          : "Flag status unavailable.";
+      } catch (err) {
+        byId("flag-status").textContent = err.message;
+      }
+    }
+
+    async function startLive() {
+      const button = byId("start-live");
+      button.disabled = true;
+      byId("start-message").className = "meta";
+      byId("start-message").textContent = "Updating targeting…";
+      try {
+        await jsonFetch("/api/start-live", { method: "POST" });
+        byId("start-message").className = "success";
+        byId("start-message").textContent = "Live variation started. Waiting for SDK update…";
+        await Promise.all([loadHighlight(), refreshStatus()]);
+      } catch (err) {
+        byId("start-message").className = "error";
+        byId("start-message").textContent = err.message;
+      } finally {
+        button.disabled = false;
+        byId("grid-screen").focus();
+      }
+    }
+
+    async function trackLatency() {
+      const timestamp = new Date().toISOString().slice(11, 19);
+      try {
+        await jsonFetch("/api/track-latency", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, latencyMs }),
+        });
+        eventLines.push(`${timestamp} track ${latencyMs} ms`);
+      } catch (err) {
+        eventLines.push(`${timestamp} ERROR ${err.message}`);
+      }
+      eventLines = eventLines.slice(-30);
+      byId("event-log").textContent = eventLines.join("\n");
+      byId("event-log").scrollTop = byId("event-log").scrollHeight;
+    }
+
+    function tryMove(dr, dc) {
+      const nr = Math.max(0, Math.min(2, row + dr));
+      const nc = Math.max(0, Math.min(2, col + dc));
+      if (nr === row && nc === col) return false;
+      previous = { row, col };
+      row = nr;
+      col = nc;
+      return true;
+    }
+
+    function render() {
+      const isGreen = highlight.highlightColor === "green";
+      byId("hdr-name").textContent = username;
+      byId("hdr-name").className = isGreen ? "color-green" : "";
+      byId("hdr-flag-value").textContent = highlight.flagValue || "none";
+      byId("hdr-current").textContent = formatPos(row, col);
+      byId("hdr-previous").textContent = previous ? formatPos(previous.row, previous.col) : "—";
+      byId("hdr-latency").textContent = latencyMs;
+      byId("context").textContent = JSON.stringify({ kind: "user", key: username }, null, 2);
+
+      const grid = byId("grid");
+      grid.innerHTML = "";
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          const selected = r === row && c === col;
+          const cell = document.createElement("div");
+          cell.className = [
+            "cell",
+            selected ? "selected" : "",
+            selected && isGreen ? "highlight-green" : "",
+          ].filter(Boolean).join(" ");
+          cell.textContent = selected ? "X" : "";
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    function startGrid(name) {
+      username = name;
+      row = 1;
+      col = 1;
+      previous = null;
+      eventLines = [];
+      byId("event-log").textContent = "No moves tracked yet.";
+      byId("login-screen").classList.add("hidden");
+      byId("app-shell").classList.remove("hidden");
+      render();
+      loadHighlight();
+      refreshStatus();
+      clearInterval(pollTimer);
+      pollTimer = setInterval(loadHighlight, 500);
+      byId("grid-screen").focus();
+    }
+
+    function logout() {
+      clearInterval(pollTimer);
+      pollTimer = null;
+      username = "";
+      highlight = { flagValue: "none", highlightColor: "none" };
+      byId("username").value = "";
+      byId("app-shell").classList.add("hidden");
+      byId("login-screen").classList.remove("hidden");
+      byId("username").focus();
+    }
+
+    byId("login-btn").addEventListener("click", () => {
+      const name = byId("username").value.trim();
+      byId("login-error").classList.toggle("hidden", Boolean(name));
+      if (name) startGrid(name);
+    });
+    byId("username").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") byId("login-btn").click();
+    });
+    byId("start-live").addEventListener("click", startLive);
+    byId("refresh-status").addEventListener("click", () => {
+      refreshStatus();
+      byId("grid-screen").focus();
+    });
+    byId("latency").addEventListener("input", (event) => {
+      latencyMs = Number(event.target.value);
+      byId("latency-value").textContent = `${latencyMs} ms`;
+      byId("latency-value").classList.toggle("threshold-high", latencyMs > THRESHOLD_MS);
+      render();
+    });
+    byId("latency").addEventListener("change", () => byId("grid-screen").focus());
+    byId("grid-screen").addEventListener("keydown", (event) => {
+      const key = event.key.toLowerCase();
+      if (key === "l") {
+        event.preventDefault();
+        logout();
+        return;
+      }
+      if (key === "q") {
+        event.preventDefault();
+        clearInterval(pollTimer);
+        window.close();
+        document.body.innerHTML = "<p>Application closed. You may close this tab.</p>";
+        return;
+      }
+      let moved = false;
+      if (event.key === "ArrowUp" || key === "w") moved = tryMove(-1, 0);
+      else if (event.key === "ArrowDown" || key === "s") moved = tryMove(1, 0);
+      else if (event.key === "ArrowLeft" || key === "a") moved = tryMove(0, -1);
+      else if (event.key === "ArrowRight" || key === "d") moved = tryMove(0, 1);
+      else return;
+      event.preventDefault();
+      if (moved) {
+        render();
+        trackLatency();
+      }
+    });
+  </script>
+</body>
+</html>

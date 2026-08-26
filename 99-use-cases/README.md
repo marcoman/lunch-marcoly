@@ -13,6 +13,7 @@ Each subdirectory demonstrates a specific product pattern (A/B testing, rollouts
 | [11-create-eval-flag/](11-create-eval-flag/) | Create and evaluate a single highlight color flag; toggle via UI or curl |
 | [14-progressive-rollout/](14-progressive-rollout/) | Progressive rollout of green highlight over 15 minutes (10→100%) |
 | [15-guarded-rollout/](15-guarded-rollout/) | Guarded rollout with latency, error rate, and movement guardrails |
+| [16-adaptive-triggers/](16-adaptive-triggers/) | Adaptive trigger: custom latency metric switches highlight variation (`green` → `none`) |
 
 ## Conventions
 

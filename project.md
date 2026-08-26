@@ -114,9 +114,12 @@ lunch-marcoly/
 │       └── javascript/ · react/ · vue/
 ├── 99-use-cases/              # Focused LaunchDarkly use-case examples
 │   ├── README.md
-│   └── 01-abcd-test/          # A-B-C-D test on navigation count label
-│   └── 02-segments-by-name/   # Segment targeting from username context
-│   └── 11-create-eval-flag/   # Create and evaluate a single highlight flag
+│   ├── 01-abcd-test/          # A-B-C-D test on navigation count label
+│   ├── 02-segments-by-name/   # Segment targeting from username context
+│   ├── 11-create-eval-flag/   # Create and evaluate a single highlight flag
+│   ├── 14-progressive-rollout/ # Time-based percentage ramp
+│   ├── 15-guarded-rollout/    # Percentage ramp with regression guardrails
+│   └── 16-adaptive-triggers/  # Metric threshold switches flag variation
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── rest/
@@ -154,7 +157,7 @@ lunch-marcoly/
 - `31-client-evaluation` (under `30-client-sdk/`) demonstrates initialize, client-side availability, variation, and `change:` (JavaScript **:8310**, React Web **:8311**, Vue **:8312**).
 - `32-client-identify` (under `30-client-sdk/`) demonstrates `identify()` (switch user without reload; JavaScript **:8320**, React Web **:8321**, Vue **:8322**).
 - `33-synced-segments` (under `30-client-sdk/`) demonstrates a boolean flag targeted by a synced/big-style segment (inner-circle badge; JavaScript **:8330**, React Web **:8331**, Vue **:8332**).
-- `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive and guarded rollouts).
+- `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive/guarded rollouts, and adaptive triggers).
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author
 

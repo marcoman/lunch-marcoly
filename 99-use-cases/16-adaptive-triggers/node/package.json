@@ -1,0 +1,13 @@
+{
+  "name": "16-adaptive-triggers-node",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Adaptive trigger grid navigator with numeric latency controls",
+  "main": "16-adaptive-triggers.js",
+  "scripts": {
+    "start": "node 16-adaptive-triggers.js"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0"
+  }
+}

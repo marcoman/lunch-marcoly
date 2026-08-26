@@ -95,7 +95,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 31 | [31-client-evaluation](30-client-sdk/31-client-evaluation/) | Initialize, client-side availability, `variation`, `change:` (**JS :8310** · **React :8311** · **Vue :8312**) |
 | 32 | [32-client-identify](30-client-sdk/32-client-identify/) | `identify()` context switch without reload (**JS :8320** · **React :8321** · **Vue :8322**) |
 | 33 | [33-synced-segments](30-client-sdk/33-synced-segments/) | Synced/big segment inner-circle badge (**JS :8330** · **React :8331** · **Vue :8332**) |
-| 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (A-B-C-D test, segments, …) |
+| 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (experiments, segments, rollouts, adaptive triggers, …) |
 
 ## Building code
 
