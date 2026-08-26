@@ -2,7 +2,8 @@
 
 LaunchDarkly **client-side SDK** examples for the lunch-marcoly grid navigator.
 The application runs in the browser. Evaluation uses a **client-side ID**, never
-a server-side SDK key.
+a server-side SDK key. **JavaScript** (`javascript/`) uses the JS SDK.
+**React Web** (`react/`, 31–33) uses the [React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web).
 
 Baseline (no LaunchDarkly): [02-reference-client-code](../02-reference-client-code/).
 Server-side flags live in [10-code-control](../10-code-control/).
@@ -11,6 +12,7 @@ Server-side flags live in [10-code-control](../10-code-control/).
 |---------|--------|-----------------|
 | **31** | [31-client-evaluation/](31-client-evaluation/) | Initialize, **client-side availability**, `variation`, `change:` |
 | **32** | [32-client-identify/](32-client-identify/) | **`identify()`** — switch context without reload |
+| **33** | [33-synced-segments/](33-synced-segments/) | **Synced / big segment** — inner-circle badge + REST membership |
 
 ## Credentials
 

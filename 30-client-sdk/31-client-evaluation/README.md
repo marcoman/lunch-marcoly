@@ -1,15 +1,17 @@
 # 31-client-evaluation
 
-Browser **feature flags**: initialize the JavaScript SDK, mark flags **client-side
-available**, call `variation`, and listen for `change:`.
+Browser **feature flags**: initialize a client-side SDK, mark flags **client-side
+available**, evaluate variations, and listen for `change:`. JavaScript uses the
+JS SDK; React Web uses typed variation hooks on the same flags.
 
 Baseline UI: [02-reference-client-code](../../02-reference-client-code/).
 Behavior spec: [application.md](application.md).
 
 Keywords: **feature flags** · **client-side ID** · **boolean variation** ·
-**string variation** · **streaming `change:`**
+**string variation** · **streaming `change:`** · **React Web SDK**
 
 Docs: [JavaScript SDK](https://launchdarkly.com/docs/sdk/client-side/javascript) ·
+[React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web) ·
 [environment keys](https://launchdarkly.com/docs/home/account/environment/keys) ·
 [client-side availability](https://launchdarkly.com/docs/home/flags/creating-flags#make-flags-available-to-client-side-and-mobile-sdks)
 
@@ -53,10 +55,12 @@ Run provisioning before opening the app.
 | Language | Directory | Run | URL |
 |----------|-----------|-----|-----|
 | JavaScript | [javascript/](javascript/) | `npm start` | [http://127.0.0.1:8310/](http://127.0.0.1:8310/) |
+| React Web | [react/](react/) | `npm start` | [http://127.0.0.1:8311/](http://127.0.0.1:8311/) |
 
 ## Further reading
 
 - [application.md](application.md)
 - [30-client-sdk](../README.md)
 - [32-client-identify](../32-client-identify/) — `identify()` without reload
+- [33-synced-segments](../33-synced-segments/) — synced/big segment badge
 - [02-reference-client-code](../../02-reference-client-code/)

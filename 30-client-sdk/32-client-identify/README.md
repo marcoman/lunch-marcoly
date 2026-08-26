@@ -9,7 +9,8 @@ Keywords: **identify** · **contexts** · **targeting rules** · **client-side I
 
 Docs: [identify](https://launchdarkly.com/docs/sdk/features/identify) ·
 [target with rules](https://launchdarkly.com/docs/home/flags/target-rules) ·
-[JavaScript SDK](https://launchdarkly.com/docs/sdk/client-side/javascript)
+[JavaScript SDK](https://launchdarkly.com/docs/sdk/client-side/javascript) ·
+[React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web)
 
 Baseline: [31-client-evaluation](../31-client-evaluation/) ·
 [02-reference-client-code](../../02-reference-client-code/).
@@ -53,8 +54,10 @@ with Alice/Bob rules.
 | Language | Directory | Run | URL |
 |----------|-----------|-----|-----|
 | JavaScript | [javascript/](javascript/) | `npm start` | [http://127.0.0.1:8320/](http://127.0.0.1:8320/) |
+| React Web | [react/](react/) | `npm start` | [http://127.0.0.1:8321/](http://127.0.0.1:8321/) |
 
 ## Further reading
 
 - [application.md](application.md)
 - [30-client-sdk](../README.md)
+- [33-synced-segments](../33-synced-segments/) — synced/big segment badge
