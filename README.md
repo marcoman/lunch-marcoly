@@ -44,6 +44,7 @@ lunch-marcoly/
 │   └── 24-agent-judges/              # Judges gate (Python/Node/Java/.NET + Go console)
 ├── 30-client-sdk/               # Browser JavaScript SDK
 │   ├── README.md
+│   ├── portal/                  # Series shell: JS :8300 · React :8301 · Vue :8302
 │   ├── 31-client-evaluation/    # initialize · variation · change: (:8310 JS · :8311 React · :8312 Vue)
 │   ├── 32-client-identify/      # identify() without reload (:8320 JS · :8321 React · :8322 Vue)
 │   └── 33-synced-segments/      # synced/big segment badge (:8330 JS · :8331 React · :8332 Vue)
@@ -91,7 +92,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 22 | [22-config-outside-code](20-agent-config/22-config-outside-code/) | Tracked completion: metrics + thumbs feedback (web + Go console) |
 | 23 | [23-agent-tools](20-agent-config/23-agent-tools/) | Library tools + tool loop + `track_tool_call` (web + Go console) |
 | 24 | [24-agent-judges](20-agent-config/24-agent-judges/) | Judges runtime gate + rewrite (Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console) |
-| 30 | [30-client-sdk](30-client-sdk/) | Browser JavaScript SDK series (client-side ID) |
+| 30 | [30-client-sdk](30-client-sdk/) | Browser client-side SDK series (client-side ID); [portal](30-client-sdk/portal/) JS **:8300** · React **:8301** · Vue **:8302** |
 | 31 | [31-client-evaluation](30-client-sdk/31-client-evaluation/) | Initialize, client-side availability, `variation`, `change:` (**JS :8310** · **React :8311** · **Vue :8312**) |
 | 32 | [32-client-identify](30-client-sdk/32-client-identify/) | `identify()` context switch without reload (**JS :8320** · **React :8321** · **Vue :8322**) |
 | 33 | [33-synced-segments](30-client-sdk/33-synced-segments/) | Synced/big segment inner-circle badge (**JS :8330** · **React :8331** · **Vue :8332**) |

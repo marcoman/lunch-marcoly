@@ -101,8 +101,9 @@ lunch-marcoly/
 │   └── 24-agent-judges/             # Judges runtime gate + rewrite
 │       ├── README.md · application.md · rest/
 │       └── python/ · node/ · java/ · dotnet/ · go/  # Web :8240–:8243; Go console
-├── 30-client-sdk/               # Browser JavaScript SDK (client-side ID)
+├── 30-client-sdk/               # Browser client-side SDK (client-side ID)
 │   ├── README.md
+│   ├── portal/                  # Series shell: JS :8300 · React :8301 · Vue :8302
 │   ├── 31-client-evaluation/    # initialize · variation · change:  :8310 JS · :8311 React · :8312 Vue
 │   │   ├── README.md · application.md · rest/ · terraform/
 │   │   └── javascript/ · react/ · vue/
@@ -153,7 +154,7 @@ lunch-marcoly/
 - `10-code-control` groups grid-navigator **feature flag** examples; shared portal lives in its `portal/`.
 - `11-flag-enablement` (under `10-code-control/`) demonstrates feature flag naming, provisioning, and boolean enablement.
 - `12-flag-variations` (under `10-code-control/`) demonstrates string, number, JSON, and anonymous-context flag variation types.
-- `30-client-sdk` groups **browser** client-side SDK examples (client-side ID, not `LD_SDK_KEY`).
+- `30-client-sdk` groups **browser** client-side SDK examples (client-side ID, not `LD_SDK_KEY`); series portals live in its `portal/` (JavaScript **:8300** · React **:8301** · Vue **:8302**).
 - `31-client-evaluation` (under `30-client-sdk/`) demonstrates initialize, client-side availability, variation, and `change:` (JavaScript **:8310**, React Web **:8311**, Vue **:8312**).
 - `32-client-identify` (under `30-client-sdk/`) demonstrates `identify()` (switch user without reload; JavaScript **:8320**, React Web **:8321**, Vue **:8322**).
 - `33-synced-segments` (under `30-client-sdk/`) demonstrates a boolean flag targeted by a synced/big-style segment (inner-circle badge; JavaScript **:8330**, React Web **:8331**, Vue **:8332**).

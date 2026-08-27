@@ -32,3 +32,22 @@ SDK credentials: [environment keys](https://launchdarkly.com/docs/home/account/e
 
 - Flags provisioned per example (`rest/` or `terraform/`)
 - Node.js as in the [root README](../README.md)
+
+## Portal
+
+One command starts **31**, **32**, and **33** for a single client SDK in a
+tabbed shell: [portal/](portal/).
+
+| Client SDK | Command | Portal | Children |
+|------------|---------|--------|----------|
+| JavaScript | `(cd 30-client-sdk/portal/javascript && npm start)` | **:8300** | :8310 · :8320 · :8330 |
+| React | `(cd 30-client-sdk/portal/react && npm start)` | **:8301** | :8311 · :8321 · :8331 |
+| Vue | `(cd 30-client-sdk/portal/vue && npm start)` | **:8302** | :8312 · :8322 · :8332 |
+
+```bash
+export LD_CLIENT_SIDE_ID="..."
+(cd 30-client-sdk/portal/javascript && npm start)
+```
+
+Standalone `javascript/`, `react/`, and `vue/` folders still run on their own
+ports without the portal.
