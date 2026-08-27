@@ -61,9 +61,13 @@ Open [http://127.0.0.1:8161/](http://127.0.0.1:8161/).
 | Language | Directory | Application type | Status |
 |----------|-----------|------------------|--------|
 | Node.js | [node/](node/) | Web application | Implemented |
+| Python | [python/](python/) | Web application | Implemented |
+| Java | [java/](java/) | Web application | Implemented |
+| .NET | [dotnet/](dotnet/) | Web application | Implemented |
 
 The browser sends only username, slider value, and control requests to the
-local Node host. SDK and API credentials remain server-side.
+local language host. SDK and API credentials remain server-side. Each web twin
+uses port `8161`, so run one at a time.
 
 ## Demo sequence
 
@@ -82,4 +86,6 @@ This is a variation switch, not use of the SDK fallback value.
 The app rail deep-links to the flag's Targeting and Monitoring tabs and reports
 whether `LD_SDK_KEY` and `LD_ENVIRONMENT_KEY` resolve to the same environment —
 a mismatch is the most common reason a correctly configured trigger never fires.
-See [node/README.md](node/README.md) for the full troubleshooting table.
+See the selected language README for build instructions. The
+[Node README](node/README.md) contains the full troubleshooting table shared by
+all three implementations.
