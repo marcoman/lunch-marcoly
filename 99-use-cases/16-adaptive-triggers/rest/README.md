@@ -29,7 +29,9 @@ chmod +x *.sh
 | `create-metric.sh` | Create numeric metric `adaptive-grid-nav-latency-metric` for event key `adaptive-grid-nav-latency` |
 | `configure-adaptive-trigger.sh` | Provision both resources and print exact UI steps |
 | `start-live.sh` | Turn on targeting and serve `green` to all contexts |
+| `stop.sh` | Turn targeting off so evaluations return `none` |
 | `get-status.sh` | Show flag targeting and metric metadata |
 
-The Node app offers the same **Start live** operation through a local proxy;
-the API access token stays in the Node process.
+The Node app offers the same **Start live** and **Stop** operations through a
+local proxy; the API access token stays in the Node process. Stop does not
+remove the adaptive trigger.

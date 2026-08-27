@@ -26,7 +26,12 @@ Docs: [Adaptive triggers](https://launchdarkly.com/docs/home/flags/triggers) ·
 | Safe variation | `none` |
 | Metric key | `adaptive-grid-nav-latency-metric` |
 | Custom event key | `adaptive-grid-nav-latency` |
-| Trigger default | Constant, Above 200 ms, 1 minute, switch to `none` |
+| Trigger default | Constant, Above 200 ms, shortest window offered, switch to `none` |
+
+In the **Add adaptive trigger** dialog you set only two fields — the source
+metric and the alert threshold — then verify **Switch variation to** is
+`Safe: no highlight` and pick the shortest **alert window** available. Latency
+must stay above the threshold for that full window, so prefer 1 minute over 30.
 
 Adaptive triggers are available on select plans, are environment-specific, and
 do not run while the flag has an active experiment.
@@ -65,7 +70,16 @@ local Node host. SDK and API credentials remain server-side.
 1. Log in.
 2. Click **Start live (green)**.
 3. Move below the 200 ms threshold.
-4. Raise the slider above 200 ms and continue moving for the alert window.
-5. Observe `Flag value` and the grid switch to `none`.
+4. Raise the slider above 200 ms and enable **Auto-report once per second** so
+   the metric has data for the whole alert window.
+5. Observe `Flag value` and the grid switch to `none`, and the **Default rule**
+   card record the `green → none` switch with its attribution.
+6. Click **Stop** to turn the flag off. Remove the adaptive trigger in the UI
+   separately.
 
 This is a variation switch, not use of the SDK fallback value.
+
+The app rail deep-links to the flag's Targeting and Monitoring tabs and reports
+whether `LD_SDK_KEY` and `LD_ENVIRONMENT_KEY` resolve to the same environment —
+a mismatch is the most common reason a correctly configured trigger never fires.
+See [node/README.md](node/README.md) for the full troubleshooting table.

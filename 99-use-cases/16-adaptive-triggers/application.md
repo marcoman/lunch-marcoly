@@ -81,6 +81,8 @@ On each **successful navigation** (arrow keys / WASD), the SDK **tracks** a cust
 
 The slider does **not** change the flag. It only changes the number reported to LaunchDarkly. Login, WASD, and `variation()` stay independent of the slider except for this `track` call.
 
+Metric event volume is independent of flag evaluation volume. Polling implementations produce many `variation` calls per second; only `track` calls feed the metric the trigger watches. Surfaces that display counts must label which one they show.
+
 WASD must **not** be logged as SDK `variation` spam. `track` on move is the intended metric path.
 
 ### Slider (lab control)
@@ -97,16 +99,23 @@ Optional header readout: `Reported latency: {n} ms` (the slider, not measured ap
 
 Create on the flag **Targeting** tab → **Add adaptive trigger**. Lab defaults:
 
-| Field | Value |
-|-------|--------|
-| **Source** | LaunchDarkly hosted metric `adaptive-grid-nav-latency` |
-| **Type** | **Constant** (not Anomaly) |
-| **Condition** | **Above** |
-| **Alert threshold** | **200** (ms) |
-| **Alert window** | **1 minute**, or the shortest window the UI allows |
-| **Switch variation to** | **`none`** |
-| **Cooldown** | Document whatever the UI default is; a second fire will not happen until cooldown elapses |
-| **Notifications** | Optional |
+| Field | Value | Action |
+|-------|--------|--------|
+| **Source** (first menu) | LaunchDarkly hosted metrics | Already selected |
+| **Source** (second menu) | `Adaptive: grid navigation latency` | **Set** |
+| **Alert threshold** | **200** (ms) | **Set** |
+| **Switch variation to** | **`none`** (`Safe: no highlight`) | Verify |
+| **Alert window** | **1 minute** if offered | Verify |
+| **Type** | **Constant** (not Anomaly) | Default |
+| **Condition** | **Above** | Default |
+| **Cooldown** | Whatever the UI shows; a second fire waits for it to elapse | Default |
+| **Evaluation delay** | 0 | Default |
+| **Notifications** | Optional | — |
+
+Only two fields require input. Document the **alert window** the UI actually
+offers: the metric must stay above the threshold for that entire window before
+the trigger fires, so a 30 minute window means a 30 minute demo. Prefer
+1 minute, and use the app's auto-report control to keep the metric fed.
 
 Provisioning may create the **flag** and **metric** via [rest/](rest/) / [terraform/](terraform/). Creating the **adaptive trigger** itself may remain a **UI step** if public REST only covers webhook-style [flag triggers](https://launchdarkly.com/docs/api/flag-triggers) (`turnFlagOn` / `turnFlagOff`). Do not pretend a generic trigger URL is an adaptive trigger.
 
@@ -116,11 +125,16 @@ After the trigger fires, targeting **stays** on `none` until someone (or a later
 
 1. User logs in with a username (LaunchDarkly context key `user` / `key`).
 2. Application evaluates `enable-adaptive-grid-highlight` with code fallback **`none`** (safety only — not the trigger outcome).
-3. Header shows `Name:`, **`Flag value:`** (raw SDK string), positions. Optional: reported latency from the slider.
+3. Header shows `Name:`, the **flag name and key**, **`Flag value:`** (raw SDK string), positions. Optional: reported latency from the slider.
 4. Selected cell and username use highlight color when `Flag value:` is `green`; `X` only when `none`.
 5. Lab rail (web) or equivalent (console):
    - **Start live** — targeting on, default rule serves `green`.
+   - **Stop** — targeting off. Evaluations return the off variation `none`. Does not delete the adaptive trigger.
    - **Latency slider** — 0–500 ms, default 50.
+   - **Auto-report** — optional 1 Hz `track` so the metric has data across a full alert window without navigating.
+   - **Default rule** — current served variation, a timestamped history of observed switches, and attribution of the most recent flag change. A trigger-driven change has no member or token actor.
+   - **Dashboard links** — flag Targeting (trigger config) and Monitoring (analytics), metric, environments.
+   - **Environment diagnostics** — report whether `LD_SDK_KEY` and `LD_ENVIRONMENT_KEY` resolve to the same environment. They must match, or the trigger never sees the events.
 6. Each successful move: `track('adaptive-grid-nav-latency', numericValue)`.
 7. Standard 00 navigation, logout (`L`), quit (`Q`).
 8. Console apps re-evaluate every **500 ms**. Web apps follow streaming flag changes.
@@ -132,8 +146,9 @@ After the trigger fires, targeting **stays** on `none` until someone (or a later
 | Fresh provision | **Off** | n/a | `none` |
 | After **Start live** | **On** | serve `green` | `green` (all users) |
 | After trigger fires | **On** | serve `none` | `none` |
+| After **Stop** | **Off** | unchanged | `none` (off variation) |
 
-Turning the flag **off** also yields `none` (off variation). The lesson is the **on + switched default rule**, not kill-switch.
+Turning the flag **off** also yields `none` (off variation). The lesson is the **on + switched default rule**, not kill-switch. **Stop** restores the provisioned targeting state so **Start live** can run the demo again. Remove the adaptive trigger in the dashboard separately if you want a clean slate.
 
 ### Single-evaluation mode
 
@@ -152,6 +167,7 @@ No extra attributes required.
 The page / console must not hold `LD_API_ACCESS_TOKEN`. A local host may proxy:
 
 - Start live (on + fallthrough `green`)
+- Stop (targeting off)
 - Status (on/off, current fallthrough variation)
 
 Same pattern as other 99-use-cases hosts.
@@ -169,6 +185,8 @@ Same pattern as other 99-use-cases hosts.
 9. Observed switch is the **dashboard variation `none`**, not the SDK fallback parameter.
 10. No experiment on this flag while the trigger is in use.
 11. `/api/config` (if present) never includes `LD_SDK_KEY` or API tokens.
+12. The app polls flag status and reports the **default rule** switch on screen — current variation, timestamped `green → none` history, and attribution — without requiring a manual refresh.
+13. **Stop** turns targeting off; evaluations return the off variation `none`. It does not delete the adaptive trigger.
 
 ## Further reading
 
