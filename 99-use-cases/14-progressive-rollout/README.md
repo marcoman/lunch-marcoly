@@ -278,6 +278,7 @@ Rollout uses `none` (no highlight) and `green` (green highlight).
 | Node.js | [node/](node/) | Web |
 | Java | [java-console/](java-console/) | Console |
 | Java | [java/](java/) | Web |
+| .NET | [dotnet/](dotnet/) | Web |
 | Go | [go/](go/) | Console |
 | Rust | [rust/](rust/) | Console |
 | C++ | [cpp/](cpp/) | Console |
