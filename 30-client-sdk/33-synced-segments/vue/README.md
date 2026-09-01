@@ -5,7 +5,11 @@ Same [33-synced-segments](../application.md) flag and segment, evaluated with th
 Vite proxies membership writes. The page never sees `LD_API_ACCESS_TOKEN`.
 
 [Synced segments](https://launchdarkly.com/docs/home/flags/synced-segments) ·
+[Update big segment targets](https://launchdarkly.com/docs/api/segments/update-big-segment-targets) ·
 [identify](https://launchdarkly.com/docs/sdk/features/identify)
+
+How Add to inner circle reaches LaunchDarkly:
+[parent README](../README.md#how-inner-circle-membership-works).
 
 ## Prerequisites
 
@@ -36,6 +40,6 @@ Open [http://127.0.0.1:8332/](http://127.0.0.1:8332/). JavaScript is **:8330**. 
 ## What to expect
 
 1. Log in — `initialize`. Badge follows `show-inner-circle-badge`.
-2. **Add current key** — wait for `change:`.
+2. **Add current key** — REST included targets on the segment; wait for `change:`.
 3. **Identify** another key — no second `initialize`; badge follows membership.
 4. Log records initialize / identify / change — not WASD.

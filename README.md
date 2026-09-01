@@ -47,7 +47,8 @@ lunch-marcoly/
 │   ├── portal/                  # Series shell: JS :8300 · React :8301 · Vue :8302
 │   ├── 31-client-evaluation/    # initialize · variation · change: (:8310 JS · :8311 React · :8312 Vue)
 │   ├── 32-client-identify/      # identify() without reload (:8320 JS · :8321 React · :8322 Vue)
-│   └── 33-synced-segments/      # synced/big segment badge (:8330 JS · :8331 React · :8332 Vue)
+│   ├── 33-synced-segments/      # synced/big segment badge (:8330 JS · :8331 React · :8332 Vue)
+│   └── 34-synced-segments-twilio/  # Twilio Segment Audiences (:8340 JS · :8341 React · :8342 Vue)
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -96,6 +97,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 31 | [31-client-evaluation](30-client-sdk/31-client-evaluation/) | Initialize, client-side availability, `variation`, `change:` (**JS :8310** · **React :8311** · **Vue :8312**) |
 | 32 | [32-client-identify](30-client-sdk/32-client-identify/) | `identify()` context switch without reload (**JS :8320** · **React :8321** · **Vue :8322**) |
 | 33 | [33-synced-segments](30-client-sdk/33-synced-segments/) | Synced/big segment inner-circle badge (**JS :8330** · **React :8331** · **Vue :8332**) |
+| 34 | [34-synced-segments-twilio](30-client-sdk/34-synced-segments-twilio/) | Twilio Segment Audiences sync (**JS :8340** · **React :8341** · **Vue :8342**) |
 | 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (experiments, segments, rollouts, adaptive triggers, …) |
 
 ## Building code

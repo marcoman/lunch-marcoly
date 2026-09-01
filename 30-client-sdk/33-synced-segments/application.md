@@ -11,6 +11,13 @@ The page shows an **inner-circle badge** when the current context is in the
 segment. Lab Controls **add or remove** the current context key via the REST
 API — a stand-in for **Twilio Segment Audiences** in production.
 
+**Causal chain (teaching):** REST writes **included targets** on
+`marcoly-inner-circle` → LaunchDarkly treats that user key as in the segment →
+flag `show-inner-circle-badge` (`segmentMatch`) serves `true` → the client SDK
+receives **`change:`** and the badge renders. The SDK never calls the REST
+membership API; the local host does. Narrative and request shape:
+[README — How inner-circle membership works](README.md#how-inner-circle-membership-works).
+
 ## Overview
 
 | Resource | Key | Role |
@@ -65,6 +72,13 @@ When `false`, no badge (matches 02 aside from dark theme).
 
 A true synced segment is populated **only** via sync or API — not by clicking
 members in the dashboard. This lab uses the API for that reason.
+
+**Add member** is
+[update big segment targets](https://launchdarkly.com/docs/api/segments/update-big-segment-targets)
+(`POST …/segments/…/marcoly-inner-circle/users`, body
+`{ "included": { "add": ["<key>"] } }`), with
+[patch segment](https://launchdarkly.com/docs/api/segments/patch-segment)
+`addIncludedTargets` if the project is on a list-based fallback.
 
 ## SDK surfaces
 

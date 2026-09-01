@@ -1,7 +1,7 @@
 # 30-client-sdk portal
 
 One-command series shells for **31-client-evaluation**, **32-client-identify**,
-and **33-synced-segments**. Each portal serves a tabbed UI, spawns that client
+**33-synced-segments**, and **34-synced-segments-twilio**. Each portal serves a tabbed UI, spawns that client
 SDK's existing hosts as children, and embeds them in **iframes**.
 
 Portals are keyed by **client SDK**, not by Python / Java / .NET. Those host
@@ -9,16 +9,16 @@ languages are the 10- and 20-series pattern.
 
 | Client SDK | Entry | Portal port | Child ports |
 |------------|-------|-------------|-------------|
-| **JavaScript** | [`javascript/`](javascript/) | **8300** | 8310 (31) · 8320 (32) · 8330 (33) |
-| **React** | [`react/`](react/) | **8301** | 8311 (31) · 8321 (32) · 8331 (33) |
-| **Vue** | [`vue/`](vue/) | **8302** | 8312 (31) · 8322 (32) · 8332 (33) |
+| **JavaScript** | [`javascript/`](javascript/) | **8300** | 8310 (31) · 8320 (32) · 8330 (33) · 8340 (34) |
+| **React** | [`react/`](react/) | **8301** | 8311 (31) · 8321 (32) · 8331 (33) · 8341 (34) |
+| **Vue** | [`vue/`](vue/) | **8302** | 8312 (31) · 8322 (32) · 8332 (33) · 8342 (34) |
 
 Keywords: **client-side SDK** · **client-side ID** · **series portal** · **iframe tabs** · **process supervisor**
 
 ## Prerequisites
 
-Export `LD_CLIENT_SIDE_ID` and provision the flags for all three examples. See
-each language folder’s README for child `npm install`.
+Export `LD_CLIENT_SIDE_ID` and provision the flags for 31–34. **34** also needs
+`SEGMENT_WRITE_KEY`. See each language folder’s README for child `npm install`.
 
 ## Run
 

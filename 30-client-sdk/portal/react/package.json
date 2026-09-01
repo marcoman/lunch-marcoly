@@ -2,7 +2,7 @@
   "name": "30-client-sdk-portal-react",
   "version": "1.0.0",
   "private": true,
-  "description": "Series portal — tabs for React Web SDK examples 31–33",
+  "description": "Series portal — tabs for React Web SDK examples 31–34",
   "main": "portal.js",
   "scripts": {
     "start": "node portal.js"

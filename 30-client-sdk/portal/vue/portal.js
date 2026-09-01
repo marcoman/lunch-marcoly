@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * portal.js — series shell for 30-client-sdk (Vue SDK examples 31–33).
+ * portal.js — series shell for 30-client-sdk (Vue SDK examples 31–34).
  *
  * Serves this folder's index.html on :8302 (PORTAL_PORT), spawns each example's
  * existing Vite host with its assigned PORT, and stops all children on exit.
@@ -42,6 +42,12 @@ const CHILDREN = [
     label: "Synced segments",
     cwd: path.join(SERIES_ROOT, "33-synced-segments", LANG),
     port: 8332,
+  },
+  {
+    id: "34",
+    label: "Twilio segments",
+    cwd: path.join(SERIES_ROOT, "34-synced-segments-twilio", LANG),
+    port: 8342,
   },
 ];
 
@@ -251,7 +257,7 @@ async function main() {
   server.listen(PORTAL_PORT, "127.0.0.1", () => {
     console.log(APP_BANNER);
     console.log(`Open http://127.0.0.1:${PORTAL_PORT}/`);
-    console.log("Tabs embed Vue examples on 8312 / 8322 / 8332.");
+    console.log("Tabs embed Vue examples on 8312 / 8322 / 8332 / 8342.");
     console.log("Ctrl+C stops the portal and all children.");
   });
 }

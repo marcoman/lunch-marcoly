@@ -110,7 +110,10 @@ lunch-marcoly/
 │   ├── 32-client-identify/      # identify() context switch  :8320 JS · :8321 React · :8322 Vue
 │   │   ├── README.md · application.md · rest/ · terraform/
 │   │   └── javascript/ · react/ · vue/
-│   └── 33-synced-segments/      # synced/big segment badge  :8330 JS · :8331 React · :8332 Vue
+│   ├── 33-synced-segments/      # synced/big segment badge  :8330 JS · :8331 React · :8332 Vue
+│   │   ├── README.md · application.md · rest/ · terraform/
+│   │   └── javascript/ · react/ · vue/
+│   └── 34-synced-segments-twilio/  # Twilio Segment Audiences  :8340 JS · :8341 React · :8342 Vue
 │       ├── README.md · application.md · rest/ · terraform/
 │       └── javascript/ · react/ · vue/
 ├── 99-use-cases/              # Focused LaunchDarkly use-case examples
@@ -158,6 +161,7 @@ lunch-marcoly/
 - `31-client-evaluation` (under `30-client-sdk/`) demonstrates initialize, client-side availability, variation, and `change:` (JavaScript **:8310**, React Web **:8311**, Vue **:8312**).
 - `32-client-identify` (under `30-client-sdk/`) demonstrates `identify()` (switch user without reload; JavaScript **:8320**, React Web **:8321**, Vue **:8322**).
 - `33-synced-segments` (under `30-client-sdk/`) demonstrates a boolean flag targeted by a synced/big-style segment (inner-circle badge; JavaScript **:8330**, React Web **:8331**, Vue **:8332**).
+- `34-synced-segments-twilio` (under `30-client-sdk/`) demonstrates the same badge with membership from **Twilio Segment** Analytics.js + LaunchDarkly Audiences sync (JavaScript **:8340**, React Web **:8341**, Vue **:8342**).
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive/guarded rollouts, and adaptive triggers).
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author
@@ -363,8 +367,9 @@ Default URL: [http://127.0.0.1:8020/](http://127.0.0.1:8020/). `PORT` overrides 
 ### React Web (browser)
 
 Used by [31-client-evaluation](30-client-sdk/31-client-evaluation/react/),
-[32-client-identify](30-client-sdk/32-client-identify/react/), and
-[33-synced-segments](30-client-sdk/33-synced-segments/react/). Same Node version pin. The app is a Vite + React SPA; **flag evaluation is in the page** via the [React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web).
+[32-client-identify](30-client-sdk/32-client-identify/react/),
+[33-synced-segments](30-client-sdk/33-synced-segments/react/), and
+[34-synced-segments-twilio](30-client-sdk/34-synced-segments-twilio/react/). Same Node version pin. The app is a Vite + React SPA; **flag evaluation is in the page** via the [React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web).
 
 - **Dependencies:** `package.json` in `react/` (`@launchdarkly/react-sdk`).
 - **Run:** from the language folder:
@@ -378,8 +383,9 @@ Default URL for 31: [http://127.0.0.1:8311/](http://127.0.0.1:8311/). `PORT` ove
 ### Vue (browser)
 
 Used by [31-client-evaluation](30-client-sdk/31-client-evaluation/vue/),
-[32-client-identify](30-client-sdk/32-client-identify/vue/), and
-[33-synced-segments](30-client-sdk/33-synced-segments/vue/). Same Node version pin. The app is a Vite + Vue SPA; **flag evaluation is in the page** via the [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue).
+[32-client-identify](30-client-sdk/32-client-identify/vue/),
+[33-synced-segments](30-client-sdk/33-synced-segments/vue/), and
+[34-synced-segments-twilio](30-client-sdk/34-synced-segments-twilio/vue/). Same Node version pin. The app is a Vite + Vue SPA; **flag evaluation is in the page** via the [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue).
 
 - **Dependencies:** `package.json` in `vue/` (`launchdarkly-vue-client-sdk`).
 - **Run:** from the language folder:

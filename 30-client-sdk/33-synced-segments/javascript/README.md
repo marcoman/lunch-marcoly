@@ -6,7 +6,11 @@ Inner-circle **badge** from `show-inner-circle-badge`, targeted by segment
 Node injects `LD_CLIENT_SIDE_ID` and proxies membership writes.
 
 [Synced segments](https://launchdarkly.com/docs/home/flags/synced-segments) ·
+[Update big segment targets](https://launchdarkly.com/docs/api/segments/update-big-segment-targets) ·
 [identify](https://launchdarkly.com/docs/sdk/features/identify)
+
+How Add to inner circle reaches LaunchDarkly:
+[parent README](../README.md#how-inner-circle-membership-works).
 
 ## Prerequisites
 
@@ -40,7 +44,8 @@ Vue twin: [../vue/](../vue/) (** :8332 **).
 ## What to expect
 
 1. Log in. SDK **initialize**. Badge off unless that key is already in the segment.
-2. **Add to inner circle** — REST add; `change:` should show the badge.
+2. **Add to inner circle** — host POSTs included targets on
+   `marcoly-inner-circle`; `change:` should show the badge.
 3. **Identify** as another key — badge follows that key’s membership (no second initialize).
 4. **Remove from inner circle** — badge off.
 5. SDK call log records initialize / identify / change — not WASD `variation`.
