@@ -1,7 +1,7 @@
 # 10-code-control
 
 LaunchDarkly **feature flag** examples for the **lunch-marcoly** grid navigator —
-boolean enablement, variation types, then targeting rules.
+boolean enablement, variation types, targeting rules, then multi-contexts.
 
 This series mirrors [20-agent-config](../20-agent-config/): a parent folder with
 numbered children and an optional [portal](portal/) to run them side by side.
@@ -11,6 +11,7 @@ numbered children and an optional [portal](portal/) to run them side by side.
 | **11** | [11-flag-enablement/](11-flag-enablement/) | Boolean flags, contexts, private `hostOs` |
 | **12** | [12-flag-variations/](12-flag-variations/) | String, number, JSON, anonymous context |
 | **13** | [13-flag-targeting-rules/](13-flag-targeting-rules/) | Web plus Python / Node / Java consoles: targeting rules on public `team` context attribute |
+| **14** | [14-multi-context-targeting/](14-multi-context-targeting/) | Python web: **multi-context** (user + organization) partner-badge 2×2 |
 
 Baseline (no LaunchDarkly): [00-reference-code](../00-reference-code/).
 
