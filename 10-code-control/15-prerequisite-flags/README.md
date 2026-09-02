@@ -41,9 +41,15 @@ the dependency with application branching.
 | Language | Directory | Status |
 |----------|-----------|--------|
 | Python web | [python/](python/) | Done |
-| Node web | [node/](node/) | Done |
+| Node.js web | [node/](node/) | Done |
 | Java web | [java/](java/) | Done |
 | .NET web | [dotnet/](dotnet/) | Done |
+| Python console | [python-console/](python-console/) | Done |
+| Node.js console | [node-console/](node-console/) | Done |
+| Java console | [java-console/](java-console/) | Done |
+| C++ console | [cpp/](cpp/) | Done |
+| Go console | [go/](go/) | Done |
+| Rust console | [rust/](rust/) | Done |
 
 ## Portal (series)
 

@@ -35,6 +35,8 @@ obj/
 10-code-control/13-flag-targeting-rules/**/13-flag-targeting-rules.exe
 10-code-control/14-multi-context-targeting/**/14-multi-context-targeting
 10-code-control/14-multi-context-targeting/**/14-multi-context-targeting.exe
+10-code-control/15-prerequisite-flags/**/15-prerequisite-flags
+10-code-control/15-prerequisite-flags/**/15-prerequisite-flags.exe
 # legacy local build names (pre-rename)
 10-code-control/**/10-flag-enablement
 10-code-control/**/11-flag-variations
