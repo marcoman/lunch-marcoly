@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Grid Navigator — Prerequisite flags</title>
+  <style>
+    :root{--ink:#e8e8ec;--muted:#9a9aab;--panel:#2d2d3d;--line:#4a4a5c;--accent:#64b5f6}
+    *{box-sizing:border-box}html,body{height:100%}
+    body{margin:0;background:#1e1e2e;color:var(--ink);font-family:system-ui,sans-serif}
+    button,input,select{font:inherit}button{cursor:pointer;background:#3d3d52;color:var(--ink);border:1px solid #666;padding:.5rem .75rem}
+    code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.hidden{display:none!important}
+    .muted,.app-banner{color:var(--muted);font-size:.85rem}.error{color:#ef9a9a}
+    #login{max-width:480px;margin:2rem auto;padding:0 1rem}#login h1{font-size:1.3rem}
+    #username{display:block;width:100%;margin:.4rem 0 .8rem;padding:.55rem;background:#252535;color:var(--ink);border:1px solid var(--line)}
+    #shell{height:100vh;grid-template-columns:minmax(0,1fr) min(31rem,46vw)}
+    body.active #shell{display:grid!important}
+    #grid-screen{padding:1.5rem 1.25rem;overflow:auto;outline:0}.header{line-height:1.65;margin-bottom:1.4rem}
+    #hdr-name.highlight-green{color:#81c784}#hdr-name.highlight-yellow{color:#fff176}
+    #hdr-name.highlight-red{color:#ef5350}#hdr-name.highlight-blue{color:#64b5f6}
+    #hdr-name.highlight-purple{color:#ce93d8}#hdr-name.highlight-pink{color:#f48fb1}
+    .grid{display:grid;grid-template-columns:repeat(3,80px);gap:6px}
+    .cell{width:80px;height:80px;border:1px solid #555;background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+    .cell.selected{font-weight:700}.cell.selected.highlight-green{background:#43a047;border-color:#2e7d32;color:#fff}
+    .cell.selected.highlight-yellow{background:#fdd835;color:#1a1a1a}.cell.selected.highlight-red{background:#e53935}
+    .cell.selected.highlight-blue{background:#1e88e5}.cell.selected.highlight-purple{background:#8e24aa}
+    .cell.selected.highlight-pink{background:#e91e63}
+    .hint{color:var(--muted);font-size:.875rem}
+    aside{min-height:0;overflow:auto;background:var(--panel);border-left:1px solid var(--line);padding:1rem 1.1rem}
+    aside h2{margin:0 0 .3rem;font-size:1.05rem}.block-title{margin:1rem 0 .4rem;color:var(--accent);font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+    .dependency{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.5rem}
+    .node,.status,.context,.trace{border:1px solid var(--line);border-radius:8px;background:#1f1f2d;padding:.7rem}
+    .node strong{display:block}.node code{font-size:.7rem;color:var(--muted);word-break:break-all}.arrow{font-size:1.4rem;color:var(--accent)}
+    .node.met{border-color:#43a047}.node.failed{border-color:#c45c5c}.status,.context{font-size:.82rem;line-height:1.45}
+    .context{white-space:pre-wrap;color:#c5e1f7}.trace{height:8rem;overflow:auto;font:.76rem/1.45 ui-monospace,monospace}
+    .trace div{margin:.2rem 0}.ok{color:#81c784}.bad{color:#ef9a9a}.eval{color:#64b5f6}
+    .controls-warn{padding:.55rem;border:1px solid #8a3a3a;background:#3a2222;color:#ffcdd2}
+    .flag-card{border:1px solid var(--line);border-radius:8px;background:#252535;padding:.7rem;margin:.65rem 0}
+    .flag-top{display:flex;justify-content:space-between;gap:.5rem}.flag-card h3{margin:0;font-size:.9rem}.flag-key{font:.68rem ui-monospace,monospace;color:var(--muted)}
+    .flag-summary,.flag-hint{font-size:.78rem;color:var(--muted);line-height:1.4}.toggle.on{background:#2e5a35}.toggle.off{background:#5c2b2b}
+    .color-row{display:flex;align-items:center;gap:.5rem;margin-top:.55rem}.color-row select{flex:1;background:#2d2d3d;color:var(--ink);padding:.35rem}
+    a{color:#90caf9}
+  </style>
+</head>
+<body>
+  <section id="login">
+    <div class="app-banner">15-prerequisite-flags[java]</div>
+    <h1>Login</h1>
+    <p class="muted">One user context. The dependency lives in LaunchDarkly, not in application code.</p>
+    <label for="username">Username</label>
+    <input id="username" autocomplete="username" autofocus>
+    <p id="login-error" class="error hidden">Username is required.</p>
+    <button id="login-btn">Continue</button>
+  </section>
+
+  <div id="shell" class="hidden">
+    <main id="grid-screen" tabindex="0">
+      <div class="header">
+        <div class="app-banner">15-prerequisite-flags[java]</div>
+        <div>Name: <span id="hdr-name"></span></div>
+        <div>Current position: <span id="hdr-current"></span></div>
+        <div>Previous position: <span id="hdr-previous"></span></div>
+        <div id="count-row" class="hidden">Count: <span id="hdr-count">0</span></div>
+      </div>
+      <div id="grid" class="grid"></div>
+      <p class="hint">Arrows or WASD move. L logs out; Q quits.</p>
+    </main>
+
+    <aside aria-label="LaunchDarkly prerequisite lab">
+      <h2>LaunchDarkly · prerequisite lab</h2>
+      <p class="muted">Parent must be <strong>ON</strong> and serve <strong>green</strong> before the child evaluates normally.</p>
+
+      <div class="block-title">Live dependency</div>
+      <div class="dependency">
+        <div id="parent-node" class="node"><strong>Parent</strong><code>enable-grid-selection-highlight-prereq</code><div id="parent-value">waiting…</div></div>
+        <div class="arrow">→</div>
+        <div id="child-node" class="node"><strong>Child</strong><code>show-navigation-move-count-prereq</code><div id="child-value">waiting…</div></div>
+      </div>
+
+      <div class="block-title">Current result</div>
+      <div id="status" class="status">Waiting for evaluation…</div>
+
+      <div class="block-title">Context</div>
+      <pre id="context" class="context">Waiting for login…</pre>
+
+      <div class="block-title">Controls</div>
+      <p id="controls-meta" class="muted">Loading status…</p>
+      <div id="controls-warn" class="controls-warn hidden"></div>
+      <button id="refresh-controls">Refresh status</button>
+      <div id="controls-list"></div>
+      <p class="flag-hint">Controls never edit the prerequisite. Provisioning owns that relationship.</p>
+
+      <div class="block-title">Events / evaluation reasons</div>
+      <div id="trace" class="trace"><span class="muted">Evaluations and controls appear here.</span></div>
+
+      <div class="block-title">About</div>
+      <p class="flag-summary">Unlike example 11, these flags are not independent. An unmet prerequisite makes the child serve its off variation and report <code>PREREQUISITE_FAILED</code>.</p>
+      <p class="flag-summary"><a href="https://launchdarkly.com/docs/home/flags/prereqs" target="_blank">Flag prerequisites documentation</a></p>
+    </aside>
+  </div>
+
+  <script>
+    const ROWS=["t","m","b"],COLS=["l","m","r"];
+    let username="",row=1,col=1,previous=null,moves=0,timer=null,lastSnapshot="",busy="";
+    let flags={highlightColor:"none",showMoveCount:false,prerequisiteMet:false,parent:{reason:{}},child:{reason:{}}};
+    const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    const pos=(r,c)=>`${ROWS[r]}/${COLS[c]}`;
+
+    function trace(kind,text){
+      const el=document.getElementById("trace");
+      if(el.querySelector(".muted"))el.innerHTML="";
+      const line=document.createElement("div");line.className=kind;
+      line.textContent=`${new Date().toLocaleTimeString()}  ${text}`;el.appendChild(line);el.scrollTop=el.scrollHeight;
+    }
+    function reason(detail){return (detail&&detail.reason&&detail.reason.kind)||"UNKNOWN"}
+    function render(){
+      const color=flags.highlightColor||"none";
+      document.getElementById("hdr-name").textContent=username;
+      document.getElementById("hdr-name").className=color!=="none"?`highlight-${color}`:"";
+      document.getElementById("hdr-current").textContent=pos(row,col);
+      document.getElementById("hdr-previous").textContent=previous?pos(previous.row,previous.col):"—";
+      document.getElementById("count-row").classList.toggle("hidden",!flags.showMoveCount);
+      document.getElementById("hdr-count").textContent=String(moves);
+      const grid=document.getElementById("grid");grid.innerHTML="";
+      for(let r=0;r<3;r++)for(let c=0;c<3;c++){
+        const selected=r===row&&c===col,cell=document.createElement("div");
+        cell.className="cell"+(selected?` selected${color!=="none"?` highlight-${color}`:""}`:"");
+        cell.textContent=selected?"X":"";grid.appendChild(cell);
+      }
+      document.getElementById("parent-value").textContent=`${JSON.stringify(flags.parent.value)} · ${reason(flags.parent)}`;
+      document.getElementById("child-value").textContent=`${JSON.stringify(flags.child.value)} · ${reason(flags.child)}`;
+      document.getElementById("parent-node").classList.toggle("met",flags.prerequisiteMet);
+      document.getElementById("parent-node").classList.toggle("failed",!flags.prerequisiteMet);
+      document.getElementById("child-node").classList.toggle("met",flags.showMoveCount);
+      document.getElementById("child-node").classList.toggle("failed",!flags.showMoveCount);
+      document.getElementById("status").innerHTML=flags.prerequisiteMet
+        ? `<strong class="ok">Prerequisite met.</strong> Parent serves <code>${esc(color)}</code>; child evaluates <code>${flags.showMoveCount}</code>.`
+        : `<strong class="bad">Prerequisite not met.</strong> Child serves its off variation. Reason: <code>${esc(reason(flags.child))}</code>.`;
+      document.getElementById("context").textContent=JSON.stringify(flags.ldContext||{kind:"user",key:username},null,2);
+    }
+    async function refreshFlags(){
+      if(!username)return;
+      try{
+        const response=await fetch(`/api/flags?username=${encodeURIComponent(username)}`,{cache:"no-store"});
+        if(!response.ok)throw new Error(`HTTP ${response.status}`);
+        flags=await response.json();
+        const snapshot=JSON.stringify({p:flags.parent,c:flags.child});
+        if(snapshot!==lastSnapshot){
+          lastSnapshot=snapshot;
+          trace(flags.prerequisiteMet?"ok":"eval",`parent=${JSON.stringify(flags.parent.value)} (${reason(flags.parent)}); child=${flags.child.value} (${reason(flags.child)})`);
+        }
+        render();
+      }catch(error){trace("bad",`Evaluation failed: ${error}`)}
+    }
+    function move(dr,dc){
+      const nr=Math.max(0,Math.min(2,row+dr)),nc=Math.max(0,Math.min(2,col+dc));
+      if(nr===row&&nc===col)return;
+      previous={row,col};row=nr;col=nc;moves++;render();
+    }
+    function start(name){
+      username=name.trim().toLowerCase();row=1;col=1;previous=null;moves=0;lastSnapshot="";
+      document.getElementById("login").classList.add("hidden");document.body.classList.add("active");
+      document.getElementById("shell").classList.remove("hidden");refreshFlags();
+      timer=setInterval(refreshFlags,1500);document.getElementById("grid-screen").focus();trace("eval",`Logged in as ${username}`);
+    }
+    function logout(){
+      clearInterval(timer);timer=null;username="";document.body.classList.remove("active");
+      document.getElementById("shell").classList.add("hidden");document.getElementById("login").classList.remove("hidden");
+      document.getElementById("username").value="";document.getElementById("username").focus();
+    }
+    document.getElementById("login-btn").onclick=()=>{
+      const name=document.getElementById("username").value.trim();
+      document.getElementById("login-error").classList.toggle("hidden",!!name);if(name)start(name);
+    };
+    document.getElementById("username").onkeydown=e=>{if(e.key==="Enter")document.getElementById("login-btn").click()};
+    document.addEventListener("keydown",e=>{
+      if(!username||["INPUT","SELECT","TEXTAREA"].includes(e.target.tagName))return;
+      const key=e.key.toLowerCase();if(key==="l"){logout();return}if(key==="q"){clearInterval(timer);document.body.innerHTML="<p>Application closed.</p>";return}
+      if(e.key==="ArrowUp"||key==="w")move(-1,0);else if(e.key==="ArrowDown"||key==="s")move(1,0);
+      else if(e.key==="ArrowLeft"||key==="a")move(0,-1);else if(e.key==="ArrowRight"||key==="d")move(0,1);else return;
+      e.preventDefault();
+    });
+
+    function renderControls(data){
+      document.getElementById("controls-meta").innerHTML=data.configured
+        ? `Project <code>${esc(data.projectKey)}</code> · environment <code>${esc(data.environmentKey)}</code>`
+        : "REST controls unavailable.";
+      const warn=document.getElementById("controls-warn");
+      warn.classList.toggle("hidden",!!data.configured);warn.textContent=data.configured?"":`Missing: ${(data.missing||[]).join(", ")}`;
+      const list=document.getElementById("controls-list");list.innerHTML="";
+      for(const flag of data.flags||[]){
+        const card=document.createElement("div");card.className="flag-card";
+        const on=flag.on===true;
+        const colors=flag.colorOptions||[];
+        const options=colors.map(c=>`<option value="${esc(c)}"${c===flag.servedWhenOnFallthrough?" selected":""}>${esc(c)}</option>`).join("");
+        card.innerHTML=`<div class="flag-top"><div><h3>${esc(flag.label||flag.key)}</h3><div class="flag-key">${esc(flag.key)}</div></div>`+
+          `<button class="toggle ${on?"on":"off"}" data-key="${esc(flag.key)}" data-on="${on?"1":"0"}"${flag.on===null||busy?" disabled":""}>${flag.on===null?"—":on?"ON":"OFF"}</button></div>`+
+          `<p class="flag-summary">${esc(flag.summary||"")}</p>`+
+          (colors.length?`<div class="color-row"><label>Fallthrough</label><select data-key="${esc(flag.key)}">${options}</select></div>`:"")+
+          `<p class="flag-hint">${esc(flag.targetingHint||"")}</p>`;
+        list.appendChild(card);
+      }
+      list.querySelectorAll(".toggle").forEach(button=>button.onclick=()=>postControl({key:button.dataset.key,on:button.dataset.on!=="1"}));
+      list.querySelectorAll("select").forEach(select=>select.onchange=()=>postControl({key:select.dataset.key,fallthrough:select.value}));
+    }
+    async function refreshControls(){
+      try{const response=await fetch("/api/flag-controls",{cache:"no-store"});renderControls(await response.json())}
+      catch(error){trace("bad",`Control status failed: ${error}`)}
+    }
+    async function postControl(body){
+      busy=body.key;trace("eval",`REST control ${JSON.stringify(body)}`);await refreshControls();
+      try{
+        const response=await fetch("/api/flag-controls",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+        const data=await response.json();if(!response.ok)throw new Error(data.error||`HTTP ${response.status}`);
+        trace("ok",`${body.key}: ${(data.instructions||[]).join(", ")}`);setTimeout(refreshFlags,500);
+      }catch(error){trace("bad",`Control failed: ${error}`)}
+      finally{busy="";await refreshControls()}
+    }
+    document.getElementById("refresh-controls").onclick=refreshControls;
+    render();refreshControls();
+  </script>
+</body>
+</html>

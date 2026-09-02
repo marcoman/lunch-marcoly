@@ -1,0 +1,13 @@
+{
+  "name": "prerequisite-flags",
+  "version": "1.0.0",
+  "private": true,
+  "description": "15-prerequisite-flags grid navigator web UI",
+  "main": "15-prerequisite-flags.js",
+  "scripts": {
+    "start": "node 15-prerequisite-flags.js"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0"
+  }
+}
