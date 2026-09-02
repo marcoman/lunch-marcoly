@@ -15,6 +15,9 @@ numbered children and an optional [portal](portal/) to run them side by side.
 | **14** | [14-multi-context-targeting/](14-multi-context-targeting/) | Web plus Python / Node / Java / C++ / Go / Rust consoles: **multi-context** (user + organization) partner-badge 2×2 |
 | **15** | [15-prerequisite-flags/](15-prerequisite-flags/) | Web (Python / Node / Java / .NET) plus consoles: highlight must serve `green` before move count can evaluate |
 
+**16** (migration flags) is not in this series. Stub:
+[99-use-cases/17-migration-flags](../99-use-cases/17-migration-flags/).
+
 Baseline (no LaunchDarkly): [00-reference-code](../00-reference-code/).
 
 ## Portals

@@ -49,6 +49,10 @@ lunch-marcoly/
 │   ├── 32-client-identify/      # identify() without reload (:8320 JS · :8321 React · :8322 Vue)
 │   ├── 33-synced-segments/      # synced/big segment badge (:8330 JS · :8331 React · :8332 Vue)
 │   └── 34-synced-segments-twilio/  # Twilio Segment Audiences (:8340 JS · :8341 React · :8342 Vue)
+├── 40-dont-do-this/             # Anti-patterns (do not ship)
+│   ├── README.md
+│   ├── 41-no-sdk-singleton/     # Stub: new LDClient per evaluation
+│   └── 42-local-if-no-sdk/      # Stub: local if / no variation()
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -101,7 +105,10 @@ Each example may include implementations in any of these languages. Python, Node
 | 32 | [32-client-identify](30-client-sdk/32-client-identify/) | `identify()` context switch without reload (**JS :8320** · **React :8321** · **Vue :8322**) |
 | 33 | [33-synced-segments](30-client-sdk/33-synced-segments/) | Synced/big segment inner-circle badge (**JS :8330** · **React :8331** · **Vue :8332**) |
 | 34 | [34-synced-segments-twilio](30-client-sdk/34-synced-segments-twilio/) | Twilio Segment Audiences sync (**JS :8340** · **React :8341** · **Vue :8342**) |
-| 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (experiments, segments, rollouts, adaptive triggers, …) |
+| 40 | [40-dont-do-this](40-dont-do-this/) | Anti-pattern series (do not ship); stub |
+| 41 | [41-no-sdk-singleton](40-dont-do-this/41-no-sdk-singleton/) | Stub: new server SDK client per evaluation |
+| 42 | [42-local-if-no-sdk](40-dont-do-this/42-local-if-no-sdk/) | Stub: local `if` / hardcoded boolean, never `variation()` |
+| 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (experiments, segments, rollouts, adaptive triggers, stubs for migration flags and SDK fallbacks, …) |
 
 ## Building code
 

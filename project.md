@@ -118,6 +118,10 @@ lunch-marcoly/
 │   └── 34-synced-segments-twilio/  # Twilio Segment Audiences  :8340 JS · :8341 React · :8342 Vue
 │       ├── README.md · application.md · rest/ · terraform/
 │       └── javascript/ · react/ · vue/
+├── 40-dont-do-this/             # Anti-patterns (do not ship)
+│   ├── README.md
+│   ├── 41-no-sdk-singleton/     # Stub: new LDClient per evaluation
+│   └── 42-local-if-no-sdk/      # Stub: local if / no variation()
 ├── 99-use-cases/              # Focused LaunchDarkly use-case examples
 │   ├── README.md
 │   ├── 01-abcd-test/          # A-B-C-D test on navigation count label
@@ -125,7 +129,9 @@ lunch-marcoly/
 │   ├── 11-create-eval-flag/   # Create and evaluate a single highlight flag
 │   ├── 14-progressive-rollout/ # Time-based percentage ramp
 │   ├── 15-guarded-rollout/    # Percentage ramp with regression guardrails
-│   └── 16-adaptive-triggers/  # Metric threshold switches flag variation
+│   ├── 16-adaptive-triggers/  # Metric threshold switches flag variation
+│   ├── 17-migration-flags/    # Stub: migration flag dual-store cutover
+│   └── 18-sdk-fallbacks/      # Stub: SDK defaults vs last-known when LD is gone
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── rest/
@@ -166,7 +172,10 @@ lunch-marcoly/
 - `32-client-identify` (under `30-client-sdk/`) demonstrates `identify()` (switch user without reload; JavaScript **:8320**, React Web **:8321**, Vue **:8322**).
 - `33-synced-segments` (under `30-client-sdk/`) demonstrates a boolean flag targeted by a synced/big-style segment (inner-circle badge; JavaScript **:8330**, React Web **:8331**, Vue **:8332**).
 - `34-synced-segments-twilio` (under `30-client-sdk/`) demonstrates the same badge with membership from **Twilio Segment** Analytics.js + LaunchDarkly Audiences sync (JavaScript **:8340**, React Web **:8341**, Vue **:8342**).
-- `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive/guarded rollouts, and adaptive triggers).
+- `40-dont-do-this` groups **anti-pattern** examples (loud do-not-ship). Children start at **41**.
+- `41-no-sdk-singleton` (under `40-dont-do-this/`) will demonstrate a new server SDK client per evaluation instead of one process-wide client.
+- `42-local-if-no-sdk` (under `40-dont-do-this/`) will demonstrate a local `if` / hardcoded boolean instead of `variation()` — flipping the dashboard flag does nothing.
+- `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive/guarded rollouts, adaptive triggers, and stubs for migration flags and SDK fallbacks).
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author
 

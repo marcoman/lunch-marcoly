@@ -14,6 +14,8 @@ Each subdirectory demonstrates a specific product pattern (A/B testing, rollouts
 | [14-progressive-rollout/](14-progressive-rollout/) | Progressive rollout of green highlight over 15 minutes (10→100%) |
 | [15-guarded-rollout/](15-guarded-rollout/) | Guarded rollout with latency, error rate, and movement guardrails |
 | [16-adaptive-triggers/](16-adaptive-triggers/) | Adaptive trigger: custom latency metric switches highlight variation (`green` → `none`) |
+| [17-migration-flags/](17-migration-flags/) | **Stub:** migration flag dual-store cutover (parked 10-series 16) |
+| [18-sdk-fallbacks/](18-sdk-fallbacks/) | **Stub:** init failure / stream loss → default vs last-known evaluation |
 
 ## Conventions
 
