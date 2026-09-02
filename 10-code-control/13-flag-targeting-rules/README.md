@@ -38,7 +38,7 @@ See [application.md](application.md) for the full specification.
 
 ## Portal (series)
 
-The [10-code-control portal](../portal/) embeds examples **11–14** in tabs:
+The [10-code-control portal](../portal/) embeds examples **11–15** in tabs:
 
 | Language | Entry | URL | Child port for 13 |
 |----------|-------|-----|-------------------|

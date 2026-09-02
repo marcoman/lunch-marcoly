@@ -85,11 +85,12 @@ Each example may include implementations in any of these languages. Python, Node
 | 00 | [00-reference-code](00-reference-code/) | Grid navigator reference app (all languages, no LaunchDarkly) |
 | 01 | [01-reference-agent](01-reference-agent/) | News headlines → AI equity briefing (Python / Node / Java / .NET web + consoles; LaunchDarkly comes in later examples) |
 | 02 | [02-reference-client-code](02-reference-client-code/) | Browser grid navigator (JavaScript in the page, no LaunchDarkly) |
-| 10 | [10-code-control](10-code-control/) | Feature-flag series (portal + examples 11–14) |
+| 10 | [10-code-control](10-code-control/) | Feature-flag series (portal + examples 11–15) |
 | 11 | [11-flag-enablement](10-code-control/11-flag-enablement/) | Grid navigator with LaunchDarkly boolean flags (all languages, Terraform + REST) |
 | 12 | [12-flag-variations](10-code-control/12-flag-variations/) | Grid navigator with string, number, JSON, and anonymous flags (all languages) |
 | 13 | [13-flag-targeting-rules](10-code-control/13-flag-targeting-rules/) | Targeting rules on a public `team` context attribute |
 | 14 | [14-multi-context-targeting](10-code-control/14-multi-context-targeting/) | User + organization multi-context targeting |
+| 15 | [15-prerequisite-flags](10-code-control/15-prerequisite-flags/) | Flag prerequisites: highlight must serve `green` before move count can evaluate |
 | 20 | [20-agent-config](20-agent-config/) | AgentControl series (shared LLM / AWS / LD setup); [portal](20-agent-config/portal/) Python **:8200** · Node **:8201** |
 | 21 | [21-agent-completion-config](20-agent-config/21-agent-completion-config/) | Completion config: model + system/user prompts (web + Go console) |
 | 22 | [22-config-outside-code](20-agent-config/22-config-outside-code/) | Tracked completion: metrics + thumbs feedback (web + Go console) |

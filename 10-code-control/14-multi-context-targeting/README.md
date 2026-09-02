@@ -51,7 +51,7 @@ Its right rail keeps three things visible together as you walk the 2×2:
 
 ## Portal (series)
 
-The [10-code-control portal](../portal/) embeds examples **11–14** in tabs:
+The [10-code-control portal](../portal/) embeds examples **11–15** in tabs:
 
 | Language | Entry | URL | Child port for 14 |
 |----------|-------|-----|-------------------|

@@ -45,6 +45,19 @@ the dependency with application branching.
 | Java web | [java/](java/) | Done |
 | .NET web | [dotnet/](dotnet/) | Done |
 
+## Portal (series)
+
+The [10-code-control portal](../portal/) embeds examples **11–15** in tabs:
+
+| Language | Entry | URL | Child port for 15 |
+|----------|-------|-----|-------------------|
+| Python | [../portal/python/](../portal/python/) | http://127.0.0.1:8100/?tab=15 | **8150** |
+| Node.js | [../portal/node/](../portal/node/) | http://127.0.0.1:8101/?tab=15 | **8151** |
+| Java | [../portal/java/](../portal/java/) | http://127.0.0.1:8102/?tab=15 | **8152** |
+| .NET | [../portal/dotnet/](../portal/dotnet/) | http://127.0.0.1:8103/?tab=15 | **8153** |
+
+See [../portal/README.md](../portal/README.md).
+
 ## Environment
 
 ```bash

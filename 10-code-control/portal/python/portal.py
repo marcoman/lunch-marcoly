@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-portal.py — series shell for 10-code-control (Python web examples 11–14).
+portal.py — series shell for 10-code-control (Python web examples 11–15).
 
 One process for the user:
   - Serves this folder's index.html on :8100 (PORTAL_PORT)
@@ -75,6 +75,16 @@ CHILDREN: list[dict[str, Any]] = [
         / "14-multi-context-targeting.py",
         "cwd": SERIES_ROOT / "14-multi-context-targeting" / "python",
         "port": 8140,
+    },
+    {
+        "id": "15",
+        "label": "Prerequisite flags",
+        "script": SERIES_ROOT
+        / "15-prerequisite-flags"
+        / "python"
+        / "15-prerequisite-flags.py",
+        "cwd": SERIES_ROOT / "15-prerequisite-flags" / "python",
+        "port": 8150,
     },
 ]
 
@@ -294,7 +304,7 @@ def main() -> None:
 
     print(APP_BANNER, flush=True)
     print(f"Open http://127.0.0.1:{PORTAL_PORT}/", flush=True)
-    print("Tabs embed Python examples on 8110 / 8120 / 8130 / 8140.", flush=True)
+    print("Tabs embed Python examples on 8110 / 8120 / 8130 / 8140 / 8150.", flush=True)
     print("Ctrl+C stops the portal and all children.", flush=True)
     try:
         server.serve_forever()
