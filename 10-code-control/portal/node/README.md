@@ -1,7 +1,6 @@
 # Portal (Node)
 
-Series shell for **10-code-control**: tabbed UI that embeds **11**, **12**, and **13**
-side by side.
+Series shell for **10-code-control**: tabbed UI that embeds **11–14** side by side.
 
 | | Port |
 |--|------|
@@ -9,6 +8,7 @@ side by side.
 | **11 Flag enablement** | 8111 |
 | **12 Flag variations** | 8121 |
 | **13 Flag targeting rules** | 8131 |
+| **14 Multi-context targeting** | 8141 |
 
 Keywords: **feature flags** · **targeting rules** · **contexts** · **series portal**
 
@@ -19,7 +19,7 @@ Keywords: **feature flags** · **targeting rules** · **contexts** · **series p
 - Dependencies installed in all child examples:
 
 ```bash
-for d in ../../11-flag-enablement/node ../../12-flag-variations/node ../../13-flag-targeting-rules/node; do
+for d in ../../11-flag-enablement/node ../../12-flag-variations/node ../../13-flag-targeting-rules/node ../../14-multi-context-targeting/node; do
   (cd "$d" && npm install)
 done
 export LD_SDK_KEY="sdk-..."

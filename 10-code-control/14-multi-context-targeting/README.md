@@ -43,6 +43,19 @@ Its right rail keeps three things visible together as you walk the 2×2:
 | Java web | [java/](java/) | Done |
 | .NET web | [dotnet/](dotnet/) | Done |
 
+## Portal (series)
+
+The [10-code-control portal](../portal/) embeds examples **11–14** in tabs:
+
+| Language | Entry | URL | Child port for 14 |
+|----------|-------|-----|-------------------|
+| Python | [../portal/python/](../portal/python/) | http://127.0.0.1:8100/?tab=14 | **8140** |
+| Node.js | [../portal/node/](../portal/node/) | http://127.0.0.1:8101/?tab=14 | **8141** |
+| Java | [../portal/java/](../portal/java/) | http://127.0.0.1:8102/?tab=14 | **8142** |
+| .NET | [../portal/dotnet/](../portal/dotnet/) | http://127.0.0.1:8103/?tab=14 | **8143** |
+
+See [../portal/README.md](../portal/README.md).
+
 ## Environment
 
 ```bash

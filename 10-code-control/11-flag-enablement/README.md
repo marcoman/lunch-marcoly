@@ -149,7 +149,7 @@ All implementations require `LD_SDK_KEY` and provisioned flags. See each languag
 
 ## Portal (series)
 
-The [10-code-control portal](../portal/) embeds **11**, **12**, and **13** in tabs:
+The [10-code-control portal](../portal/) embeds examples **11–14** in tabs:
 
 | Language | Entry | URL |
 |----------|-------|-----|

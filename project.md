@@ -78,13 +78,15 @@ lunch-marcoly/
 │   └── javascript/            # Static files + optional Node file server :8020
 ├── 10-code-control/             # Feature-flag series (shared portal)
 │   ├── README.md
-│   ├── portal/                  # Series shell: Python :8100 → 8110 · 8120
+│   ├── portal/                  # Series shell: Python :8100 → 8110 · 8120 · 8130 · 8140
 │   ├── 11-flag-enablement/      # Boolean flags, contexts, private hostOs
 │   │   ├── README.md · application.md · rest/ · terraform/
 │   │   └── <language[-console]>/
-│   └── 12-flag-variations/      # String, number, JSON, anonymous context
-│       ├── README.md · application.md · rest/ · terraform/
-│       └── <language[-console]>/
+│   ├── 12-flag-variations/      # String, number, JSON, anonymous context
+│   │   ├── README.md · application.md · rest/ · terraform/
+│   │   └── <language[-console]>/
+│   ├── 13-flag-targeting-rules/ # Rules on public team context
+│   └── 14-multi-context-targeting/ # User + organization multi-context
 ├── 20-agent-config/             # AgentControl series (shared setup README)
 │   ├── README.md                # Ollama, AWS SSO, LD env — landing page
 │   ├── portal/                  # Series shell: Python :8200 · Node :8201
@@ -157,6 +159,8 @@ lunch-marcoly/
 - `10-code-control` groups grid-navigator **feature flag** examples; shared portal lives in its `portal/`.
 - `11-flag-enablement` (under `10-code-control/`) demonstrates feature flag naming, provisioning, and boolean enablement.
 - `12-flag-variations` (under `10-code-control/`) demonstrates string, number, JSON, and anonymous-context flag variation types.
+- `13-flag-targeting-rules` demonstrates targeting rules on a public `team` context attribute.
+- `14-multi-context-targeting` demonstrates one evaluation containing separate `user` and `organization` contexts.
 - `30-client-sdk` groups **browser** client-side SDK examples (client-side ID, not `LD_SDK_KEY`); series portals live in its `portal/` (JavaScript **:8300** · React **:8301** · Vue **:8302**).
 - `31-client-evaluation` (under `30-client-sdk/`) demonstrates initialize, client-side availability, variation, and `change:` (JavaScript **:8310**, React Web **:8311**, Vue **:8312**).
 - `32-client-identify` (under `30-client-sdk/`) demonstrates `identify()` (switch user without reload; JavaScript **:8320**, React Web **:8321**, Vue **:8322**).

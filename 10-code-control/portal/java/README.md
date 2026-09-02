@@ -1,7 +1,6 @@
 # Portal (Java)
 
-Series shell for **10-code-control**: tabbed UI that embeds **11**, **12**, and **13**
-side by side.
+Series shell for **10-code-control**: tabbed UI that embeds **11–14** side by side.
 
 | | Port |
 |--|------|
@@ -9,6 +8,7 @@ side by side.
 | **11 Flag enablement** | 8112 |
 | **12 Flag variations** | 8122 |
 | **13 Flag targeting rules** | 8132 |
+| **14 Multi-context targeting** | 8142 |
 
 Keywords: **feature flags** · **targeting rules** · **contexts** · **series portal**
 
