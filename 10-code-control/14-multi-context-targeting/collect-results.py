@@ -2,7 +2,7 @@
 """Collect the 14-multi-context 2×2 (plus unmatched) and compare to expected.
 
 Default: evaluate with the server SDK (needs LD_SDK_KEY).
-Optional: --url http://127.0.0.1:8080 hits the Python lab's /api/flags.
+Optional: --url http://127.0.0.1:8080 hits a running lab's /api/flags.
 
 Does not encode the matrix in the app — this script is the check harness.
 """
@@ -58,7 +58,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Collect partner-badge results for the 2×2.")
     parser.add_argument(
         "--url",
-        help="Python lab base URL (example: http://127.0.0.1:8080). Omit to use the SDK.",
+        help="Lab base URL (example: http://127.0.0.1:8080). Omit to use the SDK.",
     )
     parser.add_argument("--json", action="store_true", help="Print JSON instead of a table.")
     args = parser.parse_args()

@@ -25,9 +25,9 @@ Docs: [Multi-contexts](https://launchdarkly.com/docs/home/flags/multi-contexts) 
 [Targeting rules](https://launchdarkly.com/docs/home/flags/target-rules) ·
 [Contexts](https://launchdarkly.com/docs/home/flags/contexts)
 
-Python, Node.js, Java, C++, Go, and Rust are also available as console
-applications. They keep login, org choice, live flag refresh, and grid
-navigation, but omit the web lab and REST Controls.
+Web implementations (Python, Node.js, Java, .NET) share the same lab UI. Console
+applications in other languages keep login, org choice, live flag refresh, and
+grid navigation, but omit the web lab and REST Controls.
 
 ## The 2×2 (the whole lesson)
 

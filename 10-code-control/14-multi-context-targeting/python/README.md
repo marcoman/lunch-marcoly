@@ -1,8 +1,9 @@
 # Python (web)
 
-Python web implementation of [14-multi-context-targeting](../application.md),
-with the example 12 LaunchDarkly lab shell (Controls / Context / About) and Trace
-dock.
+Python web implementation of [14-multi-context-targeting](../application.md).
+Login and the lab rail use Alice/Bob and Acme/Globex radio cards. The rail keeps
+the live multi-context JSON, current result, and event history visible while you
+walk the 2×2. Tabs are Controls and About.
 
 ## Prerequisites
 
