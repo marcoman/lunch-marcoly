@@ -42,6 +42,12 @@ Its right rail keeps three things visible together as you walk the 2×2:
 | Node.js web | [node/](node/) | Done |
 | Java web | [java/](java/) | Done |
 | .NET web | [dotnet/](dotnet/) | Done |
+| Python console | [python-console/](python-console/) | Done |
+| Node.js console | [node-console/](node-console/) | Done |
+| Java console | [java-console/](java-console/) | Done |
+| C++ console | [cpp/](cpp/) | Done |
+| Go console | [go/](go/) | Done |
+| Rust console | [rust/](rust/) | Done |
 
 ## Portal (series)
 
@@ -75,6 +81,26 @@ cd python && python 14-multi-context-targeting.py
 
 Open http://127.0.0.1:8080/. Set `PORT` to override. Run one language at a time
 on that port.
+
+```bash
+# Python console
+cd python-console && python 14-multi-context-targeting.py
+
+# Node console
+cd node-console && npm install && npm start
+
+# Java console
+cd java-console && ./mvnw -q -DskipTests package && java -jar target/14-multi-context-targeting.jar
+
+# C++ console
+cd cpp && make && ./14-multi-context-targeting
+
+# Go console
+cd go && go build -o 14-multi-context-targeting . && ./14-multi-context-targeting
+
+# Rust console
+cd rust && cargo build --release && ./target/release/14-multi-context-targeting
+```
 
 ## Collect results
 

@@ -200,16 +200,73 @@ func clamp(v, lo, hi int) int {
 	return v
 }
 
-func readUsername(reader *bufio.Reader) (string, error) {
+type readState int
+
+const (
+	keyReady readState = iota
+	keyTimeout
+	keyClosed
+)
+
+// A terminal fd does not support read deadlines, so a dedicated goroutine owns
+// stdin and hands bytes to the render loop over a channel. That keeps the
+// 500 ms flag refresh from blocking on input, and vice versa.
+type keyStream struct {
+	keys chan byte
+}
+
+func newKeyStream() *keyStream {
+	stream := &keyStream{keys: make(chan byte, 64)}
+	go func() {
+		defer close(stream.keys)
+		reader := bufio.NewReader(os.Stdin)
+		for {
+			key, err := reader.ReadByte()
+			if err != nil {
+				return
+			}
+			stream.keys <- key
+		}
+	}()
+	return stream
+}
+
+func (stream *keyStream) next(timeout time.Duration) (byte, readState) {
+	timer := time.NewTimer(timeout)
+	defer timer.Stop()
+	select {
+	case key, open := <-stream.keys:
+		if !open {
+			return 0, keyClosed
+		}
+		return key, keyReady
+	case <-timer.C:
+		return 0, keyTimeout
+	}
+}
+
+// Read a whole line while the terminal is still in cooked mode (it echoes).
+func (stream *keyStream) readLine() (string, bool) {
+	var line strings.Builder
+	for key := range stream.keys {
+		if key == '\n' || key == '\r' {
+			return strings.TrimSpace(line.String()), true
+		}
+		line.WriteByte(key)
+	}
+	return "", false
+}
+
+func readUsername(stream *keyStream) (string, error) {
 	fmt.Println(appBanner)
-	fmt.Println("Login\n")
+	fmt.Println("Login")
+	fmt.Println()
 	for {
 		fmt.Print("Username: ")
-		line, err := reader.ReadString('\n')
-		if err != nil {
-			return "", err
+		name, ok := stream.readLine()
+		if !ok {
+			return "", fmt.Errorf("stdin closed")
 		}
-		name := strings.TrimSpace(line)
 		if name != "" {
 			return name, nil
 		}
@@ -288,57 +345,61 @@ const (
 	actionLogout
 )
 
-func readKeyWithTimeout(reader *bufio.Reader, timeout time.Duration) (dr, dc int, action sessionAction, endSession, ok, timedOut bool) {
-	if err := os.Stdin.SetReadDeadline(time.Now().Add(timeout)); err != nil {
-		return 0, 0, actionQuit, false, false, true
-	}
-	defer os.Stdin.SetReadDeadline(time.Time{})
-
-	b, err := reader.ReadByte()
-	if err != nil {
-		if ne, ok := err.(interface{ Timeout() bool }); ok && ne.Timeout() {
-			return 0, 0, actionQuit, false, false, true
-		}
-		return 0, 0, actionQuit, true, false, false
-	}
-
-	switch b {
-	case 3, 'q', 'Q':
-		return 0, 0, actionQuit, true, true, false
-	case 'l', 'L':
-		return 0, 0, actionLogout, true, true, false
-	case 'w', 'W':
-		return -1, 0, 0, false, true, false
-	case 's', 'S':
-		return 1, 0, 0, false, true, false
-	case 'a', 'A':
-		return 0, -1, 0, false, true, false
-	case 'd', 'D':
-		return 0, 1, 0, false, true, false
-	case 27:
-		b2, err := reader.ReadByte()
-		if err != nil || b2 != '[' {
-			return 0, 0, 0, false, false, false
-		}
-		b3, err := reader.ReadByte()
-		if err != nil {
-			return 0, 0, 0, false, false, false
-		}
-		switch b3 {
-		case 'A':
-			return -1, 0, 0, false, true, false
-		case 'B':
-			return 1, 0, 0, false, true, false
-		case 'C':
-			return 0, 1, 0, false, true, false
-		case 'D':
-			return 0, -1, 0, false, true, false
-		}
-	}
-	return 0, 0, 0, false, false, false
+// One keystroke, decoded into everything the grid loop needs to know.
+type keyEvent struct {
+	dr, dc      int
+	action      sessionAction
+	endsSession bool
+	hasMove     bool
 }
 
-func runGrid(username string, reader *bufio.Reader) sessionAction {
+func readKeyEvent(stream *keyStream, timeout time.Duration) keyEvent {
+	key, state := stream.next(timeout)
+	switch state {
+	case keyTimeout:
+		return keyEvent{}
+	case keyClosed:
+		return keyEvent{action: actionQuit, endsSession: true}
+	}
+
+	switch key {
+	case 3, 'q', 'Q':
+		return keyEvent{action: actionQuit, endsSession: true}
+	case 'l', 'L':
+		return keyEvent{action: actionLogout, endsSession: true}
+	case 'w', 'W':
+		return keyEvent{dr: -1, hasMove: true}
+	case 's', 'S':
+		return keyEvent{dr: 1, hasMove: true}
+	case 'a', 'A':
+		return keyEvent{dc: -1, hasMove: true}
+	case 'd', 'D':
+		return keyEvent{dc: 1, hasMove: true}
+	case 27:
+		// An arrow key arrives as ESC [ A-D; a bare ESC times out here.
+		second, state := stream.next(50 * time.Millisecond)
+		if state != keyReady || second != '[' {
+			return keyEvent{}
+		}
+		third, state := stream.next(50 * time.Millisecond)
+		if state != keyReady {
+			return keyEvent{}
+		}
+		switch third {
+		case 'A':
+			return keyEvent{dr: -1, hasMove: true}
+		case 'B':
+			return keyEvent{dr: 1, hasMove: true}
+		case 'C':
+			return keyEvent{dc: 1, hasMove: true}
+		case 'D':
+			return keyEvent{dc: -1, hasMove: true}
+		}
+	}
+	return keyEvent{}
+}
+
+func runGrid(username string, stream *keyStream) sessionAction {
 	row, col := 1, 1
 	var previous *position
 	moveCount := 0
@@ -347,14 +408,11 @@ func runGrid(username string, reader *bufio.Reader) sessionAction {
 		flags := evaluateFlags(username)
 		render(username, row, col, previous, moveCount, flags)
 
-		dr, dc, action, endSession, ok, timedOut := readKeyWithTimeout(reader, 500*time.Millisecond)
-		if timedOut {
-			continue
+		event := readKeyEvent(stream, 500*time.Millisecond)
+		if event.endsSession {
+			return event.action
 		}
-		if endSession {
-			return action
-		}
-		if !ok {
+		if !event.hasMove {
 			continue
 		}
 
@@ -362,7 +420,7 @@ func runGrid(username string, reader *bufio.Reader) sessionAction {
 			continue
 		}
 
-		result := tryMove(row, col, dr, dc)
+		result := tryMove(row, col, event.dr, event.dc)
 		if result.moved {
 			prev := position{row, col}
 			previous = &prev
@@ -380,11 +438,11 @@ func main() {
 		}
 	}()
 
-	reader := bufio.NewReader(os.Stdin)
+	stream := newKeyStream()
 	fd := int(os.Stdin.Fd())
 
 	for {
-		username, err := readUsername(reader)
+		username, err := readUsername(stream)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
@@ -396,7 +454,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		action := runGrid(username, reader)
+		action := runGrid(username, stream)
 		term.Restore(fd, oldState)
 
 		if action == actionQuit {

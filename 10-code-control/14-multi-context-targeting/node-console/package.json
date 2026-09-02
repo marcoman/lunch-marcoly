@@ -1,0 +1,13 @@
+{
+  "name": "multi-context-targeting-grid-navigator-console",
+  "version": "1.0.0",
+  "private": true,
+  "description": "14-multi-context-targeting grid navigator console app",
+  "main": "14-multi-context-targeting.js",
+  "scripts": {
+    "start": "node 14-multi-context-targeting.js"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0"
+  }
+}

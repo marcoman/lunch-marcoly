@@ -1,4 +1,4 @@
-// Console grid navigator demonstrating LaunchDarkly targeting rules.
+// Console grid navigator demonstrating LaunchDarkly multi-context targeting.
 package main
 
 import (
@@ -13,14 +13,14 @@ import (
 	"golang.org/x/term"
 )
 
-// LaunchDarkly targeting rules inspect the public team context attribute.
-// No team intentionally omits the attribute so evaluation reaches fallthrough.
-// https://launchdarkly.com/docs/home/flags/target-rules
+// LaunchDarkly: one variation call with kind multi (user + organization).
+// https://launchdarkly.com/docs/home/flags/multi-contexts
 const (
-	flagTeamStyle = "configure-team-label-style"
-	appBanner     = "13-flag-targeting-rules[go]"
-	bgANSI        = "\033[48;5;236m"
-	resetANSI     = "\033[0m"
+	flagPartnerBadge = "show-partner-org-badge"
+	appBanner        = "14-multi-context-targeting[go]"
+	bgANSI           = "\033[48;5;236m"
+	resetANSI        = "\033[0m"
+	greenANSI        = "\033[32m"
 )
 
 var (
@@ -31,12 +31,14 @@ var (
 
 type login struct {
 	username string
-	team     string
+	org      string
 }
 
 type flagValues struct {
-	teamLabel string
-	style     string
+	username string
+	org      string
+	orgLabel string
+	partner  bool
 }
 
 type position struct {
@@ -54,6 +56,8 @@ type keyEvent struct {
 	action      sessionAction
 	endsSession bool
 	hasMove     bool
+	nextUser    string
+	nextOrg     string
 }
 
 type sessionAction int
@@ -66,66 +70,50 @@ const (
 func initLaunchDarkly() {
 	sdkKey := os.Getenv("LD_SDK_KEY")
 	if sdkKey == "" {
-		fmt.Fprintln(os.Stderr, "Warning: LD_SDK_KEY not set — flag uses plain default.")
+		fmt.Fprintln(os.Stderr, "Warning: LD_SDK_KEY not set — partner badge stays false.")
 		return
 	}
 	client, err := ld.MakeClient(sdkKey, 5*time.Second)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Warning: LaunchDarkly SDK did not initialize — flag uses plain default.")
+		fmt.Fprintln(os.Stderr, "Warning: LaunchDarkly SDK did not initialize — partner badge stays false.")
 		return
 	}
 	ldClient = client
 }
 
-// Evaluate the string variation with team as a public context attribute.
-// https://launchdarkly.com/docs/home/flags/context-attributes
-func evaluateFlags(username, team string) flagValues {
-	builder := ldcontext.NewBuilder(username)
-	if team != "" {
-		builder.SetString("team", team)
+func orgLabel(org string) string {
+	if org == "globex" {
+		return "Globex"
 	}
-	context := builder.Build()
+	return "Acme"
+}
 
-	style := "plain"
+// Evaluate show-partner-org-badge. Org is a separate context kind, not a user attribute.
+func evaluateFlags(username, org string) flagValues {
+	user := ldcontext.NewBuilder(username).Kind("user").Build()
+	organization := ldcontext.NewBuilder(org).Kind("organization").SetString("name", orgLabel(org)).Build()
+	context := ldcontext.NewMulti(user, organization)
+
+	partner := false
 	if ldClient != nil {
-		candidate, err := ldClient.StringVariation(flagTeamStyle, context, "plain")
+		value, err := ldClient.BoolVariation(flagPartnerBadge, context, false)
 		if err == nil {
-			switch candidate {
-			case "plain", "colored-red", "colored-blue", "colored-yellow":
-				style = candidate
-			}
+			partner = value
 		}
 	}
-	return flagValues{teamLabel: teamLabel(team), style: style}
-}
-
-func teamLabel(team string) string {
-	switch team {
-	case "red":
-		return "Team Red"
-	case "blue":
-		return "Team Blue"
-	case "yellow":
-		return "Team Yellow"
-	default:
-		return "No team"
+	return flagValues{
+		username: username,
+		org:      org,
+		orgLabel: orgLabel(org),
+		partner:  partner,
 	}
 }
 
-func coloredTeam(flags flagValues) string {
-	color := ""
-	switch flags.style {
-	case "colored-red":
-		color = "\033[31m"
-	case "colored-blue":
-		color = "\033[34m"
-	case "colored-yellow":
-		color = "\033[33m"
+func nameLine(username string, flags flagValues) string {
+	if !flags.partner {
+		return "Name: " + username
 	}
-	if color == "" {
-		return flags.teamLabel
-	}
-	return color + flags.teamLabel + resetANSI + bgANSI
+	return "Name: " + username + "  " + greenANSI + "partner" + resetANSI + bgANSI
 }
 
 func formatPos(row, col int) string {
@@ -205,35 +193,41 @@ func (stream *keyStream) readLine() (string, bool) {
 	return "", false
 }
 
-// Prompt for the user key and public team attribute used by targeting rules.
+// Prompt for Alice/Bob and Acme/Globex — the two multi-context keys.
 func readLogin(stream *keyStream) (login, error) {
 	fmt.Println(appBanner)
 	fmt.Println("Login")
 	fmt.Println()
 	var username string
 	for username == "" {
-		fmt.Print("Username: ")
+		fmt.Print("User [1=Alice 2=Bob]: ")
 		line, ok := stream.readLine()
 		if !ok {
 			return login{}, fmt.Errorf("stdin closed")
 		}
-		username = line
-		if username == "" {
-			fmt.Println("Username is required.")
+		switch line {
+		case "1":
+			username = "alice"
+		case "2":
+			username = "bob"
+		default:
+			fmt.Println("Choose 1 or 2.")
 		}
 	}
-
-	teams := map[string]string{"1": "", "2": "red", "3": "blue", "4": "yellow"}
 	for {
-		fmt.Print("Team [1=None 2=Red 3=Blue 4=Yellow]: ")
+		fmt.Print("Org  [1=Acme 2=Globex]: ")
 		line, ok := stream.readLine()
 		if !ok {
 			return login{}, fmt.Errorf("stdin closed")
 		}
-		if team, present := teams[line]; present {
-			return login{username: username, team: team}, nil
+		switch line {
+		case "1":
+			return login{username: username, org: "acme"}, nil
+		case "2":
+			return login{username: username, org: "globex"}, nil
+		default:
+			fmt.Println("Choose 1 or 2.")
 		}
-		fmt.Println("Choose 1, 2, 3, or 4.")
 	}
 }
 
@@ -259,12 +253,12 @@ func render(session login, row, col int, previous *position, flags flagValues) {
 		previousText = formatPos(previous.row, previous.col)
 	}
 	writeLine(&out, appBanner)
-	writeLine(&out, "Name: "+session.username)
-	writeLine(&out, "Team: "+coloredTeam(flags))
+	writeLine(&out, nameLine(session.username, flags))
+	writeLine(&out, "Org: "+flags.orgLabel)
 	writeLine(&out, "Current position: "+formatPos(row, col))
 	writeLine(&out, "Previous position: "+previousText)
 	writeLine(&out, "")
-	writeLine(&out, "Use arrow keys or WASD to move (L to logout, Q to quit).")
+	writeLine(&out, "1/2 user Alice/Bob, 3/4 org Acme/Globex. Arrows or WASD. L logout, Q quit.")
 	writeLine(&out, "")
 
 	for r := 0; r < 3; r++ {
@@ -293,6 +287,14 @@ func readKeyEvent(stream *keyStream, timeout time.Duration) keyEvent {
 		return keyEvent{action: actionQuit, endsSession: true}
 	case 'l', 'L':
 		return keyEvent{action: actionLogout, endsSession: true}
+	case '1':
+		return keyEvent{nextUser: "alice"}
+	case '2':
+		return keyEvent{nextUser: "bob"}
+	case '3':
+		return keyEvent{nextOrg: "acme"}
+	case '4':
+		return keyEvent{nextOrg: "globex"}
 	case 'w', 'W':
 		return keyEvent{dr: -1, hasMove: true}
 	case 's', 'S':
@@ -325,16 +327,24 @@ func readKeyEvent(stream *keyStream, timeout time.Duration) keyEvent {
 	return keyEvent{}
 }
 
-// Re-evaluate the team style every 500 ms while navigating.
+// Re-evaluate the partner badge every 500 ms; 1–4 walk the 2×2 without logout.
 func runGrid(session login, stream *keyStream) sessionAction {
 	row, col := 1, 1
 	var previous *position
 	for {
-		flags := evaluateFlags(session.username, session.team)
+		flags := evaluateFlags(session.username, session.org)
 		render(session, row, col, previous, flags)
 		event := readKeyEvent(stream, 500*time.Millisecond)
 		if event.endsSession {
 			return event.action
+		}
+		if event.nextUser != "" {
+			session.username = event.nextUser
+			continue
+		}
+		if event.nextOrg != "" {
+			session.org = event.nextOrg
+			continue
 		}
 		if !event.hasMove {
 			continue
