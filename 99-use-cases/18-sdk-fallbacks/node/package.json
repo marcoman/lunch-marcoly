@@ -1,0 +1,13 @@
+{
+  "name": "18-sdk-fallbacks-node",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SDK default versus last-known stream data lab",
+  "main": "18-sdk-fallbacks.js",
+  "scripts": {
+    "start": "node 18-sdk-fallbacks.js"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0"
+  }
+}

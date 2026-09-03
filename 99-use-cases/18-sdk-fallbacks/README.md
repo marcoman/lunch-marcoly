@@ -1,6 +1,6 @@
 # 18-sdk-fallbacks
 
-**Status: stub — not implemented yet.**
+**Status: web applications implemented.**
 
 Simulate losing LaunchDarkly (init never succeeds, or the stream dies after a
 good evaluation) and show the grid still working from **SDK fallbacks**.
@@ -54,4 +54,11 @@ toggles “block init” vs “drop stream” and watches the source line change
 
 | Language | Directory | Status |
 |----------|-----------|--------|
-| *(none yet)* | — | Stub |
+| Python | [python/](python/) | Web app — stream gate + three evaluation sources |
+| Node.js | [node/](node/) | Web app — stream gate + three evaluation sources |
+| Java | [java/](java/) | Web app — stream gate + three evaluation sources |
+| .NET | [dotnet/](dotnet/) | Web app — stream gate + three evaluation sources |
+
+Provision the dedicated flag with [rest/create-flag.sh](rest/create-flag.sh).
+The detailed behavior and acceptance criteria are in
+[application.md](application.md).

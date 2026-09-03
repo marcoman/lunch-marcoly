@@ -108,7 +108,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 40 | [40-dont-do-this](40-dont-do-this/) | Anti-pattern series (do not ship); stub |
 | 41 | [41-no-sdk-singleton](40-dont-do-this/41-no-sdk-singleton/) | Stub: new server SDK client per evaluation |
 | 42 | [42-local-if-no-sdk](40-dont-do-this/42-local-if-no-sdk/) | Stub: local `if` / hardcoded boolean, never `variation()` |
-| 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (experiments, segments, rollouts, adaptive triggers, stubs for migration flags and SDK fallbacks, …) |
+| 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (experiments, segments, rollouts, adaptive triggers, SDK fallbacks, …) |
 
 ## Building code
 

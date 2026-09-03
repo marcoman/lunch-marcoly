@@ -131,7 +131,7 @@ lunch-marcoly/
 │   ├── 15-guarded-rollout/    # Percentage ramp with regression guardrails
 │   ├── 16-adaptive-triggers/  # Metric threshold switches flag variation
 │   ├── 17-migration-flags/    # Stub: migration flag dual-store cutover
-│   └── 18-sdk-fallbacks/      # Stub: SDK defaults vs last-known when LD is gone
+│   └── 18-sdk-fallbacks/      # SDK defaults vs last-known (web apps)
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── rest/
@@ -175,7 +175,7 @@ lunch-marcoly/
 - `40-dont-do-this` groups **anti-pattern** examples (loud do-not-ship). Children start at **41**.
 - `41-no-sdk-singleton` (under `40-dont-do-this/`) will demonstrate a new server SDK client per evaluation instead of one process-wide client.
 - `42-local-if-no-sdk` (under `40-dont-do-this/`) will demonstrate a local `if` / hardcoded boolean instead of `variation()` — flipping the dashboard flag does nothing.
-- `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive/guarded rollouts, adaptive triggers, and stubs for migration flags and SDK fallbacks).
+- `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive/guarded rollouts, adaptive triggers, SDK fallbacks, and a migration-flags stub).
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author
 

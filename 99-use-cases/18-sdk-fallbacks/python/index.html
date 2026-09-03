@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grid Navigator — SDK Fallbacks</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #1e1e2e; color: #e8e8ec; }
+    button, input { font: inherit; }
+    button {
+      padding: .58rem .8rem; color: #fff; background: #3d3d52;
+      border: 1px solid #666; border-radius: 5px; cursor: pointer;
+    }
+    button:hover { background: #4b4b65; }
+    button:disabled { opacity: .55; cursor: wait; }
+    code { color: #d0bcff; }
+    .hidden { display: none !important; }
+    .meta { color: #aaa; font-size: .875rem; }
+    .error { color: #ef6c6c; }
+    .good { color: #81c784; }
+    .warn { color: #ffb74d; }
+    #login { width: min(28rem, calc(100% - 2rem)); margin: 3rem auto; }
+    #login input {
+      display: block; width: 100%; margin: .4rem 0 .7rem; padding: .65rem;
+      color: #fff; background: #2d2d3d; border: 1px solid #555;
+    }
+    #shell {
+      display: grid; grid-template-columns: minmax(0, 1fr) min(31rem, 46vw);
+      min-height: 100vh;
+    }
+    #grid-screen { padding: 2rem; min-width: 0; outline: none; }
+    .banner { color: #aaa; font-size: .875rem; margin-bottom: .5rem; }
+    .header { line-height: 1.7; margin-bottom: 1.5rem; }
+    .grid { display: grid; grid-template-columns: repeat(3, 80px); gap: 6px; }
+    .cell {
+      width: 80px; height: 80px; display: grid; place-items: center;
+      border: 1px solid #555; background: #2d2d3d; font-size: 1.5rem;
+    }
+    .cell.selected { font-weight: 700; }
+    .cell.green { background: #43a047; border-color: #81c784; }
+    .name-green { color: #81c784; }
+    .rail {
+      padding: 1.4rem; overflow: auto; background: #252535;
+      border-left: 1px solid #4a4a5c;
+    }
+    .rail h2 { margin: 0 0 .3rem; }
+    .card {
+      margin: 1rem 0; padding: 1rem; border-radius: 7px;
+      border: 1px solid #4a4a5c; background: #2d2d3d;
+    }
+    .card h3 { margin: 0 0 .65rem; font-size: 1rem; }
+    .buttons { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .source {
+      display: inline-block; padding: .2rem .5rem; border-radius: 4px;
+      background: #191923; font: 700 .95rem ui-monospace, monospace;
+    }
+    .source.STREAM { color: #81c784; }
+    .source.LAST_KNOWN { color: #ffb74d; }
+    .source.DEFAULT { color: #ef9a9a; }
+    .facts {
+      display: grid; grid-template-columns: 10rem 1fr; gap: .4rem .8rem;
+      margin: .8rem 0 0; font-size: .9rem;
+    }
+    .facts dt { color: #aaa; }
+    .facts dd { margin: 0; overflow-wrap: anywhere; }
+    .reason {
+      min-height: 3.5rem; white-space: pre-wrap; overflow-wrap: anywhere;
+      font: .8rem/1.45 ui-monospace, monospace; color: #c9d1d9;
+    }
+    .flow { margin: .5rem 0 0; padding-left: 1.3rem; line-height: 1.55; }
+    @media (max-width: 780px) {
+      #shell { grid-template-columns: 1fr; }
+      .rail { border-left: 0; border-top: 1px solid #4a4a5c; }
+    }
+  </style>
+</head>
+<body>
+  <section id="login">
+    <div class="banner runtime-banner">18-sdk-fallbacks</div>
+    <h1>Login</h1>
+    <label for="username">Username</label>
+    <input id="username" autocomplete="username" autofocus>
+    <p id="login-error" class="error hidden">Username is required.</p>
+    <button id="login-button" type="button">Continue</button>
+  </section>
+
+  <main id="shell" class="hidden">
+    <section id="grid-screen" tabindex="0">
+      <div class="header">
+        <div class="banner runtime-banner">18-sdk-fallbacks</div>
+        <div>Name: <strong id="name">—</strong></div>
+        <div>Flag: <span id="flag-name">—</span> (<code id="flag-key">—</code>)</div>
+        <div>Flag value: <strong id="flag-value">none</strong></div>
+        <div>Evaluation source: <strong id="header-source">DEFAULT</strong></div>
+        <div>Current position: <span id="current">m/m</span></div>
+        <div>Previous position: <span id="previous">—</span></div>
+      </div>
+      <div id="grid" class="grid" aria-label="3 by 3 grid"></div>
+      <p class="meta">Arrow keys / WASD move. L logs out; Q quits.</p>
+    </section>
+
+    <aside class="rail" aria-label="LaunchDarkly SDK fallback lab">
+      <h2>LaunchDarkly · SDK Fallbacks</h2>
+      <p class="meta">
+        Same <code>variation_detail()</code> call, three transport states.
+        Source and evaluation reason are deliberately separate.
+      </p>
+
+      <section class="card">
+        <h3>Scenario</h3>
+        <div class="buttons">
+          <button id="connect" type="button">Connect stream</button>
+          <button id="drop" type="button">Drop stream</button>
+          <button id="block" type="button">Block initialization</button>
+        </div>
+        <p id="control-message" class="meta">
+          Start live, drop the stream, then block a fresh client's initialization.
+        </p>
+      </section>
+
+      <section class="card">
+        <h3>Current evaluation</h3>
+        <div>Source: <span id="source" class="source DEFAULT">DEFAULT</span></div>
+        <dl class="facts">
+          <dt>Variation</dt><dd><code id="variation">none</code></dd>
+          <dt>Code default</dt><dd><code id="code-default">none</code></dd>
+          <dt>SDK initialized</dt><dd id="initialized">no</dd>
+          <dt>Ever initialized</dt><dd id="ever-initialized">no</dd>
+          <dt>Stream gate</dt><dd id="gate">closed</dd>
+          <dt>Active streams</dt><dd id="active-streams">0</dd>
+          <dt>Init wait bound</dt><dd id="start-wait">—</dd>
+        </dl>
+      </section>
+
+      <section class="card">
+        <h3>Evaluation reason</h3>
+        <div id="reason" class="reason">—</div>
+        <p class="meta">
+          The reason explains the flag decision or error. It does not say
+          “stream” versus “last known”; that is transport/store state.
+        </p>
+      </section>
+
+      <section class="card">
+        <h3>Expected flow</h3>
+        <ol class="flow">
+          <li><strong class="good">STREAM</strong>: live flag data, normally <code>green</code>.</li>
+          <li><strong class="warn">LAST_KNOWN</strong>: same client, stream severed, still <code>green</code>.</li>
+          <li><strong class="error">DEFAULT</strong>: fresh client never initialized, returns <code>none</code>.</li>
+        </ol>
+      </section>
+
+      <section class="card">
+        <h3>Context</h3>
+        <pre id="context" class="reason">—</pre>
+      </section>
+    </aside>
+  </main>
+
+  <script>
+    const ROWS = ["t", "m", "b"];
+    const COLS = ["l", "m", "r"];
+    const byId = (id) => document.getElementById(id);
+
+    let username = "";
+    let row = 1;
+    let col = 1;
+    let previous = null;
+    let evaluation = {
+      flagValue: "none", highlightColor: "none", source: "DEFAULT",
+      initialized: false, everInitialized: false, gateOpen: false,
+      activeStreams: 0, reason: null
+    };
+    let pollTimer = null;
+
+    async function jsonFetch(path, options) {
+      const response = await fetch(path, options);
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error || response.statusText);
+      return body;
+    }
+
+    /**
+     * Load public labels and status only. SDK credentials stay in Python.
+     */
+    async function loadConfig() {
+      const config = await jsonFetch("/api/config");
+      document.querySelectorAll(".runtime-banner").forEach((element) => {
+        element.textContent = config.runtime || "18-sdk-fallbacks";
+      });
+      byId("flag-name").textContent = config.flag.name;
+      byId("flag-key").textContent = config.flag.key;
+      byId("code-default").textContent = config.codeDefault;
+      applyStatus(config);
+    }
+
+    /**
+     * Evaluate through the SDK in STREAM, LAST_KNOWN, and DEFAULT modes.
+     */
+    async function refreshEvaluation() {
+      if (!username) return;
+      try {
+        evaluation = await jsonFetch(
+          `/api/evaluate?username=${encodeURIComponent(username)}`
+        );
+        render();
+      } catch (error) {
+        byId("control-message").className = "error";
+        byId("control-message").textContent = error.message;
+      }
+    }
+
+    function applyStatus(status) {
+      evaluation = { ...evaluation, ...status };
+      const source = status.source || "DEFAULT";
+      byId("source").textContent = source;
+      byId("source").className = `source ${source}`;
+      byId("header-source").textContent = source;
+      byId("initialized").textContent = status.initialized ? "yes" : "no";
+      byId("ever-initialized").textContent = status.everInitialized ? "yes" : "no";
+      byId("gate").textContent = status.gateOpen ? "open" : "closed";
+      byId("active-streams").textContent = String(status.activeStreams ?? 0);
+      if (status.startWaitSeconds !== undefined) {
+        byId("start-wait").textContent = `${status.startWaitSeconds} seconds`;
+      }
+      byId("drop").disabled = !status.everInitialized;
+    }
+
+    function render() {
+      applyStatus(evaluation);
+      const green = evaluation.highlightColor === "green";
+      byId("name").textContent = username;
+      byId("name").className = green ? "name-green" : "";
+      byId("flag-value").textContent = evaluation.flagValue || "none";
+      byId("variation").textContent = evaluation.flagValue || "none";
+      byId("current").textContent = `${ROWS[row]}/${COLS[col]}`;
+      byId("previous").textContent = previous
+        ? `${ROWS[previous.row]}/${COLS[previous.col]}`
+        : "—";
+      byId("reason").textContent = evaluation.reason
+        ? JSON.stringify(evaluation.reason, null, 2)
+        : "—";
+      byId("context").textContent = JSON.stringify(
+        { kind: "user", key: username }, null, 2
+      );
+
+      const grid = byId("grid");
+      grid.innerHTML = "";
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          const selected = r === row && c === col;
+          const cell = document.createElement("div");
+          cell.className = [
+            "cell", selected ? "selected" : "", selected && green ? "green" : ""
+          ].filter(Boolean).join(" ");
+          cell.textContent = selected ? "X" : "";
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    async function changeScenario(path, pending, success) {
+      const buttons = ["connect", "drop", "block"].map(byId);
+      buttons.forEach((button) => { button.disabled = true; });
+      byId("control-message").className = "meta";
+      byId("control-message").textContent = pending;
+      try {
+        const nextStatus = await jsonFetch(path, { method: "POST" });
+        applyStatus(nextStatus);
+        await refreshEvaluation();
+        byId("control-message").className = "good";
+        byId("control-message").textContent = success;
+      } catch (error) {
+        byId("control-message").className = "error";
+        byId("control-message").textContent = error.message;
+      } finally {
+        buttons.forEach((button) => { button.disabled = false; });
+        byId("drop").disabled = !evaluation.everInitialized;
+        byId("grid-screen").focus();
+      }
+    }
+
+    function tryMove(dr, dc) {
+      const nextRow = Math.max(0, Math.min(2, row + dr));
+      const nextCol = Math.max(0, Math.min(2, col + dc));
+      if (nextRow === row && nextCol === col) return;
+      previous = { row, col };
+      row = nextRow;
+      col = nextCol;
+      render();
+    }
+
+    function start(name) {
+      username = name;
+      row = 1;
+      col = 1;
+      previous = null;
+      byId("login").classList.add("hidden");
+      byId("shell").classList.remove("hidden");
+      render();
+      refreshEvaluation();
+      clearInterval(pollTimer);
+      pollTimer = setInterval(refreshEvaluation, 1000);
+      byId("grid-screen").focus();
+    }
+
+    function logout() {
+      clearInterval(pollTimer);
+      pollTimer = null;
+      username = "";
+      byId("username").value = "";
+      byId("shell").classList.add("hidden");
+      byId("login").classList.remove("hidden");
+      byId("username").focus();
+    }
+
+    byId("login-button").addEventListener("click", () => {
+      const name = byId("username").value.trim();
+      byId("login-error").classList.toggle("hidden", Boolean(name));
+      if (name) start(name);
+    });
+    byId("username").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") byId("login-button").click();
+    });
+    byId("connect").addEventListener("click", () => changeScenario(
+      "/api/connect", "Opening gate and initializing a fresh client…",
+      "Stream connected. Evaluations use live flag data."
+    ));
+    byId("drop").addEventListener("click", () => changeScenario(
+      "/api/drop-stream", "Severing the active stream…",
+      "Stream dropped. The same client evaluates last-known flag data."
+    ));
+    byId("block").addEventListener("click", () => changeScenario(
+      "/api/block-init", "Closing gate and starting a fresh client…",
+      "Initialization failed within its bound. Evaluation returned the code default."
+    ));
+    byId("grid-screen").addEventListener("keydown", (event) => {
+      const key = event.key.toLowerCase();
+      if (key === "l") {
+        event.preventDefault();
+        logout();
+      } else if (key === "q") {
+        event.preventDefault();
+        clearInterval(pollTimer);
+        window.close();
+        document.body.innerHTML = "<p>Application closed. You may close this tab.</p>";
+      } else if (event.key === "ArrowUp" || key === "w") {
+        event.preventDefault(); tryMove(-1, 0);
+      } else if (event.key === "ArrowDown" || key === "s") {
+        event.preventDefault(); tryMove(1, 0);
+      } else if (event.key === "ArrowLeft" || key === "a") {
+        event.preventDefault(); tryMove(0, -1);
+      } else if (event.key === "ArrowRight" || key === "d") {
+        event.preventDefault(); tryMove(0, 1);
+      }
+    });
+
+    loadConfig().catch((error) => {
+      byId("control-message").className = "error";
+      byId("control-message").textContent = error.message;
+    });
+    render();
+  </script>
+</body>
+</html>

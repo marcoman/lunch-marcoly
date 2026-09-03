@@ -14,7 +14,6 @@ LaunchDarkly surfaces: **string variation**, **contexts**, **numeric custom
 ## Prerequisites
 
 - Java **21+**
-- Maven **3.9+**
 - Provision [../rest/](../rest/) and configure the adaptive trigger in the UI
 
 Export the server-side configuration:
@@ -29,7 +28,7 @@ export LD_ENVIRONMENT_KEY="production"
 ## Build and run
 
 ```bash
-mvn clean package
+./mvnw clean package
 java -jar target/16-adaptive-triggers.jar
 ```
 

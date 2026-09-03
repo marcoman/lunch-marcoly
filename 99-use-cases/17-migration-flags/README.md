@@ -65,6 +65,8 @@ chrome changing. That is the whole demo.
 1. Write `application.md` (flag key, variation type, stages, acceptance
    criteria, dedicated keys so 11/15 stay independent).
 2. Python web first, then twins, then consoles if the rail still teaches.
+   Java twins should ship the Maven Wrapper (`./mvnw`, `mvnw.cmd`, `.mvn/wrapper/`)
+   the same way as [11-create-eval-flag/java](../11-create-eval-flag/java/).
 3. REST (and optional Terraform) to create the **migration** flag — not a
    boolean stand-in.
 4. Lab rail always visible: stage, read store, write stores, consistency
