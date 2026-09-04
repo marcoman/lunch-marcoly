@@ -53,6 +53,9 @@ lunch-marcoly/
 │   ├── README.md
 │   ├── 41-no-sdk-singleton/     # Stub: new LDClient per evaluation
 │   └── 42-local-if-no-sdk/      # Stub: local if / no variation()
+├── 50-mobile/                   # Mobile SDK series (2×2 tap navigator)
+│   ├── README.md
+│   └── 51-reference/            # android/ · ios/ (no LaunchDarkly)
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -64,7 +67,7 @@ Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control
 
 ## Languages
 
-Each example may include implementations in any of these languages. Python, Node.js, Java, and **.NET** default to **web applications** with a browser UI. **JavaScript** (`javascript/`), **React Web** (`react/`), and **Vue** (`vue/`) are **browser applications**: the page owns the logic. Go, Rust, and C++ are **console applications**. Optional `-console` variants exist for Python, Node.js, and Java when a terminal-based version is also needed.
+Each example may include implementations in any of these languages. Python, Node.js, Java, and **.NET** default to **web applications** with a browser UI. **JavaScript** (`javascript/`), **React Web** (`react/`), and **Vue** (`vue/`) are **browser applications**: the page owns the logic. **Android** (`android/`) and **iOS** (`ios/`) are **mobile applications** (2×2 tap navigator in series 50). Go, Rust, and C++ are **console applications**. Optional `-console` variants exist for Python, Node.js, and Java when a terminal-based version is also needed.
 
 | Language | Directory | Application type |
 |----------|-----------|------------------|
@@ -81,6 +84,9 @@ Each example may include implementations in any of these languages. Python, Node
 | JavaScript | `javascript/` | Browser application (static files) |
 | React Web | `react/` | Browser application (Vite + React Web SDK) |
 | Vue       | `vue/` | Browser application (Vite + Vue SDK) |
+| Android  | `android/` | Mobile application (Kotlin / Compose) |
+| iOS      | `ios/` | Mobile application (Swift / SwiftUI) |
+| React Native | `react-native/` | Mobile application (later; series 50) |
 
 ## Examples
 
@@ -108,6 +114,8 @@ Each example may include implementations in any of these languages. Python, Node
 | 40 | [40-dont-do-this](40-dont-do-this/) | Anti-pattern series (do not ship); stub |
 | 41 | [41-no-sdk-singleton](40-dont-do-this/41-no-sdk-singleton/) | Stub: new server SDK client per evaluation |
 | 42 | [42-local-if-no-sdk](40-dont-do-this/42-local-if-no-sdk/) | Stub: local `if` / hardcoded boolean, never `variation()` |
+| 50 | [50-mobile](50-mobile/) | Mobile SDK series (2×2 tap navigator; mobile key, not browser client-side ID) |
+| 51 | [51-reference](50-mobile/51-reference/) | Mobile reference app — login, 2×2 tap grid, drawer; Android + iOS; no LaunchDarkly |
 | 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (experiments, segments, rollouts, adaptive triggers, SDK fallbacks, …) |
 
 ## Building code
@@ -163,6 +171,8 @@ Run `nvm use` whenever you open a new shell before working on Node examples.
 | C++      | C++20 compiler and Make |
 | Go       | [go.dev](https://go.dev/dl/) **1.22+** (AgentControl `go/` modules may require **1.24** — see each `go.mod`) |
 | Rust     | [rustup.rs](https://rustup.rs/) 1.75+ |
+| Android  | [Android Studio](https://developer.android.com/studio) (JDK 17+, SDK; Gradle Wrapper in each `android/`) |
+| iOS      | [Xcode](https://developer.apple.com/xcode/) 15+ (macOS) |
 
 ### Build patterns (from each language folder)
 
@@ -178,6 +188,8 @@ Run `nvm use` whenever you open a new shell before working on Node examples.
 | C++ | `make clean && make all` | `./00-reference-code` |
 | Go | `go mod tidy` · `go build -o <example-name> .` | `./<example-name>` |
 | Rust | `cargo build --release` | `./target/release/00-reference-code` |
+| Android | `./gradlew assembleDebug` | Android Studio → Run, or install the debug APK |
+| iOS | Open `*.xcodeproj` | Xcode → Run on Simulator |
 
 Each language folder's `README.md` lists the exact **Build** and **Run** commands for that implementation.
 

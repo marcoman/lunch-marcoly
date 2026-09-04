@@ -52,6 +52,22 @@ obj/
 # Rust build output
 **/rust/target/
 
+# Android
+**/.gradle/
+**/local.properties
+**/*.iml
+**/.cxx/
+**/android/.idea/
+**/android/app/build/
+**/android/build/
+**/android/captures/
+
+# iOS
+**/ios/**/xcuserdata/
+**/ios/**/DerivedData/
+**/ios/**/*.xcuserstate
+**/ios/build/
+
 # IDE
 .idea/
 

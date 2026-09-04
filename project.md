@@ -2,7 +2,7 @@
 
 This document defines the structure, conventions, and standards for **lunch-marcoly** — a collection of small, self-contained programming examples, each implemented across multiple languages.
 
-For the reference grid navigator application behavior, see [00-reference-code/application.md](00-reference-code/application.md). For the browser-side twin, see [02-reference-client-code/application.md](02-reference-client-code/application.md). For the reference agent UI, see [01-reference-agent/application.md](01-reference-agent/application.md).
+For the reference grid navigator application behavior, see [00-reference-code/application.md](00-reference-code/application.md). For the browser-side twin, see [02-reference-client-code/application.md](02-reference-client-code/application.md). For the reference agent UI, see [01-reference-agent/application.md](01-reference-agent/application.md). For the mobile 2×2 tap navigator, see [50-mobile/51-reference/application.md](50-mobile/51-reference/application.md).
 
 ## Purpose
 
@@ -27,6 +27,9 @@ Supported languages and application types:
 | JavaScript | `javascript/` | Browser application (static files) | nvm + npm (optional static server) |
 | React Web | `react/` | Browser application (Vite + React Web SDK) | nvm + npm |
 | Vue       | `vue/`   | Browser application (Vite + Vue SDK) | nvm + npm |
+| Android  | `android/` | Mobile application (Kotlin / Compose) | Gradle Wrapper + Android SDK |
+| iOS      | `ios/` | Mobile application (Swift / SwiftUI) | Xcode |
+| React Native | `react-native/` | Mobile application (later) | nvm + Metro; not in 51 |
 
 **Web applications** (`python/`, `node/`, `java/`, `dotnet/`) include a graphical component served in the browser. Each README should document how to start the local server and which URL to open.
 
@@ -37,6 +40,12 @@ the server. `javascript/` is the vanilla JS SDK. `react/` is the
 `vue/` is the [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue).
 Used by [02-reference-client-code](02-reference-client-code/) (`javascript/` only)
 and [30-client-sdk](30-client-sdk/).
+
+**Mobile applications** (`android/`, `ios/`, later `react-native/`) run on a
+device or emulator. Evaluation (when present) uses a **mobile key**
+(`LD_MOBILE_KEY`), not a server SDK key and not the browser client-side ID.
+Used by [50-mobile](50-mobile/). Do not wrap the 00/02 WASD grid; 51 defines a
+2×2 tap navigator.
 
 **Console applications** (`python-console/`, `node-console/`, `java-console/`, `go/`, `cpp/`, `rust/`) run in the terminal with text-based input and output.
 
@@ -122,6 +131,9 @@ lunch-marcoly/
 │   ├── README.md
 │   ├── 41-no-sdk-singleton/     # Stub: new LDClient per evaluation
 │   └── 42-local-if-no-sdk/      # Stub: local if / no variation()
+├── 50-mobile/                   # Mobile SDK series (2×2 tap navigator)
+│   ├── README.md                # Mobile key, simulators, no AgentControl
+│   └── 51-reference/            # No LaunchDarkly — android/ · ios/
 ├── 99-use-cases/              # Focused LaunchDarkly use-case examples
 │   ├── README.md
 │   ├── 01-abcd-test/          # A-B-C-D test on navigation count label
@@ -175,6 +187,9 @@ lunch-marcoly/
 - `40-dont-do-this` groups **anti-pattern** examples (loud do-not-ship). Children start at **41**.
 - `41-no-sdk-singleton` (under `40-dont-do-this/`) will demonstrate a new server SDK client per evaluation instead of one process-wide client.
 - `42-local-if-no-sdk` (under `40-dont-do-this/`) will demonstrate a local `if` / hardcoded boolean instead of `variation()` — flipping the dashboard flag does nothing.
+- `50-mobile` groups **mobile** client-side SDK examples (mobile key, not `LD_SDK_KEY` and not `LD_CLIENT_SIDE_ID`). Children start at **51**. There is no HTTP portal. AgentControl is out of scope.
+- `51-reference` (under `50-mobile/`) is the 2×2 tap navigator baseline. It does **not** include LaunchDarkly. Android (`android/`) and iOS (`ios/`) ship first; `react-native/` comes later.
+- A later **52** example will add mobile SDK initialize / variation / listeners. Do not reuse 00/02 flag keys.
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive/guarded rollouts, adaptive triggers, SDK fallbacks, and a migration-flags stub).
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author
@@ -184,6 +199,7 @@ lunch-marcoly/
 - Use the fixed directory names from the table above
 - Web implementations: `python/`, `node/`, `java/`, `dotnet/`
 - Browser implementations: `javascript/` (vanilla JS SDK), `react/` (React Web SDK), `vue/` (Vue SDK)
+- Mobile implementations: `android/` (Kotlin), `ios/` (Swift), `react-native/` (later)
 - Console implementations: `python-console/`, `node-console/`, `java-console/`, `go/`, `cpp/`, `rust/`
 - Only create a language folder when that implementation exists
 - Do not nest `-console` folders inside their web counterparts — each is a sibling directory at the example root
@@ -204,6 +220,9 @@ Follow the idiomatic naming style of each language:
 | C++      | `cpp/`    | `main.cpp` + Makefile | binary `00-reference-code` |
 | Go       | `go/`     | `main.go` | binary `00-reference-code` |
 | Rust     | `rust/`   | `src/main.rs` | binary `00-reference-code` |
+| Android  | `android/` | Gradle `app/` (Kotlin / Compose) | `51-reference` APK / Studio run |
+| iOS      | `ios/`    | Xcode app (`*.xcodeproj`) | `51-reference` on Simulator |
+| React Native | `react-native/` | *(later)* | — |
 
 The **runnable artifact name** matches the **example directory name** (e.g. `00-reference-code`, `01-hello-world`). Language READMEs document the exact build and run commands for that folder.
 
@@ -289,6 +308,9 @@ Repository-wide and per-language dependency conventions:
 | JavaScript | `javascript/` → `package.json` | Optional static file server; the app is `index.html` + client JS |
 | React Web | `react/` → `package.json` | Vite app; `@launchdarkly/react-sdk`; lab API in `vite.config.js` |
 | Vue       | `vue/` → `package.json` | Vite app; `launchdarkly-vue-client-sdk`; lab API in `vite.config.js` |
+| Android  | `android/` → Gradle Wrapper | `./gradlew`; Jetpack Compose; later `launchdarkly-android-client-sdk` |
+| iOS      | `ios/` → Xcode project | SwiftUI; later Swift Package `ios-client-sdk` |
+| React Native | `react-native/` | Reserved; add after native twins exist |
 | Java | `java/`, `java-console/` → `pom.xml` | Maven build; use `./mvnw` (Maven Wrapper) |
 | Java | `mvnw`, `.mvn/wrapper/` | Maven Wrapper — preferred over a system `mvn` install |
 | .NET | `dotnet/` → `{example-name}.csproj` | Per-folder .NET project file; use `dotnet restore` / `dotnet build` |
@@ -496,6 +518,24 @@ cargo build --release
 
 The Cargo `[bin]` name matches the example directory.
 
+### Android
+
+Used by [50-mobile](50-mobile/). **Grid behavior is on the device.** 51 has no SDK.
+
+- **Build:** from the `android/` folder (Gradle Wrapper; no system Gradle required):
+
+```bash
+./gradlew assembleDebug
+```
+
+- **Run:** Android Studio → Open the `android/` folder → Run on an emulator or device. Language READMEs cite the application id.
+
+### iOS
+
+Used by [50-mobile](50-mobile/). macOS + Xcode required.
+
+- **Build / run:** open the `.xcodeproj` in the `ios/` folder and run on Simulator. Language READMEs cite the scheme name.
+
 ### Documentation split
 
 | Document | Build/run content |
@@ -567,6 +607,8 @@ Install only what you need for the language and provisioning approach you are wo
 | C++             | C++20           | Make and a C++20-capable compiler |
 | Go              | 1.22+           | go modules; AgentControl `go/` ports may require **1.24** (see `go.mod`) |
 | Rust            | 1.75+           | 2021 edition |
+| Android         | API 26+ / JDK 17+ | Android Studio; Gradle Wrapper in each `android/` folder |
+| iOS             | Xcode 15+       | macOS; SwiftUI app in each `ios/` folder |
 | Terraform       | 1.5+            | Required for `terraform/` provisioning examples |
 | curl            | any recent      | Required for `rest/` provisioning examples |
 
