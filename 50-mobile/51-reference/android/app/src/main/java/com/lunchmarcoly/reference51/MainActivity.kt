@@ -133,15 +133,11 @@ private fun LoginScreen(onLogin: (String) -> Unit) {
 private fun GridScreen(nav: Navigator, onLogout: () -> Unit) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    var tick by remember { mutableStateOf(0) }
-    fun bump() {
-        tick += 1
-    }
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet(modifier = Modifier.fillMaxWidth(0.78f)) {
-                DrawerBody(nav, tick)
+                DrawerBody(nav)
             }
         },
     ) {
@@ -151,8 +147,6 @@ private fun GridScreen(nav: Navigator, onLogout: () -> Unit) {
                     .fillMaxSize()
                     .padding(start = 20.dp, end = 16.dp, top = 48.dp, bottom = 16.dp),
             ) {
-                @Suppress("UNUSED_VARIABLE")
-                val observed = tick
                 Text("51-reference[android]", style = MaterialTheme.typography.labelMedium, color = Color(0xFF666666))
                 Text("Name: ${nav.username}", color = Ink)
                 Text("Current position: ${nav.current.label()}", color = Ink)
@@ -161,7 +155,7 @@ private fun GridScreen(nav: Navigator, onLogout: () -> Unit) {
                     Text("Logout")
                 }
                 Spacer(Modifier.height(12.dp))
-                TapGrid(nav) { bump() }
+                TapGrid(nav)
             }
             Box(
                 modifier = Modifier
@@ -175,9 +169,7 @@ private fun GridScreen(nav: Navigator, onLogout: () -> Unit) {
 }
 
 @Composable
-private fun DrawerBody(nav: Navigator, tick: Int) {
-    @Suppress("UNUSED_VARIABLE")
-    val observed = tick
+private fun DrawerBody(nav: Navigator) {
     Column(Modifier.padding(20.dp)) {
         Text("Lab drawer", style = MaterialTheme.typography.titleMedium, color = Ink)
         Spacer(Modifier.height(8.dp))
@@ -200,7 +192,7 @@ private fun DrawerBody(nav: Navigator, tick: Int) {
 }
 
 @Composable
-private fun TapGrid(nav: Navigator, onMoved: () -> Unit) {
+private fun TapGrid(nav: Navigator) {
     val cells = listOf(
         listOf(Cell(Row.T, Col.L), Cell(Row.T, Col.R)),
         listOf(Cell(Row.B, Col.L), Cell(Row.B, Col.R)),
@@ -215,10 +207,7 @@ private fun TapGrid(nav: Navigator, onMoved: () -> Unit) {
                             .width(120.dp)
                             .height(120.dp)
                             .border(1.dp, CellStroke)
-                            .clickable {
-                                nav.tap(cell)
-                                onMoved()
-                            },
+                            .clickable { nav.tap(cell) },
                         contentAlignment = Alignment.Center,
                     ) {
                         Surface(color = CellFill, modifier = Modifier.fillMaxSize()) {

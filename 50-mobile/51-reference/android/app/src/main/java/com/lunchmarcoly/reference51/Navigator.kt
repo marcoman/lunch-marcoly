@@ -1,5 +1,9 @@
 package com.lunchmarcoly.reference51
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+
 /**
  * 2×2 tap navigator for 51-reference.
  * Positions are t/l, t/r, b/l, b/r. Moves are orthogonal only.
@@ -17,11 +21,13 @@ data class Cell(val row: Row, val col: Col) {
 }
 
 class Navigator {
-    var username: String = ""
+    // Compose state, not plain vars: every composable that reads these must
+    // recompose when tap() or logout() changes them.
+    var username by mutableStateOf("")
         private set
-    var current: Cell = Cell(Row.T, Col.L)
+    var current by mutableStateOf(Cell(Row.T, Col.L))
         private set
-    var previous: Cell? = null
+    var previous by mutableStateOf<Cell?>(null)
         private set
 
     fun login(name: String): Boolean {
