@@ -1,0 +1,3 @@
+// Copy to LDMobileKey.xcconfig (gitignored) and paste the environment mobile key.
+// Do not commit a real key.
+LD_MOBILE_KEY = mob-replace-me

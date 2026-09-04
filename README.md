@@ -55,7 +55,8 @@ lunch-marcoly/
 │   └── 42-local-if-no-sdk/      # Stub: local if / no variation()
 ├── 50-mobile/                   # Mobile SDK series (2×2 tap navigator)
 │   ├── README.md
-│   └── 51-reference/            # android/ · ios/ (no LaunchDarkly)
+│   ├── 51-reference/            # android/ · ios/ (no LaunchDarkly)
+│   └── 52-mobile-evaluation/    # android/ · ios/ (mobile key)
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -116,6 +117,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 42 | [42-local-if-no-sdk](40-dont-do-this/42-local-if-no-sdk/) | Stub: local `if` / hardcoded boolean, never `variation()` |
 | 50 | [50-mobile](50-mobile/) | Mobile SDK series (2×2 tap navigator; mobile key, not browser client-side ID) |
 | 51 | [51-reference](50-mobile/51-reference/) | Mobile reference app — login, 2×2 tap grid, drawer; Android + iOS; no LaunchDarkly |
+| 52 | [52-mobile-evaluation](50-mobile/52-mobile-evaluation/) | Mobile SDK: init, variation, listeners (`LD_MOBILE_KEY`; dedicated flag keys) |
 | 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (experiments, segments, rollouts, adaptive triggers, SDK fallbacks, …) |
 
 ## Building code

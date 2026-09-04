@@ -67,6 +67,8 @@ obj/
 **/ios/**/DerivedData/
 **/ios/**/*.xcuserstate
 **/ios/build/
+**/ios/LDMobileKey.xcconfig
+**/android/.kotlin/
 
 # IDE
 .idea/

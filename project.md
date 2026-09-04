@@ -133,7 +133,8 @@ lunch-marcoly/
 │   └── 42-local-if-no-sdk/      # Stub: local if / no variation()
 ├── 50-mobile/                   # Mobile SDK series (2×2 tap navigator)
 │   ├── README.md                # Mobile key, simulators, no AgentControl
-│   └── 51-reference/            # No LaunchDarkly — android/ · ios/
+│   ├── 51-reference/            # No LaunchDarkly — android/ · ios/
+│   └── 52-mobile-evaluation/    # Mobile SDK init / variation / listeners
 ├── 99-use-cases/              # Focused LaunchDarkly use-case examples
 │   ├── README.md
 │   ├── 01-abcd-test/          # A-B-C-D test on navigation count label
@@ -189,7 +190,7 @@ lunch-marcoly/
 - `42-local-if-no-sdk` (under `40-dont-do-this/`) will demonstrate a local `if` / hardcoded boolean instead of `variation()` — flipping the dashboard flag does nothing.
 - `50-mobile` groups **mobile** client-side SDK examples (mobile key, not `LD_SDK_KEY` and not `LD_CLIENT_SIDE_ID`). Children start at **51**. There is no HTTP portal. AgentControl is out of scope.
 - `51-reference` (under `50-mobile/`) is the 2×2 tap navigator baseline. It does **not** include LaunchDarkly. Android (`android/`) and iOS (`ios/`) ship first; `react-native/` comes later.
-- A later **52** example will add mobile SDK initialize / variation / listeners. Do not reuse 00/02 flag keys.
+- `52-mobile-evaluation` (under `50-mobile/`) adds the Android / iOS mobile SDKs (`LD_MOBILE_KEY`), dedicated flag keys, variation, and flag listeners. Do not reuse 31’s browser flag keys.
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive/guarded rollouts, adaptive triggers, SDK fallbacks, and a migration-flags stub).
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author
@@ -521,6 +522,7 @@ The Cargo `[bin]` name matches the example directory.
 ### Android
 
 Used by [50-mobile](50-mobile/). **Grid behavior is on the device.** 51 has no SDK.
+52 uses `LD_MOBILE_KEY` (never `LD_SDK_KEY`).
 
 - **Build:** from the `android/` folder (Gradle Wrapper; no system Gradle required):
 
