@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>62-server-traces</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #fafafa; color: #222; max-width: 480px; margin: 2rem auto; padding: 0 1rem; }
+    h1 { font-size: 1.25rem; margin-bottom: 1rem; }
+    label { display: block; margin-bottom: 0.5rem; }
+    input { width: 100%; padding: 0.5rem; margin-bottom: 1rem; box-sizing: border-box; }
+    button { padding: 0.5rem 1rem; cursor: pointer; }
+    .error { color: #c62828; margin-bottom: 0.5rem; }
+    .app-banner { font-size: 0.875rem; color: #666; margin-bottom: 0.5rem; }
+    .header { margin-bottom: 1.5rem; line-height: 1.6; }
+    .grid { display: grid; grid-template-columns: repeat(3, 80px); gap: 6px; }
+    .cell { width: 80px; height: 80px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; background: #fff; font-size: 1.5rem; user-select: none; }
+    .cell.selected { font-weight: bold; }
+    .hint { margin-top: 1rem; color: #666; font-size: 0.875rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <section id="login-screen">
+    <div class="app-banner">62-server-traces[python]</div>
+    <h1>Login</h1>
+    <label for="username">Username</label>
+    <input id="username" type="text" autocomplete="username" autofocus>
+    <p id="login-error" class="error hidden"></p>
+    <button id="login-btn" type="button">Continue</button>
+  </section>
+
+  <section id="grid-screen" class="hidden" tabindex="0">
+    <div class="header">
+      <div class="app-banner">62-server-traces[python]</div>
+      <div>Name: <span id="hdr-name"></span></div>
+      <div>Current position: <span id="hdr-current"></span></div>
+      <div>Previous position: <span id="hdr-previous"></span></div>
+    </div>
+    <div id="grid" class="grid" aria-label="3 by 3 grid"></div>
+    <p class="hint">Login creates grid.login; successful moves create grid.move. Arrows/WASD; L logs out, Q quits.</p>
+  </section>
+
+  <script>
+    const positions = ["t/l", "t/m", "t/r", "m/l", "m/m", "m/r", "b/l", "b/m", "b/r"];
+    const loginScreen = document.getElementById("login-screen");
+    const gridScreen = document.getElementById("grid-screen");
+    const loginError = document.getElementById("login-error");
+    let state = { loggedIn: false, username: "", current: "m/m", previous: null };
+
+    async function api(path, body) {
+      const response = await fetch(path, {
+        method: body === undefined ? "GET" : "POST",
+        headers: body === undefined ? {} : { "Content-Type": "application/json" },
+        body: body === undefined ? undefined : JSON.stringify(body),
+        cache: "no-store"
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+      return payload;
+    }
+
+    function render() {
+      loginScreen.classList.toggle("hidden", state.loggedIn);
+      gridScreen.classList.toggle("hidden", !state.loggedIn);
+      if (!state.loggedIn) return;
+      document.getElementById("hdr-name").textContent = state.username;
+      document.getElementById("hdr-current").textContent = state.current;
+      document.getElementById("hdr-previous").textContent = state.previous || "—";
+      const grid = document.getElementById("grid");
+      grid.replaceChildren(...positions.map(position => {
+        const cell = document.createElement("div");
+        cell.className = "cell" + (position === state.current ? " selected" : "");
+        cell.textContent = position === state.current ? "X" : "";
+        return cell;
+      }));
+      gridScreen.focus();
+    }
+
+    async function login() {
+      try {
+        state = await api("/api/login", { username: document.getElementById("username").value.trim() });
+        loginError.classList.add("hidden");
+        render();
+      } catch (error) {
+        loginError.textContent = error.message;
+        loginError.classList.remove("hidden");
+      }
+    }
+
+    async function move(direction) {
+      state = await api("/api/move", { direction });
+      render();
+    }
+
+    async function logout() {
+      state = await api("/api/logout", {});
+      document.getElementById("username").value = "";
+      render();
+      document.getElementById("username").focus();
+    }
+
+    document.getElementById("login-btn").addEventListener("click", login);
+    document.getElementById("username").addEventListener("keydown", event => {
+      if (event.key === "Enter") login();
+    });
+    gridScreen.addEventListener("keydown", async event => {
+      const key = event.key.toLowerCase();
+      const directions = {
+        ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right",
+        w: "up", s: "down", a: "left", d: "right"
+      };
+      if (key === "q") {
+        event.preventDefault();
+        window.close();
+        document.body.innerHTML = "<p>Application closed. You may close this tab.</p>";
+      } else if (key === "l") {
+        event.preventDefault();
+        await logout();
+      } else if (directions[event.key] || directions[key]) {
+        event.preventDefault();
+        await move(directions[event.key] || directions[key]);
+      }
+    });
+
+    api("/api/state").then(value => { state = value; render(); });
+  </script>
+</body>
+</html>

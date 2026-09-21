@@ -135,6 +135,9 @@ lunch-marcoly/
 │   ├── README.md                # Mobile key, simulators, no AgentControl
 │   ├── 51-reference/            # No LaunchDarkly — android/ · ios/
 │   └── 52-mobile-evaluation/    # Mobile SDK init / variation / listeners
+├── 60-observability/            # Server-side observability series
+│   ├── 61-reference/            # Python-owned navigator API; no LaunchDarkly :8610
+│   └── 62-server-traces/        # ObservabilityPlugin + move spans :8620
 ├── 99-use-cases/              # Focused LaunchDarkly use-case examples
 │   ├── README.md
 │   ├── 01-abcd-test/          # A-B-C-D test on navigation count label
@@ -191,6 +194,9 @@ lunch-marcoly/
 - `50-mobile` groups **mobile** client-side SDK examples (mobile key, not `LD_SDK_KEY` and not `LD_CLIENT_SIDE_ID`). Children start at **51**. There is no HTTP portal. AgentControl is out of scope.
 - `51-reference` (under `50-mobile/`) is the 2×2 tap navigator baseline. It does **not** include LaunchDarkly. Android (`android/`) and iOS (`ios/`) ship first; `react-native/` comes later.
 - `52-mobile-evaluation` (under `50-mobile/`) adds the Android / iOS mobile SDKs (`LD_MOBILE_KEY`), dedicated flag keys, variation, and flag listeners. Do not reuse 31’s browser flag keys.
+- `60-observability` groups **server-side observability** examples. Children start at **61**; Python ships first.
+- `61-reference` (under `60-observability/`) moves the 00 web navigator state into Python APIs without LaunchDarkly (**:8610**).
+- `62-server-traces` adds the Python `ObservabilityPlugin` and manual spans for successful login (`grid.login` with username) and successful moves (`grid.move`) (**:8620**). It evaluates no flags.
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive/guarded rollouts, adaptive triggers, SDK fallbacks, and a migration-flags stub).
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author
