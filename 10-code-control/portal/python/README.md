@@ -1,6 +1,6 @@
 # Portal (Python)
 
-Series shell for **10-code-control**: tabbed UI that embeds **11–15** side by side.
+Series shell for **10-code-control**: tabbed UI that embeds **11–16** side by side.
 
 | | Port |
 |--|------|
@@ -10,6 +10,7 @@ Series shell for **10-code-control**: tabbed UI that embeds **11–15** side by 
 | **13 Flag targeting rules** | 8130 |
 | **14 Multi-context targeting** | 8140 |
 | **15 Prerequisite flags** | 8150 |
+| **16 Percentage rollout** | 8160 |
 
 Keywords: **feature flags** · **targeting rules** · **contexts** · **series portal**
 

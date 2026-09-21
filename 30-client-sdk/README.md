@@ -15,6 +15,10 @@ Server-side flags live in [10-code-control](../10-code-control/).
 | **32** | [32-client-identify/](32-client-identify/) | **`identify()`** — switch context without reload |
 | **33** | [33-synced-segments/](33-synced-segments/) | **Synced / big segment** — inner-circle badge + REST membership |
 | **34** | [34-synced-segments-twilio/](34-synced-segments-twilio/) | **Twilio Segment Audiences** — same badge; `identify`/`track` then sync |
+| **35** | [35-client-bootstrap/](35-client-bootstrap/) | **Stub:** bootstrap initial flag values (no wait for network init) |
+| **36** | [36-client-track-events/](36-client-track-events/) | **Stub:** client SDK `track()` — `login_completed`, `grid_move` |
+
+Work order: [TODO.md](../TODO.md). Portal still covers **31–34** until 35/36 ship.
 
 ## Credentials
 

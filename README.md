@@ -6,6 +6,7 @@ A collection of programming examples, each demonstrating a single concept across
 
 ```
 lunch-marcoly/
+├── TODO.md                  # Next examples (16 → 17 → 35 → 36)
 ├── requirements.txt         # Python dependencies (repository-wide)
 ├── .python-version          # Python version for pyenv (repository-wide)
 ├── .nvmrc                   # Node.js version for nvm (repository-wide)
@@ -33,7 +34,8 @@ lunch-marcoly/
 │   ├── README.md
 │   ├── portal/                   # Series shell: Python :8100
 │   ├── 11-flag-enablement/       # Boolean flags + contexts
-│   └── 12-flag-variations/       # String / number / JSON / anonymous
+│   ├── 12-flag-variations/       # String / number / JSON / anonymous
+│   └── ...                      # 13–16 done; 17 stub
 ├── 20-agent-config/             # AgentControl series (shared setup)
 │   ├── README.md
 │   ├── portal/                   # Series shell: Python :8200 · Node :8201
@@ -99,12 +101,14 @@ Each example may include implementations in any of these languages. Python, Node
 | 00 | [00-reference-code](00-reference-code/) | Grid navigator reference app (all languages, no LaunchDarkly) |
 | 01 | [01-reference-agent](01-reference-agent/) | News headlines → AI equity briefing (Python / Node / Java / .NET web + consoles; LaunchDarkly comes in later examples) |
 | 02 | [02-reference-client-code](02-reference-client-code/) | Browser grid navigator (JavaScript in the page, no LaunchDarkly) |
-| 10 | [10-code-control](10-code-control/) | Feature-flag series (portal + examples 11–15) |
+| 10 | [10-code-control](10-code-control/) | Feature-flag series (11–16; 17 stub) |
 | 11 | [11-flag-enablement](10-code-control/11-flag-enablement/) | Grid navigator with LaunchDarkly boolean flags (all languages, Terraform + REST) |
 | 12 | [12-flag-variations](10-code-control/12-flag-variations/) | Grid navigator with string, number, JSON, and anonymous flags (all languages) |
 | 13 | [13-flag-targeting-rules](10-code-control/13-flag-targeting-rules/) | Targeting rules on a public `team` context attribute |
 | 14 | [14-multi-context-targeting](10-code-control/14-multi-context-targeting/) | User + organization multi-context targeting |
 | 15 | [15-prerequisite-flags](10-code-control/15-prerequisite-flags/) | Flag prerequisites: highlight must serve `green` before move count can evaluate |
+| 16 | [16-percentage-rollout](10-code-control/16-percentage-rollout/) | Static 30/70 percentage rollout, sticky context key (Python **:8160**) |
+| 17 | [17-scheduled-changes](10-code-control/17-scheduled-changes/) | Stub: scheduled flag change a few minutes ahead |
 | 20 | [20-agent-config](20-agent-config/) | AgentControl series (shared LLM / AWS / LD setup); [portal](20-agent-config/portal/) Python **:8200** · Node **:8201** |
 | 21 | [21-agent-completion-config](20-agent-config/21-agent-completion-config/) | Completion config: model + system/user prompts (web + Go console) |
 | 22 | [22-config-outside-code](20-agent-config/22-config-outside-code/) | Tracked completion: metrics + thumbs feedback (web + Go console) |
@@ -115,6 +119,8 @@ Each example may include implementations in any of these languages. Python, Node
 | 32 | [32-client-identify](30-client-sdk/32-client-identify/) | `identify()` context switch without reload (**JS :8320** · **React :8321** · **Vue :8322**) |
 | 33 | [33-synced-segments](30-client-sdk/33-synced-segments/) | Synced/big segment inner-circle badge (**JS :8330** · **React :8331** · **Vue :8332**) |
 | 34 | [34-synced-segments-twilio](30-client-sdk/34-synced-segments-twilio/) | Twilio Segment Audiences sync (**JS :8340** · **React :8341** · **Vue :8342**) |
+| 35 | [35-client-bootstrap](30-client-sdk/35-client-bootstrap/) | Stub: JS SDK bootstrap (first paint with initial flag values) |
+| 36 | [36-client-track-events](30-client-sdk/36-client-track-events/) | Stub: client `track()` — `login_completed`, `grid_move` |
 | 40 | [40-dont-do-this](40-dont-do-this/) | Anti-pattern series (do not ship); stub |
 | 41 | [41-no-sdk-singleton](40-dont-do-this/41-no-sdk-singleton/) | Stub: new server SDK client per evaluation |
 | 42 | [42-local-if-no-sdk](40-dont-do-this/42-local-if-no-sdk/) | Stub: local `if` / hardcoded boolean, never `variation()` |

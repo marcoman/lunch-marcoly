@@ -95,7 +95,10 @@ lunch-marcoly/
 │   │   ├── README.md · application.md · rest/ · terraform/
 │   │   └── <language[-console]>/
 │   ├── 13-flag-targeting-rules/ # Rules on public team context
-│   └── 14-multi-context-targeting/ # User + organization multi-context
+│   ├── 14-multi-context-targeting/ # User + organization multi-context
+│   ├── 15-prerequisite-flags/   # Flag prerequisites
+│   ├── 16-percentage-rollout/   # Python :8160 + REST/Terraform; static %, sticky key
+│   └── 17-scheduled-changes/    # Stub: scheduled flag change
 ├── 20-agent-config/             # AgentControl series (shared setup README)
 │   ├── README.md                # Ollama, AWS SSO, LD env — landing page
 │   ├── portal/                  # Series shell: Python :8200 · Node :8201
@@ -124,9 +127,11 @@ lunch-marcoly/
 │   ├── 33-synced-segments/      # synced/big segment badge  :8330 JS · :8331 React · :8332 Vue
 │   │   ├── README.md · application.md · rest/ · terraform/
 │   │   └── javascript/ · react/ · vue/
-│   └── 34-synced-segments-twilio/  # Twilio Segment Audiences  :8340 JS · :8341 React · :8342 Vue
-│       ├── README.md · application.md · rest/ · terraform/
-│       └── javascript/ · react/ · vue/
+│   ├── 34-synced-segments-twilio/  # Twilio Segment Audiences  :8340 JS · :8341 React · :8342 Vue
+│   │   ├── README.md · application.md · rest/ · terraform/
+│   │   └── javascript/ · react/ · vue/
+│   ├── 35-client-bootstrap/     # Stub: JS SDK bootstrap
+│   └── 36-client-track-events/  # Stub: client track()
 ├── 40-dont-do-this/             # Anti-patterns (do not ship)
 │   ├── README.md
 │   ├── 41-no-sdk-singleton/     # Stub: new LDClient per evaluation
@@ -183,11 +188,16 @@ lunch-marcoly/
 - `12-flag-variations` (under `10-code-control/`) demonstrates string, number, JSON, and anonymous-context flag variation types.
 - `13-flag-targeting-rules` demonstrates targeting rules on a public `team` context attribute.
 - `14-multi-context-targeting` demonstrates one evaluation containing separate `user` and `organization` contexts.
+- `15-prerequisite-flags` demonstrates a child flag that evaluates only when the parent serves `green`.
+- `16-percentage-rollout` (under `10-code-control/`) demonstrates a **static** percentage rollout with sticky context-key assignment (not progressive); Python web **:8160** plus REST/Terraform ship first.
+- `17-scheduled-changes` (under `10-code-control/`) will demonstrate a scheduled flag change a few minutes in the future.
 - `30-client-sdk` groups **browser** client-side SDK examples (client-side ID, not `LD_SDK_KEY`); series portals live in its `portal/` (JavaScript **:8300** · React **:8301** · Vue **:8302**).
 - `31-client-evaluation` (under `30-client-sdk/`) demonstrates initialize, client-side availability, variation, and `change:` (JavaScript **:8310**, React Web **:8311**, Vue **:8312**).
 - `32-client-identify` (under `30-client-sdk/`) demonstrates `identify()` (switch user without reload; JavaScript **:8320**, React Web **:8321**, Vue **:8322**).
 - `33-synced-segments` (under `30-client-sdk/`) demonstrates a boolean flag targeted by a synced/big-style segment (inner-circle badge; JavaScript **:8330**, React Web **:8331**, Vue **:8332**).
 - `34-synced-segments-twilio` (under `30-client-sdk/`) demonstrates the same badge with membership from **Twilio Segment** Analytics.js + LaunchDarkly Audiences sync (JavaScript **:8340**, React Web **:8341**, Vue **:8342**).
+- `35-client-bootstrap` (under `30-client-sdk/`) will demonstrate bootstrapping client-side flag values so the grid paints without waiting for network init.
+- `36-client-track-events` (under `30-client-sdk/`) will demonstrate client SDK `track()` for `login_completed` and `grid_move`.
 - `40-dont-do-this` groups **anti-pattern** examples (loud do-not-ship). Children start at **41**.
 - `41-no-sdk-singleton` (under `40-dont-do-this/`) will demonstrate a new server SDK client per evaluation instead of one process-wide client.
 - `42-local-if-no-sdk` (under `40-dont-do-this/`) will demonstrate a local `if` / hardcoded boolean instead of `variation()` — flipping the dashboard flag does nothing.
