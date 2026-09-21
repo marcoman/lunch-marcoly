@@ -14,7 +14,7 @@ numbered children and an optional [portal](portal/) to run them side by side.
 | **13** | [13-flag-targeting-rules/](13-flag-targeting-rules/) | Web plus Python / Node / Java consoles: targeting rules on public `team` context attribute |
 | **14** | [14-multi-context-targeting/](14-multi-context-targeting/) | Web plus Python / Node / Java / C++ / Go / Rust consoles: **multi-context** (user + organization) partner-badge 2×2 |
 | **15** | [15-prerequisite-flags/](15-prerequisite-flags/) | Web (Python / Node / Java / .NET) plus consoles: highlight must serve `green` before move count can evaluate |
-| **16** | [16-percentage-rollout/](16-percentage-rollout/) | Python web + REST/Terraform: static percentage rollout; sticky context key (not progressive) |
+| **16** | [16-percentage-rollout/](16-percentage-rollout/) | Web (Python / Node / Java / .NET) + REST/Terraform: static percentage rollout; sticky context key (not progressive) |
 | **17** | [17-scheduled-changes/](17-scheduled-changes/) | **Stub:** scheduled highlight change a few minutes in the future |
 
 Migration flags are not in this series. Stub:
@@ -32,13 +32,13 @@ export LD_SDK_KEY="sdk-..."
 # Python: portal :8100, children :8110 / :8120 / :8130 / :8140 / :8150 / :8160
 (cd portal/python && python portal.py)
 
-# Node: portal :8101, children :8111 / :8121 / :8131 / :8141 / :8151
+# Node: portal :8101, children :8111 / :8121 / :8131 / :8141 / :8151 / :8161
 (cd portal/node && npm start)
 
-# Java: portal :8102, children :8112 / :8122 / :8132 / :8142 / :8152
+# Java: portal :8102, children :8112 / :8122 / :8132 / :8142 / :8152 / :8162
 (cd portal/java && ./mvnw -q -DskipTests package && java -jar target/portal-java.jar)
 
-# .NET: portal :8103, children :8113 / :8123 / :8133 / :8143 / :8153
+# .NET: portal :8103, children :8113 / :8123 / :8133 / :8143 / :8153 / :8163
 (cd portal/dotnet && dotnet run)
 ```
 

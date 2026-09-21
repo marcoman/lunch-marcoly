@@ -6,15 +6,15 @@ Work queue for new lunch-marcoly examples. Ship in this order.
 
 | Priority | Example | Series | Status |
 |----------|---------|--------|--------|
-| — | [16-percentage-rollout](10-code-control/16-percentage-rollout/) | 10-code-control | **Python + REST/Terraform done**; remaining languages later |
+| — | [16-percentage-rollout](10-code-control/16-percentage-rollout/) | 10-code-control | **Web (Python / Node / Java / .NET) + REST/Terraform done**; consoles later |
 | 1 | [17-scheduled-changes](10-code-control/17-scheduled-changes/) | 10-code-control | **Next** |
 | 2 | [35-client-bootstrap](30-client-sdk/35-client-bootstrap/) | 30-client-sdk | Placeholder |
 | 3 | [36-client-track-events](30-client-sdk/36-client-track-events/) | 30-client-sdk | Placeholder |
 
 **16** is a **static** percentage (for example 30% highlighted). It is not a time-ramped progressive rollout ([99-use-cases/14-progressive-rollout](99-use-cases/14-progressive-rollout/)) and not the A-B-C-D experiment ([99-use-cases/01-abcd-test](99-use-cases/01-abcd-test/)).
 
-16 Python web ships first. Add the rest of the 10-series language set after the
-lesson is verified. Dedicated flag keys keep 11 independent.
+16 web ships in Python, Node, Java, and .NET. Consoles remain later.
+Dedicated flag keys keep 11 independent.
 
 ## Don't do
 

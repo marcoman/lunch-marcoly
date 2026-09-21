@@ -25,6 +25,9 @@ percentage on the default rule (lab default **30%** `green` / **70%** `none`).
 | Language | Directory | Status |
 |----------|-----------|--------|
 | Python web | [python/](python/) | Done — standalone **:8160**, Python portal tab 16 |
+| Node web | [node/](node/) | Done — standalone **:8080**, Node portal tab 16 **:8161** |
+| Java web | [java/](java/) | Done — standalone **:8080**, Java portal tab 16 **:8162** |
+| .NET web | [dotnet/](dotnet/) | Done — standalone **:8080**, .NET portal tab 16 **:8163** |
 
 Provision with [REST](rest/) or [Terraform](terraform/). See
 [application.md](application.md) for the full contract.
@@ -42,10 +45,7 @@ cd python
 python 16-percentage-rollout.py
 ```
 
-Open [http://127.0.0.1:8160/](http://127.0.0.1:8160/), or run the
-[Python portal](../portal/python/) and select tab 16.
+Open [http://127.0.0.1:8160/](http://127.0.0.1:8160/), or run a
+[portal](../portal/) and select tab 16.
 
-## Next languages
-
-Node, Java, .NET, and console implementations remain queued after the Python
-lesson is verified. See [TODO.md](../../TODO.md).
+Console implementations remain queued. See [TODO.md](../../TODO.md).

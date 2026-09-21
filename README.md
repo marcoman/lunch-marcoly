@@ -107,7 +107,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 13 | [13-flag-targeting-rules](10-code-control/13-flag-targeting-rules/) | Targeting rules on a public `team` context attribute |
 | 14 | [14-multi-context-targeting](10-code-control/14-multi-context-targeting/) | User + organization multi-context targeting |
 | 15 | [15-prerequisite-flags](10-code-control/15-prerequisite-flags/) | Flag prerequisites: highlight must serve `green` before move count can evaluate |
-| 16 | [16-percentage-rollout](10-code-control/16-percentage-rollout/) | Static 30/70 percentage rollout, sticky context key (Python **:8160**) |
+| 16 | [16-percentage-rollout](10-code-control/16-percentage-rollout/) | Static 30/70 percentage rollout, sticky context key (Python **:8160** · Node **:8161** · Java **:8162** · .NET **:8163**) |
 | 17 | [17-scheduled-changes](10-code-control/17-scheduled-changes/) | Stub: scheduled flag change a few minutes ahead |
 | 20 | [20-agent-config](20-agent-config/) | AgentControl series (shared LLM / AWS / LD setup); [portal](20-agent-config/portal/) Python **:8200** · Node **:8201** |
 | 21 | [21-agent-completion-config](20-agent-config/21-agent-completion-config/) | Completion config: model + system/user prompts (web + Go console) |

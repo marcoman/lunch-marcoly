@@ -97,7 +97,7 @@ lunch-marcoly/
 │   ├── 13-flag-targeting-rules/ # Rules on public team context
 │   ├── 14-multi-context-targeting/ # User + organization multi-context
 │   ├── 15-prerequisite-flags/   # Flag prerequisites
-│   ├── 16-percentage-rollout/   # Python :8160 + REST/Terraform; static %, sticky key
+│   ├── 16-percentage-rollout/   # Python :8160 · Node :8161 · Java :8162 · .NET :8163; static %, sticky key
 │   └── 17-scheduled-changes/    # Stub: scheduled flag change
 ├── 20-agent-config/             # AgentControl series (shared setup README)
 │   ├── README.md                # Ollama, AWS SSO, LD env — landing page
@@ -189,7 +189,7 @@ lunch-marcoly/
 - `13-flag-targeting-rules` demonstrates targeting rules on a public `team` context attribute.
 - `14-multi-context-targeting` demonstrates one evaluation containing separate `user` and `organization` contexts.
 - `15-prerequisite-flags` demonstrates a child flag that evaluates only when the parent serves `green`.
-- `16-percentage-rollout` (under `10-code-control/`) demonstrates a **static** percentage rollout with sticky context-key assignment (not progressive); Python web **:8160** plus REST/Terraform ship first.
+- `16-percentage-rollout` (under `10-code-control/`) demonstrates a **static** percentage rollout with sticky context-key assignment (not progressive); Python / Node / Java / .NET web plus REST/Terraform.
 - `17-scheduled-changes` (under `10-code-control/`) will demonstrate a scheduled flag change a few minutes in the future.
 - `30-client-sdk` groups **browser** client-side SDK examples (client-side ID, not `LD_SDK_KEY`); series portals live in its `portal/` (JavaScript **:8300** · React **:8301** · Vue **:8302**).
 - `31-client-evaluation` (under `30-client-sdk/`) demonstrates initialize, client-side availability, variation, and `change:` (JavaScript **:8310**, React Web **:8311**, Vue **:8312**).
