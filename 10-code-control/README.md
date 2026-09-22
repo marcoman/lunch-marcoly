@@ -14,7 +14,7 @@ numbered children and an optional [portal](portal/) to run them side by side.
 | **13** | [13-flag-targeting-rules/](13-flag-targeting-rules/) | Web plus Python / Node / Java consoles: targeting rules on public `team` context attribute |
 | **14** | [14-multi-context-targeting/](14-multi-context-targeting/) | Web plus Python / Node / Java / C++ / Go / Rust consoles: **multi-context** (user + organization) partner-badge 2×2 |
 | **15** | [15-prerequisite-flags/](15-prerequisite-flags/) | Web (Python / Node / Java / .NET) plus consoles: highlight must serve `green` before move count can evaluate |
-| **16** | [16-percentage-rollout/](16-percentage-rollout/) | Web (Python / Node / Java / .NET) + REST/Terraform: static percentage rollout; sticky context key (not progressive) |
+| **16** | [16-percentage-rollout/](16-percentage-rollout/) | Web (Python / Node / Java / .NET) + consoles (Python / Node / Java / Go / Rust / C++) + REST/Terraform: static percentage rollout; sticky context key (not progressive) |
 | **17** | [17-scheduled-changes/](17-scheduled-changes/) | **Stub:** scheduled highlight change a few minutes in the future |
 
 Migration flags are not in this series. Stub:

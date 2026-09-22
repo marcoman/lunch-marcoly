@@ -28,6 +28,12 @@ percentage on the default rule (lab default **30%** `green` / **70%** `none`).
 | Node web | [node/](node/) | Done — standalone **:8080**, Node portal tab 16 **:8161** |
 | Java web | [java/](java/) | Done — standalone **:8080**, Java portal tab 16 **:8162** |
 | .NET web | [dotnet/](dotnet/) | Done — standalone **:8080**, .NET portal tab 16 **:8163** |
+| Python console | [python-console/](python-console/) | Done — **N** / **P** walk `<login>`, `<login>1`, `<login>2`, … |
+| Node console | [node-console/](node-console/) | Done |
+| Java console | [java-console/](java-console/) | Done |
+| Go console | [go/](go/) | Done |
+| Rust console | [rust/](rust/) | Done |
+| C++ console | [cpp/](cpp/) | Done |
 
 Provision with [REST](rest/) or [Terraform](terraform/). See
 [application.md](application.md) for the full contract.
@@ -48,4 +54,5 @@ python 16-percentage-rollout.py
 Open [http://127.0.0.1:8160/](http://127.0.0.1:8160/), or run a
 [portal](../portal/) and select tab 16.
 
-Console implementations remain queued. See [TODO.md](../../TODO.md).
+Consoles: Python / Node / Java / Go / Rust / C++. Press **N** / **P** to walk
+generated usernames.

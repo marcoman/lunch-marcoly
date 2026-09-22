@@ -6,7 +6,7 @@ A collection of programming examples, each demonstrating a single concept across
 
 ```
 lunch-marcoly/
-├── TODO.md                  # Next examples (16 → 17 → 35 → 36)
+├── TODO.md                  # Next examples (17 → 35 → 36)
 ├── requirements.txt         # Python dependencies (repository-wide)
 ├── .python-version          # Python version for pyenv (repository-wide)
 ├── .nvmrc                   # Node.js version for nvm (repository-wide)
@@ -32,25 +32,32 @@ lunch-marcoly/
 │   └── javascript/          # browser grid (static files, no LaunchDarkly)
 ├── 10-code-control/             # Feature-flag series
 │   ├── README.md
-│   ├── portal/                   # Series shell: Python :8100
-│   ├── 11-flag-enablement/       # Boolean flags + contexts
-│   ├── 12-flag-variations/       # String / number / JSON / anonymous
-│   └── ...                      # 13–16 done; 17 stub
+│   ├── portal/                   # Python :8100 · Node :8101 · Java :8102 · .NET :8103
+│   ├── 11-flag-enablement/
+│   ├── 12-flag-variations/
+│   ├── 13-flag-targeting-rules/
+│   ├── 14-multi-context-targeting/
+│   ├── 15-prerequisite-flags/
+│   ├── 16-percentage-rollout/    # Web :8160–:8163 + consoles; static 30/70
+│   └── 17-scheduled-changes/     # Stub
 ├── 20-agent-config/             # AgentControl series (shared setup)
 │   ├── README.md
-│   ├── portal/                   # Series shell: Python :8200 · Node :8201
+│   ├── portal/                   # Python :8200 · Node :8201 · Java :8202 · .NET :8203
 │   ├── stories/                  # Shared Yahoo headlines cache
-│   ├── 21-agent-completion-config/   # web + Go console
-│   ├── 22-config-outside-code/       # web + Go console
-│   ├── 23-agent-tools/               # web + Go console
-│   └── 24-agent-judges/              # Judges gate (Python/Node/Java/.NET + Go console)
+│   ├── 21-agent-completion-config/
+│   ├── 22-config-outside-code/
+│   ├── 23-agent-tools/
+│   ├── 24-agent-judges/
+│   └── 25-agent-graph/           # assess → specialist → finalize
 ├── 30-client-sdk/               # Browser JavaScript SDK
 │   ├── README.md
-│   ├── portal/                  # Series shell: JS :8300 · React :8301 · Vue :8302
-│   ├── 31-client-evaluation/    # initialize · variation · change: (:8310 JS · :8311 React · :8312 Vue)
-│   ├── 32-client-identify/      # identify() without reload (:8320 JS · :8321 React · :8322 Vue)
-│   ├── 33-synced-segments/      # synced/big segment badge (:8330 JS · :8331 React · :8332 Vue)
-│   └── 34-synced-segments-twilio/  # Twilio Segment Audiences (:8340 JS · :8341 React · :8342 Vue)
+│   ├── portal/                  # JS :8300 · React :8301 · Vue :8302 (31–34)
+│   ├── 31-client-evaluation/
+│   ├── 32-client-identify/
+│   ├── 33-synced-segments/
+│   ├── 34-synced-segments-twilio/
+│   ├── 35-client-bootstrap/     # Stub
+│   └── 36-client-track-events/  # Stub
 ├── 40-dont-do-this/             # Anti-patterns (do not ship)
 │   ├── README.md
 │   ├── 41-no-sdk-singleton/     # Stub: new LDClient per evaluation
@@ -62,6 +69,15 @@ lunch-marcoly/
 ├── 60-observability/            # Server-side observability series
 │   ├── 61-reference/            # Python-owned navigator API; no LaunchDarkly
 │   └── 62-server-traces/        # Python ObservabilityPlugin + manual move spans
+├── 99-use-cases/                # Product patterns on the grid navigator
+│   ├── 01-abcd-test/
+│   ├── 02-segments-by-name/
+│   ├── 11-create-eval-flag/
+│   ├── 14-progressive-rollout/
+│   ├── 15-guarded-rollout/
+│   ├── 16-adaptive-triggers/
+│   ├── 17-migration-flags/      # Stub
+│   └── 18-sdk-fallbacks/
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -101,29 +117,30 @@ Each example may include implementations in any of these languages. Python, Node
 | 00 | [00-reference-code](00-reference-code/) | Grid navigator reference app (all languages, no LaunchDarkly) |
 | 01 | [01-reference-agent](01-reference-agent/) | News headlines → AI equity briefing (Python / Node / Java / .NET web + consoles; LaunchDarkly comes in later examples) |
 | 02 | [02-reference-client-code](02-reference-client-code/) | Browser grid navigator (JavaScript in the page, no LaunchDarkly) |
-| 10 | [10-code-control](10-code-control/) | Feature-flag series (11–16; 17 stub) |
+| 10 | [10-code-control](10-code-control/) | Feature-flag series (11–16 done; 17 stub) |
 | 11 | [11-flag-enablement](10-code-control/11-flag-enablement/) | Grid navigator with LaunchDarkly boolean flags (all languages, Terraform + REST) |
 | 12 | [12-flag-variations](10-code-control/12-flag-variations/) | Grid navigator with string, number, JSON, and anonymous flags (all languages) |
 | 13 | [13-flag-targeting-rules](10-code-control/13-flag-targeting-rules/) | Targeting rules on a public `team` context attribute |
 | 14 | [14-multi-context-targeting](10-code-control/14-multi-context-targeting/) | User + organization multi-context targeting |
 | 15 | [15-prerequisite-flags](10-code-control/15-prerequisite-flags/) | Flag prerequisites: highlight must serve `green` before move count can evaluate |
-| 16 | [16-percentage-rollout](10-code-control/16-percentage-rollout/) | Static 30/70 percentage rollout, sticky context key (Python **:8160** · Node **:8161** · Java **:8162** · .NET **:8163**) |
-| 17 | [17-scheduled-changes](10-code-control/17-scheduled-changes/) | Stub: scheduled flag change a few minutes ahead |
-| 20 | [20-agent-config](20-agent-config/) | AgentControl series (shared LLM / AWS / LD setup); [portal](20-agent-config/portal/) Python **:8200** · Node **:8201** |
+| 16 | [16-percentage-rollout](10-code-control/16-percentage-rollout/) | Static 30/70 percentage rollout, sticky context key (web **:8160–:8163** + Python / Node / Java / Go / Rust / C++ consoles) |
+| 17 | [17-scheduled-changes](10-code-control/17-scheduled-changes/) | **Stub:** scheduled flag change a few minutes ahead |
+| 20 | [20-agent-config](20-agent-config/) | AgentControl series (shared LLM / AWS / LD setup); [portal](20-agent-config/portal/) Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
 | 21 | [21-agent-completion-config](20-agent-config/21-agent-completion-config/) | Completion config: model + system/user prompts (web + Go console) |
 | 22 | [22-config-outside-code](20-agent-config/22-config-outside-code/) | Tracked completion: metrics + thumbs feedback (web + Go console) |
 | 23 | [23-agent-tools](20-agent-config/23-agent-tools/) | Library tools + tool loop + `track_tool_call` (web + Go console) |
 | 24 | [24-agent-judges](20-agent-config/24-agent-judges/) | Judges runtime gate + rewrite (Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console) |
-| 30 | [30-client-sdk](30-client-sdk/) | Browser client-side SDK series (client-side ID); [portal](30-client-sdk/portal/) JS **:8300** · React **:8301** · Vue **:8302** |
+| 25 | [25-agent-graph](20-agent-config/25-agent-graph/) | Agent graph: assess → specialist → finalize (Python **8250** · Node **8251** · Java **8252** · .NET **8253**) |
+| 30 | [30-client-sdk](30-client-sdk/) | Browser client-side SDK series (client-side ID); [portal](30-client-sdk/portal/) JS **:8300** · React **:8301** · Vue **:8302** (31–34) |
 | 31 | [31-client-evaluation](30-client-sdk/31-client-evaluation/) | Initialize, client-side availability, `variation`, `change:` (**JS :8310** · **React :8311** · **Vue :8312**) |
 | 32 | [32-client-identify](30-client-sdk/32-client-identify/) | `identify()` context switch without reload (**JS :8320** · **React :8321** · **Vue :8322**) |
 | 33 | [33-synced-segments](30-client-sdk/33-synced-segments/) | Synced/big segment inner-circle badge (**JS :8330** · **React :8331** · **Vue :8332**) |
 | 34 | [34-synced-segments-twilio](30-client-sdk/34-synced-segments-twilio/) | Twilio Segment Audiences sync (**JS :8340** · **React :8341** · **Vue :8342**) |
-| 35 | [35-client-bootstrap](30-client-sdk/35-client-bootstrap/) | Stub: JS SDK bootstrap (first paint with initial flag values) |
-| 36 | [36-client-track-events](30-client-sdk/36-client-track-events/) | Stub: client `track()` — `login_completed`, `grid_move` |
-| 40 | [40-dont-do-this](40-dont-do-this/) | Anti-pattern series (do not ship); stub |
-| 41 | [41-no-sdk-singleton](40-dont-do-this/41-no-sdk-singleton/) | Stub: new server SDK client per evaluation |
-| 42 | [42-local-if-no-sdk](40-dont-do-this/42-local-if-no-sdk/) | Stub: local `if` / hardcoded boolean, never `variation()` |
+| 35 | [35-client-bootstrap](30-client-sdk/35-client-bootstrap/) | **Stub:** JS SDK bootstrap (first paint with initial flag values) |
+| 36 | [36-client-track-events](30-client-sdk/36-client-track-events/) | **Stub:** client `track()` — `login_completed`, `grid_move` |
+| 40 | [40-dont-do-this](40-dont-do-this/) | Anti-pattern series (do not ship) |
+| 41 | [41-no-sdk-singleton](40-dont-do-this/41-no-sdk-singleton/) | **Stub:** new server SDK client per evaluation |
+| 42 | [42-local-if-no-sdk](40-dont-do-this/42-local-if-no-sdk/) | **Stub:** local `if` / hardcoded boolean, never `variation()` |
 | 50 | [50-mobile](50-mobile/) | Mobile SDK series (2×2 tap navigator; mobile key, not browser client-side ID) |
 | 51 | [51-reference](50-mobile/51-reference/) | Mobile reference app — login, 2×2 tap grid, drawer; Android + iOS; no LaunchDarkly |
 | 52 | [52-mobile-evaluation](50-mobile/52-mobile-evaluation/) | Mobile SDK: init, variation, listeners (`LD_MOBILE_KEY`; dedicated flag keys) |
@@ -131,6 +148,14 @@ Each example may include implementations in any of these languages. Python, Node
 | 61 | [61-reference](60-observability/61-reference/) | Server-owned Python navigator baseline (**:8610**; no LaunchDarkly) |
 | 62 | [62-server-traces](60-observability/62-server-traces/) | Python `ObservabilityPlugin` + `grid.login` / `grid.move` spans (**:8620**) |
 | 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (experiments, segments, rollouts, adaptive triggers, SDK fallbacks, …) |
+| — | [01-abcd-test](99-use-cases/01-abcd-test/) | A-B-C-D experiment on the navigation count label |
+| — | [02-segments-by-name](99-use-cases/02-segments-by-name/) | Segment targeting from username-derived context |
+| — | [11-create-eval-flag](99-use-cases/11-create-eval-flag/) | Create and evaluate a single highlight flag |
+| — | [14-progressive-rollout](99-use-cases/14-progressive-rollout/) | Time-staged 10→100% highlight ramp (not 16’s static %) |
+| — | [15-guarded-rollout](99-use-cases/15-guarded-rollout/) | Percentage ramp with regression guardrails |
+| — | [16-adaptive-triggers](99-use-cases/16-adaptive-triggers/) | Metric threshold switches flag variation |
+| — | [17-migration-flags](99-use-cases/17-migration-flags/) | **Stub:** migration flag dual-store cutover |
+| — | [18-sdk-fallbacks](99-use-cases/18-sdk-fallbacks/) | Init failure / stream loss → default vs last-known |
 
 ## Building code
 

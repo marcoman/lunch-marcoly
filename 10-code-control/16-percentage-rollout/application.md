@@ -83,6 +83,11 @@ History records the value seen at that time. Assignment is stable while flag
 configuration stays unchanged; changing rollout weights can move contexts
 across the rollout boundary.
 
+Console maps **Try next username** to **N** and walking back to **P**. The
+login name stays the sequence base; **P** stops there (`marco2` → `marco1` →
+`marco`). History is listed, not clickable. Unique-key observed percent still
+belongs on screen.
+
 ## Demo script
 
 1. Provision (`rest/` / `terraform/`). Confirm default rule is 30% / 70%.

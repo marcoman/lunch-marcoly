@@ -87,7 +87,7 @@ lunch-marcoly/
 │   └── javascript/            # Static files + optional Node file server :8020
 ├── 10-code-control/             # Feature-flag series (shared portal)
 │   ├── README.md
-│   ├── portal/                  # Series shell: Python :8100 → 8110 · 8120 · 8130 · 8140
+│   ├── portal/                  # Series shell: Python :8100 · Node :8101 · Java :8102 · .NET :8103
 │   ├── 11-flag-enablement/      # Boolean flags, contexts, private hostOs
 │   │   ├── README.md · application.md · rest/ · terraform/
 │   │   └── <language[-console]>/
@@ -97,11 +97,11 @@ lunch-marcoly/
 │   ├── 13-flag-targeting-rules/ # Rules on public team context
 │   ├── 14-multi-context-targeting/ # User + organization multi-context
 │   ├── 15-prerequisite-flags/   # Flag prerequisites
-│   ├── 16-percentage-rollout/   # Python :8160 · Node :8161 · Java :8162 · .NET :8163; static %, sticky key
+│   ├── 16-percentage-rollout/   # Web :8160–:8163 + consoles; static %, sticky key
 │   └── 17-scheduled-changes/    # Stub: scheduled flag change
 ├── 20-agent-config/             # AgentControl series (shared setup README)
 │   ├── README.md                # Ollama, AWS SSO, LD env — landing page
-│   ├── portal/                  # Series shell: Python :8200 · Node :8201
+│   ├── portal/                  # Series shell: Python :8200 · Node :8201 · Java :8202 · .NET :8203
 │   ├── stories/                 # Shared Yahoo headlines cache (all examples)
 │   ├── 21-agent-completion-config/  # Completion config: model + system/user prompts
 │   │   ├── README.md · application.md · rest/
@@ -112,9 +112,12 @@ lunch-marcoly/
 │   ├── 23-agent-tools/              # Library tools + tool loop
 │   │   ├── README.md · application.md · rest/
 │   │   └── python/ · node/ · java/ · dotnet/ · go/
-│   └── 24-agent-judges/             # Judges runtime gate + rewrite
+│   ├── 24-agent-judges/             # Judges runtime gate + rewrite
+│   │   ├── README.md · application.md · rest/
+│   │   └── python/ · node/ · java/ · dotnet/ · go/  # Web :8240–:8243; Go console
+│   └── 25-agent-graph/              # Agent graph: assess → specialist → finalize
 │       ├── README.md · application.md · rest/
-│       └── python/ · node/ · java/ · dotnet/ · go/  # Web :8240–:8243; Go console
+│       └── python/ · node/ · java/ · dotnet/  # Web :8250–:8253
 ├── 30-client-sdk/               # Browser client-side SDK (client-side ID)
 │   ├── README.md
 │   ├── portal/                  # Series shell: JS :8300 · React :8301 · Vue :8302
@@ -182,6 +185,7 @@ lunch-marcoly/
 - `22-config-outside-code` adds **tracked completion** (`TrackMetricsOf` / feedback) on that same config shape.
 - `23-agent-tools` adds **Library tools**, a tool loop, and `TrackToolCall`.
 - `24-agent-judges` adds **custom Judges** as a runtime quality gate (draft → scores → one Charlie rewrite).
+- `25-agent-graph` (under `20-agent-config/`) adds an **agent graph** (assess → specialist → finalize; Python **8250** · Node **8251** · Java **8252** · .NET **8253**).
 - AgentControl **web** ports: Python / Node / Java / .NET. **Go** is console-only under this series (raw-terminal TUI).
 - `10-code-control` groups grid-navigator **feature flag** examples; shared portal lives in its `portal/`.
 - `11-flag-enablement` (under `10-code-control/`) demonstrates feature flag naming, provisioning, and boolean enablement.
@@ -189,7 +193,7 @@ lunch-marcoly/
 - `13-flag-targeting-rules` demonstrates targeting rules on a public `team` context attribute.
 - `14-multi-context-targeting` demonstrates one evaluation containing separate `user` and `organization` contexts.
 - `15-prerequisite-flags` demonstrates a child flag that evaluates only when the parent serves `green`.
-- `16-percentage-rollout` (under `10-code-control/`) demonstrates a **static** percentage rollout with sticky context-key assignment (not progressive); Python / Node / Java / .NET web plus REST/Terraform.
+- `16-percentage-rollout` (under `10-code-control/`) demonstrates a **static** percentage rollout with sticky context-key assignment (not progressive); Python / Node / Java / .NET web, consoles (Python / Node / Java / Go / Rust / C++), plus REST/Terraform.
 - `17-scheduled-changes` (under `10-code-control/`) will demonstrate a scheduled flag change a few minutes in the future.
 - `30-client-sdk` groups **browser** client-side SDK examples (client-side ID, not `LD_SDK_KEY`); series portals live in its `portal/` (JavaScript **:8300** · React **:8301** · Vue **:8302**).
 - `31-client-evaluation` (under `30-client-sdk/`) demonstrates initialize, client-side availability, variation, and `change:` (JavaScript **:8310**, React Web **:8311**, Vue **:8312**).
