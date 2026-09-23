@@ -1,6 +1,6 @@
 # Portal (Node)
 
-Series shell for **10-code-control**: tabbed UI that embeds **11–16** side by side.
+Series shell for **10-code-control**: tabbed UI that embeds **11–17** side by side.
 
 | | Port |
 |--|------|
@@ -11,6 +11,7 @@ Series shell for **10-code-control**: tabbed UI that embeds **11–16** side by 
 | **14 Multi-context targeting** | 8141 |
 | **15 Prerequisite flags** | 8151 |
 | **16 Percentage rollout** | 8161 |
+| **17 Scheduled changes** | 8171 |
 
 Keywords: **feature flags** · **targeting rules** · **contexts** · **series portal**
 
@@ -18,10 +19,12 @@ Keywords: **feature flags** · **targeting rules** · **contexts** · **series p
 
 - Node.js 20+
 - `LD_SDK_KEY` (flags provisioned under each example)
+- For tab 17 controls: `LD_API_ACCESS_TOKEN`, `LD_PROJECT_KEY`, and
+  `LD_ENVIRONMENT_KEY`
 - Dependencies installed in all child examples:
 
 ```bash
-for d in ../../11-flag-enablement/node ../../12-flag-variations/node ../../13-flag-targeting-rules/node ../../14-multi-context-targeting/node ../../15-prerequisite-flags/node ../../16-percentage-rollout/node; do
+for d in ../../11-flag-enablement/node ../../12-flag-variations/node ../../13-flag-targeting-rules/node ../../14-multi-context-targeting/node ../../15-prerequisite-flags/node ../../16-percentage-rollout/node ../../17-scheduled-changes/node; do
   (cd "$d" && npm install)
 done
 export LD_SDK_KEY="sdk-..."
@@ -37,6 +40,6 @@ npm start
 Open [http://127.0.0.1:8101/](http://127.0.0.1:8101/). **Ctrl+C** stops the portal and all children.
 
 Override with `PORTAL_PORT`. The portal passes `PORT` to each child; solo apps
-still default to `:8080` when run from their own folders.
+use the standalone default documented in their own README.
 
 Twins: [Python](../python/) · [Java](../java/) · [.NET](../dotnet/). Series index: [../README.md](../README.md).

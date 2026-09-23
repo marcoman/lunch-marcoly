@@ -8,7 +8,7 @@ One process for the user:
   - Embeds those pages in iframes (see index.html)
 
 Twin of ../node (:8101) and ../java (:8102).
-Standalone entrypoints under each example's python/ still work alone (default :8080).
+Standalone entrypoints under each example's python/ still use their own default.
 Ctrl+C / SIGTERM stops the portal and all children.
 """
 
@@ -34,7 +34,7 @@ PORTAL_PORT = int(os.environ.get("PORTAL_PORT") or "8100")
 APP_BANNER = "10-code-control[portal-python]"
 
 # cwd = each example's python/ so index.html + imports resolve like a solo run.
-# PORT is passed so both apps (solo default 8080) can run together.
+# PORT is passed so every child can run alongside the portal.
 CHILDREN: list[dict[str, Any]] = [
     {
         "id": "11",

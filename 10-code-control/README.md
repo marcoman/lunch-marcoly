@@ -15,7 +15,7 @@ numbered children and an optional [portal](portal/) to run them side by side.
 | **14** | [14-multi-context-targeting/](14-multi-context-targeting/) | Web plus Python / Node / Java / C++ / Go / Rust consoles: **multi-context** (user + organization) partner-badge 2×2 |
 | **15** | [15-prerequisite-flags/](15-prerequisite-flags/) | Web (Python / Node / Java / .NET) plus consoles: highlight must serve `green` before move count can evaluate |
 | **16** | [16-percentage-rollout/](16-percentage-rollout/) | Web (Python / Node / Java / .NET) + consoles (Python / Node / Java / Go / Rust / C++) + REST/Terraform: static percentage rollout; sticky context key (not progressive) |
-| **17** | [17-scheduled-changes/](17-scheduled-changes/) | Python web + REST/Terraform: replaceable scheduled highlight change, elapsed timer (**:8170**) |
+| **17** | [17-scheduled-changes/](17-scheduled-changes/) | Web (Python / Node / Java / .NET **:8170–:8173**) + consoles (Python / Node / Java / Go / Rust / C++) + REST/Terraform: replaceable scheduled highlight, elapsed timer |
 
 Migration flags are not in this series. Stub:
 [99-use-cases/17-migration-flags](../99-use-cases/17-migration-flags/).
@@ -32,13 +32,13 @@ export LD_SDK_KEY="sdk-..."
 # Python: portal :8100, children :8110 / :8120 / :8130 / :8140 / :8150 / :8160 / :8170
 (cd portal/python && python portal.py)
 
-# Node: portal :8101, children :8111 / :8121 / :8131 / :8141 / :8151 / :8161
+# Node: portal :8101, children :8111 / :8121 / :8131 / :8141 / :8151 / :8161 / :8171
 (cd portal/node && npm start)
 
-# Java: portal :8102, children :8112 / :8122 / :8132 / :8142 / :8152 / :8162
+# Java: portal :8102, children :8112 / :8122 / :8132 / :8142 / :8152 / :8162 / :8172
 (cd portal/java && ./mvnw -q -DskipTests package && java -jar target/portal-java.jar)
 
-# .NET: portal :8103, children :8113 / :8123 / :8133 / :8143 / :8153 / :8163
+# .NET: portal :8103, children :8113 / :8123 / :8133 / :8143 / :8153 / :8163 / :8173
 (cd portal/dotnet && dotnet run)
 ```
 

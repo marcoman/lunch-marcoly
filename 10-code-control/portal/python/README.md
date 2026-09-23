@@ -35,6 +35,7 @@ python portal.py
 
 Open [http://127.0.0.1:8100/](http://127.0.0.1:8100/). **Ctrl+C** stops the portal and all children.
 
-Override with `PORTAL_PORT`. Solo apps still default to `:8080` when run from their own folders.
+Override with `PORTAL_PORT`. Solo apps use the standalone default documented in
+their own README.
 
 Twins: [Node](../node/) · [Java](../java/) · [.NET](../dotnet/). Series index: [../README.md](../README.md).

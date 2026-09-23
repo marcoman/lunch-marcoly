@@ -33,6 +33,15 @@ value.
 | Language | Directory | Status |
 |----------|-----------|--------|
 | Python web | [python/](python/) | Complete · **:8170** |
+| Node web | [node/](node/) | Complete · **:8171** |
+| Java web | [java/](java/) | Complete · **:8172** |
+| .NET web | [dotnet/](dotnet/) | Complete · **:8173** |
+| Python console | [python-console/](python-console/) | Complete · **G** / **T** / **M** |
+| Node console | [node-console/](node-console/) | Complete |
+| Java console | [java-console/](java-console/) | Complete |
+| Go console | [go/](go/) | Complete |
+| Rust console | [rust/](rust/) | Complete |
+| C++ console | [cpp/](cpp/) | Complete |
 
 Provision with [REST](rest/) or [Terraform](terraform/). See
 [application.md](application.md) for replacement and timing behavior.

@@ -98,7 +98,7 @@ lunch-marcoly/
 │   ├── 14-multi-context-targeting/ # User + organization multi-context
 │   ├── 15-prerequisite-flags/   # Flag prerequisites
 │   ├── 16-percentage-rollout/   # Web :8160–:8163 + consoles; static %, sticky key
-│   └── 17-scheduled-changes/    # Python web :8170; scheduled turn-on
+│   └── 17-scheduled-changes/    # Web :8170–:8173 + consoles; scheduled turn-on
 ├── 20-agent-config/             # AgentControl series (shared setup README)
 │   ├── README.md                # Ollama, AWS SSO, LD env — landing page
 │   ├── portal/                  # Series shell: Python :8200 · Node :8201 · Java :8202 · .NET :8203
@@ -194,7 +194,7 @@ lunch-marcoly/
 - `14-multi-context-targeting` demonstrates one evaluation containing separate `user` and `organization` contexts.
 - `15-prerequisite-flags` demonstrates a child flag that evaluates only when the parent serves `green`.
 - `16-percentage-rollout` (under `10-code-control/`) demonstrates a **static** percentage rollout with sticky context-key assignment (not progressive); Python / Node / Java / .NET web, consoles (Python / Node / Java / Go / Rust / C++), plus REST/Terraform.
-- `17-scheduled-changes` (under `10-code-control/`) demonstrates a replaceable scheduled `turnFlagOn` change with an elapsed timer (Python web **:8170** + REST/Terraform).
+- `17-scheduled-changes` (under `10-code-control/`) demonstrates a replaceable scheduled `turnFlagOn` change with an elapsed timer (Python / Node / Java / .NET web **:8170–:8173**, consoles Python / Node / Java / Go / Rust / C++, REST/Terraform).
 - `30-client-sdk` groups **browser** client-side SDK examples (client-side ID, not `LD_SDK_KEY`); series portals live in its `portal/` (JavaScript **:8300** · React **:8301** · Vue **:8302**).
 - `31-client-evaluation` (under `30-client-sdk/`) demonstrates initialize, client-side availability, variation, and `change:` (JavaScript **:8310**, React Web **:8311**, Vue **:8312**).
 - `32-client-identify` (under `30-client-sdk/`) demonstrates `identify()` (switch user without reload; JavaScript **:8320**, React Web **:8321**, Vue **:8322**).

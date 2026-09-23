@@ -45,6 +45,10 @@ obj/
 10-code-control/15-prerequisite-flags/**/15-prerequisite-flags.exe
 10-code-control/16-percentage-rollout/**/16-percentage-rollout
 10-code-control/16-percentage-rollout/**/16-percentage-rollout.exe
+10-code-control/17-scheduled-changes/**/17-scheduled-changes
+10-code-control/17-scheduled-changes/**/17-scheduled-changes.exe
+10-code-control/17-scheduled-changes/go/scheduled-changes
+10-code-control/17-scheduled-changes/go/scheduled-changes.exe
 # legacy local build names (pre-rename)
 10-code-control/**/10-flag-enablement
 10-code-control/**/11-flag-variations

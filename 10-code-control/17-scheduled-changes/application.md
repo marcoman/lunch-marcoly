@@ -68,6 +68,26 @@ turning off alone would let a pending change flip it back on later.
 The elapsed clock **holds its last value** after stopping. Starting a new
 schedule resets it.
 
+## Console mapping
+
+Web buttons become keys. Do **not** add N/P username cycling; this lesson is
+one context watching LaunchDarkly's clock.
+
+| Key | Action |
+|-----|--------|
+| **G** | Start scheduled change (replace pending, turn off, schedule `turnFlagOn`) |
+| **T** | Stop: cancel pending changes and turn the flag off |
+| **M** | Cycle delay **1 → 2 → 5 → 10** minutes |
+| **1** / **2** / **5** / **0** | Set delay to 1, 2, 5, or **10** minutes |
+| Arrows / WASD | Move |
+| **L** | Logout |
+| **Q** | Quit |
+
+Redraw on a short timeout (~500 ms) so elapsed time and flag value update
+without a local flip timer. Show delay, status (pending / applied / stopped),
+scheduled wall time, elapsed clock (frozen after **T**), and the elapsed time
+when `green` first appeared.
+
 ## Timing explanation
 
 The lesson must state why the highlight can appear well after the selected

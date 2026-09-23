@@ -6,9 +6,10 @@ Work queue for new lunch-marcoly examples. Ship in this order.
 
 | Priority | Example | Series | Status |
 |----------|---------|--------|--------|
-| 1 | [17-scheduled-changes](10-code-control/17-scheduled-changes/) | 10-code-control | **In progress** (Python web + REST/Terraform done) |
-| 2 | [35-client-bootstrap](30-client-sdk/35-client-bootstrap/) | 30-client-sdk | Stub |
-| 3 | [36-client-track-events](30-client-sdk/36-client-track-events/) | 30-client-sdk | Stub |
+| 1 | [35-client-bootstrap](30-client-sdk/35-client-bootstrap/) | 30-client-sdk | Stub |
+| 2 | [36-client-track-events](30-client-sdk/36-client-track-events/) | 30-client-sdk | Stub |
+
+[17-scheduled-changes](10-code-control/17-scheduled-changes/) is **done** (Python / Node / Java / .NET web + Python / Node / Java / Go / Rust / C++ consoles + REST/Terraform).
 
 [16-percentage-rollout](10-code-control/16-percentage-rollout/) is **done** (web + consoles + REST/Terraform). It is a **static** percentage (for example 30% highlighted). It is not a time-ramped progressive rollout ([99-use-cases/14-progressive-rollout](99-use-cases/14-progressive-rollout/)) and not the A-B-C-D experiment ([99-use-cases/01-abcd-test](99-use-cases/01-abcd-test/)). Dedicated flag keys keep 11 independent.
 

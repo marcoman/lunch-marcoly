@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Grid Navigator — Scheduled changes</title>
+  <style>
+    :root{--ink:#e8e8ec;--muted:#aaaabd;--panel:#2d2d3d;--line:#505064;--accent:#81c784}
+    *{box-sizing:border-box}html,body{height:100%}
+    body{margin:0;background:#1e1e2e;color:var(--ink);font-family:system-ui,sans-serif}
+    button,input,select{font:inherit}button,select{background:#3d3d52;color:var(--ink);border:1px solid #666;padding:.5rem .75rem}
+    button{cursor:pointer}button:disabled{cursor:wait;opacity:.55}code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .hidden{display:none!important}.muted,.app-banner{color:var(--muted);font-size:.86rem}.error{color:#ef9a9a}.good{color:var(--accent)}
+    #login{max-width:480px;margin:2rem auto;padding:0 1rem}#login h1{font-size:1.3rem}
+    #username{display:block;width:100%;margin:.4rem 0 .8rem;padding:.55rem;background:#252535;color:var(--ink);border:1px solid var(--line)}
+    #shell{height:100vh;grid-template-columns:minmax(0,1fr) min(30rem,46vw)}
+    body.active #shell{display:grid!important}
+    main{padding:1.5rem 1.25rem;overflow:auto;outline:0}.header{line-height:1.65;margin-bottom:1.4rem}
+    .grid{display:grid;grid-template-columns:repeat(3,80px);gap:6px}
+    .cell{width:80px;height:80px;border:1px solid #555;background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+    .cell.selected{font-weight:700}.cell.selected.green{background:#43a047;border-color:#2e7d32;color:white}
+    #hdr-name.green{color:var(--accent)}.hint{color:var(--muted);font-size:.875rem}
+    aside{overflow:auto;background:var(--panel);border-left:1px solid var(--line);padding:1.1rem}
+    aside h2{margin:.1rem 0 .35rem;font-size:1.08rem}.block-title{margin:1.1rem 0 .4rem;color:#90caf9;font-size:.78rem;font-weight:700;text-transform:uppercase}
+    .card{border:1px solid var(--line);border-radius:8px;background:#222232;padding:.8rem;line-height:1.5}
+    .controls{display:flex;gap:.55rem;align-items:end;flex-wrap:wrap}.controls label{display:grid;gap:.25rem}
+    .clock{font:700 1.65rem ui-monospace,SFMono-Regular,Menlo,monospace;margin:.35rem 0}
+    .status{padding:.65rem;border-left:4px solid #777;background:#29293a}.status.pending{border-color:#ffb74d}.status.applied{border-color:#66bb6a}.status.stopped{border-color:#90a4ae}
+    a{color:#90caf9}
+  </style>
+</head>
+<body>
+  <section id="login">
+    <div class="app-banner">17-scheduled-changes[node]</div>
+    <h1>Login</h1>
+    <p class="muted">Your username becomes the LaunchDarkly user context key.</p>
+    <label for="username">Username</label>
+    <input id="username" autocomplete="username" autofocus>
+    <p id="login-error" class="error hidden">Username is required.</p>
+    <button id="login-btn">Continue</button>
+  </section>
+
+  <div id="shell" class="hidden">
+    <main id="grid-screen" tabindex="0">
+      <div class="header">
+        <div class="app-banner">17-scheduled-changes[node]</div>
+        <div>Name: <span id="hdr-name"></span></div>
+        <div>Current position: <span id="hdr-current"></span></div>
+        <div>Previous position: <span id="hdr-previous"></span></div>
+        <div>Flag value: <code id="hdr-flag"></code></div>
+      </div>
+      <div id="grid" class="grid"></div>
+      <p class="hint">Arrows or WASD move. L logs out; Q quits.</p>
+    </main>
+
+    <aside>
+      <h2>LaunchDarkly · scheduled change</h2>
+      <p class="muted">The button resets the flag off, replaces any pending schedule, then asks LaunchDarkly to turn it on later.</p>
+      <div class="block-title">Schedule the highlight</div>
+      <div class="card">
+        <div class="controls">
+          <label for="duration">Delay
+            <select id="duration">
+              <option value="1">1 minute</option>
+              <option value="2">2 minutes</option>
+              <option value="5">5 minutes</option>
+              <option value="10">10 minutes</option>
+            </select>
+          </label>
+          <button id="start-schedule" disabled>Start scheduled change</button>
+          <button id="stop-schedule" disabled>Stop schedule</button>
+        </div>
+        <p id="control-config" class="muted">Checking REST configuration…</p>
+        <p id="schedule-error" class="error hidden"></p>
+      </div>
+      <div class="block-title">Elapsed since start</div>
+      <div class="card">
+        <div id="elapsed" class="clock">0:00</div>
+        <div id="schedule-status" class="status">No pending change.</div>
+        <p id="scheduled-time" class="muted">Choose a delay and start the schedule.</p>
+        <p class="muted">This is elapsed time, not a countdown. API execution and SDK delivery are close to the selected delay, not second-perfect.</p>
+        <p class="muted">A one-minute schedule that turns green near 1:30 is normal: LaunchDarkly executes close to the execution date rather than exactly on it, the change still has to reach this server's SDK stream, and the page re-evaluates only every two seconds.</p>
+        <p class="muted">Stopping cancels the pending change and turns the flag off, and the clock holds its last value.</p>
+      </div>
+      <div class="block-title">What to watch</div>
+      <div class="card">
+        <p id="assignment">NONE · X only</p>
+        <p id="reason" class="muted"></p>
+        <p class="muted">The browser only re-evaluates the SDK value. It does not turn the highlight on with a local timer.</p>
+      </div>
+      <div class="block-title">About</div>
+      <p class="muted">Scheduled flag changes are a LaunchDarkly Enterprise feature.</p>
+      <p><a href="https://launchdarkly.com/docs/home/flags/scheduled-changes" target="_blank">Scheduled changes documentation</a></p>
+    </aside>
+  </div>
+
+  <script>
+    const ROWS=["t","m","b"],COLS=["l","m","r"];
+    let username="",row=1,col=1,previous=null;
+    let flags={flagValue:"none",highlightColor:"none"},startedAt=null,executionDate=null;
+    let hadPending=false,pendingNow=false,stoppedAt=null,observedAt=null,controlsReady=false;
+    const pos=(r,c)=>`${ROWS[r]}/${COLS[c]}`;
+    const clock=ms=>`${Math.floor(ms/60000)}:${String(Math.floor(ms/1000)%60).padStart(2,"0")}`;
+
+    function render(){
+      const green=flags.highlightColor==="green";
+      const name=document.getElementById("hdr-name");name.textContent=username;name.className=green?"green":"";
+      document.getElementById("hdr-current").textContent=pos(row,col);
+      document.getElementById("hdr-previous").textContent=previous?pos(previous.row,previous.col):"—";
+      document.getElementById("hdr-flag").textContent=flags.flagValue;
+      const grid=document.getElementById("grid");grid.innerHTML="";
+      for(let r=0;r<3;r++)for(let c=0;c<3;c++){
+        const selected=r===row&&c===col,cell=document.createElement("div");
+        cell.className=`cell${selected?" selected":""}${selected&&green?" green":""}`;
+        cell.textContent=selected?"X":"";grid.appendChild(cell);
+      }
+      const assignment=document.getElementById("assignment");
+      assignment.textContent=green?"GREEN · highlighted":"NONE · X only";
+      assignment.className=green?"good":"";
+      document.getElementById("reason").textContent=`reason: ${(flags.reason||{}).kind||"UNKNOWN"} · variation index: ${flags.variationIndex??"default"}`;
+    }
+
+    // Elapsed holds its last value once the demo is stopped.
+    function renderClock(){
+      const end=stoppedAt||Date.now();
+      document.getElementById("elapsed").textContent=startedAt?clock(Math.max(0,end-startedAt)):"0:00";
+    }
+    function renderControls(){
+      const stop=document.getElementById("stop-schedule");
+      const green=flags.highlightColor==="green";
+      stop.textContent=pendingNow?"Stop schedule":"Turn flag off";
+      stop.disabled=!controlsReady||(!pendingNow&&!green);
+      document.getElementById("start-schedule").disabled=!controlsReady;
+    }
+    function renderSchedule(pending){
+      const status=document.getElementById("schedule-status"),when=document.getElementById("scheduled-time");
+      pendingNow=Boolean(pending);
+      if(pending){
+        hadPending=true;startedAt=startedAt||pending.createdAt||Date.now();executionDate=pending.executionDate;
+        status.textContent="PENDING · LaunchDarkly will turn the flag on";status.className="status pending";
+        when.textContent=`Scheduled wall time: ${new Date(executionDate).toLocaleString()}`;
+      }else if(stoppedAt){
+        status.textContent="STOPPED · pending change cancelled, flag off";status.className="status stopped";
+        when.textContent=`Stopped at ${new Date(stoppedAt).toLocaleTimeString()}`+(startedAt?` after ${clock(stoppedAt-startedAt)} elapsed.`:".");
+      }else if(hadPending&&flags.highlightColor==="green"){
+        status.textContent="APPLIED · SDK now serves green";status.className="status applied";
+        when.textContent=observedAt&&startedAt
+          ?`Scheduled for ${new Date(executionDate).toLocaleTimeString()}; green first observed here at ${clock(observedAt-startedAt)} elapsed.`
+          :`LaunchDarkly applied the change near ${new Date(executionDate).toLocaleString()}.`;
+      }else{
+        status.textContent="No pending change.";status.className="status";
+      }
+      renderControls();renderClock();
+    }
+    async function evaluate(){
+      const response=await fetch(`/api/flags?username=${encodeURIComponent(username)}`,{cache:"no-store"});
+      const data=await response.json();if(!response.ok)throw new Error(data.error||`HTTP ${response.status}`);
+      flags=data;if(hadPending&&!stoppedAt&&!observedAt&&flags.highlightColor==="green")observedAt=Date.now();
+      render();renderControls();
+    }
+    async function checkSchedule(){
+      const response=await fetch("/api/schedule",{cache:"no-store"}),data=await response.json();
+      if(!response.ok)throw new Error(data.error||`HTTP ${response.status}`);
+      renderSchedule((data.items||[])[0]||null);
+    }
+    async function startSchedule(){
+      const button=document.getElementById("start-schedule"),error=document.getElementById("schedule-error");
+      button.disabled=true;error.classList.add("hidden");
+      try{
+        const minutes=Number(document.getElementById("duration").value);
+        const response=await fetch("/api/schedule",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({minutes})});
+        const data=await response.json();if(!response.ok)throw new Error(data.error||`HTTP ${response.status}`);
+        startedAt=data.startedAt;executionDate=data.scheduledChange.executionDate;
+        hadPending=true;stoppedAt=null;observedAt=null;
+        await evaluate();renderSchedule(data.scheduledChange);
+      }catch(err){error.textContent=err.message;error.classList.remove("hidden")}
+      finally{button.disabled=false}
+    }
+    // One control for both states: cancel the pending change and turn the flag off.
+    async function stopSchedule(){
+      const button=document.getElementById("stop-schedule"),error=document.getElementById("schedule-error");
+      button.disabled=true;error.classList.add("hidden");
+      try{
+        const response=await fetch("/api/schedule",{method:"DELETE"});
+        const data=await response.json();if(!response.ok)throw new Error(data.error||`HTTP ${response.status}`);
+        stoppedAt=data.stoppedAt;await evaluate();renderSchedule(null);
+      }catch(err){error.textContent=err.message;error.classList.remove("hidden");renderControls()}
+    }
+    async function start(name){
+      username=name.trim();document.getElementById("login").classList.add("hidden");
+      document.getElementById("shell").classList.remove("hidden");document.body.classList.add("active");
+      await evaluate();await checkSchedule();document.getElementById("grid-screen").focus();
+    }
+    function logout(){
+      username="";document.body.classList.remove("active");document.getElementById("shell").classList.add("hidden");
+      document.getElementById("login").classList.remove("hidden");document.getElementById("username").value="";
+      document.getElementById("username").focus();
+    }
+    function move(dr,dc){
+      const nr=Math.max(0,Math.min(2,row+dr)),nc=Math.max(0,Math.min(2,col+dc));
+      if(nr===row&&nc===col)return;previous={row,col};row=nr;col=nc;render();
+    }
+    fetch("/api/bootstrap",{cache:"no-store"}).then(r=>r.json()).then(data=>{
+      const cfg=data.controls||{},el=document.getElementById("control-config");
+      el.textContent=cfg.configured?`REST target: ${cfg.projectKey} / ${cfg.environmentKey}`:`Controls disabled; missing ${cfg.missing.join(", ")}`;
+      controlsReady=Boolean(cfg.configured);renderControls();
+    }).catch(()=>{});
+    document.getElementById("login-btn").onclick=()=>{
+      const name=document.getElementById("username").value.trim();
+      document.getElementById("login-error").classList.toggle("hidden",!!name);
+      if(name)start(name).catch(error=>alert(error.message));
+    };
+    document.getElementById("username").onkeydown=e=>{if(e.key==="Enter")document.getElementById("login-btn").click()};
+    document.getElementById("start-schedule").onclick=startSchedule;
+    document.getElementById("stop-schedule").onclick=stopSchedule;
+    document.addEventListener("keydown",e=>{
+      if(!username||["INPUT","SELECT","BUTTON"].includes(e.target.tagName))return;
+      const key=e.key.toLowerCase();if(key==="l"){logout();return}if(key==="q"){document.body.innerHTML="<p>Application closed.</p>";return}
+      if(e.key==="ArrowUp"||key==="w")move(-1,0);else if(e.key==="ArrowDown"||key==="s")move(1,0);
+      else if(e.key==="ArrowLeft"||key==="a")move(0,-1);else if(e.key==="ArrowRight"||key==="d")move(0,1);else return;e.preventDefault();
+    });
+    setInterval(renderClock,1000);
+    setInterval(()=>{if(username)evaluate().catch(()=>{})},2000);
+    setInterval(()=>{if(username)checkSchedule().catch(()=>{})},5000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "scheduled-changes",
+  "version": "1.0.0",
+  "private": true,
+  "description": "17-scheduled-changes grid navigator web UI",
+  "main": "17-scheduled-changes.js",
+  "scripts": {
+    "start": "node 17-scheduled-changes.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0"
+  }
+}
