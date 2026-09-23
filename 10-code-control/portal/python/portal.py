@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-portal.py — series shell for 10-code-control (Python web examples 11–16).
+portal.py — series shell for 10-code-control (Python web examples 11–17).
 
 One process for the user:
   - Serves this folder's index.html on :8100 (PORTAL_PORT)
@@ -95,6 +95,16 @@ CHILDREN: list[dict[str, Any]] = [
         / "16-percentage-rollout.py",
         "cwd": SERIES_ROOT / "16-percentage-rollout" / "python",
         "port": 8160,
+    },
+    {
+        "id": "17",
+        "label": "Scheduled changes",
+        "script": SERIES_ROOT
+        / "17-scheduled-changes"
+        / "python"
+        / "17-scheduled-changes.py",
+        "cwd": SERIES_ROOT / "17-scheduled-changes" / "python",
+        "port": 8170,
     },
 ]
 
@@ -316,7 +326,7 @@ def main() -> None:
     print(f"Open http://127.0.0.1:{PORTAL_PORT}/", flush=True)
     print(
         "Tabs embed Python examples on "
-        "8110 / 8120 / 8130 / 8140 / 8150 / 8160.",
+        "8110 / 8120 / 8130 / 8140 / 8150 / 8160 / 8170.",
         flush=True,
     )
     print("Ctrl+C stops the portal and all children.", flush=True)

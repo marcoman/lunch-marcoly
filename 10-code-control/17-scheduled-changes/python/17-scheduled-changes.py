@@ -1,0 +1,147 @@
+#!/usr/bin/env python3
+"""Serve the scheduled-changes grid navigator and REST-backed lab."""
+
+from __future__ import annotations
+
+import json
+import os
+import sys
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from urllib.parse import parse_qs, urlparse
+
+import ldclient
+from ldclient import Config
+from ldclient.client import LDClient
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from scheduled_change import (  # noqa: E402
+    api_config,
+    evaluate_highlight,
+    list_scheduled_changes,
+    normalize_username,
+    start_scheduled_change,
+    stop_scheduled_change,
+)
+
+ROOT = Path(__file__).parent
+_ld_client: LDClient | None = None
+
+
+def init_launchdarkly() -> None:
+    """Initialize one SDK client; scheduled changes alter its flag remotely."""
+    global _ld_client
+    sdk_key = (os.environ.get("LD_SDK_KEY") or "").strip()
+    if not sdk_key:
+        print("Warning: LD_SDK_KEY not set — highlight defaults to none.", flush=True)
+        return
+    ldclient.set_config(Config(sdk_key))
+    _ld_client = ldclient.get()
+    if not _ld_client.is_initialized():
+        print("Warning: LaunchDarkly SDK did not initialize.", flush=True)
+
+
+def json_response(
+    handler: SimpleHTTPRequestHandler, status: int, payload: object
+) -> None:
+    """Write a no-cache JSON response."""
+    body = json.dumps(payload).encode()
+    handler.send_response(status)
+    handler.send_header("Content-Type", "application/json; charset=utf-8")
+    handler.send_header("Content-Length", str(len(body)))
+    handler.send_header("Cache-Control", "no-store")
+    handler.end_headers()
+    handler.wfile.write(body)
+
+
+def read_json(handler: SimpleHTTPRequestHandler) -> dict:
+    """Read one JSON object from a request body."""
+    length = int(handler.headers.get("Content-Length") or "0")
+    try:
+        value = json.loads(handler.rfile.read(length).decode() or "{}")
+    except json.JSONDecodeError as exc:
+        raise ValueError("Request body must be JSON") from exc
+    if not isinstance(value, dict):
+        raise ValueError("Request body must be a JSON object")
+    return value
+
+
+class Handler(SimpleHTTPRequestHandler):
+    """Serve the UI, SDK evaluations, and scheduled-change controls."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, directory=str(ROOT), **kwargs)
+
+    def do_GET(self) -> None:
+        parsed = urlparse(self.path)
+        if parsed.path == "/api/flags":
+            params = parse_qs(parsed.query, keep_blank_values=True)
+            try:
+                username = normalize_username((params.get("username") or [""])[0])
+                json_response(self, 200, evaluate_highlight(_ld_client, username))
+            except ValueError as exc:
+                json_response(self, 400, {"error": str(exc)})
+            return
+        if parsed.path == "/api/schedule":
+            try:
+                json_response(self, 200, list_scheduled_changes())
+            except Exception as exc:  # noqa: BLE001
+                json_response(self, 502, {"error": str(exc), **api_config()})
+            return
+        if parsed.path == "/api/bootstrap":
+            json_response(
+                self,
+                200,
+                {
+                    "appBanner": "17-scheduled-changes[python]",
+                    "flagKey": "enable-grid-selection-highlight-sched",
+                    "controls": api_config(),
+                    "port": int(os.environ.get("PORT") or "8170"),
+                },
+            )
+            return
+        super().do_GET()
+
+    def do_POST(self) -> None:
+        if urlparse(self.path).path != "/api/schedule":
+            self.send_error(404, "Not found")
+            return
+        try:
+            data = read_json(self)
+            minutes = int(data.get("minutes", 0))
+            json_response(self, 201, start_scheduled_change(minutes))
+        except (TypeError, ValueError) as exc:
+            json_response(self, 400, {"ok": False, "error": str(exc)})
+        except Exception as exc:  # noqa: BLE001
+            json_response(self, 502, {"ok": False, "error": str(exc)})
+
+    def do_DELETE(self) -> None:
+        """Cancel any pending change and turn the flag off."""
+        if urlparse(self.path).path != "/api/schedule":
+            self.send_error(404, "Not found")
+            return
+        try:
+            json_response(self, 200, stop_scheduled_change())
+        except Exception as exc:  # noqa: BLE001
+            json_response(self, 502, {"ok": False, "error": str(exc)})
+
+
+def main() -> None:
+    """Start the local lab server and close the SDK during shutdown."""
+    init_launchdarkly()
+    port = int(os.environ.get("PORT") or "8170")
+    server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
+    print("17-scheduled-changes[python]")
+    print(f"Open http://127.0.0.1:{port}/")
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.server_close()
+        if _ld_client is not None:
+            _ld_client.close()
+
+
+if __name__ == "__main__":
+    main()

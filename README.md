@@ -39,7 +39,7 @@ lunch-marcoly/
 │   ├── 14-multi-context-targeting/
 │   ├── 15-prerequisite-flags/
 │   ├── 16-percentage-rollout/    # Web :8160–:8163 + consoles; static 30/70
-│   └── 17-scheduled-changes/     # Stub
+│   └── 17-scheduled-changes/     # Python web :8170; scheduled turn-on
 ├── 20-agent-config/             # AgentControl series (shared setup)
 │   ├── README.md
 │   ├── portal/                   # Python :8200 · Node :8201 · Java :8202 · .NET :8203
@@ -124,7 +124,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 14 | [14-multi-context-targeting](10-code-control/14-multi-context-targeting/) | User + organization multi-context targeting |
 | 15 | [15-prerequisite-flags](10-code-control/15-prerequisite-flags/) | Flag prerequisites: highlight must serve `green` before move count can evaluate |
 | 16 | [16-percentage-rollout](10-code-control/16-percentage-rollout/) | Static 30/70 percentage rollout, sticky context key (web **:8160–:8163** + Python / Node / Java / Go / Rust / C++ consoles) |
-| 17 | [17-scheduled-changes](10-code-control/17-scheduled-changes/) | **Stub:** scheduled flag change a few minutes ahead |
+| 17 | [17-scheduled-changes](10-code-control/17-scheduled-changes/) | Replaceable scheduled flag turn-on with elapsed timer (Python web **:8170** + REST/Terraform) |
 | 20 | [20-agent-config](20-agent-config/) | AgentControl series (shared LLM / AWS / LD setup); [portal](20-agent-config/portal/) Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
 | 21 | [21-agent-completion-config](20-agent-config/21-agent-completion-config/) | Completion config: model + system/user prompts (web + Go console) |
 | 22 | [22-config-outside-code](20-agent-config/22-config-outside-code/) | Tracked completion: metrics + thumbs feedback (web + Go console) |

@@ -6,7 +6,7 @@ Work queue for new lunch-marcoly examples. Ship in this order.
 
 | Priority | Example | Series | Status |
 |----------|---------|--------|--------|
-| 1 | [17-scheduled-changes](10-code-control/17-scheduled-changes/) | 10-code-control | **Next** (stub) |
+| 1 | [17-scheduled-changes](10-code-control/17-scheduled-changes/) | 10-code-control | **In progress** (Python web + REST/Terraform done) |
 | 2 | [35-client-bootstrap](30-client-sdk/35-client-bootstrap/) | 30-client-sdk | Stub |
 | 3 | [36-client-track-events](30-client-sdk/36-client-track-events/) | 30-client-sdk | Stub |
 

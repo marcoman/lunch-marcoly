@@ -2,7 +2,7 @@
 
 LaunchDarkly **feature flag** examples for the **lunch-marcoly** grid navigator —
 boolean enablement, variation types, targeting rules, multi-contexts,
-prerequisites, percentage rollout, then scheduled changes (17 stub).
+prerequisites, percentage rollout, then scheduled changes.
 
 This series mirrors [20-agent-config](../20-agent-config/): a parent folder with
 numbered children and an optional [portal](portal/) to run them side by side.
@@ -15,7 +15,7 @@ numbered children and an optional [portal](portal/) to run them side by side.
 | **14** | [14-multi-context-targeting/](14-multi-context-targeting/) | Web plus Python / Node / Java / C++ / Go / Rust consoles: **multi-context** (user + organization) partner-badge 2×2 |
 | **15** | [15-prerequisite-flags/](15-prerequisite-flags/) | Web (Python / Node / Java / .NET) plus consoles: highlight must serve `green` before move count can evaluate |
 | **16** | [16-percentage-rollout/](16-percentage-rollout/) | Web (Python / Node / Java / .NET) + consoles (Python / Node / Java / Go / Rust / C++) + REST/Terraform: static percentage rollout; sticky context key (not progressive) |
-| **17** | [17-scheduled-changes/](17-scheduled-changes/) | **Stub:** scheduled highlight change a few minutes in the future |
+| **17** | [17-scheduled-changes/](17-scheduled-changes/) | Python web + REST/Terraform: replaceable scheduled highlight change, elapsed timer (**:8170**) |
 
 Migration flags are not in this series. Stub:
 [99-use-cases/17-migration-flags](../99-use-cases/17-migration-flags/).
@@ -29,7 +29,7 @@ Baseline (no LaunchDarkly): [00-reference-code](../00-reference-code/).
 ```bash
 export LD_SDK_KEY="sdk-..."
 
-# Python: portal :8100, children :8110 / :8120 / :8130 / :8140 / :8150 / :8160
+# Python: portal :8100, children :8110 / :8120 / :8130 / :8140 / :8150 / :8160 / :8170
 (cd portal/python && python portal.py)
 
 # Node: portal :8101, children :8111 / :8121 / :8131 / :8141 / :8151 / :8161
