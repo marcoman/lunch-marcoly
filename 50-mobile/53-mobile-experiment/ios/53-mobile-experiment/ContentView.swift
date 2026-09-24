@@ -1,31 +1,33 @@
 import SwiftUI
 
 struct ContentView: View {
-    private enum Destination {
-        case login
-        case loading
-        case helper
-        case grid
-    }
-
     @StateObject private var nav = Navigator()
     @StateObject private var experiment = ExperimentSession()
-    @State private var destination: Destination = .login
+    @State private var loggedIn = false
+    @State private var helperAcknowledged = false
     @State private var drawerOpen = false
+
+    // The login field lives here, not inside LoginScreen, so logout clears it
+    // deterministically instead of relying on child view state being discarded.
+    @State private var username = ""
+    @State private var usernameError = false
 
     var body: some View {
         Group {
-            switch destination {
-            case .login:
-                LoginScreen(onLogin: login)
-            case .loading:
+            if !loggedIn {
+                LoginScreen(
+                    name: $username,
+                    error: $usernameError,
+                    onLogin: login
+                )
+            } else if !experiment.ready {
                 LoadingScreen()
-            case .helper:
+            } else if experiment.variation && !helperAcknowledged {
                 HowToPlayScreen(
-                    onContinue: { destination = .grid },
+                    onContinue: { helperAcknowledged = true },
                     onLogout: logout
                 )
-            case .grid:
+            } else {
                 GridScreen(
                     nav: nav,
                     experiment: experiment,
@@ -37,19 +39,25 @@ struct ContentView: View {
         .preferredColorScheme(.dark)
     }
 
-    private func login(_ name: String) {
-        guard nav.login(name) else { return }
-        destination = .loading
-        experiment.start(username: nav.username) {
-            destination = experiment.variation ? .helper : .grid
+    private func login() {
+        guard nav.login(username) else {
+            usernameError = true
+            return
         }
+        usernameError = false
+        helperAcknowledged = false
+        experiment.start(username: nav.username)
+        loggedIn = true
     }
 
     private func logout() {
         experiment.stop()
         nav.logout()
+        username = ""
+        usernameError = false
+        helperAcknowledged = false
         drawerOpen = false
-        destination = .login
+        loggedIn = false
     }
 }
 
@@ -62,9 +70,9 @@ private struct Banner: View {
 }
 
 private struct LoginScreen: View {
-    var onLogin: (String) -> Void
-    @State private var name = ""
-    @State private var error = false
+    @Binding var name: String
+    @Binding var error: Bool
+    var onLogin: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -77,22 +85,17 @@ private struct LoginScreen: View {
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .textFieldStyle(.roundedBorder)
-                .onSubmit(submit)
+                .onChange(of: name) { error = false }
+                .onSubmit(onLogin)
             if error {
                 Text("Username is required.")
                     .foregroundStyle(Color(red: 0.9, green: 0.5, blue: 0.5))
             }
-            Button("Continue", action: submit)
+            Button("Continue", action: onLogin)
                 .buttonStyle(.borderedProminent)
             Spacer()
         }
         .screenStyle()
-    }
-
-    private func submit() {
-        let valid = !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        error = !valid
-        if valid { onLogin(name) }
     }
 }
 

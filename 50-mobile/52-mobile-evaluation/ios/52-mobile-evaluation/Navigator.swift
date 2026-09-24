@@ -60,5 +60,6 @@ final class Navigator: ObservableObject {
     private func resetGrid() {
         current = Cell(row: .t, col: .l)
         previous = nil
+        moveCount = 0
     }
 }

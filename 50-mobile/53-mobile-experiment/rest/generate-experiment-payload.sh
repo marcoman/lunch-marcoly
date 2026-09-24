@@ -41,7 +41,7 @@ jq -n \
     name: "First-run helper vs grid",
     key: "first-run-helper-vs-grid",
     iteration: {
-      hypothesis: "If we show a short How to play card before the 2×2 grid, more users will complete their first successful orthogonal move (mobile_onboarding_completed) than users who open the grid immediately, without increasing crash rate or onboarding latency.",
+      hypothesis: "If we show a short How to play card before the 2×2 grid, then more users will complete their first successful orthogonal move than users who open the grid immediately, because the card gives them greater confidence.",
       metrics: [{key: $metric, isGroup: false}],
       primarySingleMetricKey: $metric,
       randomizationUnit: "user",

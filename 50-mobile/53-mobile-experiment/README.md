@@ -68,33 +68,30 @@ First-run helper vs grid
 ```
 
 Paste this hypothesis into the Hypothesis field (the code block copies as a
-single clipboard snippet):
+single clipboard snippet). It is written to pass LaunchDarkly's inline
+Change / Measurement / Rationale check:
 
 ```text
-If we show a short How to play card before the 2×2 grid, more users will complete their first successful orthogonal move (mobile_onboarding_completed) than users who open the grid immediately, without increasing crash rate or onboarding latency.
+If we show a short How to play card before the 2×2 grid, then more users will complete their first successful orthogonal move than users who open the grid immediately, because the card gives them greater confidence.
 ```
 
-Then set **Variations and audience targeting** to:
+Then match the Design tab:
 
 | Field | Value |
 |-------|-------|
-| Assignment method | LaunchDarkly flag or config |
-| Flag or config | Acme: mobile onboarding helper |
-| Targeting rule | Default rule |
 | Randomize by | `user` |
-| Audience allocation | 50% of `user` contexts in this experiment |
-| Variations split | Control 50% / Treatment 50% |
+| Metric source | LaunchDarkly hosted |
+| Metrics | `mobile_onboarding_completed` |
+| Flag or config | Acme: mobile onboarding helper |
+| Audience allocation | 100% of `user` contexts in this experiment |
 | Disable reshuffling | On (leave the default) |
 
-Do not target a treatment by platform. After this page, select primary metric
-`mobile_onboarding_completed` and result attributes `platform` and
+Do not target a treatment by platform. After the flag is selected, keep the
+50/50 Control / Treatment split. Add result attributes `platform` and
 `app-version`. Validate exposure and conversion from both platforms before
 starting a decision-making run.
 
-![LaunchDarkly experiment targeting: default rule, randomize by user, 50% allocation, reshuffling disabled](docs/experiment-setup-targeting.jpg)
-
-The screenshot is a field map for targeting and allocation. Its experiment
-name matches the flag too closely; use **First-run helper vs grid** instead.
+![LaunchDarkly experiment Design tab: First-run helper vs grid, checker-passing hypothesis, randomize by user, 100% allocation, reshuffling disabled](docs/experiment-setup-targeting.png)
 
 Analyze overall control versus treatment first. Then inspect Android treatment
 versus Android control and iOS treatment versus iOS control. A higher raw

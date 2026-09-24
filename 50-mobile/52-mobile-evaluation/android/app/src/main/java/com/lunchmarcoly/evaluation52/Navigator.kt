@@ -54,6 +54,7 @@ class Navigator {
     private fun resetGrid() {
         current = Cell(Row.T, Col.L)
         previous = null
+        moveCount = 0
     }
 
     companion object {

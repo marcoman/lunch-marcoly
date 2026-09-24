@@ -12,6 +12,7 @@ final class ExperimentSession: ObservableObject {
     static let eventKey = "mobile_onboarding_completed"
 
     @Published private(set) var variation = false
+    @Published private(set) var ready = false
     @Published private(set) var exposureEvaluated = false
     @Published private(set) var conversionSent = false
     @Published private(set) var hasMobileKey = false
@@ -31,9 +32,15 @@ final class ExperimentSession: ObservableObject {
     /// Builds the complete context before starting the client, then evaluates
     /// the boolean variation before allowing either experience to render.
     ///
+    /// Publishing `ready` (instead of invoking a view callback) keeps SwiftUI
+    /// state owned by the view that declares it.
+    ///
     /// Experimentation exposure comes from flag evaluation:
     /// https://launchdarkly.com/docs/sdk/features/experimentation
-    func start(username: String, completion: @escaping () -> Void) {
+    func start(username: String) {
+        // LDClient.start() is a no-op while an instance exists, so a stale
+        // client from a previous login would silently skip evaluation.
+        closeClient(countClose: false)
         resetLoginState()
 
         let stableKey = username.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -43,7 +50,7 @@ final class ExperimentSession: ObservableObject {
 
         guard case .success(let context) = builder.build() else {
             status = "Invalid context — serving control"
-            completion()
+            ready = true
             return
         }
 
@@ -51,7 +58,7 @@ final class ExperimentSession: ObservableObject {
         hasMobileKey = !mobileKey.isEmpty
         guard hasMobileKey else {
             status = "No LD_MOBILE_KEY — serving control"
-            completion()
+            ready = true
             return
         }
 
@@ -68,7 +75,7 @@ final class ExperimentSession: ObservableObject {
                 self.evaluationCount += 1
                 self.exposureEvaluated = true
                 self.status = "Evaluated"
-                completion()
+                self.ready = true
             }
         }
     }
@@ -93,12 +100,15 @@ final class ExperimentSession: ObservableObject {
 
     /// Closes the mobile client on logout and clears per-login experiment state.
     func stop() {
-        if let client = LDClient.get() {
-            client.close()
-            closeCount += 1
-        }
+        closeClient(countClose: true)
         resetLoginState()
         status = "Closed"
+    }
+
+    private func closeClient(countClose: Bool) {
+        guard let client = LDClient.get() else { return }
+        client.close()
+        if countClose { closeCount += 1 }
     }
 
     var sdkLog: String {
@@ -110,6 +120,7 @@ final class ExperimentSession: ObservableObject {
 
     private func resetLoginState() {
         variation = false
+        ready = false
         exposureEvaluated = false
         conversionSent = false
         completedThisLogin = false

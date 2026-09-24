@@ -31,10 +31,9 @@ an operating system.
 
 ## Hypothesis
 
-For Acme mobile users on Android and iOS, showing a concise first-run helper
-will increase successful onboarding completion compared with opening directly
-on the grid. The treatment must not materially increase crash rate or
-onboarding latency.
+If we show a short How to play card before the 2×2 grid, then more users will
+complete their first successful orthogonal move than users who open the grid
+immediately, because the card gives them greater confidence.
 
 ## Flag
 
@@ -97,7 +96,7 @@ been sent in its lab drawer.
 - Assignment: LaunchDarkly flag or config, default rule, randomize by `user`
 - One experiment using `acme-mobile-onboarding-v2`
 - Treatments: `false` control, `true` treatment
-- Audience: 50% of `user` contexts, 50/50 split, reshuffling disabled
+- Audience: 100% of `user` contexts, 50/50 split, reshuffling disabled
 - Primary metric: custom event `mobile_onboarding_completed`
 - Result attributes: `platform`, `app-version`
 - Do not target treatment by platform

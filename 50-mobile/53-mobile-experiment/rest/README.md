@@ -41,16 +41,15 @@ In the LaunchDarkly dashboard:
 2. Create one experiment named **First-run helper vs grid** — not the flag
    display name **Acme: mobile onboarding helper**, and not the near duplicate
    **Acme mobile onboarding helper**.
-3. Assignment method **LaunchDarkly flag or config**; flag **Acme: mobile
-   onboarding helper**; targeting rule **Default rule**.
-4. Randomize by `user`. Put 50% of `user` contexts in the experiment, split
-   50/50 Control (`false`) / Treatment (`true`), and leave **Disable
-   reshuffling** on. Do not target by platform.
-5. Select primary custom metric `mobile_onboarding_completed`.
-6. Add result attributes `platform` and `app-version`.
-7. Review audience and allocation. Validate exposure and conversion from both
+3. Randomize by `user`. Metric source **LaunchDarkly hosted**. Flag **Acme:
+   mobile onboarding helper**. Put **100%** of `user` contexts in the
+   experiment, split 50/50 Control (`false`) / Treatment (`true`), and leave
+   **Disable reshuffling** on. Do not target by platform.
+4. Select primary custom metric `mobile_onboarding_completed`.
+5. Add result attributes `platform` and `app-version`.
+6. Review audience and allocation. Validate exposure and conversion from both
    platforms—prefer an A/A check if instrumentation is uncertain.
-8. Start only after review. Nothing in this directory starts an experiment.
+7. Start only after review. Nothing in this directory starts an experiment.
 
 `./generate-experiment-payload.sh > experiment-draft.json` resolves the
 variation IDs and config version and emits a current API-shaped draft. Its
