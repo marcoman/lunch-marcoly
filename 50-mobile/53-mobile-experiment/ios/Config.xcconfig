@@ -1,0 +1,3 @@
+// Optional local override (gitignored): copy LDMobileKey.xcconfig.example
+LD_MOBILE_KEY =
+#include? "LDMobileKey.xcconfig"

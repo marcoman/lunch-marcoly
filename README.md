@@ -65,7 +65,8 @@ lunch-marcoly/
 ├── 50-mobile/                   # Mobile SDK series (2×2 tap navigator)
 │   ├── README.md
 │   ├── 51-reference/            # android/ · ios/ (no LaunchDarkly)
-│   └── 52-mobile-evaluation/    # android/ · ios/ (mobile key)
+│   ├── 52-mobile-evaluation/    # android/ · ios/ (mobile key)
+│   └── 53-mobile-experiment/    # one experiment; platform is analysis dimension
 ├── 60-observability/            # Server-side observability series
 │   ├── 61-reference/            # Python-owned navigator API; no LaunchDarkly
 │   └── 62-server-traces/        # Python ObservabilityPlugin + manual move spans
@@ -144,6 +145,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 50 | [50-mobile](50-mobile/) | Mobile SDK series (2×2 tap navigator; mobile key, not browser client-side ID) |
 | 51 | [51-reference](50-mobile/51-reference/) | Mobile reference app — login, 2×2 tap grid, drawer; Android + iOS; no LaunchDarkly |
 | 52 | [52-mobile-evaluation](50-mobile/52-mobile-evaluation/) | Mobile SDK: init, variation, listeners (`LD_MOBILE_KEY`; dedicated flag keys) |
+| 53 | [53-mobile-experiment](50-mobile/53-mobile-experiment/) | Android+iOS Experimentation: one flag, exposure→conversion, results by platform, synthetic traffic |
 | 60 | [60-observability](60-observability/) | Observability series: Python server-side telemetry on the grid navigator |
 | 61 | [61-reference](60-observability/61-reference/) | Server-owned Python navigator baseline (**:8610**; no LaunchDarkly) |
 | 62 | [62-server-traces](60-observability/62-server-traces/) | Python `ObservabilityPlugin` + `grid.login` / `grid.move` spans (**:8620**) |

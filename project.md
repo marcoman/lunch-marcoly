@@ -142,7 +142,8 @@ lunch-marcoly/
 ├── 50-mobile/                   # Mobile SDK series (2×2 tap navigator)
 │   ├── README.md                # Mobile key, simulators, no AgentControl
 │   ├── 51-reference/            # No LaunchDarkly — android/ · ios/
-│   └── 52-mobile-evaluation/    # Mobile SDK init / variation / listeners
+│   ├── 52-mobile-evaluation/    # Mobile SDK init / variation / listeners
+│   └── 53-mobile-experiment/    # One Android+iOS experiment; platform analysis
 ├── 60-observability/            # Server-side observability series
 │   ├── 61-reference/            # Python-owned navigator API; no LaunchDarkly :8610
 │   └── 62-server-traces/        # ObservabilityPlugin + move spans :8620
@@ -208,6 +209,7 @@ lunch-marcoly/
 - `50-mobile` groups **mobile** client-side SDK examples (mobile key, not `LD_SDK_KEY` and not `LD_CLIENT_SIDE_ID`). Children start at **51**. There is no HTTP portal. AgentControl is out of scope.
 - `51-reference` (under `50-mobile/`) is the 2×2 tap navigator baseline. It does **not** include LaunchDarkly. Android (`android/`) and iOS (`ios/`) ship first; `react-native/` comes later.
 - `52-mobile-evaluation` (under `50-mobile/`) adds the Android / iOS mobile SDKs (`LD_MOBILE_KEY`), dedicated flag keys, variation, and flag listeners. Do not reuse 31’s browser flag keys.
+- `53-mobile-experiment` (under `50-mobile/`) runs one boolean control/treatment experiment across Android and iOS. `platform` and `app-version` are context attributes for result analysis, never application-side assignment logic. The optional synthetic simulator uses a server SDK key only on the host.
 - `60-observability` groups **server-side observability** examples. Children start at **61**; Python ships first.
 - `61-reference` (under `60-observability/`) moves the 00 web navigator state into Python APIs without LaunchDarkly (**:8610**).
 - `62-server-traces` adds the Python `ObservabilityPlugin` and manual spans for successful login (`grid.login` with username) and successful moves (`grid.move`) (**:8620**). It evaluates no flags.

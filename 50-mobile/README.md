@@ -18,6 +18,7 @@ this series.
 |---------|--------|-----------------|
 | **51** | [51-reference/](51-reference/) | Touch 2×2 navigator — **no LaunchDarkly** |
 | **52** | [52-mobile-evaluation/](52-mobile-evaluation/) | `init`, `variation`, listeners — **mobile key** |
+| **53** | [53-mobile-experiment/](53-mobile-experiment/) | One Android+iOS **Experimentation** test; exposure, conversion, platform analysis |
 
 There is no series HTTP portal. Run each app in an emulator or simulator.
 
@@ -25,8 +26,8 @@ There is no series HTTP portal. Run each app in an emulator or simulator.
 
 | Variable | Role |
 |----------|------|
-| `LD_MOBILE_KEY` | Mobile SDK (51 does **not** use this; **52 does**) |
-| `LD_SDK_KEY` | **Not used** — do not embed a server SDK key |
+| `LD_MOBILE_KEY` | Mobile SDK (51 does **not** use this; 52/53 do) |
+| `LD_SDK_KEY` | **Never embed in mobile apps**; 53's optional host-side simulator uses one |
 | `LD_CLIENT_SIDE_ID` | **Not used** — that is the browser 30-series |
 
 SDK credentials: [environment keys](https://launchdarkly.com/docs/home/account/environment/keys).
@@ -42,8 +43,8 @@ See [client-side and mobile flags](https://launchdarkly.com/docs/home/flags/crea
 
 | Directory | Platform | Status |
 |-----------|----------|--------|
-| `android/` | Kotlin + Jetpack Compose | 51 + 52 |
-| `ios/` | Swift + SwiftUI | 51 + 52 |
+| `android/` | Kotlin + Jetpack Compose | 51 + 52 + 53 |
+| `ios/` | Swift + SwiftUI | 51 + 52 + 53 |
 | `react-native/` | React Native | Later — add after native twins exist |
 
 ## Prerequisites
@@ -55,4 +56,5 @@ See [client-side and mobile flags](https://launchdarkly.com/docs/home/flags/crea
 
 - [51-reference/application.md](51-reference/application.md) — 2×2 tap navigator spec
 - [52-mobile-evaluation/application.md](52-mobile-evaluation/application.md) — mobile SDK evaluation
+- [53-mobile-experiment/application.md](53-mobile-experiment/application.md) — one experiment, two platforms
 - [project.md](../project.md) — `android/`, `ios/`, `react-native/` conventions
