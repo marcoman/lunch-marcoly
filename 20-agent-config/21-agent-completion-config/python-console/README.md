@@ -54,7 +54,7 @@ Before the first generate, the middle row shows `config:equity-briefing-completi
 | Key | Action |
 |-----|--------|
 | `t` | Set two tickers |
-| `o` | Fetch Yahoo headlines (shared `../stories/` cache) |
+| `o` | Fetch headlines — Finnhub → Massive → Yahoo (shared `../stories/` cache) |
 | `s` | Status: user, tickers, stories + one-line last LD variation |
 | `l` | Last LD **sent** / **received** (context, variation, message previews, pretty reason JSON) |
 | `c` | Clear the output pane (keeps persona, stories, last LD tx) |
@@ -82,7 +82,7 @@ Optional theme: `AGENT_CONSOLE_THEME=high-contrast` (or `default`).
 |------|------|
 | `21-agent-completion-config.py` | Curses UI |
 | [`../python/agent_core.py`](../python/agent_core.py) | **LD insertion:** `completion_config` → stream |
-| [`../python/yahoo_news.py`](../python/yahoo_news.py) | Yahoo + shared stories cache |
+| [`../python/yahoo_news.py`](../python/yahoo_news.py) | News waterfall + shared stories cache |
 
 No `(m)ode` cycle here — the served AgentControl variation owns provider/model (unlike [01 python-console](../../../01-reference-agent/python-console/)).
 

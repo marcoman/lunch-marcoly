@@ -90,7 +90,7 @@ topology and Trace UX without a Java AI SDK dependency.
 |------|------|
 | `WebServer.java` | HTTP + SSE |
 | `AgentCore.java` | **LD insertion:** JSON variation (graph + 6 agent nodes) → manual walk → Ollama |
-| `YahooNews.java` | Yahoo headlines + `../stories/` cache |
+| `YahooNews.java` | News waterfall (Finnhub → Massive → Yahoo) + `../stories/` cache |
 | `src/main/resources/public/index.html` | Browser UI (Trace dock + mini path map) |
 
 ## Environment

@@ -3,7 +3,7 @@
  *
  *   1. Serve wwwroot/index.html
  *   2. JSON bootstrap (personas, cached tickers, config key)
- *   3. Yahoo Finance headlines
+ *   3. Headlines (Finnhub → Massive → Yahoo)
  *   4. Bridge browser SSE -> AgentCore.GenerateStreamAsync() (tool loop)
  *
  * LaunchDarkly work lives in AgentCore.cs (CompletionConfig + tools + TrackToolCall).

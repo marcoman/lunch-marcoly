@@ -58,7 +58,7 @@ dotnet run
   process (it reuses whatever is listening).
 - `GET /api/status` reports whether each child port is reachable (tab dots).
 
-Yahoo headlines use the **series** cache at [`../../stories/`](../../stories/).
+Headlines use the **series** cache at [`../../stories/`](../../stories/).
 Standalone `dotnet run` in each example’s `dotnet/` still works without the portal.
 
 ## Related

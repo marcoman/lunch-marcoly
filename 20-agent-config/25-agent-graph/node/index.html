@@ -11,7 +11,7 @@
 
     Flow:
       1. Enter two tickers (optional for joke)
-      2. Get Stories → Yahoo Finance headlines
+      2. Get Stories → Finnhub / Massive / Yahoo headlines
       3. Choose user (Charlie / Amelia / Toby)
       4. Pick an action → graph walk with Trace
   -->
@@ -995,7 +995,7 @@
      * Client flow
      * -----------
      * 1. boot()         → GET /api/bootstrap (+ restore saved story titles)
-     * 2. getStories()   → GET /api/stories  (Yahoo only; no LLM)
+     * 2. getStories()   → GET /api/stories  (Finnhub → Massive → Yahoo; no LLM)
      * 3. selectUser()   → Previous/Next User (UI only; no fetch, no LLM)
      * 4. generate(action) → POST /api/generate with action + stories (SSE)
      *
@@ -1793,8 +1793,10 @@
       const name = (block && block.name) || "";
       headingEl.textContent = ticker;
       let sub = name && name !== ticker ? name : "";
-      if (block && block.from_cache) {
-        sub = sub ? `${sub} · cached` : "cached";
+      const src = (block && block.from_cache) ? "cache" : String((block && block.source) || "");
+      const srcLabel = { finnhub: "Finnhub", massive: "Massive", yahoo: "Yahoo Finance", cache: "cached" }[src] || "";
+      if (srcLabel) {
+        sub = sub ? `${sub} · ${srcLabel}` : srcLabel;
       }
       nameEl.textContent = sub;
 
@@ -1851,7 +1853,7 @@
     async function getStories() {
       const { ticker1, ticker2 } = currentTickers();
       setBusy(true);
-      setStatus(`Fetching Yahoo Finance stories for ${ticker1} and ${ticker2}…`, "busy");
+      setStatus(`Fetching headlines for ${ticker1} and ${ticker2}…`, "busy");
       try {
         const res = await fetch(
           `/api/stories?ticker1=${encodeURIComponent(ticker1)}&ticker2=${encodeURIComponent(ticker2)}`
@@ -1864,7 +1866,7 @@
         const notes = [];
         if (data.errors && data.errors.length) notes.push(data.errors.join(" · "));
         const cached = blocks.some((b) => b.from_cache);
-        if (cached) notes.push("Used saved headlines where live Yahoo fetch failed.");
+        if (cached) notes.push("Used saved headlines where live fetch failed.");
         if (notes.length) {
           setStatus(notes.join(" "), "error");
         } else if (!usable) {

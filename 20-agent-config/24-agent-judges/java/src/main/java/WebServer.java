@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
  *
  * GET  /              → index.html
  * GET  /api/bootstrap → personas, tickers, config/judge keys, passThreshold
- * GET  /api/stories   → Yahoo headlines for two tickers
+ * GET  /api/stories   → headlines for two tickers (Finnhub → Massive → Yahoo)
  * POST /api/generate  → SSE (draft → judges → optional Charlie rewrite)
  *
  * LaunchDarkly work lives in AgentCore (jsonValueVariationDetail + Ollama judges).

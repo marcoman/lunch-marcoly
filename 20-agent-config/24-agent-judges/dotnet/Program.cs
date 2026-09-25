@@ -8,7 +8,7 @@
 //
 //   1. Serve wwwroot/index.html
 //   2. JSON bootstrap (personas, tickers, config/judge keys, passThreshold)
-//   3. Yahoo Finance headlines
+//   3. Headlines (Finnhub → Massive → Yahoo)
 //   4. Bridge browser SSE → AgentCore.GenerateStreamAsync()
 //
 // The LaunchDarkly work lives in AgentCore.cs (CompletionConfig + JudgeConfig).
@@ -17,7 +17,7 @@
 // -----------
 //   GET  /                 → index.html
 //   GET  /api/bootstrap    → personas, tickers, configKey, judgeKeys, passThreshold
-//   GET  /api/stories      → Yahoo headlines for two tickers
+//   GET  /api/stories      → headlines for two tickers (Finnhub → Massive → Yahoo)
 //   POST /api/generate     → SSE (draft → judges → optional Charlie rewrite)
 
 using System.Text;

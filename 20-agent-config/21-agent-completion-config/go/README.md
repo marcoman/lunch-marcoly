@@ -60,7 +60,7 @@ Before the first generate, the middle row shows `config:equity-briefing-completi
 | Key | Action |
 |-----|--------|
 | `t` | Set two tickers |
-| `o` | Fetch Yahoo headlines (shared `../stories/` cache) |
+| `o` | Fetch headlines — Finnhub → Massive → Yahoo (shared `../stories/` cache) |
 | `s` | Status: user, tickers, config key, served provider/model, last LD variation + stories |
 | `g` | Generate — LD evaluate → stream report |
 | `n` | Next persona (wrap; no LLM call until `g`) |
@@ -83,7 +83,7 @@ Typical session: `o` → `g` → `s` → `n` → `g` (compare personas) → `q`.
 |------|------|
 | `main.go` | Raw-terminal TUI (chrome, hotkeys, scrollback) — adapted from [01-reference-agent/go/main.go](../../../01-reference-agent/go/main.go) |
 | `agent.go` | **LD insertion:** `aiClient.CompletionConfig(...)` → stream. See the file header for the full read-order. |
-| `yahoo.go` | Yahoo headlines + shared `../stories/` cache — unchanged from [01-reference-agent/go/yahoo.go](../../../01-reference-agent/go/yahoo.go) |
+| `yahoo.go` | news waterfall (Finnhub → Massive → Yahoo) + shared `../stories/` cache — unchanged from [01-reference-agent/go/yahoo.go](../../../01-reference-agent/go/yahoo.go) |
 
 ## Go AI SDK note (API quirks vs Python / Node / .NET)
 

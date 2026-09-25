@@ -16,7 +16,7 @@ import (
 const (
 	defaultTicker1 = "NVDA"
 	defaultTicker2 = "SPCX"
-	userAgent      = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " +
+	userAgent     = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " +
 		"AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 )
 
@@ -30,6 +30,7 @@ var tickerCleaner = regexp.MustCompile(`[^A-Z0-9.\-]`)
 type story struct {
 	Title     string `json:"title"`
 	Publisher string `json:"publisher"`
+	Published string `json:"published"`
 	Link      string `json:"link"`
 	UUID      string `json:"uuid"`
 }
@@ -38,6 +39,7 @@ type tickerBlock struct {
 	Ticker    string  `json:"ticker"`
 	Name      string  `json:"name"`
 	Stories   []story `json:"stories"`
+	Source    string  `json:"source,omitempty"`
 	Error     string  `json:"error,omitempty"`
 	FromCache bool    `json:"from_cache"`
 	CachedAt  string  `json:"cached_at,omitempty"`
@@ -142,6 +144,7 @@ func getCachedTicker(ticker string) *tickerBlock {
 		Ticker:    symbol,
 		Name:      name,
 		Stories:   append([]story(nil), stories...),
+		Source:    "cache",
 		FromCache: true,
 		CachedAt:  entry.CachedAt,
 	}
@@ -226,7 +229,35 @@ func rememberPair(ticker1, ticker2 string, results []tickerBlock) {
 	_ = saveCache(c)
 }
 
-func yahooGetJSON(rawURL string) (map[string]any, error) {
+func envKey(name string) string {
+	return strings.TrimSpace(os.Getenv(name))
+}
+
+func commonStory(title, publisher, published, link, uuid string) *story {
+	title = strings.TrimSpace(title)
+	if title == "" {
+		return nil
+	}
+	return &story{
+		Title:     title,
+		Publisher: strings.TrimSpace(publisher),
+		Published: strings.TrimSpace(published),
+		Link:      strings.TrimSpace(link),
+		UUID:      strings.TrimSpace(uuid),
+	}
+}
+
+func tickerOk(symbol, name string, stories []story, source string) tickerBlock {
+	if name == "" {
+		name = symbol
+	}
+	return tickerBlock{Ticker: symbol, Name: name, Stories: stories, Source: source}
+}
+
+func getJSON(rawURL string, extraHeaders map[string]string, sleepBefore time.Duration) (any, error) {
+	if sleepBefore > 0 {
+		time.Sleep(sleepBefore)
+	}
 	client := &http.Client{Timeout: 20 * time.Second}
 	var lastErr error
 	for attempt := 0; attempt < 3; attempt++ {
@@ -237,7 +268,9 @@ func yahooGetJSON(rawURL string) (map[string]any, error) {
 		req.Header.Set("User-Agent", userAgent)
 		req.Header.Set("Accept", "application/json")
 		req.Header.Set("Accept-Language", "en-US,en;q=0.9")
-
+		for k, v := range extraHeaders {
+			req.Header.Set(k, v)
+		}
 		res, err := client.Do(req)
 		if err != nil {
 			lastErr = err
@@ -250,7 +283,10 @@ func yahooGetJSON(rawURL string) (map[string]any, error) {
 			lastErr = readErr
 			continue
 		}
-		if res.StatusCode == 429 || res.StatusCode == 503 {
+		if res.StatusCode == 429 {
+			return nil, fmt.Errorf("HTTP %d", res.StatusCode)
+		}
+		if res.StatusCode == 503 {
 			lastErr = fmt.Errorf("HTTP %d", res.StatusCode)
 			if attempt < 2 {
 				time.Sleep(time.Duration(1500*(attempt+1)) * time.Millisecond)
@@ -261,16 +297,52 @@ func yahooGetJSON(rawURL string) (map[string]any, error) {
 		if res.StatusCode < 200 || res.StatusCode >= 300 {
 			return nil, fmt.Errorf("HTTP %d", res.StatusCode)
 		}
-		var payload map[string]any
+		var payload any
 		if err := json.Unmarshal(body, &payload); err != nil {
 			return nil, err
 		}
 		return payload, nil
 	}
 	if lastErr == nil {
-		lastErr = fmt.Errorf("Yahoo request failed")
+		lastErr = fmt.Errorf("news request failed")
 	}
 	return nil, lastErr
+}
+
+func httpFail(label, symbol string, err error) string {
+	msg := err.Error()
+	if strings.HasPrefix(msg, "HTTP ") {
+		return fmt.Sprintf("%s %s for %s.", label, msg, symbol)
+	}
+	return fmt.Sprintf("%s request failed for %s: %v", label, symbol, err)
+}
+
+func unixToISO(v any) string {
+	switch t := v.(type) {
+	case float64:
+		if t <= 0 {
+			return ""
+		}
+		return time.Unix(int64(t), 0).UTC().Format("2006-01-02T15:04:05Z")
+	case json.Number:
+		n, err := t.Int64()
+		if err != nil || n <= 0 {
+			return ""
+		}
+		return time.Unix(n, 0).UTC().Format("2006-01-02T15:04:05Z")
+	default:
+		s := strings.TrimSpace(asString(v))
+		if s == "" {
+			return ""
+		}
+		if ts, err := time.Parse(time.RFC3339, s); err == nil {
+			return ts.UTC().Format("2006-01-02T15:04:05Z")
+		}
+		if ts, err := time.Parse("2006-01-02T15:04:05Z", s); err == nil {
+			return ts.UTC().Format("2006-01-02T15:04:05Z")
+		}
+		return s
+	}
 }
 
 func asString(v any) string {
@@ -305,40 +377,115 @@ func parseSearchPayload(symbol string, payload map[string]any, count int) *ticke
 		if !ok {
 			continue
 		}
-		title := strings.TrimSpace(asString(m["title"]))
-		if title == "" {
-			continue
+		s := commonStory(asString(m["title"]), asString(m["publisher"]), unixToISO(m["providerPublishTime"]), asString(m["link"]), asString(m["uuid"]))
+		if s != nil {
+			stories = append(stories, *s)
 		}
-		stories = append(stories, story{
-			Title:     title,
-			Publisher: strings.TrimSpace(asString(m["publisher"])),
-			Link:      strings.TrimSpace(asString(m["link"])),
-			UUID:      strings.TrimSpace(asString(m["uuid"])),
-		})
 	}
 	if len(stories) == 0 {
 		return nil
 	}
-	if name == "" {
-		name = symbol
-	}
-	return &tickerBlock{
-		Ticker:    symbol,
-		Name:      name,
-		Stories:   stories,
-		FromCache: false,
-	}
+	block := tickerOk(symbol, name, stories, "yahoo")
+	return &block
 }
 
-func fetchStoriesForTicker(ticker string, count int) tickerBlock {
-	symbol := normalizeTicker(ticker)
-	if symbol == "" {
-		return tickerBlock{Error: "Ticker is empty."}
+func fetchFinnhub(symbol string, count int) (tickerBlock, string, bool) {
+	token := envKey("FINNHUB_API_KEY")
+	if token == "" {
+		return tickerBlock{}, "", false
 	}
+	end := time.Now().UTC()
+	start := end.AddDate(0, 0, -7)
+	q := url.Values{
+		"symbol": {symbol},
+		"from":   {start.Format("2006-01-02")},
+		"to":     {end.Format("2006-01-02")},
+		"token":  {token},
+	}
+	payload, err := getJSON("https://finnhub.io/api/v1/company-news?"+q.Encode(), nil, 0)
+	if err != nil {
+		return tickerBlock{}, httpFail("Finnhub", symbol, err), false
+	}
+	items, ok := payload.([]any)
+	if !ok {
+		return tickerBlock{}, fmt.Sprintf("Finnhub returned no stories for %s.", symbol), false
+	}
+	stories := make([]story, 0, count)
+	for _, item := range items {
+		if len(stories) >= count {
+			break
+		}
+		m, ok := item.(map[string]any)
+		if !ok {
+			continue
+		}
+		s := commonStory(asString(m["headline"]), asString(m["source"]), unixToISO(m["datetime"]), asString(m["url"]), asString(m["id"]))
+		if s != nil {
+			stories = append(stories, *s)
+		}
+	}
+	if len(stories) == 0 {
+		return tickerBlock{}, fmt.Sprintf("No recent stories found for %s.", symbol), false
+	}
+	return tickerOk(symbol, symbol, stories, "finnhub"), "", true
+}
+
+func fetchMassive(symbol string, count int) (tickerBlock, string, bool) {
+	token := envKey("MASSIVE_API_KEY")
+	if token == "" {
+		return tickerBlock{}, "", false
+	}
+	q := url.Values{
+		"ticker": {symbol},
+		"limit":  {fmt.Sprintf("%d", count)},
+		"sort":   {"published_utc"},
+		"order":  {"desc"},
+	}
+	payload, err := getJSON("https://api.massive.com/v2/reference/news?"+q.Encode(), map[string]string{
+		"Authorization": "Bearer " + token,
+	}, 0)
+	if err != nil {
+		return tickerBlock{}, httpFail("Massive", symbol, err), false
+	}
+	root, ok := payload.(map[string]any)
+	if !ok {
+		return tickerBlock{}, fmt.Sprintf("Massive returned no stories for %s.", symbol), false
+	}
+	results, _ := root["results"].([]any)
+	stories := make([]story, 0, count)
+	for _, item := range results {
+		if len(stories) >= count {
+			break
+		}
+		m, ok := item.(map[string]any)
+		if !ok {
+			continue
+		}
+		publisher := ""
+		if pub, ok := m["publisher"].(map[string]any); ok {
+			publisher = asString(pub["name"])
+		} else {
+			publisher = asString(m["publisher"])
+		}
+		link := asString(m["article_url"])
+		if link == "" {
+			link = asString(m["url"])
+		}
+		s := commonStory(asString(m["title"]), publisher, unixToISO(m["published_utc"]), link, asString(m["id"]))
+		if s != nil {
+			stories = append(stories, *s)
+		}
+	}
+	if len(stories) == 0 {
+		return tickerBlock{}, fmt.Sprintf("No recent stories found for %s.", symbol), false
+	}
+	return tickerOk(symbol, symbol, stories, "massive"), "", true
+}
+
+func fetchYahoo(symbol string, count int) (tickerBlock, string, bool) {
 	if count < 1 {
 		count = 1
 	}
-
 	variants := []url.Values{
 		{
 			"q":                {symbol},
@@ -357,40 +504,75 @@ func fetchStoriesForTicker(ticker string, count int) tickerBlock {
 			"region":      {"US"},
 		},
 	}
-
 	lastError := fmt.Sprintf("No recent stories found for %s.", symbol)
 	for _, host := range yahooSearchHosts {
 		for _, params := range variants {
 			rawURL := host + "?" + params.Encode()
-			payload, err := yahooGetJSON(rawURL)
+			payload, err := getJSON(rawURL, nil, time.Second)
 			if err != nil {
 				msg := err.Error()
 				if strings.HasPrefix(msg, "HTTP ") {
 					lastError = fmt.Sprintf("Yahoo Finance %s for %s.", msg, symbol)
+					if msg == "HTTP 429" {
+						return tickerBlock{}, lastError, false
+					}
 				} else {
 					lastError = fmt.Sprintf("Yahoo Finance request failed for %s: %v", symbol, err)
 				}
 				continue
 			}
-			parsed := parseSearchPayload(symbol, payload, count)
+			root, ok := payload.(map[string]any)
+			if !ok {
+				lastError = fmt.Sprintf("No recent stories found for %s.", symbol)
+				continue
+			}
+			parsed := parseSearchPayload(symbol, root, count)
 			if parsed == nil {
 				lastError = fmt.Sprintf("No recent stories found for %s.", symbol)
 				continue
 			}
-			rememberTicker(symbol, parsed.Name, parsed.Stories)
-			return *parsed
+			return *parsed, "", true
 		}
 	}
+	return tickerBlock{}, lastError, false
+}
 
+func fetchStoriesForTicker(ticker string, count int) tickerBlock {
+	symbol := normalizeTicker(ticker)
+	if symbol == "" {
+		return tickerBlock{Error: "Ticker is empty."}
+	}
+	if count < 1 {
+		count = 1
+	}
+	lastError := fmt.Sprintf("No recent stories found for %s.", symbol)
+	if envKey("FINNHUB_API_KEY") != "" {
+		if block, err, ok := fetchFinnhub(symbol, count); ok {
+			rememberTicker(symbol, block.Name, block.Stories)
+			return block
+		} else if err != "" {
+			lastError = err
+		}
+	}
+	if envKey("MASSIVE_API_KEY") != "" {
+		if block, err, ok := fetchMassive(symbol, count); ok {
+			rememberTicker(symbol, block.Name, block.Stories)
+			return block
+		} else if err != "" {
+			lastError = err
+		}
+	}
+	if block, err, ok := fetchYahoo(symbol, count); ok {
+		rememberTicker(symbol, block.Name, block.Stories)
+		return block
+	} else if err != "" {
+		lastError = err
+	}
 	if cached := getCachedTicker(symbol); cached != nil {
 		cached.Error = lastError + " Showing last saved headlines."
 		return *cached
 	}
-	return tickerBlock{
-		Ticker: symbol,
-		Name:   symbol,
-		Error:  lastError,
-	}
+	return tickerBlock{Ticker: symbol, Name: symbol, Error: lastError}
 }
 
 func fetchStoriesForTickers(ticker1, ticker2 string, count int) fetchPairResult {
@@ -403,7 +585,9 @@ func fetchStoriesForTickers(ticker1, ticker2 string, count int) fetchPairResult 
 		t2 = defaultTicker2
 	}
 	first := fetchStoriesForTicker(t1, count)
-	time.Sleep(500 * time.Millisecond)
+	if first.Source == "yahoo" || len(first.Stories) == 0 {
+		time.Sleep(500 * time.Millisecond)
+	}
 	second := fetchStoriesForTicker(t2, count)
 	results := []tickerBlock{first, second}
 	rememberPair(t1, t2, results)
@@ -424,7 +608,7 @@ func fetchStoriesForTickers(ticker1, ticker2 string, count int) fetchPairResult 
 
 func formatStoriesForPrompt(tickerResults []tickerBlock) string {
 	var b strings.Builder
-	b.WriteString("Using only the recent Yahoo Finance headlines below, write a short ")
+	b.WriteString("Using only the recent headlines below, write a short ")
 	b.WriteString("market briefing that compares the two tickers. Cite story titles ")
 	b.WriteString("where helpful. Do not invent facts beyond what the headlines imply.\n\n")
 	for _, block := range tickerResults {

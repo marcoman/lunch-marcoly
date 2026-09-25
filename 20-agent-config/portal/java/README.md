@@ -59,7 +59,7 @@ java -jar target/portal-java.jar
   process (it reuses whatever is listening).
 - `GET /api/status` reports whether each child port is reachable (tab dots).
 
-Yahoo headlines use the **series** cache at [`../../stories/`](../../stories/).
+Headlines use the **series** cache at [`../../stories/`](../../stories/).
 Standalone `java -jar` in each example’s `java/` still works without the portal.
 
 ## Related

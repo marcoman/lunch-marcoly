@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -5,9 +6,8 @@ using System.Text.Json.Nodes;
 namespace AgentGraph;
 
 /// <summary>
-/// Fetch recent Yahoo Finance news titles for tickers (no API key).
-/// Successful fetches are written to the shared example cache:
-///   ../../stories/stories_cache.json (20-agent-config/stories/)
+/// Fetch recent news titles (Finnhub → Massive → Yahoo). No LaunchDarkly.
+/// Headlines are mapped to {title, publisher, published, link, uuid}.
 /// </summary>
 public static class YahooNews
 {
@@ -19,6 +19,9 @@ public static class YahooNews
         "https://query1.finance.yahoo.com/v1/finance/search",
         "https://query2.finance.yahoo.com/v1/finance/search",
     };
+
+    private const string FinnhubNewsUrl = "https://finnhub.io/api/v1/company-news";
+    private const string MassiveNewsUrl = "https://api.massive.com/v2/reference/news";
 
     // Space Yahoo calls; stop walking hosts/variants on HTTP 429.
     private const int RequestGapMs = 1000;
@@ -144,6 +147,7 @@ public static class YahooNews
             ["ticker"] = symbol,
             ["name"] = string.IsNullOrEmpty(name) ? symbol : name,
             ["stories"] = stories,
+            ["source"] = "cache",
             ["error"] = null,
             ["from_cache"] = true,
             ["cached_at"] = JsonUtil.AsString(entry["cached_at"]),
@@ -197,7 +201,7 @@ public static class YahooNews
         if (results.Count != 2) return;
         foreach (var r in results)
         {
-            if (JsonUtil.AsDictList(r.GetValueOrDefault("stories")).Count == 0) return;
+            if (r.GetValueOrDefault("stories") is not List<Dictionary<string, object?>> s || s.Count == 0) return;
         }
 
         var cache = LoadCache();
@@ -211,7 +215,7 @@ public static class YahooNews
         foreach (var block in results)
         {
             if (block.GetValueOrDefault("from_cache") is true) continue;
-            var stories = JsonUtil.AsDictList(block.GetValueOrDefault("stories"));
+            var stories = block.GetValueOrDefault("stories") as List<Dictionary<string, object?>> ?? new();
             var symbol = NormalizeTicker(block.GetValueOrDefault("ticker") as string ?? "");
             if (symbol.Length == 0 || stories.Count == 0) continue;
             tickers[symbol] = new JsonObject
@@ -235,28 +239,34 @@ public static class YahooNews
         public YahooHttpException(int statusCode) : base($"HTTP {statusCode}") => StatusCode = statusCode;
     }
 
-    private static async Task<JsonObject> YahooGetJsonAsync(string url)
+    private static string EnvKey(string name) => (Environment.GetEnvironmentVariable(name) ?? "").Trim();
+
+    private static async Task<JsonNode> GetJsonAsync(string url, Dictionary<string, string>? extraHeaders = null, int sleepBeforeMs = 0)
     {
         Exception? last = null;
         for (var attempt = 0; attempt < 3; attempt++)
         {
-            await Task.Delay(RequestGapMs);
+            if (sleepBeforeMs > 0) await Task.Delay(sleepBeforeMs);
             try
             {
                 using var request = new HttpRequestMessage(HttpMethod.Get, url);
                 request.Headers.TryAddWithoutValidation("User-Agent", UserAgent);
                 request.Headers.TryAddWithoutValidation("Accept", "application/json");
                 request.Headers.TryAddWithoutValidation("Accept-Language", "en-US,en;q=0.9");
+                if (extraHeaders != null)
+                {
+                    foreach (var kv in extraHeaders)
+                        request.Headers.TryAddWithoutValidation(kv.Key, kv.Value);
+                }
                 using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
                 using var response = await Http.SendAsync(request, cts.Token);
                 var code = (int)response.StatusCode;
                 if (code is >= 200 and < 300)
                 {
                     var body = await response.Content.ReadAsStringAsync();
-                    return JsonNode.Parse(body) as JsonObject ?? new JsonObject();
+                    return JsonNode.Parse(body) ?? new JsonObject();
                 }
 
-                // Rate-limited: do not retry — caller falls back to cache.
                 if (code == 429) throw new YahooHttpException(code);
                 if (code == 503 && attempt < 2)
                 {
@@ -281,8 +291,33 @@ public static class YahooNews
                 throw;
             }
         }
-        throw last ?? new Exception("Yahoo request failed");
+        throw last ?? new Exception("News request failed");
     }
+
+    private static Dictionary<string, object?>? CommonStory(string? title, string? publisher, string? published, string? link, string? uuid)
+    {
+        title = (title ?? "").Trim();
+        if (title.Length == 0) return null;
+        return new Dictionary<string, object?>
+        {
+            ["title"] = title,
+            ["publisher"] = (publisher ?? "").Trim(),
+            ["published"] = (published ?? "").Trim(),
+            ["link"] = (link ?? "").Trim(),
+            ["uuid"] = (uuid ?? "").Trim(),
+        };
+    }
+
+    private static Dictionary<string, object?> TickerOk(string symbol, string name, List<Dictionary<string, object?>> stories, string source)
+        => new()
+        {
+            ["ticker"] = symbol,
+            ["name"] = string.IsNullOrEmpty(name) ? symbol : name,
+            ["stories"] = stories,
+            ["source"] = source,
+            ["error"] = null,
+            ["from_cache"] = false,
+        };
 
     private static Dictionary<string, object?>? ParseSearchPayload(string symbol, JsonObject payload, int count)
     {
@@ -299,45 +334,113 @@ public static class YahooNews
             {
                 if (stories.Count >= count) break;
                 if (item is not JsonObject obj) continue;
-                var title = (JsonUtil.AsString(obj["title"]) ?? "").Trim();
-                if (title.Length == 0) continue;
-                stories.Add(new Dictionary<string, object?>
-                {
-                    ["title"] = title,
-                    ["publisher"] = (JsonUtil.AsString(obj["publisher"]) ?? "").Trim(),
-                    ["published"] = UnixToIso(obj["providerPublishTime"]),
-                    ["link"] = (JsonUtil.AsString(obj["link"]) ?? "").Trim(),
-                    ["uuid"] = (JsonUtil.AsString(obj["uuid"]) ?? "").Trim(),
-                });
+                var story = CommonStory(
+                    JsonUtil.AsString(obj["title"]),
+                    JsonUtil.AsString(obj["publisher"]),
+                    UnixToIso(obj["providerPublishTime"]),
+                    JsonUtil.AsString(obj["link"]),
+                    JsonUtil.AsString(obj["uuid"]));
+                if (story != null) stories.Add(story);
             }
         }
 
         if (stories.Count == 0) return null;
-        return new Dictionary<string, object?>
-        {
-            ["ticker"] = symbol,
-            ["name"] = string.IsNullOrEmpty(name) ? symbol : name,
-            ["stories"] = stories,
-            ["error"] = null,
-            ["from_cache"] = false,
-        };
+        return TickerOk(symbol, name, stories, "yahoo");
     }
 
-    public static async Task<Dictionary<string, object?>> FetchStoriesForTickerAsync(string ticker, int count)
+    private static async Task<(Dictionary<string, object?>? parsed, string err)> FetchFinnhubAsync(string symbol, int count)
     {
-        var symbol = NormalizeTicker(ticker);
-        if (symbol.Length == 0)
+        var token = EnvKey("FINNHUB_API_KEY");
+        if (token.Length == 0) return (null, "");
+        var end = DateTime.UtcNow.Date;
+        var start = end.AddDays(-7);
+        var url = $"{FinnhubNewsUrl}?{BuildQuery(new Dictionary<string, string>
         {
-            return new Dictionary<string, object?>
-            {
-                ["ticker"] = "",
-                ["name"] = "",
-                ["stories"] = new List<Dictionary<string, object?>>(),
-                ["error"] = "Ticker is empty.",
-                ["from_cache"] = false,
-            };
+            ["symbol"] = symbol,
+            ["from"] = start.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+            ["to"] = end.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+            ["token"] = token,
+        })}";
+        JsonNode payload;
+        try
+        {
+            payload = await GetJsonAsync(url);
         }
+        catch (YahooHttpException exc)
+        {
+            return (null, $"Finnhub HTTP {exc.StatusCode} for {symbol}.");
+        }
+        catch (Exception exc)
+        {
+            return (null, $"Finnhub request failed for {symbol}: {exc.Message}");
+        }
+        if (payload is not JsonArray arr)
+            return (null, $"Finnhub returned no stories for {symbol}.");
+        var stories = new List<Dictionary<string, object?>>();
+        foreach (var item in arr)
+        {
+            if (stories.Count >= count) break;
+            if (item is not JsonObject obj) continue;
+            var story = CommonStory(
+                FirstNonBlank(JsonUtil.AsString(obj["headline"]), JsonUtil.AsString(obj["title"])),
+                JsonUtil.AsString(obj["source"]),
+                ToIso(obj["datetime"]),
+                JsonUtil.AsString(obj["url"]),
+                JsonUtil.AsString(obj["id"]) ?? JsonUtil.AsLong(obj["id"])?.ToString(CultureInfo.InvariantCulture));
+            if (story != null) stories.Add(story);
+        }
+        if (stories.Count == 0) return (null, $"No recent stories found for {symbol}.");
+        return (TickerOk(symbol, symbol, stories, "finnhub"), "");
+    }
 
+    private static async Task<(Dictionary<string, object?>? parsed, string err)> FetchMassiveAsync(string symbol, int count)
+    {
+        var token = EnvKey("MASSIVE_API_KEY");
+        if (token.Length == 0) return (null, "");
+        var url = $"{MassiveNewsUrl}?{BuildQuery(new Dictionary<string, string>
+        {
+            ["ticker"] = symbol,
+            ["limit"] = Math.Max(1, count).ToString(CultureInfo.InvariantCulture),
+            ["sort"] = "published_utc",
+            ["order"] = "desc",
+        })}";
+        JsonNode payload;
+        try
+        {
+            payload = await GetJsonAsync(url, new Dictionary<string, string> { ["Authorization"] = $"Bearer {token}" });
+        }
+        catch (YahooHttpException exc)
+        {
+            return (null, $"Massive HTTP {exc.StatusCode} for {symbol}.");
+        }
+        catch (Exception exc)
+        {
+            return (null, $"Massive request failed for {symbol}: {exc.Message}");
+        }
+        if (payload is not JsonObject obj || obj["results"] is not JsonArray results || results.Count == 0)
+            return (null, $"No recent stories found for {symbol}.");
+        var stories = new List<Dictionary<string, object?>>();
+        foreach (var item in results)
+        {
+            if (stories.Count >= count) break;
+            if (item is not JsonObject row) continue;
+            var publisher = "";
+            if (row["publisher"] is JsonObject pub) publisher = JsonUtil.AsString(pub["name"]) ?? "";
+            else publisher = JsonUtil.AsString(row["publisher"]) ?? "";
+            var story = CommonStory(
+                FirstNonBlank(JsonUtil.AsString(row["title"]), JsonUtil.AsString(row["headline"])),
+                publisher,
+                ToIso(row["published_utc"]),
+                FirstNonBlank(JsonUtil.AsString(row["article_url"]), JsonUtil.AsString(row["url"])),
+                JsonUtil.AsString(row["id"]));
+            if (story != null) stories.Add(story);
+        }
+        if (stories.Count == 0) return (null, $"No recent stories found for {symbol}.");
+        return (TickerOk(symbol, symbol, stories, "massive"), "");
+    }
+
+    private static async Task<(Dictionary<string, object?>? parsed, string err)> FetchYahooAsync(string symbol, int count)
+    {
         var newsCount = Math.Max(1, count).ToString(CultureInfo.InvariantCulture);
         var queryVariants = new List<Dictionary<string, string>>
         {
@@ -360,43 +463,87 @@ public static class YahooNews
                 ["region"] = "US",
             },
         };
-
         var lastError = $"No recent stories found for {symbol}.";
         foreach (var host in YahooSearchHosts)
         {
-            var rateLimited = false;
             foreach (var parameters in queryVariants)
             {
                 var url = $"{host}?{BuildQuery(parameters)}";
                 try
                 {
-                    var payload = await YahooGetJsonAsync(url);
-                    var parsed = ParseSearchPayload(symbol, payload, count);
+                    var payload = await GetJsonAsync(url, sleepBeforeMs: RequestGapMs);
+                    if (payload is not JsonObject obj)
+                    {
+                        lastError = $"No recent stories found for {symbol}.";
+                        continue;
+                    }
+                    var parsed = ParseSearchPayload(symbol, obj, count);
                     if (parsed == null)
                     {
                         lastError = $"No recent stories found for {symbol}.";
                         continue;
                     }
-                    var stories = (List<Dictionary<string, object?>>)parsed["stories"]!;
-                    RememberTicker(symbol, parsed["name"] as string, stories);
-                    return parsed;
+                    return (parsed, "");
                 }
                 catch (YahooHttpException exc)
                 {
-                    if (exc.StatusCode == 429)
-                    {
-                        lastError = $"Yahoo Finance HTTP 429 for {symbol}.";
-                        rateLimited = true;
-                        break;
-                    }
                     lastError = $"Yahoo Finance HTTP {exc.StatusCode} for {symbol}.";
+                    if (exc.StatusCode == 429) return (null, lastError);
                 }
                 catch (Exception exc)
                 {
                     lastError = $"Yahoo Finance request failed for {symbol}: {exc.Message}";
                 }
             }
-            if (rateLimited) break;
+        }
+        return (null, lastError);
+    }
+
+    public static async Task<Dictionary<string, object?>> FetchStoriesForTickerAsync(string ticker, int count)
+    {
+        var symbol = NormalizeTicker(ticker);
+        if (symbol.Length == 0)
+        {
+            return new Dictionary<string, object?>
+            {
+                ["ticker"] = "",
+                ["name"] = "",
+                ["stories"] = new List<Dictionary<string, object?>>(),
+                ["source"] = "",
+                ["error"] = "Ticker is empty.",
+                ["from_cache"] = false,
+            };
+        }
+
+        var lastError = $"No recent stories found for {symbol}.";
+        if (EnvKey("FINNHUB_API_KEY").Length > 0)
+        {
+            var (parsed, err) = await FetchFinnhubAsync(symbol, count);
+            if (parsed != null)
+            {
+                RememberTicker(symbol, parsed["name"] as string, (List<Dictionary<string, object?>>)parsed["stories"]!);
+                return parsed;
+            }
+            if (!string.IsNullOrEmpty(err)) lastError = err;
+        }
+        if (EnvKey("MASSIVE_API_KEY").Length > 0)
+        {
+            var (parsed, err) = await FetchMassiveAsync(symbol, count);
+            if (parsed != null)
+            {
+                RememberTicker(symbol, parsed["name"] as string, (List<Dictionary<string, object?>>)parsed["stories"]!);
+                return parsed;
+            }
+            if (!string.IsNullOrEmpty(err)) lastError = err;
+        }
+        {
+            var (parsed, err) = await FetchYahooAsync(symbol, count);
+            if (parsed != null)
+            {
+                RememberTicker(symbol, parsed["name"] as string, (List<Dictionary<string, object?>>)parsed["stories"]!);
+                return parsed;
+            }
+            if (!string.IsNullOrEmpty(err)) lastError = err;
         }
 
         var cached = GetCachedTicker(symbol);
@@ -411,6 +558,7 @@ public static class YahooNews
             ["ticker"] = symbol,
             ["name"] = symbol,
             ["stories"] = new List<Dictionary<string, object?>>(),
+            ["source"] = "",
             ["error"] = lastError,
             ["from_cache"] = false,
         };
@@ -424,7 +572,9 @@ public static class YahooNews
         if (t2.Length == 0) t2 = DefaultTicker2;
 
         var first = await FetchStoriesForTickerAsync(t1, count);
-        await Task.Delay(RequestGapMs);
+        var firstStories = first.GetValueOrDefault("stories") as List<Dictionary<string, object?>>;
+        if (first.GetValueOrDefault("source") as string == "yahoo" || firstStories == null || firstStories.Count == 0)
+            await Task.Delay(RequestGapMs);
         var second = await FetchStoriesForTickerAsync(t2, count);
         var results = new List<Dictionary<string, object?>> { first, second };
         RememberPair(t1, t2, results);
@@ -448,7 +598,7 @@ public static class YahooNews
     {
         var lines = new List<string>
         {
-            "Using only the recent Yahoo Finance headlines below, write a short market briefing " +
+            "Using only the recent headlines below, write a short market briefing " +
             "that compares the two tickers. Cite story titles where helpful. Do not invent facts " +
             "beyond what the headlines imply.",
             "",
@@ -460,7 +610,7 @@ public static class YahooNews
             var name = block.GetValueOrDefault("name") as string ?? ticker;
             lines.Add($"## {ticker} ({name})");
 
-            var stories = JsonUtil.AsDictList(block.GetValueOrDefault("stories"));
+            var stories = block.GetValueOrDefault("stories") as List<Dictionary<string, object?>> ?? new();
             if (stories.Count == 0)
             {
                 lines.Add("- (no stories available)");
@@ -533,5 +683,145 @@ public static class YahooNews
         }
     }
 
+    private static string ToIso(JsonNode? node)
+    {
+        var unix = UnixToIso(node);
+        if (unix.Length > 0) return unix;
+        var text = (JsonUtil.AsString(node) ?? "").Trim();
+        if (text.Length == 0) return "";
+        if (DateTimeOffset.TryParse(text, CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out var dto))
+        {
+            return dto.UtcDateTime.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
+        }
+        return text;
+    }
+
     private static string NowIso() => DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
+}
+
+/// <summary>
+/// Small helpers for converting between <see cref="JsonNode"/> trees and the loosely typed
+/// <c>Dictionary&lt;string, object?&gt;</c> shape used throughout this example (mirrors the
+/// plain-object/Map style used by the Node and Java ports of 01-reference-agent).
+/// </summary>
+internal static class JsonUtil
+{
+    public static string? AsString(JsonNode? node)
+        => node is JsonValue v && v.TryGetValue<string>(out var s) ? s : null;
+
+    public static long? AsLong(JsonNode? node)
+    {
+        if (node is not JsonValue v) return null;
+        if (v.TryGetValue<long>(out var l)) return l;
+        if (v.TryGetValue<double>(out var d)) return (long)d;
+        if (v.TryGetValue<string>(out var s) && long.TryParse(s, out var parsed)) return parsed;
+        return null;
+    }
+
+    public static object? ToObject(JsonNode? node)
+    {
+        switch (node)
+        {
+            case null:
+                return null;
+            case JsonObject o:
+                return ToMap(o);
+            case JsonArray a:
+            {
+                // Prefer List<Dictionary<…>> when every element is a map (or the array
+                // is empty) so callers' `as List<Dictionary<string, object?>>` casts
+                // succeed after a browser JSON round-trip of ticker story blocks.
+                var items = a.Select(ToObject).ToList();
+                if (items.Count == 0 || items.All(x => x is Dictionary<string, object?>))
+                {
+                    return items
+                        .OfType<Dictionary<string, object?>>()
+                        .ToList();
+                }
+                return items;
+            }
+            case JsonValue v:
+                if (v.TryGetValue<string>(out var s)) return s;
+                if (v.TryGetValue<bool>(out var b)) return b;
+                if (v.TryGetValue<long>(out var l)) return l;
+                if (v.TryGetValue<double>(out var d)) return d;
+                return node.ToString();
+            default:
+                return node.ToString();
+        }
+    }
+
+    /// <summary>
+    /// Coerce a nested list (from <see cref="ToObject"/> or in-memory builds) to
+    /// <c>List&lt;Dictionary&lt;string, object?&gt;&gt;</c>.
+    /// </summary>
+    public static List<Dictionary<string, object?>> AsDictList(object? value)
+    {
+        if (value is List<Dictionary<string, object?>> typed) return typed;
+        var list = new List<Dictionary<string, object?>>();
+        if (value is IEnumerable enumerable and not string)
+        {
+            foreach (var item in enumerable)
+            {
+                if (item is Dictionary<string, object?> d) list.Add(d);
+            }
+        }
+        return list;
+    }
+
+    public static Dictionary<string, object?> ToMap(JsonObject obj)
+    {
+        var map = new Dictionary<string, object?>();
+        foreach (var kv in obj)
+        {
+            map[kv.Key] = ToObject(kv.Value);
+        }
+        return map;
+    }
+
+    public static JsonNode? FromObject(object? value)
+    {
+        switch (value)
+        {
+            case null:
+                return null;
+            case string s:
+                return JsonValue.Create(s);
+            case bool b:
+                return JsonValue.Create(b);
+            case int i:
+                return JsonValue.Create(i);
+            case long l:
+                return JsonValue.Create(l);
+            case double d:
+                return JsonValue.Create(d);
+            case Dictionary<string, object?> map:
+                return FromMap(map);
+            case IEnumerable list:
+                return FromList(list);
+            default:
+                return JsonValue.Create(value.ToString());
+        }
+    }
+
+    public static JsonObject FromMap(Dictionary<string, object?> map)
+    {
+        var obj = new JsonObject();
+        foreach (var kv in map)
+        {
+            obj[kv.Key] = FromObject(kv.Value);
+        }
+        return obj;
+    }
+
+    private static JsonArray FromList(IEnumerable list)
+    {
+        var arr = new JsonArray();
+        foreach (var item in list)
+        {
+            arr.Add(FromObject(item));
+        }
+        return arr;
+    }
 }

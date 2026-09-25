@@ -57,7 +57,7 @@ Open **http://127.0.0.1:8213/** (Python: 8210; Node.js: 8211; Java: 8212).
 |------|------|
 | `Program.cs` | Minimal API / Kestrel — routes + SSE bridge |
 | `AgentCore.cs` | **LD insertion:** `LdAiClient.CompletionConfig` → `CreateTracker` → Ollama stream |
-| `YahooNews.cs` | Yahoo headlines + `../stories/` cache |
+| `YahooNews.cs` | News waterfall (Finnhub → Massive → Yahoo) + `../stories/` cache |
 | `JsonUtil.cs` | `JsonNode` ⇄ `Dictionary<string, object?>` helpers (mirrors the loose typing used in the Node/Python examples) |
 | `wwwroot/index.html` | Browser UI (shared with Node/Python/Java) |
 

@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
  *
  * GET  /              -> index.html
  * GET  /api/bootstrap -> personas, tickers, graph/node keys, actions
- * GET  /api/stories   -> Yahoo headlines for two tickers
+ * GET  /api/stories   -> headlines for two tickers (Finnhub → Massive → Yahoo)
  * POST /api/generate  -> SSE (assess -> specialist -> finalize)
  *
  * LaunchDarkly work lives in AgentCore (jsonValueVariationDetail on the graph

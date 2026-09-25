@@ -5,7 +5,7 @@
 Same jobs as 01-reference-agent.py / 21:
   1. Serve index.html
   2. JSON bootstrap
-  3. Yahoo Finance headlines
+  3. Headlines (Finnhub → Massive → Yahoo)
   4. Bridge browser SSE → agent_core.generate_stream()
   5. POST /api/feedback — thumbs via resumption token
 

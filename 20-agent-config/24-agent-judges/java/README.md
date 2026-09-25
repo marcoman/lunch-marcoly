@@ -64,7 +64,7 @@ Prefer Python when the lesson is first-class `create_judge`. Node matches the ga
 |------|------|
 | `WebServer.java` | HTTP + SSE |
 | `AgentCore.java` | **LD insertion:** JSON variation (completion + judges) → Ollama |
-| `YahooNews.java` | Yahoo headlines + `../stories/` cache |
+| `YahooNews.java` | News waterfall (Finnhub → Massive → Yahoo) + `../stories/` cache |
 | `src/main/resources/public/index.html` | Browser UI |
 
 ## Environment

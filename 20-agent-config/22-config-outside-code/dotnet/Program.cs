@@ -2,7 +2,7 @@
 //
 //   GET  /                 → wwwroot/index.html
 //   GET  /api/bootstrap    → personas, tickers, cached stories, config key
-//   GET  /api/stories      → Yahoo headlines
+//   GET  /api/stories      → headlines (Finnhub → Massive → Yahoo)
 //   POST /api/generate     → SSE (TrackMetricsOf path)
 //   POST /api/feedback     → thumbs via resumption token
 //

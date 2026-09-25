@@ -53,7 +53,7 @@ Open **http://127.0.0.1:8210/** (01 uses 8090).
 |------|------|
 | `21-agent-completion-config.py` | HTTP + SSE |
 | `agent_core.py` | **LD insertion:** `completion_config` → Ollama/Bedrock stream |
-| `yahoo_news.py` | Yahoo headlines + `../stories/` cache |
+| `yahoo_news.py` | News waterfall (Finnhub → Massive → Yahoo) + `../stories/` cache |
 | `index.html` | Browser UI |
 
 ## Environment
@@ -61,6 +61,8 @@ Open **http://127.0.0.1:8210/** (01 uses 8090).
 | Variable | Required | Notes |
 |----------|----------|-------|
 | `LD_SDK_KEY` | Yes | Server-side SDK key |
+| `FINNHUB_API_KEY` | No | First live news source when set |
+| `MASSIVE_API_KEY` | No | Second live news source when Finnhub is skipped or fails |
 | `LD_AGENT_CONFIG_KEY` | No | Default `equity-briefing-completion` |
 | `OLLAMA_HOST` | No | Default `http://127.0.0.1:11434` |
 | `AWS_PROFILE` / `AWS_REGION` | For Bedrock models | Only if the variation names a Bedrock model |

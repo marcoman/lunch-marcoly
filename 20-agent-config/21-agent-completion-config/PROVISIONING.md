@@ -145,7 +145,7 @@ When you respond, include all of the following:
 4. Add a **user** message. Paste exactly (the `{{ stories }}` variable is filled by the app at generate time):
 
 ```text
-Using only the recent Yahoo Finance headlines below, write a short market briefing that compares the two tickers. Cite story titles where helpful. Do not invent facts beyond what the headlines imply.
+Using only the recent headlines below, write a short market briefing that compares the two tickers. Cite story titles where helpful. Do not invent facts beyond what the headlines imply.
 
 {{ stories }}
 ```

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json.Nodes;
@@ -6,13 +7,9 @@ using System.Text.RegularExpressions;
 namespace AgentTools;
 
 /// <summary>
-/// Fetch recent Yahoo Finance news titles for tickers (no API key).
-///
-/// Uses Yahoo's unofficial public search JSON endpoints. Several host/query
-/// variants are tried because Yahoo rate-limits and occasionally 404s a given
-/// query shape. Successful fetches are written to the shared example cache
-/// (20-agent-config/stories/stories_cache.json) so every example and language
-/// port in the series can reuse headlines and fall back on 429/404.
+/// Fetch recent news titles (Finnhub → Massive → Yahoo). No LaunchDarkly.
+/// Headlines are mapped to {title, publisher, published, link, uuid}.
+/// Cache: 20-agent-config/stories/stories_cache.json.
 /// </summary>
 public static class YahooNews
 {
@@ -142,9 +139,32 @@ public static class YahooNews
                 ["ticker"] = "",
                 ["name"] = "",
                 ["stories"] = new JsonArray(),
+                ["source"] = "",
                 ["error"] = "Ticker is empty.",
                 ["from_cache"] = false,
             };
+        }
+
+        var lastError = $"No recent stories found for {symbol}.";
+        if (EnvKey("FINNHUB_API_KEY").Length > 0)
+        {
+            var (parsed, err) = await FetchFinnhubJsonAsync(symbol, count);
+            if (parsed != null)
+            {
+                RememberTicker(symbol, JsonHelpers.GetStr(parsed, "name", symbol), (JsonArray)parsed["stories"]!);
+                return parsed;
+            }
+            if (!string.IsNullOrEmpty(err)) lastError = err;
+        }
+        if (EnvKey("MASSIVE_API_KEY").Length > 0)
+        {
+            var (parsed, err) = await FetchMassiveJsonAsync(symbol, count);
+            if (parsed != null)
+            {
+                RememberTicker(symbol, JsonHelpers.GetStr(parsed, "name", symbol), (JsonArray)parsed["stories"]!);
+                return parsed;
+            }
+            if (!string.IsNullOrEmpty(err)) lastError = err;
         }
 
         var queryVariants = new[]
@@ -168,47 +188,40 @@ public static class YahooNews
                 ["region"] = "US",
             },
         };
-
-        var lastError = $"No recent stories found for {symbol}.";
-        var rateLimited = false;
         foreach (var host in SearchHosts)
         {
             foreach (var parameters in queryVariants)
             {
                 var url = $"{host}?{EncodeParams(parameters)}";
-                JsonObject payload;
                 try
                 {
-                    payload = await YahooGetJsonAsync(url);
+                    var node = await GetJsonNodeAsync(url, sleepBefore: RequestGap);
+                    if (node is not JsonObject payload)
+                    {
+                        lastError = $"No recent stories found for {symbol}.";
+                        continue;
+                    }
+                    var parsed = ParseSearchPayload(symbol, payload, count);
+                    if (parsed is null)
+                    {
+                        lastError = $"No recent stories found for {symbol}.";
+                        continue;
+                    }
+                    RememberTicker(symbol, JsonHelpers.GetStr(parsed, "name", symbol), (JsonArray)parsed["stories"]!);
+                    return parsed;
                 }
                 catch (YahooHttpException exc)
                 {
                     lastError = $"Yahoo Finance HTTP {exc.StatusCode} for {symbol}.";
-                    if (exc.StatusCode == 429)
-                    {
-                        rateLimited = true;
-                        break;
-                    }
-                    continue;
+                    if (exc.StatusCode == 429) goto AfterYahoo;
                 }
                 catch (Exception exc)
                 {
                     lastError = $"Yahoo Finance request failed for {symbol}: {exc.Message}";
-                    continue;
                 }
-
-                var parsed = ParseSearchPayload(symbol, payload, count);
-                if (parsed is null)
-                {
-                    lastError = $"No recent stories found for {symbol}.";
-                    continue;
-                }
-
-                RememberTicker(symbol, JsonHelpers.GetStr(parsed, "name", symbol), (JsonArray)parsed["stories"]!);
-                return parsed;
             }
-            if (rateLimited) break;
         }
+        AfterYahoo:
 
         var cached = GetCachedTicker(symbol);
         if (cached is not null)
@@ -222,27 +235,29 @@ public static class YahooNews
             ["ticker"] = symbol,
             ["name"] = symbol,
             ["stories"] = new JsonArray(),
+            ["source"] = "",
             ["error"] = lastError,
             ["from_cache"] = false,
         };
     }
 
-    private sealed class YahooHttpException(int statusCode, string message) : Exception(message)
-    {
-        public int StatusCode { get; } = statusCode;
-    }
+    private static string EnvKey(string name) => (Environment.GetEnvironmentVariable(name) ?? "").Trim();
 
-    private static async Task<JsonObject> YahooGetJsonAsync(string url)
+    private static async Task<JsonNode> GetJsonNodeAsync(string url, Dictionary<string, string>? extraHeaders = null, TimeSpan? sleepBefore = null)
     {
         Exception? last = null;
         for (var attempt = 0; attempt < 3; attempt++)
         {
-            await Task.Delay(RequestGap);
+            if (sleepBefore is { } gap) await Task.Delay(gap);
             using var request = new HttpRequestMessage(HttpMethod.Get, url);
             request.Headers.UserAgent.ParseAdd(UserAgent);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             request.Headers.AcceptLanguage.Add(new StringWithQualityHeaderValue("en-US"));
-
+            if (extraHeaders != null)
+            {
+                foreach (var kv in extraHeaders)
+                    request.Headers.TryAddWithoutValidation(kv.Key, kv.Value);
+            }
             HttpResponseMessage response;
             try
             {
@@ -254,17 +269,13 @@ public static class YahooNews
                 if (attempt < 2) { await Task.Delay(1000); continue; }
                 throw;
             }
-
             var code = (int)response.StatusCode;
             if (code is >= 200 and < 300)
             {
                 var body = await response.Content.ReadAsStringAsync();
-                return (JsonObject)(JsonNode.Parse(body) ?? new JsonObject());
+                return JsonNode.Parse(body) ?? new JsonObject();
             }
-            if (code == 429)
-            {
-                throw new YahooHttpException(429, "HTTP 429");
-            }
+            if (code == 429) throw new YahooHttpException(429, "HTTP 429");
             if (code == 503 && attempt < 2)
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(1500 * (attempt + 1)));
@@ -277,7 +288,99 @@ public static class YahooNews
             }
             throw new YahooHttpException(code, $"HTTP {code}");
         }
-        throw last ?? new YahooHttpException(0, "Yahoo request failed");
+        throw last ?? new YahooHttpException(0, "News request failed");
+    }
+
+    private static JsonObject? CommonStory(string? title, string? publisher, string? published, string? link, string? uuid)
+    {
+        title = (title ?? "").Trim();
+        if (title.Length == 0) return null;
+        return new JsonObject
+        {
+            ["title"] = title,
+            ["publisher"] = (publisher ?? "").Trim(),
+            ["published"] = (published ?? "").Trim(),
+            ["link"] = (link ?? "").Trim(),
+            ["uuid"] = (uuid ?? "").Trim(),
+        };
+    }
+
+    private static async Task<(JsonObject? parsed, string err)> FetchFinnhubJsonAsync(string symbol, int count)
+    {
+        var token = EnvKey("FINNHUB_API_KEY");
+        if (token.Length == 0) return (null, "");
+        var end = DateTime.UtcNow.Date;
+        var start = end.AddDays(-7);
+        var url = "https://finnhub.io/api/v1/company-news?" +
+                  $"symbol={Uri.EscapeDataString(symbol)}&from={start:yyyy-MM-dd}&to={end:yyyy-MM-dd}&token={Uri.EscapeDataString(token)}";
+        JsonNode payload;
+        try { payload = await GetJsonNodeAsync(url); }
+        catch (YahooHttpException exc) { return (null, $"Finnhub HTTP {exc.StatusCode} for {symbol}."); }
+        catch (Exception exc) { return (null, $"Finnhub request failed for {symbol}: {exc.Message}"); }
+        if (payload is not JsonArray arr) return (null, $"Finnhub returned no stories for {symbol}.");
+        var stories = new JsonArray();
+        foreach (var item in arr)
+        {
+            if (stories.Count >= count) break;
+            if (item is not JsonObject obj) continue;
+            var story = CommonStory(
+                JsonHelpers.GetStr(obj, "headline", JsonHelpers.GetStr(obj, "title")),
+                JsonHelpers.GetStr(obj, "source"),
+                UnixToIso(obj["datetime"]),
+                JsonHelpers.GetStr(obj, "url"),
+                obj["id"]?.ToString());
+            if (story != null) stories.Add(story);
+        }
+        if (stories.Count == 0) return (null, $"No recent stories found for {symbol}.");
+        return (new JsonObject
+        {
+            ["ticker"] = symbol, ["name"] = symbol, ["stories"] = stories,
+            ["source"] = "finnhub", ["error"] = null, ["from_cache"] = false,
+        }, "");
+    }
+
+    private static async Task<(JsonObject? parsed, string err)> FetchMassiveJsonAsync(string symbol, int count)
+    {
+        var token = EnvKey("MASSIVE_API_KEY");
+        if (token.Length == 0) return (null, "");
+        var url = "https://api.massive.com/v2/reference/news?" +
+                  $"ticker={Uri.EscapeDataString(symbol)}&limit={Math.Max(1, count)}&sort=published_utc&order=desc";
+        JsonNode payload;
+        try
+        {
+            payload = await GetJsonNodeAsync(url, new Dictionary<string, string> { ["Authorization"] = $"Bearer {token}" });
+        }
+        catch (YahooHttpException exc) { return (null, $"Massive HTTP {exc.StatusCode} for {symbol}."); }
+        catch (Exception exc) { return (null, $"Massive request failed for {symbol}: {exc.Message}"); }
+        if (payload is not JsonObject obj || obj["results"] is not JsonArray results || results.Count == 0)
+            return (null, $"No recent stories found for {symbol}.");
+        var stories = new JsonArray();
+        foreach (var item in results)
+        {
+            if (stories.Count >= count) break;
+            if (item is not JsonObject news) continue;
+            var publisher = news["publisher"] is JsonObject pub
+                ? JsonHelpers.GetStr(pub, "name")
+                : JsonHelpers.GetStr(news, "publisher");
+            var story = CommonStory(
+                JsonHelpers.GetStr(news, "title"),
+                publisher,
+                JsonHelpers.GetStr(news, "published_utc"),
+                FirstNonBlank(JsonHelpers.GetStr(news, "article_url"), JsonHelpers.GetStr(news, "url")),
+                JsonHelpers.GetStr(news, "id"));
+            if (story != null) stories.Add(story);
+        }
+        if (stories.Count == 0) return (null, $"No recent stories found for {symbol}.");
+        return (new JsonObject
+        {
+            ["ticker"] = symbol, ["name"] = symbol, ["stories"] = stories,
+            ["source"] = "massive", ["error"] = null, ["from_cache"] = false,
+        }, "");
+    }
+
+    private sealed class YahooHttpException(int statusCode, string message) : Exception(message)
+    {
+        public int StatusCode { get; } = statusCode;
     }
 
     private static JsonObject? ParseSearchPayload(string symbol, JsonObject payload, int count)
@@ -314,6 +417,7 @@ public static class YahooNews
             ["ticker"] = symbol,
             ["name"] = name.Length == 0 ? symbol : name,
             ["stories"] = stories,
+            ["source"] = "yahoo",
             ["error"] = null,
             ["from_cache"] = false,
         };
@@ -339,6 +443,7 @@ public static class YahooNews
             ["ticker"] = symbol,
             ["name"] = FirstNonBlank(JsonHelpers.GetStr(entry, "name"), symbol),
             ["stories"] = stories,
+            ["source"] = "cache",
             ["error"] = null,
             ["from_cache"] = true,
         };

@@ -12,7 +12,7 @@ Series landing page (Ollama, AWS SSO, shared env): [../README.md](../README.md).
 |------------------|--------------------|---------------------|
 | Model | Env / mode override | AgentControl config variation |
 | System prompt | `prompts/system_prompt.txt` | AgentControl **system** message |
-| User prompt | Built in code from Yahoo headlines | AgentControl **user** message (with runtime variables / app-supplied content as specified) |
+| User prompt | Built in code from headlines | AgentControl **user** message (with runtime variables / app-supplied content as specified) |
 
 Keywords: **AgentControl** · **completion config** · **completion mode** · **config variations** · **model configuration** · **system/user messages** · **AI SDK**
 

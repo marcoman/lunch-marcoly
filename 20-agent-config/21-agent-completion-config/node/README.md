@@ -54,7 +54,7 @@ Open **http://127.0.0.1:8211/** (Python twin uses 8210; 01 uses 8090).
 |------|------|
 | `21-agent-completion-config.js` | HTTP + SSE |
 | `agentCore.js` | **LD insertion:** `completionConfig` → Ollama stream |
-| `yahooNews.js` | Yahoo headlines + `../stories/` cache |
+| `yahooNews.js` | News waterfall (Finnhub → Massive → Yahoo) + `../stories/` cache |
 | `index.html` | Browser UI |
 
 ## Environment

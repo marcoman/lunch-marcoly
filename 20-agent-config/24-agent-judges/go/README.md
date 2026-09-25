@@ -56,7 +56,7 @@ config:equity-briefing-judged                            Name: Thoughtless Toby.
 |-----|--------|
 | `t` / `1` | Thoughtless Toby |
 | `c` / `2` | Conservative Charlie |
-| `s` (`o` alias) | Fetch Yahoo headlines (`../stories/` cache) |
+| `s` (`o` alias) | Fetch headlines — Finnhub → Massive → Yahoo (`../stories/` cache) |
 | `k` | Set two tickers |
 | `g` | Generate — draft → judges → optional Charlie rewrite |
 | `q` | Quit |

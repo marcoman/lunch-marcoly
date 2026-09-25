@@ -38,7 +38,7 @@ Open **http://127.0.0.1:8253/** (Python: **8250**; Node: **8251**; Java: **8252*
 |------|------|
 | `Program.cs` | HTTP + SSE |
 | `AgentCore.cs` | **LD insertion:** `LdAiClient.AgentGraph` + `AgentConfig` → manual walk → Ollama |
-| `YahooNews.cs` | Yahoo headlines + `../stories/` cache |
+| `YahooNews.cs` | News waterfall (Finnhub → Massive → Yahoo) + `../stories/` cache |
 | `wwwroot/index.html` | Browser UI (Trace dock + mini path map) |
 
 ## What to click

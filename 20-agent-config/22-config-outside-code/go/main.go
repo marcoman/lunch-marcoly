@@ -519,7 +519,7 @@ func (a *app) cmdTickers() {
 
 func (a *app) cmdStories() {
 	a.busy = true
-	a.setFooter(fmt.Sprintf("Fetching Yahoo stories for %s and %s…", a.ticker1, a.ticker2), "busy")
+	a.setFooter(fmt.Sprintf("Fetching headlines for %s and %s…", a.ticker1, a.ticker2), "busy")
 	a.render()
 	result := fetchStoriesForTickers(a.ticker1, a.ticker2, 2)
 	a.stories = result.Tickers

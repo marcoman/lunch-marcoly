@@ -690,7 +690,7 @@ class App:
     def cmd_stories(self) -> None:
         self.busy = True
         self.set_footer(
-            f"Fetching Yahoo stories for {self.ticker1} and {self.ticker2}…",
+            f"Fetching headlines for {self.ticker1} and {self.ticker2}…",
             "busy",
         )
         try:

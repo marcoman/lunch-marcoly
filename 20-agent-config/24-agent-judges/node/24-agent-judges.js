@@ -4,7 +4,7 @@
  *
  * GET  /              → index.html
  * GET  /api/bootstrap → personas, tickers, config/judge keys
- * GET  /api/stories   → Yahoo headlines
+ * GET  /api/stories   → headlines (Finnhub → Massive → Yahoo)
  * POST /api/generate  → SSE (draft → judges → optional Charlie rewrite)
  */
 

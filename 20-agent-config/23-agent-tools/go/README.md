@@ -76,7 +76,7 @@ or `ollama / llama3.2:3b`).
 | Key | Action |
 |-----|--------|
 | `t` | Set two tickers |
-| `o` | Fetch Yahoo headlines (shared `../stories/` cache) |
+| `o` | Fetch headlines — Finnhub → Massive → Yahoo (shared `../stories/` cache) |
 | `s` | Status: user, tickers, config key, served provider/model, attached tools, last tool-call trace, stories |
 | `g` | Generate — LD evaluate → tool loop → stream report |
 | `n` | Next persona (wrap; no LLM call until `g`) |
@@ -145,7 +145,7 @@ plain tool_use loop.
 |------|------|
 | `main.go` | Raw-terminal TUI (chrome, hotkeys, scrollback, **tool trace rendering**) — adapted from [21-agent-completion-config/go/main.go](../../21-agent-completion-config/go/main.go) |
 | `agent.go` | **LD insertion:** `aiClient.CompletionConfig(...)` → `config.Tools()` → tool loop → `tracker.TrackToolCall(name)` / `ldai.TrackMetricsOf(...)`. See the file header for the full read-order. |
-| `yahoo.go` | Yahoo headlines + shared `../stories/` cache — unchanged from [21-agent-completion-config/go/yahoo.go](../../21-agent-completion-config/go/yahoo.go) |
+| `yahoo.go` | news waterfall (Finnhub → Massive → Yahoo) + shared `../stories/` cache — unchanged from [21-agent-completion-config/go/yahoo.go](../../21-agent-completion-config/go/yahoo.go) |
 
 ## `TrackToolCall` API (Go)
 

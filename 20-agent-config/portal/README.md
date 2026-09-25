@@ -70,7 +70,7 @@ python portal.py   (or node / java / dotnet twin)
 - Java builds a missing example jar with that example’s `./mvnw` before spawn.
 - .NET uses `dotnet run` per example (first start may restore/build).
 
-Yahoo headlines use the **series** cache at [`../stories/`](../stories/).
+Headlines use the **series** cache at [`../stories/`](../stories/).
 Standalone per-example entrypoints still work without the portal.
 
 ## Non-goals

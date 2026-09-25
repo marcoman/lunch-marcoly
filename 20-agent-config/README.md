@@ -19,7 +19,7 @@ Each portal spawns that language’s web servers (Python `*210–*250`, Node `*2
 
 Standalone `NN-…/python/*.py`, `NN-…/node/`, `NN-…/java/`, and `NN-…/dotnet/` entrypoints still work alone.
 
-Shared Yahoo headline cache: [stories/](stories/) (`20-agent-config/stories/stories_cache.json`) — one cache for all examples and language ports.
+Shared headline cache: [stories/](stories/) (`20-agent-config/stories/stories_cache.json`) — one cache for all examples and language ports.
 
 ## Examples in this series
 
@@ -76,6 +76,10 @@ Every example in this series expects a LaunchDarkly project and environment plus
 export LD_PROJECT_KEY="default"
 export LD_ENVIRONMENT_KEY="test"
 export LD_SDK_KEY="sdk-..."
+
+# Optional news keys (Finnhub first, then Massive, then Yahoo; no secrets in logs)
+# export FINNHUB_API_KEY="..."
+# export MASSIVE_API_KEY="..."
 ```
 
 You also need permission to create **AgentControl** configs. Per-example config keys and variations are documented in each child `application.md`.
@@ -180,7 +184,7 @@ AGENT_LLM_MODE=ollama python 01-reference-agent.py
 # open http://127.0.0.1:8090/
 ```
 
-That confirms Yahoo stories, streaming UI, and Ollama before you add AgentControl.
+That confirms headlines, streaming UI, and Ollama before you add AgentControl.
 
 The .NET baseline (no LaunchDarkly) that the `dotnet/` ports below build on lives at [`01-reference-agent/dotnet/`](../01-reference-agent/dotnet/):
 

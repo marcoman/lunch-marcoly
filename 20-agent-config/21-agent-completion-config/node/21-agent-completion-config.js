@@ -10,7 +10,7 @@
  *
  *   1. Serve index.html
  *   2. JSON bootstrap
- *   3. Yahoo Finance headlines
+ *   3. Headlines (Finnhub → Massive → Yahoo)
  *   4. Bridge browser SSE → agentCore.generateStream()
  *
  * The LaunchDarkly work lives in agentCore.js (completionConfig at generate time).
@@ -19,7 +19,7 @@
  * -----------
  *   GET /                 → index.html
  *   GET /api/bootstrap    → personas, tickers, cached stories, config key
- *   GET /api/stories      → Yahoo headlines for two tickers
+ *   GET /api/stories      → headlines for two tickers (Finnhub → Massive → Yahoo)
  *   POST /api/generate    → SSE stream (personaId + stories already on screen)
  */
 

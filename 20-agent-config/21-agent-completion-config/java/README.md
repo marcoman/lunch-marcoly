@@ -56,7 +56,7 @@ Open **http://127.0.0.1:8212/** (Python twin: 8210; Node twin: 8211; 01 uses 809
 |------|------|
 | `WebServer.java` | HTTP + SSE |
 | `AgentCore.java` | **LD insertion:** `jsonValueVariationDetail` → Ollama stream |
-| `YahooNews.java` | Yahoo headlines + `../stories/` cache |
+| `YahooNews.java` | News waterfall (Finnhub → Massive → Yahoo) + `../stories/` cache |
 | `src/main/resources/public/index.html` | Browser UI |
 
 ## Environment

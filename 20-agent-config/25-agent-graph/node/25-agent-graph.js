@@ -4,7 +4,7 @@
  *
  * GET  /              → index.html
  * GET  /api/bootstrap → personas, tickers, graph/node keys
- * GET  /api/stories   → Yahoo headlines
+ * GET  /api/stories   → headlines (Finnhub → Massive → Yahoo)
  * POST /api/generate  → SSE (assess → specialist → finalize)
  *
  * LaunchDarkly work lives in agentCore.js.

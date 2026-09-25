@@ -59,7 +59,7 @@ Before the first generate, the middle row shows `config:equity-briefing-tracked-
 | Key | Action |
 |-----|--------|
 | `t` | Set two tickers |
-| `o` | Fetch Yahoo headlines (shared `../stories/` cache) |
+| `o` | Fetch headlines — Finnhub → Massive → Yahoo (shared `../stories/` cache) |
 | `s` | Status: user, tickers, config key, served provider/model, last LD variation, feedback readiness |
 | `g` | Generate — LD evaluate → `TrackMetricsOf` → stream report → mint resumption token |
 | `+` | Thumbs **up** — `TrackFeedback(FeedbackPositive)` against the last tracked run |
@@ -85,7 +85,7 @@ Typical session: `o` → `g` → `+` (or `-`) → `s` → `n` → `g` (Anonymous
 |------|------|
 | `main.go` | Raw-terminal TUI (chrome, hotkeys incl. `+`/`-`, scrollback) — adapted from [21-agent-completion-config/go/main.go](../../21-agent-completion-config/go/main.go) |
 | `agent.go` | **LD insertion:** `aiClient.CompletionConfig(...)` → `config.CreateTracker()` → `ldai.TrackMetricsOf(...)` for generate; `aiClient.CreateTracker(token, ctx)` → `tracker.TrackFeedback(...)` for thumbs. See the file header for the full read-order. |
-| `yahoo.go` | Yahoo headlines + shared `../stories/` cache — unchanged from [21-agent-completion-config/go/yahoo.go](../../21-agent-completion-config/go/yahoo.go) / [01-reference-agent/go/yahoo.go](../../../01-reference-agent/go/yahoo.go) |
+| `yahoo.go` | news waterfall (Finnhub → Massive → Yahoo) + shared `../stories/` cache — unchanged from [21-agent-completion-config/go/yahoo.go](../../21-agent-completion-config/go/yahoo.go) / [01-reference-agent/go/yahoo.go](../../../01-reference-agent/go/yahoo.go) |
 
 ## Go AI SDK note (API quirks vs Python / Node / .NET)
 

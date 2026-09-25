@@ -4,7 +4,7 @@
 
   1. Serve index.html
   2. JSON bootstrap
-  3. Yahoo Finance headlines
+  3. Headlines (Finnhub → Massive → Yahoo)
   4. Bridge browser SSE → agent_core.generate_stream() (tool loop)
 
 LaunchDarkly work lives in agent_core.py (completion_config + tools + track_tool_call).
