@@ -1,15 +1,14 @@
 """
-yahoo_news.py — fetch recent Yahoo Finance news titles for tickers.
+yahoo_news.py — fetch recent news titles for two tickers.
 
-Uses Yahoo's unofficial public search JSON endpoints (no API key). Several
-host/query variants are tried because Yahoo rate-limits and occasionally
-returns 404 for a given query shape.
+Live waterfall (stop on the first source that returns headlines):
+  1. Finnhub — if FINNHUB_API_KEY is set
+  2. Massive — if MASSIVE_API_KEY is set
+  3. Yahoo Finance search JSON — no API key
+  4. Disk cache (../stories/stories_cache.json), then the on-screen error
 
-Successful fetches are written to the shared example cache
-(../stories/stories_cache.json) so all language apps can reuse the same
-headlines:
-  * a later 404/429 can fall back to the last good headlines
-  * the UI can restore titles on application start
+Every provider is mapped into the same story shape so the UI, cache, and
+LLM prompt never see vendor-specific JSON.
 
 Returned shape (per ticker)
 ---------------------------
@@ -26,6 +25,7 @@ Returned shape (per ticker)
     },
     ...
   ],
+  "source": "finnhub" | "massive" | "yahoo" | "cache" | "",
   "error": null | "human-readable failure",
   "from_cache": false | true
 }
@@ -34,12 +34,13 @@ Returned shape (per ticker)
 from __future__ import annotations
 
 import json
+import os
 import re
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -52,12 +53,20 @@ YAHOO_SEARCH_HOSTS = (
     "https://query1.finance.yahoo.com/v1/finance/search",
     "https://query2.finance.yahoo.com/v1/finance/search",
 )
+FINNHUB_NEWS_URL = "https://finnhub.io/api/v1/company-news"
+MASSIVE_NEWS_URL = "https://api.massive.com/v2/reference/news"
 # Space Yahoo calls; stop walking hosts/variants on HTTP 429.
 REQUEST_GAP_S = 1.0
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 )
+SOURCE_LABELS = {
+    "finnhub": "Finnhub",
+    "massive": "Massive",
+    "yahoo": "Yahoo Finance",
+    "cache": "cache",
+}
 
 # Default demo tickers used when the UI fields are empty.
 DEFAULT_TICKER_1 = "NVDA"
@@ -70,8 +79,19 @@ def normalize_ticker(raw: str) -> str:
     return cleaned
 
 
+def source_label(source: str | None, from_cache: bool = False) -> str:
+    """Human name for a ticker-block source field."""
+    if from_cache or source == "cache":
+        return SOURCE_LABELS["cache"]
+    return SOURCE_LABELS.get((source or "").strip().lower(), "")
+
+
 def _now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+
+
+def _env_key(name: str) -> str:
+    return (os.environ.get(name) or "").strip()
 
 
 def load_cache() -> dict[str, Any]:
@@ -113,6 +133,7 @@ def get_cached_ticker(ticker: str) -> dict[str, Any] | None:
         "ticker": symbol,
         "name": entry.get("name") or symbol,
         "stories": list(entry.get("stories") or [])[:2],
+        "source": "cache",
         "error": None,
         "from_cache": True,
         "cached_at": entry.get("cached_at"),
@@ -188,30 +209,67 @@ def _remember_pair(ticker1: str, ticker2: str, results: list[dict[str, Any]]) ->
     save_cache(cache)
 
 
-def _yahoo_get_json(url: str) -> dict[str, Any]:
-    """GET JSON from Yahoo.
+def _common_story(
+    *,
+    title: str,
+    publisher: str = "",
+    published: str = "",
+    link: str = "",
+    uuid: str = "",
+) -> dict[str, str] | None:
+    """Normalize one headline into the shared story object, or None if empty."""
+    title = (title or "").strip()
+    if not title:
+        return None
+    return {
+        "title": title,
+        "publisher": (publisher or "").strip(),
+        "published": (published or "").strip(),
+        "link": (link or "").strip(),
+        "uuid": (uuid or "").strip(),
+    }
 
-    Waits REQUEST_GAP_S before each attempt. Retries briefly on 503/timeouts.
-    HTTP 429 is raised immediately (no retry) so callers can stop early.
-    """
-    req = urllib.request.Request(
-        url,
-        headers={
-            "User-Agent": USER_AGENT,
-            "Accept": "application/json",
-            "Accept-Language": "en-US,en;q=0.9",
-        },
-        method="GET",
-    )
+
+def _ticker_ok(
+    symbol: str,
+    name: str,
+    stories: list[dict[str, str]],
+    source: str,
+) -> dict[str, Any]:
+    return {
+        "ticker": symbol,
+        "name": name or symbol,
+        "stories": stories,
+        "source": source,
+        "error": None,
+        "from_cache": False,
+    }
+
+
+def _get_json(
+    url: str,
+    extra_headers: dict[str, str] | None = None,
+    *,
+    sleep_before: float = 0.0,
+) -> Any:
+    """GET JSON. Retries briefly on 503/timeouts. Raises HTTPError on 4xx/429."""
+    headers = {
+        "User-Agent": USER_AGENT,
+        "Accept": "application/json",
+        "Accept-Language": "en-US,en;q=0.9",
+    }
+    if extra_headers:
+        headers.update(extra_headers)
+    req = urllib.request.Request(url, headers=headers, method="GET")
     last_exc: Exception | None = None
     for attempt in range(3):
-        time.sleep(REQUEST_GAP_S)
+        if sleep_before:
+            time.sleep(sleep_before)
         try:
             with urllib.request.urlopen(req, timeout=20) as resp:
                 return json.loads(resp.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
             last_exc = exc
-            # Rate-limited: do not retry — caller falls back to cache.
             if exc.code == 429:
                 raise
             if exc.code == 503 and attempt < 2:
@@ -229,7 +287,7 @@ def _yahoo_get_json(url: str) -> dict[str, Any]:
 
 
 def _unix_to_iso(value: Any) -> str:
-    """Convert Yahoo providerPublishTime (unix seconds) to local ISO datetime."""
+    """Convert unix seconds to local ISO datetime."""
     try:
         ts = int(value)
     except (TypeError, ValueError):
@@ -237,9 +295,33 @@ def _unix_to_iso(value: Any) -> str:
     if ts <= 0:
         return ""
     try:
-        return datetime.fromtimestamp(ts, tz=timezone.utc).astimezone().isoformat(timespec="seconds")
+        return datetime.fromtimestamp(ts, tz=timezone.utc).astimezone().isoformat(
+            timespec="seconds"
+        )
     except (OverflowError, OSError, ValueError):
         return ""
+
+
+def _to_iso(value: Any) -> str:
+    """Unix seconds or ISO/RFC3339 text → local ISO datetime string."""
+    if value is None or value == "":
+        return ""
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return _unix_to_iso(value)
+    text = str(value).strip()
+    if not text:
+        return ""
+    if text.isdigit():
+        return _unix_to_iso(text)
+    if text.endswith("Z"):
+        text = text[:-1] + "+00:00"
+    try:
+        dt = datetime.fromisoformat(text)
+    except ValueError:
+        return str(value).strip()
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone().isoformat(timespec="seconds")
 
 
 def format_published_display(published: str | None) -> str:
@@ -266,7 +348,118 @@ def format_story_source(story: dict[str, Any] | None) -> str:
     return publisher or when
 
 
-def _parse_search_payload(symbol: str, payload: dict[str, Any], count: int) -> dict[str, Any] | None:
+def _http_fail(label: str, symbol: str, exc: BaseException) -> str:
+    if isinstance(exc, urllib.error.HTTPError):
+        return f"{label} HTTP {exc.code} for {symbol}."
+    if isinstance(exc, urllib.error.URLError):
+        return f"{label} request failed for {symbol}: {exc.reason}"
+    return f"{label} response error for {symbol}: {exc}"
+
+
+def _fetch_finnhub(
+    symbol: str, count: int
+) -> tuple[dict[str, Any] | None, str]:
+    """Finnhub company-news → common ticker block. company-news: token query param."""
+    token = _env_key("FINNHUB_API_KEY")
+    if not token:
+        return None, ""
+    end = datetime.now(timezone.utc).date()
+    start = end - timedelta(days=7)
+    url = (
+        f"{FINNHUB_NEWS_URL}?"
+        + urllib.parse.urlencode(
+            {
+                "symbol": symbol,
+                "from": start.isoformat(),
+                "to": end.isoformat(),
+                "token": token,
+            }
+        )
+    )
+    try:
+        payload = _get_json(url)
+    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
+        return None, _http_fail("Finnhub", symbol, exc)
+
+    if not isinstance(payload, list):
+        return None, f"Finnhub returned no stories for {symbol}."
+
+    stories: list[dict[str, str]] = []
+    for item in payload:
+        if not isinstance(item, dict):
+            continue
+        story = _common_story(
+            title=str(item.get("headline") or item.get("title") or ""),
+            publisher=str(item.get("source") or ""),
+            published=_to_iso(item.get("datetime")),
+            link=str(item.get("url") or ""),
+            uuid=str(item.get("id") or ""),
+        )
+        if story:
+            stories.append(story)
+        if len(stories) >= count:
+            break
+    if not stories:
+        return None, f"No recent stories found for {symbol}."
+    return _ticker_ok(symbol, symbol, stories, "finnhub"), ""
+
+
+def _fetch_massive(
+    symbol: str, count: int
+) -> tuple[dict[str, Any] | None, str]:
+    """Massive ticker news — Bearer token. https://massive.com/docs/rest/stocks/news"""
+    token = _env_key("MASSIVE_API_KEY")
+    if not token:
+        return None, ""
+    url = (
+        f"{MASSIVE_NEWS_URL}?"
+        + urllib.parse.urlencode(
+            {
+                "ticker": symbol,
+                "limit": str(max(1, count)),
+                "sort": "published_utc",
+                "order": "desc",
+            }
+        )
+    )
+    try:
+        payload = _get_json(url, {"Authorization": f"Bearer {token}"})
+    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
+        return None, _http_fail("Massive", symbol, exc)
+
+    if not isinstance(payload, dict):
+        return None, f"Massive returned no stories for {symbol}."
+    results = payload.get("results") or []
+    if not isinstance(results, list) or not results:
+        return None, f"No recent stories found for {symbol}."
+
+    stories: list[dict[str, str]] = []
+    for item in results:
+        if not isinstance(item, dict):
+            continue
+        publisher = item.get("publisher") or {}
+        pub_name = ""
+        if isinstance(publisher, dict):
+            pub_name = str(publisher.get("name") or "")
+        elif publisher:
+            pub_name = str(publisher)
+        story = _common_story(
+            title=str(item.get("title") or item.get("headline") or ""),
+            publisher=pub_name,
+            published=_to_iso(item.get("published_utc")),
+            link=str(item.get("article_url") or item.get("url") or ""),
+            uuid=str(item.get("id") or ""),
+        )
+        if story:
+            stories.append(story)
+        if len(stories) >= count:
+            break
+    if not stories:
+        return None, f"No recent stories found for {symbol}."
+    return _ticker_ok(symbol, symbol, stories, "massive"), ""
+
+
+def _parse_yahoo_payload(symbol: str, payload: dict[str, Any], count: int) -> dict[str, Any] | None:
     """Extract name + stories from a Yahoo search payload, or None if empty."""
     quotes = payload.get("quotes") or []
     name = ""
@@ -276,47 +469,26 @@ def _parse_search_payload(symbol: str, payload: dict[str, Any], count: int) -> d
 
     stories: list[dict[str, str]] = []
     for item in (payload.get("news") or [])[:count]:
-        title = (item.get("title") or "").strip()
-        if not title:
+        if not isinstance(item, dict):
             continue
-        published = _unix_to_iso(item.get("providerPublishTime"))
-        stories.append(
-            {
-                "title": title,
-                "publisher": (item.get("publisher") or "").strip(),
-                "published": published,
-                "link": (item.get("link") or "").strip(),
-                "uuid": (item.get("uuid") or "").strip(),
-            }
+        story = _common_story(
+            title=str(item.get("title") or ""),
+            publisher=str(item.get("publisher") or ""),
+            published=_unix_to_iso(item.get("providerPublishTime")),
+            link=str(item.get("link") or ""),
+            uuid=str(item.get("uuid") or ""),
         )
+        if story:
+            stories.append(story)
     if not stories:
         return None
-    return {
-        "ticker": symbol,
-        "name": name or symbol,
-        "stories": stories,
-        "error": None,
-        "from_cache": False,
-    }
+    return _ticker_ok(symbol, name or symbol, stories, "yahoo")
 
 
-def fetch_stories_for_ticker(ticker: str, count: int = 2) -> dict[str, Any]:
-    """Fetch up to `count` recent news stories for one ticker.
-
-    Tries multiple Yahoo URL variants. On hard failure, returns the last
-    cached headlines for that ticker when available.
-    """
-    symbol = normalize_ticker(ticker)
-    if not symbol:
-        return {
-            "ticker": "",
-            "name": "",
-            "stories": [],
-            "error": "Ticker is empty.",
-            "from_cache": False,
-        }
-
-    # Query variants: ticker-focused news first, then plain search.
+def _fetch_yahoo(
+    symbol: str, count: int
+) -> tuple[dict[str, Any] | None, str]:
+    """Yahoo unofficial search JSON (no API key)."""
     query_variants = (
         {
             "q": symbol,
@@ -335,21 +507,16 @@ def fetch_stories_for_ticker(ticker: str, count: int = 2) -> dict[str, Any]:
             "region": "US",
         },
     )
-
     last_error = f"No recent stories found for {symbol}."
-    rate_limited = False
     for host in YAHOO_SEARCH_HOSTS:
         for params in query_variants:
             url = f"{host}?{urllib.parse.urlencode(params)}"
             try:
-                payload = _yahoo_get_json(url)
+                payload = _get_json(url, sleep_before=REQUEST_GAP_S)
             except urllib.error.HTTPError as exc:
                 last_error = f"Yahoo Finance HTTP {exc.code} for {symbol}."
-                # 429: stop all host/variant walks — more requests make it worse.
                 if exc.code == 429:
-                    rate_limited = True
-                    break
-                # 404 on one variant is common; try the next shape/host.
+                    return None, last_error
                 continue
             except urllib.error.URLError as exc:
                 last_error = f"Yahoo Finance request failed for {symbol}: {exc.reason}"
@@ -358,17 +525,59 @@ def fetch_stories_for_ticker(ticker: str, count: int = 2) -> dict[str, Any]:
                 last_error = f"Yahoo Finance response error for {symbol}: {exc}"
                 continue
 
-            parsed = _parse_search_payload(symbol, payload, count)
+            if not isinstance(payload, dict):
+                last_error = f"No recent stories found for {symbol}."
+                continue
+            parsed = _parse_yahoo_payload(symbol, payload, count)
             if parsed is None:
                 last_error = f"No recent stories found for {symbol}."
                 continue
+            return parsed, ""
+    return None, last_error
 
+
+def fetch_stories_for_ticker(ticker: str, count: int = 2) -> dict[str, Any]:
+    """Fetch up to `count` recent news stories for one ticker.
+
+    Tries Finnhub, then Massive, then Yahoo. Stops at the first live hit.
+    On hard failure, returns the last cached headlines when available.
+    """
+    symbol = normalize_ticker(ticker)
+    if not symbol:
+        return {
+            "ticker": "",
+            "name": "",
+            "stories": [],
+            "source": "",
+            "error": "Ticker is empty.",
+            "from_cache": False,
+        }
+
+    last_error = f"No recent stories found for {symbol}."
+
+    if _env_key("FINNHUB_API_KEY"):
+        parsed, err = _fetch_finnhub(symbol, count)
+        if parsed is not None:
             _remember_ticker(symbol, parsed["name"], parsed["stories"])
             return parsed
-        if rate_limited:
-            break
+        if err:
+            last_error = err
 
-    # Live fetch failed — serve last good headlines if we have them.
+    if _env_key("MASSIVE_API_KEY"):
+        parsed, err = _fetch_massive(symbol, count)
+        if parsed is not None:
+            _remember_ticker(symbol, parsed["name"], parsed["stories"])
+            return parsed
+        if err:
+            last_error = err
+
+    parsed, err = _fetch_yahoo(symbol, count)
+    if parsed is not None:
+        _remember_ticker(symbol, parsed["name"], parsed["stories"])
+        return parsed
+    if err:
+        last_error = err
+
     cached = get_cached_ticker(symbol)
     if cached is not None:
         cached["error"] = f"{last_error} Showing last saved headlines."
@@ -378,6 +587,7 @@ def fetch_stories_for_ticker(ticker: str, count: int = 2) -> dict[str, Any]:
         "ticker": symbol,
         "name": symbol,
         "stories": [],
+        "source": "",
         "error": last_error,
         "from_cache": False,
     }
@@ -390,8 +600,9 @@ def fetch_stories_for_tickers(
     t1 = normalize_ticker(ticker1) or DEFAULT_TICKER_1
     t2 = normalize_ticker(ticker2) or DEFAULT_TICKER_2
     first = fetch_stories_for_ticker(t1, count=count)
-    # Gap between tickers (each request also waits REQUEST_GAP_S).
-    time.sleep(REQUEST_GAP_S)
+    # Gap between tickers when Yahoo was used (each Yahoo GET also waits REQUEST_GAP_S).
+    if first.get("source") == "yahoo" or not first.get("stories"):
+        time.sleep(REQUEST_GAP_S)
     second = fetch_stories_for_ticker(t2, count=count)
     results = [first, second]
     _remember_pair(t1, t2, results)
@@ -411,7 +622,7 @@ def format_stories_for_prompt(ticker_results: list[dict[str, Any]]) -> str:
     The model should write report-style prose from these headlines.
     """
     lines = [
-        "Using only the recent Yahoo Finance headlines below, write a short "
+        "Using only the recent headlines below, write a short "
         "market briefing that compares the two tickers. Cite story titles "
         "where helpful. Do not invent facts beyond what the headlines imply.",
         "",

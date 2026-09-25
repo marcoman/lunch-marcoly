@@ -24,6 +24,8 @@ pub struct Story {
     #[serde(default)]
     pub publisher: String,
     #[serde(default)]
+    pub published: String,
+    #[serde(default)]
     pub link: String,
     #[serde(default)]
     pub uuid: String,
@@ -34,6 +36,7 @@ pub struct TickerBlock {
     pub ticker: String,
     pub name: String,
     pub stories: Vec<Story>,
+    pub source: String,
     pub error: Option<String>,
     pub from_cache: bool,
 }
@@ -136,6 +139,7 @@ pub fn get_cached_ticker(ticker: &str) -> Option<TickerBlock> {
         ticker: symbol,
         name,
         stories,
+        source: "cache".into(),
         error: None,
         from_cache: true,
     })
@@ -211,19 +215,31 @@ fn remember_pair(ticker1: &str, ticker2: &str, results: &[TickerBlock]) {
     let _ = save_cache(cache);
 }
 
-fn yahoo_get_json(url: &str) -> Result<Value, String> {
-    let mut last_err = String::from("Yahoo request failed");
+fn env_key(name: &str) -> String {
+    std::env::var(name).unwrap_or_default().trim().to_string()
+}
+
+fn get_json(url: &str, extra_headers: &[(&str, &str)], sleep_before: Option<Duration>) -> Result<Value, String> {
+    if let Some(d) = sleep_before {
+        thread::sleep(d);
+    }
+    let mut last_err = String::from("News request failed");
     for attempt in 0..3 {
-        let resp = ureq::get(url)
+        let mut req = ureq::get(url)
             .set("User-Agent", USER_AGENT)
             .set("Accept", "application/json")
             .set("Accept-Language", "en-US,en;q=0.9")
-            .timeout(Duration::from_secs(20))
-            .call();
-        match resp {
+            .timeout(Duration::from_secs(20));
+        for (k, v) in extra_headers {
+            req = req.set(k, v);
+        }
+        match req.call() {
             Ok(r) => {
                 let status = r.status();
-                if status == 429 || status == 503 {
+                if status == 429 {
+                    return Err(format!("HTTP {status}"));
+                }
+                if status == 503 {
                     last_err = format!("HTTP {status}");
                     if attempt < 2 {
                         thread::sleep(Duration::from_millis(1500 * (attempt as u64 + 1)));
@@ -248,6 +264,72 @@ fn yahoo_get_json(url: &str) -> Result<Value, String> {
     Err(last_err)
 }
 
+fn json_str(item: &Value, key: &str) -> String {
+    item.get(key)
+        .and_then(|v| v.as_str())
+        .unwrap_or("")
+        .trim()
+        .to_string()
+}
+
+fn to_iso(value: &Value) -> String {
+    if let Some(n) = value.as_f64() {
+        if n <= 0.0 {
+            return String::new();
+        }
+        return format!("{}", n as i64); // unix kept as display via Date later; store RFC-ish
+    }
+    if let Some(s) = value.as_str() {
+        return s.trim().to_string();
+    }
+    if let Some(n) = value.as_i64() {
+        if n <= 0 {
+            return String::new();
+        }
+        let secs = n as u64;
+        return format!("{secs}");
+    }
+    String::new()
+}
+
+fn common_story(title: String, publisher: String, published: String, link: String, uuid: String) -> Option<Story> {
+    let title = title.trim().to_string();
+    if title.is_empty() {
+        return None;
+    }
+    Some(Story {
+        title,
+        publisher: publisher.trim().to_string(),
+        published: published.trim().to_string(),
+        link: link.trim().to_string(),
+        uuid: uuid.trim().to_string(),
+    })
+}
+
+fn ticker_ok(symbol: &str, name: &str, stories: Vec<Story>, source: &str) -> TickerBlock {
+    let name = if name.is_empty() {
+        symbol.to_string()
+    } else {
+        name.to_string()
+    };
+    TickerBlock {
+        ticker: symbol.to_string(),
+        name,
+        stories,
+        source: source.to_string(),
+        error: None,
+        from_cache: false,
+    }
+}
+
+fn http_fail(label: &str, symbol: &str, err: &str) -> String {
+    if err.starts_with("HTTP ") {
+        format!("{label} {err} for {symbol}.")
+    } else {
+        format!("{label} request failed for {symbol}: {err}")
+    }
+}
+
 fn parse_search_payload(symbol: &str, payload: &Value, count: usize) -> Option<TickerBlock> {
     let mut name = String::new();
     if let Some(quotes) = payload.get("quotes").and_then(|q| q.as_array()) {
@@ -264,81 +346,155 @@ fn parse_search_payload(symbol: &str, payload: &Value, count: usize) -> Option<T
     let mut stories = Vec::new();
     if let Some(news) = payload.get("news").and_then(|n| n.as_array()) {
         for item in news.iter().take(count) {
-            let title = item
-                .get("title")
-                .and_then(|v| v.as_str())
-                .unwrap_or("")
-                .trim()
-                .to_string();
-            if title.is_empty() {
-                continue;
+            if let Some(story) = common_story(
+                json_str(item, "title"),
+                json_str(item, "publisher"),
+                to_iso(item.get("providerPublishTime").unwrap_or(&Value::Null)),
+                json_str(item, "link"),
+                json_str(item, "uuid"),
+            ) {
+                stories.push(story);
             }
-            stories.push(Story {
-                title,
-                publisher: item
-                    .get("publisher")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("")
-                    .trim()
-                    .to_string(),
-                link: item
-                    .get("link")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("")
-                    .trim()
-                    .to_string(),
-                uuid: item
-                    .get("uuid")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("")
-                    .trim()
-                    .to_string(),
-            });
         }
     }
     if stories.is_empty() {
         return None;
     }
-    if name.is_empty() {
-        name = symbol.to_string();
-    }
-    Some(TickerBlock {
-        ticker: symbol.to_string(),
-        name,
-        stories,
-        error: None,
-        from_cache: false,
-    })
+    Some(ticker_ok(symbol, &name, stories, "yahoo"))
 }
 
-pub fn fetch_stories_for_ticker(ticker: &str, count: usize) -> TickerBlock {
-    let symbol = normalize_ticker(ticker);
-    if symbol.is_empty() {
-        return TickerBlock {
-            ticker: String::new(),
-            name: String::new(),
-            stories: vec![],
-            error: Some("Ticker is empty.".into()),
-            from_cache: false,
-        };
+fn fetch_finnhub(symbol: &str, count: usize) -> Result<TickerBlock, String> {
+    let token = env_key("FINNHUB_API_KEY");
+    if token.is_empty() {
+        return Err(String::new());
     }
-    let count = count.max(1);
+    let end = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
+    let start = end.saturating_sub(7 * 24 * 60 * 60);
+    let end_day = chrono_like_date(end);
+    let start_day = chrono_like_date(start);
+    let url = format!(
+        "https://finnhub.io/api/v1/company-news?symbol={symbol}&from={start_day}&to={end_day}&token={token}"
+    );
+    let payload = get_json(&url, &[], None).map_err(|e| http_fail("Finnhub", symbol, &e))?;
+    let Some(items) = payload.as_array() else {
+        return Err(format!("Finnhub returned no stories for {symbol}."));
+    };
+    let mut stories = Vec::new();
+    for item in items {
+        if stories.len() >= count {
+            break;
+        }
+        let title = json_str(item, "headline");
+        let title = if title.is_empty() {
+            json_str(item, "title")
+        } else {
+            title
+        };
+        let uuid = item
+            .get("id")
+            .map(|v| match v {
+                Value::Number(n) => n.to_string(),
+                Value::String(s) => s.clone(),
+                _ => String::new(),
+            })
+            .unwrap_or_default();
+        if let Some(story) = common_story(
+            title,
+            json_str(item, "source"),
+            to_iso(item.get("datetime").unwrap_or(&Value::Null)),
+            json_str(item, "url"),
+            uuid,
+        ) {
+            stories.push(story);
+        }
+    }
+    if stories.is_empty() {
+        return Err(format!("No recent stories found for {symbol}."));
+    }
+    Ok(ticker_ok(symbol, symbol, stories, "finnhub"))
+}
+
+fn chrono_like_date(unix: u64) -> String {
+    // YYYY-MM-DD from unix seconds (UTC), no chrono crate.
+    let days = unix / 86400;
+    let z = days as i64 + 719468;
+    let era = if z >= 0 { z } else { z - 146096 } / 146097;
+    let doe = (z - era * 146097) as u64;
+    let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365;
+    let y = yoe as i64 + era * 400;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let d = doy - (153 * mp + 2) / 5 + 1;
+    let m = if mp < 10 { mp + 3 } else { mp - 9 };
+    let y = if m <= 2 { y + 1 } else { y };
+    format!("{y:04}-{m:02}-{d:02}")
+}
+
+fn fetch_massive(symbol: &str, count: usize) -> Result<TickerBlock, String> {
+    let token = env_key("MASSIVE_API_KEY");
+    if token.is_empty() {
+        return Err(String::new());
+    }
+    let url = format!(
+        "https://api.massive.com/v2/reference/news?ticker={symbol}&limit={count}&sort=published_utc&order=desc"
+    );
+    let bearer = format!("Bearer {token}");
+    let payload = get_json(&url, &[("Authorization", bearer.as_str())], None)
+        .map_err(|e| http_fail("Massive", symbol, &e))?;
+    let Some(results) = payload.get("results").and_then(|r| r.as_array()) else {
+        return Err(format!("No recent stories found for {symbol}."));
+    };
+    let mut stories = Vec::new();
+    for item in results {
+        if stories.len() >= count {
+            break;
+        }
+        let publisher = item
+            .get("publisher")
+            .and_then(|p| p.get("name"))
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string();
+        let link = json_str(item, "article_url");
+        let link = if link.is_empty() {
+            json_str(item, "url")
+        } else {
+            link
+        };
+        if let Some(story) = common_story(
+            json_str(item, "title"),
+            publisher,
+            json_str(item, "published_utc"),
+            link,
+            json_str(item, "id"),
+        ) {
+            stories.push(story);
+        }
+    }
+    if stories.is_empty() {
+        return Err(format!("No recent stories found for {symbol}."));
+    }
+    Ok(ticker_ok(symbol, symbol, stories, "massive"))
+}
+
+fn fetch_yahoo(symbol: &str, count: usize) -> Result<TickerBlock, String> {
     let variants = [
         format!(
             "q={symbol}&quotesCount=1&newsCount={count}&enableFuzzyQuery=false&newsQueryId=news_cie_vespa&lang=en-US&region=US"
         ),
         format!("q={symbol}&quotesCount=1&newsCount={count}&lang=en-US&region=US"),
     ];
-
     let mut last_error = format!("No recent stories found for {symbol}.");
     for host in YAHOO_HOSTS {
         for params in &variants {
             let url = format!("{host}?{params}");
-            match yahoo_get_json(&url) {
+            match get_json(&url, &[], Some(Duration::from_secs(1))) {
                 Ok(payload) => {
-                    if let Some(parsed) = parse_search_payload(&symbol, &payload, count) {
-                        remember_ticker(&symbol, &parsed.name, &parsed.stories);
-                        return parsed;
+                    if let Some(parsed) = parse_search_payload(symbol, &payload, count) {
+                        return Ok(parsed);
                     }
                     last_error = format!("No recent stories found for {symbol}.");
                 }
@@ -348,11 +504,58 @@ pub fn fetch_stories_for_ticker(ticker: &str, count: usize) -> TickerBlock {
                     } else {
                         format!("Yahoo Finance request failed for {symbol}: {err}")
                     };
+                    if err == "HTTP 429" {
+                        return Err(last_error);
+                    }
                 }
             }
         }
     }
+    Err(last_error)
+}
 
+pub fn fetch_stories_for_ticker(ticker: &str, count: usize) -> TickerBlock {
+    let symbol = normalize_ticker(ticker);
+    if symbol.is_empty() {
+        return TickerBlock {
+            ticker: String::new(),
+            name: String::new(),
+            stories: vec![],
+            source: String::new(),
+            error: Some("Ticker is empty.".into()),
+            from_cache: false,
+        };
+    }
+    let count = count.max(1);
+    let mut last_error = format!("No recent stories found for {symbol}.");
+    if !env_key("FINNHUB_API_KEY").is_empty() {
+        match fetch_finnhub(&symbol, count) {
+            Ok(parsed) => {
+                remember_ticker(&symbol, &parsed.name, &parsed.stories);
+                return parsed;
+            }
+            Err(err) if !err.is_empty() => last_error = err,
+            Err(_) => {}
+        }
+    }
+    if !env_key("MASSIVE_API_KEY").is_empty() {
+        match fetch_massive(&symbol, count) {
+            Ok(parsed) => {
+                remember_ticker(&symbol, &parsed.name, &parsed.stories);
+                return parsed;
+            }
+            Err(err) if !err.is_empty() => last_error = err,
+            Err(_) => {}
+        }
+    }
+    match fetch_yahoo(&symbol, count) {
+        Ok(parsed) => {
+            remember_ticker(&symbol, &parsed.name, &parsed.stories);
+            return parsed;
+        }
+        Err(err) if !err.is_empty() => last_error = err,
+        Err(_) => {}
+    }
     if let Some(mut cached) = get_cached_ticker(&symbol) {
         cached.error = Some(format!("{last_error} Showing last saved headlines."));
         return cached;
@@ -361,6 +564,7 @@ pub fn fetch_stories_for_ticker(ticker: &str, count: usize) -> TickerBlock {
         ticker: symbol.clone(),
         name: symbol,
         stories: vec![],
+        source: String::new(),
         error: Some(last_error),
         from_cache: false,
     }
@@ -376,7 +580,9 @@ pub fn fetch_stories_for_tickers(ticker1: &str, ticker2: &str, count: usize) -> 
         t2 = DEFAULT_TICKER_2.to_string();
     }
     let first = fetch_stories_for_ticker(&t1, count);
-    thread::sleep(Duration::from_millis(500));
+    if first.source == "yahoo" || first.stories.is_empty() {
+        thread::sleep(Duration::from_millis(500));
+    }
     let second = fetch_stories_for_ticker(&t2, count);
     let results = vec![first, second];
     remember_pair(&t1, &t2, &results);
@@ -394,7 +600,7 @@ pub fn fetch_stories_for_tickers(ticker1: &str, ticker2: &str, count: usize) -> 
 
 pub fn format_stories_for_prompt(ticker_results: &[TickerBlock]) -> String {
     let mut lines = vec![
-        "Using only the recent Yahoo Finance headlines below, write a short \
+        "Using only the recent headlines below, write a short \
          market briefing that compares the two tickers. Cite story titles \
          where helpful. Do not invent facts beyond what the headlines imply."
             .to_string(),

@@ -2,7 +2,7 @@
 
 Web application version of the [01-reference-agent](../application.md) equity briefing demo.
 
-Behavior matches the [Python web app](../python/): Yahoo headlines → shared system prompt → streamed report (`stub` / `ollama`). Port **8090**.
+Behavior matches the [Python web app](../python/): Finnhub → Massive → Yahoo headlines → shared system prompt → streamed report (`stub` / `ollama`). Port **8090**.
 
 ## Prerequisites
 
@@ -112,7 +112,7 @@ AGENT_LLM_MODE=ollama npm start
 |------|------|
 | `01-reference-agent.js` | HTTP + SSE |
 | `agentCore.js` | Personas, prompt, stub / Ollama |
-| `yahooNews.js` | Yahoo Finance + shared [`../stories/stories_cache.json`](../stories/stories_cache.json) |
+| `yahooNews.js` | News waterfall (Finnhub → Massive → Yahoo) + shared [`../stories/stories_cache.json`](../stories/stories_cache.json) |
 | `index.html` | Browser UI |
 | `../prompts/system_prompt.txt` | Shared system prompt |
 

@@ -403,7 +403,13 @@ struct App {
             const int slot = index == 0 ? 1 : 2;
             const std::string ticker = block.ticker.empty() ? "?" : block.ticker;
             const std::string name = block.name.empty() ? ticker : block.name;
-            const std::string cache = block.from_cache ? " [cached]" : "";
+            std::string src = block.from_cache ? "cache" : block.source;
+            std::string src_label;
+            if (src == "finnhub") src_label = "Finnhub";
+            else if (src == "massive") src_label = "Massive";
+            else if (src == "yahoo") src_label = "Yahoo Finance";
+            else if (src == "cache") src_label = "cached";
+            const std::string cache = src_label.empty() ? "" : " [" + src_label + "]";
             append("  " + ticker + " (" + name + ")" + cache,
                    "ticker" + std::to_string(slot));
             if (block.stories.empty()) {
@@ -466,7 +472,7 @@ struct App {
 
     void cmd_stories() {
         busy = true;
-        set_footer("Fetching Yahoo stories for " + ticker1 + " and " + ticker2 + "…",
+        set_footer("Fetching headlines for " + ticker1 + " and " + ticker2 + "…",
                    "busy");
         render();
         auto result = fetch_stories_for_tickers(ticker1, ticker2, 2);

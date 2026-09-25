@@ -18,7 +18,7 @@ Logical layers, top to bottom:
                    will vary prompts later.
   4. Generation    generate_stream() — the main orchestration loop
   5. Providers     Stub (default), Ollama (local), Bedrock (AWS cloud)
-  6. News          yahoo_news.py — Yahoo Finance headlines for two tickers
+  6. News          yahoo_news.py — Finnhub → Massive → Yahoo headlines for two tickers
 
 Request / response contract used by the web server
 --------------------------------------------------

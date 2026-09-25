@@ -1,6 +1,6 @@
 # Reference Agent — application specification
 
-This document defines the behavior of **01-reference-agent**: a single-screen demo that builds an AI equity briefing from Yahoo Finance headlines.
+This document defines the behavior of **01-reference-agent**: a single-screen demo that builds an AI equity briefing from recent stock headlines.
 
 Repository conventions: [project.md](../project.md).  
 Human-oriented setup: [README.md](README.md) and the language READMEs under `python/`, `python-console/`, `node/`, `node-console/`, `java/`, `java-console/`, `go/`, `rust/`, and `cpp/`.
@@ -15,7 +15,7 @@ That is intentional: you can learn the product flow (news → prompt → model �
 
 A **single-screen** application (no login):
 
-1. Enter two **tickers** and click **Get Stories** (Yahoo Finance headlines).
+1. Enter two **tickers** and click **Get Stories** (Finnhub → Massive → Yahoo Finance headlines).
 2. Optionally select a **user** (Previous User / Next user). This does not call the LLM.
 3. Click **Generate AI Report** to stream a briefing from the headlines already on screen.
 4. Inspect **Prompt** and **Response** (side by side), then **Provider / model**, **Metrics**, and **Status** below.
@@ -39,7 +39,9 @@ The consoles ([Python](python-console/), [Node](node-console/), [Java](java-cons
 
 ```mermaid
 flowchart LR
-  YF[Yahoo Finance] -->|Get Stories| APP[Web app]
+  FH[Finnhub] -->|Get Stories| APP[Web app]
+  MS[Massive] -->|Get Stories| APP
+  YF[Yahoo Finance] -->|Get Stories| APP
   APP -->|story titles| UI[Browser panels]
   UI -->|Generate AI Report<br/>existing stories| APP
   SP[system_prompt.txt] --> APP
@@ -74,13 +76,13 @@ The prompt instructs the model to act as an institutional equity research analys
 
 Built from the two tickers’ headlines currently shown in the UI (typically two titles each). Defaults: `NVDA` and `SPCX`.
 
-**Generate AI Report does not re-fetch Yahoo.** It uses the stories the browser sends in the POST body.
+**Generate AI Report does not re-fetch news.** It uses the stories the browser sends in the POST body.
 
 ## Controls
 
 | Control | Behavior |
 |---------|----------|
-| **Get Stories** | Fetch up to 2 headlines per ticker; update story panels; persist cache on success. Does **not** call the LLM. |
+| **Get Stories** | Fetch up to 2 headlines per ticker: Finnhub if `FINNHUB_API_KEY` is set, else Massive if `MASSIVE_API_KEY` is set, else Yahoo, else disk cache / on-screen error. Update story panels; persist cache on success. Does **not** call the LLM. |
 | **Previous User** | Previous persona (wrap). UI only. |
 | **Next user** | Next persona (wrap). UI only. |
 | **Generate AI Report** | Stream an LLM response from the on-screen stories + system prompt. |
@@ -187,6 +189,15 @@ The Python Bedrock path uses the named SSO profile even if ambient `AWS_ACCESS_K
 
 Recommended report models: Nova Lite, Claude Haiku 4.5, Qwen3 32B (see README). Prefer general text models over coding-specialized Qwen Coder variants.
 
+### News sources
+
+| Variable | Purpose |
+|----------|---------|
+| `FINNHUB_API_KEY` | First live source when set. Success stops the waterfall. |
+| `MASSIVE_API_KEY` | Second live source when Finnhub is skipped or fails. |
+
+Yahoo Finance search JSON needs no key and is the last live source. Headlines are normalized to `{title, publisher, published, link, uuid}` before the UI, cache, or LLM see them.
+
 ### Anthropic
 
 | Variable | Purpose |
@@ -205,15 +216,15 @@ Same conventions as [00-reference-code](../00-reference-code/):
 
 | Language | Planned |
 |----------|---------|
-| Python web | Available (`stub` / `ollama` / `bedrock`) |
-| Node.js web | Available (`stub` / `ollama`) |
-| Java web | Available (`stub` / `ollama`) |
-| Python console | Available (`stub` / `ollama` / `bedrock`) |
-| Node.js console | Available (`stub` / `ollama`) |
-| Java console | Available (`stub` / `ollama`) |
-| Go console | Available (`stub` / `ollama`) |
-| Rust console | Available (`stub` / `ollama`) |
-| C++ console | Available (`stub` / `ollama`) |
+| Python web | Available (`stub` / `ollama` / `bedrock`); news: Finnhub → Massive → Yahoo |
+| Node.js web | Available (`stub` / `ollama`); news: Finnhub → Massive → Yahoo |
+| Java web | Available (`stub` / `ollama`); news: Finnhub → Massive → Yahoo |
+| Python console | Available (`stub` / `ollama` / `bedrock`); news: Finnhub → Massive → Yahoo |
+| Node.js console | Available (`stub` / `ollama`); news: Finnhub → Massive → Yahoo |
+| Java console | Available (`stub` / `ollama`); news: Finnhub → Massive → Yahoo |
+| Go console | Available (`stub` / `ollama`); news: Finnhub → Massive → Yahoo |
+| Rust console | Available (`stub` / `ollama`); news: Finnhub → Massive → Yahoo |
+| C++ console | Available (`stub` / `ollama`); news: Finnhub → Massive → Yahoo |
 
 ## Acceptance criteria
 

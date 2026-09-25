@@ -443,7 +443,17 @@ public class ConsoleApp {
             int slot = index == 0 ? 1 : 2;
             String ticker = String.valueOf(block.getOrDefault("ticker", "?"));
             String name = String.valueOf(block.getOrDefault("name", ticker));
-            String cache = Boolean.TRUE.equals(block.get("from_cache")) ? " [cached]" : "";
+            String src = Boolean.TRUE.equals(block.get("from_cache"))
+                    ? "cache"
+                    : String.valueOf(block.getOrDefault("source", ""));
+            String srcLabel = switch (src) {
+                case "finnhub" -> "Finnhub";
+                case "massive" -> "Massive";
+                case "yahoo" -> "Yahoo Finance";
+                case "cache" -> "cached";
+                default -> "";
+            };
+            String cache = srcLabel.isEmpty() ? "" : " [" + srcLabel + "]";
             append("  " + ticker + " (" + name + ")" + cache, "ticker" + slot);
             Object storiesObj = block.get("stories");
             if (!(storiesObj instanceof List<?> items) || items.isEmpty()) {
@@ -513,7 +523,7 @@ public class ConsoleApp {
 
     private void cmdStories() throws Exception {
         busy = true;
-        setFooter("Fetching Yahoo stories for " + ticker1 + " and " + ticker2 + "…", "busy");
+        setFooter("Fetching headlines for " + ticker1 + " and " + ticker2 + "…", "busy");
         render();
         try {
             Map<String, Object> result = YahooNews.fetchStoriesForTickers(ticker1, ticker2, 2);

@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -24,9 +25,11 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Fetch recent Yahoo Finance news titles for tickers (no API key).
- * Successful fetches are written to the shared example cache:
- *   01-reference-agent/stories/stories_cache.json
+ * Fetch recent news titles for two tickers.
+ *
+ * Live waterfall: Finnhub (FINNHUB_API_KEY) → Massive (MASSIVE_API_KEY) →
+ * Yahoo Finance search JSON (no key) → disk cache.
+ * Every provider is mapped into {title, publisher, published, link, uuid}.
  */
 public final class YahooNews {
     public static final String DEFAULT_TICKER_1 = "NVDA";
@@ -36,6 +39,8 @@ public final class YahooNews {
             "https://query1.finance.yahoo.com/v1/finance/search",
             "https://query2.finance.yahoo.com/v1/finance/search"
     };
+    private static final String FINNHUB_NEWS_URL = "https://finnhub.io/api/v1/company-news";
+    private static final String MASSIVE_NEWS_URL = "https://api.massive.com/v2/reference/news";
     /** Space Yahoo calls; stop walking hosts/variants on HTTP 429. */
     private static final long REQUEST_GAP_MS = 1000L;
     private static final String USER_AGENT =
@@ -120,7 +125,9 @@ public final class YahooNews {
             t2 = DEFAULT_TICKER_2;
         }
         Map<String, Object> first = fetchStoriesForTicker(t1, count);
-        Thread.sleep(REQUEST_GAP_MS);
+        if ("yahoo".equals(first.get("source")) || storiesEmpty(first)) {
+            Thread.sleep(REQUEST_GAP_MS);
+        }
         Map<String, Object> second = fetchStoriesForTicker(t2, count);
         List<Map<String, Object>> results = List.of(first, second);
         rememberPair(t1, t2, results);
@@ -142,7 +149,7 @@ public final class YahooNews {
 
     public static String formatStoriesForPrompt(List<Map<String, Object>> tickerResults) {
         StringBuilder lines = new StringBuilder();
-        lines.append("Using only the recent Yahoo Finance headlines below, write a short ")
+        lines.append("Using only the recent headlines below, write a short ")
                 .append("market briefing that compares the two tickers. Cite story titles ")
                 .append("where helpful. Do not invent facts beyond what the headlines imply.\n\n");
         for (Map<String, Object> block : tickerResults) {
@@ -172,19 +179,213 @@ public final class YahooNews {
         return lines.toString().trim();
     }
 
+    private static boolean storiesEmpty(Map<String, Object> block) {
+        Object stories = block.get("stories");
+        return !(stories instanceof List<?> list) || list.isEmpty();
+    }
+
+    private static String envKey(String name) {
+        String v = System.getenv(name);
+        return v == null ? "" : v.trim();
+    }
+
+    private static Map<String, Object> tickerOk(
+            String symbol, String name, List<Map<String, Object>> stories, String source) {
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("ticker", symbol);
+        out.put("name", name == null || name.isEmpty() ? symbol : name);
+        out.put("stories", stories);
+        out.put("source", source);
+        out.put("error", null);
+        out.put("from_cache", false);
+        return out;
+    }
+
+    private static Map<String, Object> commonStory(
+            String title, String publisher, String published, String link, String uuid) {
+        title = title == null ? "" : title.trim();
+        if (title.isEmpty()) {
+            return null;
+        }
+        Map<String, Object> story = new LinkedHashMap<>();
+        story.put("title", title);
+        story.put("publisher", publisher == null ? "" : publisher.trim());
+        story.put("published", published == null ? "" : published.trim());
+        story.put("link", link == null ? "" : link.trim());
+        story.put("uuid", uuid == null ? "" : uuid.trim());
+        return story;
+    }
+
     private static Map<String, Object> fetchStoriesForTicker(String ticker, int count)
             throws InterruptedException {
         String symbol = normalizeTicker(ticker);
         if (symbol.isEmpty()) {
-            return Map.of(
-                    "ticker", "",
-                    "name", "",
-                    "stories", List.of(),
-                    "error", "Ticker is empty.",
-                    "from_cache", false
-            );
+            Map<String, Object> empty = new LinkedHashMap<>();
+            empty.put("ticker", "");
+            empty.put("name", "");
+            empty.put("stories", List.of());
+            empty.put("source", "");
+            empty.put("error", "Ticker is empty.");
+            empty.put("from_cache", false);
+            return empty;
         }
 
+        String lastError = "No recent stories found for " + symbol + ".";
+        if (!envKey("FINNHUB_API_KEY").isEmpty()) {
+            FetchAttempt attempt = fetchFinnhub(symbol, count);
+            if (attempt.parsed != null) {
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> stories =
+                        (List<Map<String, Object>>) attempt.parsed.get("stories");
+                rememberTicker(symbol, stringOr(attempt.parsed.get("name"), symbol), stories);
+                return attempt.parsed;
+            }
+            if (!attempt.error.isEmpty()) {
+                lastError = attempt.error;
+            }
+        }
+        if (!envKey("MASSIVE_API_KEY").isEmpty()) {
+            FetchAttempt attempt = fetchMassive(symbol, count);
+            if (attempt.parsed != null) {
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> stories =
+                        (List<Map<String, Object>>) attempt.parsed.get("stories");
+                rememberTicker(symbol, stringOr(attempt.parsed.get("name"), symbol), stories);
+                return attempt.parsed;
+            }
+            if (!attempt.error.isEmpty()) {
+                lastError = attempt.error;
+            }
+        }
+        FetchAttempt yahoo = fetchYahoo(symbol, count);
+        if (yahoo.parsed != null) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> stories =
+                    (List<Map<String, Object>>) yahoo.parsed.get("stories");
+            rememberTicker(symbol, stringOr(yahoo.parsed.get("name"), symbol), stories);
+            return yahoo.parsed;
+        }
+        if (!yahoo.error.isEmpty()) {
+            lastError = yahoo.error;
+        }
+
+        Map<String, Object> cached = getCachedTicker(symbol);
+        if (cached != null) {
+            cached.put("error", lastError + " Showing last saved headlines.");
+            return cached;
+        }
+
+        Map<String, Object> empty = new LinkedHashMap<>();
+        empty.put("ticker", symbol);
+        empty.put("name", symbol);
+        empty.put("stories", List.of());
+        empty.put("source", "");
+        empty.put("error", lastError);
+        empty.put("from_cache", false);
+        return empty;
+    }
+
+    private record FetchAttempt(Map<String, Object> parsed, String error) {
+    }
+
+    private static FetchAttempt fetchFinnhub(String symbol, int count) throws InterruptedException {
+        String token = envKey("FINNHUB_API_KEY");
+        if (token.isEmpty()) {
+            return new FetchAttempt(null, "");
+        }
+        LocalDate end = LocalDate.now(ZoneId.of("UTC"));
+        LocalDate start = end.minusDays(7);
+        String url = FINNHUB_NEWS_URL + "?symbol=" + URLEncoder.encode(symbol, StandardCharsets.UTF_8)
+                + "&from=" + start
+                + "&to=" + end
+                + "&token=" + URLEncoder.encode(token, StandardCharsets.UTF_8);
+        JsonElement payload;
+        try {
+            payload = getJson(url, Map.of(), 0);
+        } catch (IOException exc) {
+            return new FetchAttempt(null, httpFail("Finnhub", symbol, exc));
+        }
+        if (!payload.isJsonArray()) {
+            return new FetchAttempt(null, "Finnhub returned no stories for " + symbol + ".");
+        }
+        List<Map<String, Object>> stories = new ArrayList<>();
+        for (JsonElement el : payload.getAsJsonArray()) {
+            if (stories.size() >= count) {
+                break;
+            }
+            if (!el.isJsonObject()) {
+                continue;
+            }
+            JsonObject item = el.getAsJsonObject();
+            Map<String, Object> story = commonStory(
+                    firstNonBlank(asString(item.get("headline")), asString(item.get("title"))),
+                    asString(item.get("source")),
+                    toIso(item.get("datetime")),
+                    asString(item.get("url")),
+                    asString(item.get("id")));
+            if (story != null) {
+                stories.add(story);
+            }
+        }
+        if (stories.isEmpty()) {
+            return new FetchAttempt(null, "No recent stories found for " + symbol + ".");
+        }
+        return new FetchAttempt(tickerOk(symbol, symbol, stories, "finnhub"), "");
+    }
+
+    private static FetchAttempt fetchMassive(String symbol, int count) throws InterruptedException {
+        String token = envKey("MASSIVE_API_KEY");
+        if (token.isEmpty()) {
+            return new FetchAttempt(null, "");
+        }
+        String url = MASSIVE_NEWS_URL + "?ticker=" + URLEncoder.encode(symbol, StandardCharsets.UTF_8)
+                + "&limit=" + Math.max(1, count)
+                + "&sort=published_utc&order=desc";
+        JsonElement payload;
+        try {
+            payload = getJson(url, Map.of("Authorization", "Bearer " + token), 0);
+        } catch (IOException exc) {
+            return new FetchAttempt(null, httpFail("Massive", symbol, exc));
+        }
+        if (!payload.isJsonObject()) {
+            return new FetchAttempt(null, "Massive returned no stories for " + symbol + ".");
+        }
+        JsonObject obj = payload.getAsJsonObject();
+        JsonArray results = obj.has("results") && obj.get("results").isJsonArray()
+                ? obj.getAsJsonArray("results")
+                : new JsonArray();
+        List<Map<String, Object>> stories = new ArrayList<>();
+        for (JsonElement el : results) {
+            if (stories.size() >= count) {
+                break;
+            }
+            if (!el.isJsonObject()) {
+                continue;
+            }
+            JsonObject item = el.getAsJsonObject();
+            String publisher = "";
+            if (item.has("publisher") && item.get("publisher").isJsonObject()) {
+                publisher = asString(item.getAsJsonObject("publisher").get("name"));
+            } else {
+                publisher = asString(item.get("publisher"));
+            }
+            Map<String, Object> story = commonStory(
+                    firstNonBlank(asString(item.get("title")), asString(item.get("headline"))),
+                    publisher,
+                    toIso(item.get("published_utc")),
+                    firstNonBlank(asString(item.get("article_url")), asString(item.get("url"))),
+                    asString(item.get("id")));
+            if (story != null) {
+                stories.add(story);
+            }
+        }
+        if (stories.isEmpty()) {
+            return new FetchAttempt(null, "No recent stories found for " + symbol + ".");
+        }
+        return new FetchAttempt(tickerOk(symbol, symbol, stories, "massive"), "");
+    }
+
+    private static FetchAttempt fetchYahoo(String symbol, int count) throws InterruptedException {
         List<Map<String, String>> queryVariants = List.of(
                 Map.of(
                         "q", symbol,
@@ -203,29 +404,26 @@ public final class YahooNews {
                         "region", "US"
                 )
         );
-
         String lastError = "No recent stories found for " + symbol + ".";
-        hostLoop:
         for (String host : YAHOO_SEARCH_HOSTS) {
             for (Map<String, String> params : queryVariants) {
                 String url = host + "?" + encodeParams(params);
                 try {
-                    JsonObject payload = yahooGetJson(url);
-                    Map<String, Object> parsed = parseSearchPayload(symbol, payload, count);
+                    JsonElement payload = getJson(url, Map.of(), REQUEST_GAP_MS);
+                    if (!payload.isJsonObject()) {
+                        lastError = "No recent stories found for " + symbol + ".";
+                        continue;
+                    }
+                    Map<String, Object> parsed = parseSearchPayload(symbol, payload.getAsJsonObject(), count);
                     if (parsed == null) {
                         lastError = "No recent stories found for " + symbol + ".";
                         continue;
                     }
-                    @SuppressWarnings("unchecked")
-                    List<Map<String, Object>> stories =
-                            (List<Map<String, Object>>) parsed.get("stories");
-                    rememberTicker(symbol, stringOr(parsed.get("name"), symbol), stories);
-                    return parsed;
+                    return new FetchAttempt(parsed, "");
                 } catch (IOException exc) {
                     lastError = "Yahoo Finance request failed for " + symbol + ": " + exc.getMessage();
                     if (exc.getMessage() != null && exc.getMessage().contains("HTTP 429")) {
-                        lastError = "Yahoo Finance HTTP 429 for " + symbol + ".";
-                        break hostLoop;
+                        return new FetchAttempt(null, "Yahoo Finance HTTP 429 for " + symbol + ".");
                     }
                     if (exc.getMessage() != null && exc.getMessage().startsWith("HTTP ")) {
                         lastError = "Yahoo Finance " + exc.getMessage() + " for " + symbol + ".";
@@ -233,20 +431,15 @@ public final class YahooNews {
                 }
             }
         }
+        return new FetchAttempt(null, lastError);
+    }
 
-        Map<String, Object> cached = getCachedTicker(symbol);
-        if (cached != null) {
-            cached.put("error", lastError + " Showing last saved headlines.");
-            return cached;
+    private static String httpFail(String label, String symbol, IOException exc) {
+        String msg = exc.getMessage() == null ? "" : exc.getMessage();
+        if (msg.startsWith("HTTP ")) {
+            return label + " " + msg + " for " + symbol + ".";
         }
-
-        Map<String, Object> empty = new LinkedHashMap<>();
-        empty.put("ticker", symbol);
-        empty.put("name", symbol);
-        empty.put("stories", List.of());
-        empty.put("error", lastError);
-        empty.put("from_cache", false);
-        return empty;
+        return label + " request failed for " + symbol + ": " + msg;
     }
 
     private static Map<String, Object> parseSearchPayload(String symbol, JsonObject payload, int count) {
@@ -290,29 +483,36 @@ public final class YahooNews {
         out.put("ticker", symbol);
         out.put("name", name.isEmpty() ? symbol : name);
         out.put("stories", stories);
+        out.put("source", "yahoo");
         out.put("error", null);
         out.put("from_cache", false);
         return out;
     }
 
-    private static JsonObject yahooGetJson(String url) throws IOException, InterruptedException {
+    private static JsonElement getJson(String url, Map<String, String> extraHeaders, long sleepBeforeMs)
+            throws IOException, InterruptedException {
         IOException last = null;
         for (int attempt = 0; attempt < 3; attempt++) {
-            Thread.sleep(REQUEST_GAP_MS);
-            HttpRequest request = HttpRequest.newBuilder(URI.create(url))
+            if (sleepBeforeMs > 0) {
+                Thread.sleep(sleepBeforeMs);
+            }
+            HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(url))
                     .timeout(Duration.ofSeconds(20))
                     .header("User-Agent", USER_AGENT)
                     .header("Accept", "application/json")
                     .header("Accept-Language", "en-US,en;q=0.9")
-                    .GET()
-                    .build();
-            HttpResponse<String> response = HTTP.send(request, HttpResponse.BodyHandlers.ofString());
+                    .GET();
+            if (extraHeaders != null) {
+                for (Map.Entry<String, String> h : extraHeaders.entrySet()) {
+                    builder.header(h.getKey(), h.getValue());
+                }
+            }
+            HttpResponse<String> response = HTTP.send(builder.build(), HttpResponse.BodyHandlers.ofString());
             int code = response.statusCode();
             if (code >= 200 && code < 300) {
-                return JsonParser.parseString(response.body()).getAsJsonObject();
+                return JsonParser.parseString(response.body());
             }
             last = new IOException("HTTP " + code);
-            // Rate-limited: do not retry — caller falls back to cache.
             if (code == 429) {
                 throw last;
             }
@@ -326,7 +526,7 @@ public final class YahooNews {
             }
             throw last;
         }
-        throw last != null ? last : new IOException("Yahoo request failed");
+        throw last != null ? last : new IOException("News request failed");
     }
 
     private static Map<String, Object> getCachedTicker(String ticker) {
@@ -359,6 +559,7 @@ public final class YahooNews {
         out.put("ticker", symbol);
         out.put("name", firstNonBlank(asString(entry.get("name")), symbol));
         out.put("stories", stories);
+        out.put("source", "cache");
         out.put("error", null);
         out.put("from_cache", true);
         if (entry.has("cached_at")) {
@@ -503,6 +704,33 @@ public final class YahooNews {
             return Instant.ofEpochSecond(ts).atZone(ZoneId.systemDefault()).toOffsetDateTime().toString();
         } catch (Exception exc) {
             return "";
+        }
+    }
+
+    private static String toIso(JsonElement el) {
+        if (el == null || el.isJsonNull()) {
+            return "";
+        }
+        if (el.isJsonPrimitive() && el.getAsJsonPrimitive().isNumber()) {
+            return unixToIso(el);
+        }
+        String text = asString(el).trim();
+        if (text.isEmpty()) {
+            return "";
+        }
+        if (text.matches("\\d+")) {
+            JsonObject tmp = new JsonObject();
+            tmp.addProperty("n", Long.parseLong(text));
+            return unixToIso(tmp.get("n"));
+        }
+        try {
+            if (text.endsWith("Z")) {
+                return Instant.parse(text).atZone(ZoneId.systemDefault()).toOffsetDateTime().toString();
+            }
+            return java.time.OffsetDateTime.parse(text).atZoneSameInstant(ZoneId.systemDefault())
+                    .toOffsetDateTime().toString();
+        } catch (Exception ignored) {
+            return text;
         }
     }
 

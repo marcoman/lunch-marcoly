@@ -19,14 +19,14 @@ You do **not** need a LaunchDarkly account to run this example. It is the **base
 | [dotnet/README.md](dotnet/README.md) | .NET / dotnet CLI web app setup (macOS, Linux, Windows, WSL) — no LaunchDarkly |
 | [application.md](application.md) | Full behavior specification |
 | [prompts/system_prompt.txt](prompts/system_prompt.txt) | The system prompt sent to the LLM |
-| [stories/](stories/) | Shared Yahoo headline cache (`stories_cache.json`, gitignored) |
+| [stories/](stories/) | Shared headline cache (`stories_cache.json`, gitignored) |
 | [20-agent-config](../20-agent-config/) | AgentControl series landing (Ollama, AWS, LD setup) |
 | [21-agent-completion-config](../20-agent-config/21-agent-completion-config/) | Next: completion config (model + prompts from LaunchDarkly) |
 
 ## What you will see
 
 1. Enter two tickers (defaults: `NVDA`, `SPCX`) and click **Get Stories**.
-2. Two panels show the latest Yahoo Finance headlines (titles are also saved locally for the next visit).
+2. Two panels show headlines (Finnhub → Massive → Yahoo). Titles are also saved locally for the next visit.
 3. Choose a **user** with **Previous User** / **Next user** (Charlie, Nancy, or Toby). Switching users does **not** call the model.
 4. Click **Generate AI Report** to stream a briefing into the **Response** panel.
 5. Watch **Provider / model**, **Metrics**, and **Status** under the prompt/response row.
@@ -51,6 +51,8 @@ in-code user prompt    →      AgentControl user message
 flowchart LR
   subgraph sources [External]
     YF[Yahoo Finance<br/>search JSON API]
+    FH[Finnhub]
+    MS[Massive]
     LLM[LLM provider<br/>stub / Ollama / Bedrock]
   end
 
@@ -60,13 +62,15 @@ flowchart LR
 
   subgraph server [Web app :8090]
     HTTP[HTTP + SSE<br/>python/ · node/ · java/ · dotnet/]
-    NEWS[Yahoo news helper]
+    NEWS[News helper<br/>Finnhub → Massive → Yahoo]
     CORE[Agent core]
     PROMPT[prompts/system_prompt.txt]
   end
 
   UI -->|GET /api/stories| HTTP
   HTTP --> NEWS
+  NEWS -->|headlines| FH
+  NEWS -->|headlines| MS
   NEWS -->|headlines| YF
   NEWS -->|titles + cache| HTTP
   HTTP -->|JSON stories| UI
@@ -84,7 +88,7 @@ flowchart LR
 
 | Step | What happens |
 |------|----------------|
-| **Get Stories** | Browser asks the server for headlines. The server calls Yahoo Finance, saves a local copy when successful, and fills the two story panels. |
+| **Get Stories** | Browser asks the server for headlines. The app tries Finnhub, then Massive, then Yahoo Finance, saves a local copy when successful, and fills the two story panels. |
 | **Previous / Next User** | UI-only. Changes which demo user is selected. Does **not** fetch news and does **not** call the LLM. |
 | **Generate AI Report** | Browser sends the **stories already on screen** plus the selected user id. The server loads [`prompts/system_prompt.txt`](prompts/system_prompt.txt) as the **system** message, builds a **user** message from the headlines, calls the LLM, and streams the answer. |
 
@@ -125,7 +129,7 @@ Edit that file to change analyst behavior. The server re-reads it on each genera
 | **.NET SDK 10** (dotnet web app) | [dotnet.microsoft.com](https://dotnet.microsoft.com/download) installer | Distro package or [dotnet.microsoft.com](https://dotnet.microsoft.com/download) install script | [dotnet.microsoft.com](https://dotnet.microsoft.com/download) installer, or **.NET SDK inside WSL** |
 | **Go 1.22+** (console) | [go.dev](https://go.dev/dl/) installer / Homebrew | Distro package or go.dev tarball | go.dev MSI, or **Go inside WSL** |
 | **Browser** | Any modern browser | Same | Same (including when the server runs in WSL) |
-| **Network** | Needed for Yahoo headlines; optional for stub LLM | Same | Same |
+| **Network** | Needed for headlines (Finnhub / Massive keys optional; Yahoo is last live source); optional for stub LLM | Same | Same |
 | **Ollama** (optional) | [ollama.com](https://ollama.com) Mac app / install | Linux install script | Windows app / install |
 | **AWS CLI + SSO** (optional Bedrock) | `brew install awscli` or pkg | Distro / pip | MSI from AWS |
 

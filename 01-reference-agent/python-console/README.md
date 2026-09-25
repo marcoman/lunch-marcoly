@@ -33,6 +33,8 @@ Same as the web app:
 | `AWS_PROFILE` | `Administrator` | Bedrock SSO profile |
 | `AWS_REGION` | `us-east-1` | Bedrock region |
 | `AGENT_CONSOLE_THEME` | `default` | Color palette: `default` or `high-contrast` |
+| `FINNHUB_API_KEY` | (unset) | First live news source when set |
+| `MASSIVE_API_KEY` | (unset) | Fallback news source when Finnhub is skipped or fails |
 
 ## Run
 
@@ -75,12 +77,12 @@ AGENT_LLM_MODE=stub  model=default-no-llm                         Name: Conserva
 | 1 | `AGENT_LLM_MODE` + `model` | User name |
 | 2 | Workflow commands + mode + quit | Next user |
 
-Successful Yahoo fetches are persisted in [`../stories/stories_cache.json`](../stories/stories_cache.json) (shared by all languages). The console restores the last cached pair on startup when available.
+Successful fetches are persisted in [`../stories/stories_cache.json`](../stories/stories_cache.json) (shared by all languages). The console restores the last cached pair on startup when available.
 
 | Key | Action |
 |-----|--------|
 | `t` | Prompt for two tickers (footer) |
-| `o` | Fetch Yahoo headlines (no LLM) |
+| `o` | Fetch headlines — Finnhub → Massive → Yahoo (no LLM) |
 | `s` | Status snapshot in the output pane |
 | `g` | Stream AI report from loaded stories |
 | `m` | Cycle LLM mode (`stub` → `ollama` → `bedrock`) |

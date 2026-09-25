@@ -10,7 +10,7 @@ This file only does four jobs:
 
   1. Serve the static browser UI (index.html)
   2. Expose a small JSON bootstrap API
-  3. Fetch Yahoo Finance headlines for two tickers
+  3. Fetch headlines for two tickers (Finnhub → Massive → Yahoo)
   4. Bridge browser SSE to agent_core.generate_stream()
 
 All persona / prompt / provider / news logic lives in agent_core.py and
@@ -22,10 +22,10 @@ Request map
   GET /api/bootstrap    → personas, default tickers, cached stories, provider/model
   GET /api/stories      → latest 2 headlines for ticker1 + ticker2
                           query: ticker1=NVDA&ticker2=SPCX
-                          (falls back to ../stories/stories_cache.json on Yahoo errors)
+                          (Finnhub → Massive → Yahoo → ../stories/stories_cache.json)
   POST /api/generate    → text/event-stream of generation events
                           JSON body: { personaId, stories }
-                          Uses the stories already shown in the UI (no Yahoo re-fetch)
+                          Uses the stories already shown in the UI (no news re-fetch)
 
 Typical session
 ---------------

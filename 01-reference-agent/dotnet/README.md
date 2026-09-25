@@ -2,7 +2,7 @@
 
 Web application version of the [01-reference-agent](../application.md) equity briefing demo. **No LaunchDarkly** — this is the baseline the [20-agent-config](../../20-agent-config/) .NET ports (21 / 22 / 23) build on.
 
-Behavior matches the Python / Node / Java web apps: Yahoo headlines → shared system prompt → streamed report (`stub` / `ollama`). Port **8090** (same as the other `01-reference-agent` web languages — run one at a time).
+Behavior matches the Python / Node / Java web apps: Finnhub → Massive → Yahoo headlines → shared system prompt → streamed report (`stub` / `ollama`). Port **8090** (same as the other `01-reference-agent` web languages — run one at a time).
 
 ## Prerequisites
 
@@ -101,7 +101,7 @@ AGENT_LLM_MODE=ollama dotnet run
 |------|------|
 | `Program.cs` | Minimal API / Kestrel — HTTP routes + SSE bridge |
 | `AgentCore.cs` | Personas, prompt, stub / Ollama generation |
-| `YahooNews.cs` | Yahoo Finance + shared [`../stories/stories_cache.json`](../stories/stories_cache.json) (also hosts the internal `JsonUtil` `JsonNode` ⇄ `Dictionary<string, object?>` helpers) |
+| `YahooNews.cs` | News waterfall (Finnhub → Massive → Yahoo) + shared [`../stories/stories_cache.json`](../stories/stories_cache.json) (also hosts the internal `JsonUtil` `JsonNode` ⇄ `Dictionary<string, object?>` helpers) |
 | `wwwroot/index.html` | Browser UI (shared look/behavior with Node/Python/Java) |
 | `../prompts/system_prompt.txt` | Shared system prompt |
 

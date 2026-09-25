@@ -8,6 +8,7 @@
 struct Story {
     std::string title;
     std::string publisher;
+    std::string published;
     std::string link;
     std::string uuid;
 };
@@ -16,6 +17,7 @@ struct TickerBlock {
     std::string ticker;
     std::string name;
     std::vector<Story> stories;
+    std::string source;
     std::string error;  // empty if none
     bool from_cache = false;
 };

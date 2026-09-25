@@ -379,9 +379,24 @@ func (a *app) appendStories() {
 		if name == "" {
 			name = ticker
 		}
-		cache := ""
+		src := block.Source
 		if block.FromCache {
-			cache = " [cached]"
+			src = "cache"
+		}
+		srcLabel := ""
+		switch src {
+		case "finnhub":
+			srcLabel = "Finnhub"
+		case "massive":
+			srcLabel = "Massive"
+		case "yahoo":
+			srcLabel = "Yahoo Finance"
+		case "cache":
+			srcLabel = "cached"
+		}
+		cache := ""
+		if srcLabel != "" {
+			cache = " [" + srcLabel + "]"
 		}
 		a.append(fmt.Sprintf("  %s (%s)%s", ticker, name, cache), fmt.Sprintf("ticker%d", slot))
 		if len(block.Stories) == 0 {
@@ -474,7 +489,7 @@ func (a *app) cmdTickers() {
 
 func (a *app) cmdStories() {
 	a.busy = true
-	a.setFooter(fmt.Sprintf("Fetching Yahoo stories for %s and %s…", a.ticker1, a.ticker2), "busy")
+	a.setFooter(fmt.Sprintf("Fetching headlines for %s and %s…", a.ticker1, a.ticker2), "busy")
 	a.render()
 	result := fetchStoriesForTickers(a.ticker1, a.ticker2, 2)
 	a.stories = result.Tickers

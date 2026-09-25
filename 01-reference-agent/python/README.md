@@ -14,7 +14,7 @@ If you are new to LaunchDarkly: **you do not need LaunchDarkly to run this.** Pr
 | **Virtual environment** at repository root (`.venv`) | Yes | Never install into system Python |
 | Repo-root [`requirements.txt`](../../requirements.txt) | Yes | Shared by all Python examples |
 | Modern browser | Yes | UI is at http://127.0.0.1:8090/ |
-| Network access | For headlines | Yahoo Finance; also for `pip` / `ollama pull` |
+| Network access | For headlines | Finnhub / Massive (API keys) or Yahoo Finance; also for `pip` / `ollama pull` |
 | [Ollama](https://ollama.com/) | Optional | Real local LLM (`AGENT_LLM_MODE=ollama`) |
 | AWS SSO + Bedrock access | Optional | Cloud LLM (`AGENT_LLM_MODE=bedrock`) |
 
@@ -195,7 +195,7 @@ aws sso login --profile Administrator
 ## What to do in the UI
 
 1. Confirm tickers (or change them).
-2. Click **Get Stories** — fills the two headline panels (may use cache if Yahoo rate-limits).
+2. Click **Get Stories** — fills the two headline panels (Finnhub, then Massive, then Yahoo; cache if all live sources fail).
 3. Optionally click **Previous User** / **Next user** — changes the demo user label only.
 4. Click **Generate AI Report** — streams the LLM answer using:
    - **System:** [`../prompts/system_prompt.txt`](../prompts/system_prompt.txt)
@@ -223,12 +223,16 @@ flowchart TB
   end
 
   subgraph external [External services]
+    FH[Finnhub]
+    MS[Massive]
     YF[Yahoo Finance]
     OL[Ollama / Bedrock / stub]
   end
 
   HTML -->|Get Stories| APP
   APP --> YN
+  YN --> FH
+  YN --> MS
   YN --> YF
   YN -->|story titles| HTML
 
@@ -244,7 +248,7 @@ flowchart TB
 |------|------|
 | [`index.html`](index.html) | UI: tickers, stories, users, Prompt / Response, metrics, status |
 | [`01-reference-agent.py`](01-reference-agent.py) | HTTP only: static page, `/api/bootstrap`, `/api/stories`, `POST /api/generate` (SSE) |
-| [`yahoo_news.py`](yahoo_news.py) | Yahoo Finance fetch + shared [`../stories/stories_cache.json`](../stories/stories_cache.json) |
+| [`yahoo_news.py`](yahoo_news.py) | News waterfall (Finnhub → Massive → Yahoo) + shared [`../stories/stories_cache.json`](../stories/stories_cache.json) |
 | [`agent_core.py`](agent_core.py) | Personas, prompt assembly, stub/Ollama/Bedrock streaming, metrics |
 | [`../prompts/system_prompt.txt`](../prompts/system_prompt.txt) | System prompt for the equity analyst persona |
 
@@ -255,7 +259,7 @@ flowchart TB
 | `GET` | `/` | UI |
 | `GET` | `/api/bootstrap` | Personas, defaults, cached stories, provider/model labels |
 | `GET` | `/api/stories?ticker1=&ticker2=` | Fetch (or cache-fallback) headlines |
-| `POST` | `/api/generate` | Body: `{ personaId, stories }` → SSE token stream (**no** Yahoo re-fetch) |
+| `POST` | `/api/generate` | Body: `{ personaId, stories }` → SSE token stream (**no** news re-fetch) |
 
 ---
 
@@ -269,6 +273,8 @@ flowchart TB
 | `AWS_PROFILE` | `Administrator` | Bedrock SSO profile |
 | `AWS_REGION` | `us-east-1` | Bedrock region |
 | `AGENT_BEDROCK_MODEL_ID` | `us.amazon.nova-lite-v1:0` | Bedrock model id |
+| `FINNHUB_API_KEY` | (unset) | First live news source when set |
+| `MASSIVE_API_KEY` | (unset) | Second live news source when Finnhub is skipped or fails |
 
 More detail: [application.md](../application.md#configuration-environment-variables).
 
@@ -279,7 +285,7 @@ More detail: [application.md](../application.md#configuration-environment-variab
 | Symptom | What to try |
 |---------|-------------|
 | `Address already in use` on 8090 | Stop the other process using that port, then start again |
-| Yahoo HTTP 429 / empty stories | Wait and retry **Get Stories**; last good titles may load from cache |
+| Yahoo HTTP 429 / empty stories | Set `FINNHUB_API_KEY` (or `MASSIVE_API_KEY`) and retry **Get Stories**; last good titles may load from cache |
 | Ollama errors | Confirm `ollama serve` / app is running and `ollama list` shows `llama3.2:3b` |
 | Bedrock AccessDenied | Re-run `aws sso login --profile Administrator`; confirm model access in the Bedrock console |
 | Wrong Python | `which python` / `Get-Command python` should point inside `.venv` |

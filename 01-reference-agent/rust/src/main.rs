@@ -413,7 +413,23 @@ impl App {
             } else {
                 block.name.as_str()
             };
-            let cache = if block.from_cache { " [cached]" } else { "" };
+            let src = if block.from_cache {
+                "cache"
+            } else {
+                block.source.as_str()
+            };
+            let src_label = match src {
+                "finnhub" => "Finnhub",
+                "massive" => "Massive",
+                "yahoo" => "Yahoo Finance",
+                "cache" => "cached",
+                _ => "",
+            };
+            let cache = if src_label.is_empty() {
+                String::new()
+            } else {
+                format!(" [{src_label}]")
+            };
             self.append(
                 &format!("  {ticker} ({name}){cache}"),
                 &format!("ticker{slot}"),
@@ -513,7 +529,7 @@ impl App {
         self.busy = true;
         self.set_footer(
             format!(
-                "Fetching Yahoo stories for {} and {}…",
+                "Fetching headlines for {} and {}…",
                 self.ticker1, self.ticker2
             ),
             "busy",

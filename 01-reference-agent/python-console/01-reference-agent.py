@@ -571,8 +571,15 @@ class App:
             story_kind = f"story{slot}"
             ticker = block.get("ticker") or "?"
             name = block.get("name") or ticker
-            cache_note = " [cached]" if block.get("from_cache") else ""
-            self.append(f"  {ticker} ({name}){cache_note}", ticker_kind)
+            src = "cache" if block.get("from_cache") else str(block.get("source") or "")
+            src_label = {
+                "finnhub": "Finnhub",
+                "massive": "Massive",
+                "yahoo": "Yahoo Finance",
+                "cache": "cached",
+            }.get(src, "")
+            src_note = f" [{src_label}]" if src_label else ""
+            self.append(f"  {ticker} ({name}){src_note}", ticker_kind)
             items = block.get("stories") or []
             if not items:
                 err = block.get("error") or "no stories"
@@ -609,7 +616,7 @@ class App:
     def cmd_stories(self) -> None:
         self.busy = True
         self.set_footer(
-            f"Fetching Yahoo stories for {self.ticker1} and {self.ticker2}…",
+            f"Fetching headlines for {self.ticker1} and {self.ticker2}…",
             "busy",
         )
         try:

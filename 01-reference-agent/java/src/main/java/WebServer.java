@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
  *
  * GET  /              → index.html
  * GET  /api/bootstrap → personas, tickers, cache, provider/model
- * GET  /api/stories   → Yahoo headlines for two tickers
+ * GET  /api/stories   → headlines for two tickers (Finnhub → Massive → Yahoo)
  * POST /api/generate  → SSE generation events
  */
 public class WebServer {

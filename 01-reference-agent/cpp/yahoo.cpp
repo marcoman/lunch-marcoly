@@ -8,6 +8,8 @@
 #include <curl/curl.h>
 #include <filesystem>
 #include <fstream>
+#include <cstdlib>
+#include <ctime>
 #include <sstream>
 #include <stdexcept>
 #include <thread>
@@ -94,6 +96,7 @@ std::optional<TickerBlock> get_cached_ticker(const std::string& ticker) {
     if (block.name.empty()) {
         block.name = symbol;
     }
+    block.source = "cache";
     block.from_cache = true;
     int n = 0;
     for (const auto& s : entry["stories"]) {
@@ -103,6 +106,7 @@ std::optional<TickerBlock> get_cached_ticker(const std::string& ticker) {
         Story story;
         story.title = s.value("title", "");
         story.publisher = s.value("publisher", "");
+        story.published = s.value("published", "");
         story.link = s.value("link", "");
         story.uuid = s.value("uuid", "");
         if (!story.title.empty()) {
@@ -126,6 +130,7 @@ void remember_ticker(const std::string& symbol, const std::string& name,
     for (size_t i = 0; i < stories.size() && i < 2; ++i) {
         arr.push_back({{"title", stories[i].title},
                        {"publisher", stories[i].publisher},
+                       {"published", stories[i].published},
                        {"link", stories[i].link},
                        {"uuid", stories[i].uuid}});
     }
@@ -160,6 +165,7 @@ void remember_pair(const std::string& t1, const std::string& t2,
         for (size_t i = 0; i < block.stories.size() && i < 2; ++i) {
             arr.push_back({{"title", block.stories[i].title},
                            {"publisher", block.stories[i].publisher},
+                           {"published", block.stories[i].published},
                            {"link", block.stories[i].link},
                            {"uuid", block.stories[i].uuid}});
         }
@@ -171,7 +177,8 @@ void remember_pair(const std::string& t1, const std::string& t2,
     save_cache(std::move(cache));
 }
 
-std::string http_get(const std::string& url, long* status_out) {
+std::string http_get(const std::string& url, long* status_out,
+                     const std::string& extra_header = "") {
     std::string body;
     CURL* curl = curl_easy_init();
     if (!curl) {
@@ -187,6 +194,9 @@ std::string http_get(const std::string& url, long* status_out) {
     struct curl_slist* headers = nullptr;
     headers = curl_slist_append(headers, "Accept: application/json");
     headers = curl_slist_append(headers, "Accept-Language: en-US,en;q=0.9");
+    if (!extra_header.empty()) {
+        headers = curl_slist_append(headers, extra_header.c_str());
+    }
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     const CURLcode rc = curl_easy_perform(curl);
     long status = 0;
@@ -202,13 +212,20 @@ std::string http_get(const std::string& url, long* status_out) {
     return body;
 }
 
-json yahoo_get_json(const std::string& url) {
-    std::string last_err = "Yahoo request failed";
+json get_json(const std::string& url, const std::string& extra_header = "",
+              bool yahoo_pace = false) {
+    std::string last_err = "News request failed";
     for (int attempt = 0; attempt < 3; ++attempt) {
+        if (yahoo_pace) {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
         try {
             long status = 0;
-            const std::string body = http_get(url, &status);
-            if (status == 429 || status == 503) {
+            const std::string body = http_get(url, &status, extra_header);
+            if (status == 429) {
+                throw std::runtime_error("HTTP 429");
+            }
+            if (status == 503) {
                 last_err = "HTTP " + std::to_string(status);
                 if (attempt < 2) {
                     std::this_thread::sleep_for(
@@ -223,6 +240,9 @@ json yahoo_get_json(const std::string& url) {
             return json::parse(body);
         } catch (const std::exception& ex) {
             last_err = ex.what();
+            if (std::string(ex.what()) == "HTTP 429") {
+                throw;
+            }
             if (attempt < 2) {
                 std::this_thread::sleep_for(std::chrono::seconds(1));
                 continue;
@@ -230,6 +250,24 @@ json yahoo_get_json(const std::string& url) {
         }
     }
     throw std::runtime_error(last_err);
+}
+
+std::string env_key(const char* name) {
+    const char* v = std::getenv(name);
+    return v ? std::string(v) : "";
+}
+
+std::string iso_date_utc(std::chrono::system_clock::time_point tp) {
+    const std::time_t t = std::chrono::system_clock::to_time_t(tp);
+    std::tm tm{};
+#if defined(_WIN32)
+    gmtime_s(&tm, &t);
+#else
+    gmtime_r(&t, &tm);
+#endif
+    char buf[16];
+    std::strftime(buf, sizeof(buf), "%Y-%m-%d", &tm);
+    return buf;
 }
 
 std::optional<TickerBlock> parse_search_payload(const std::string& symbol,
@@ -245,6 +283,7 @@ std::optional<TickerBlock> parse_search_payload(const std::string& symbol,
     }
     TickerBlock block;
     block.ticker = symbol;
+    block.source = "yahoo";
     block.from_cache = false;
     if (payload.contains("news") && payload["news"].is_array()) {
         int n = 0;
@@ -254,7 +293,6 @@ std::optional<TickerBlock> parse_search_payload(const std::string& symbol,
             }
             Story s;
             s.title = item.value("title", "");
-            // trim
             while (!s.title.empty() && std::isspace(static_cast<unsigned char>(s.title.front()))) {
                 s.title.erase(s.title.begin());
             }
@@ -278,12 +316,131 @@ std::optional<TickerBlock> parse_search_payload(const std::string& symbol,
     return block;
 }
 
-TickerBlock fetch_stories_for_ticker(const std::string& ticker, int count) {
-    const std::string symbol = normalize_ticker(ticker);
-    if (symbol.empty()) {
-        return {"", "", {}, "Ticker is empty.", false};
+TickerBlock ticker_ok(const std::string& symbol, const std::string& name,
+                      std::vector<Story> stories, const std::string& source) {
+    TickerBlock block;
+    block.ticker = symbol;
+    block.name = name.empty() ? symbol : name;
+    block.stories = std::move(stories);
+    block.source = source;
+    return block;
+}
+
+bool fetch_finnhub(const std::string& symbol, int count, TickerBlock& out,
+                   std::string& err) {
+    const std::string token = env_key("FINNHUB_API_KEY");
+    if (token.empty()) {
+        return false;
     }
-    count = std::max(1, count);
+    const auto end = std::chrono::system_clock::now();
+    const auto start = end - std::chrono::hours(24 * 7);
+    const std::string url =
+        "https://finnhub.io/api/v1/company-news?symbol=" + symbol +
+        "&from=" + iso_date_utc(start) + "&to=" + iso_date_utc(end) +
+        "&token=" + token;
+    try {
+        const json payload = get_json(url);
+        if (!payload.is_array()) {
+            err = "Finnhub returned no stories for " + symbol + ".";
+            return false;
+        }
+        std::vector<Story> stories;
+        for (const auto& item : payload) {
+            if (static_cast<int>(stories.size()) >= count) {
+                break;
+            }
+            Story s;
+            s.title = item.value("headline", "");
+            if (s.title.empty()) {
+                s.title = item.value("title", "");
+            }
+            if (s.title.empty()) {
+                continue;
+            }
+            s.publisher = item.value("source", "");
+            s.link = item.value("url", "");
+            if (item.contains("id")) {
+                s.uuid = item["id"].is_string() ? item["id"].get<std::string>()
+                                                : item["id"].dump();
+            }
+            stories.push_back(std::move(s));
+        }
+        if (stories.empty()) {
+            err = "No recent stories found for " + symbol + ".";
+            return false;
+        }
+        out = ticker_ok(symbol, symbol, std::move(stories), "finnhub");
+        err.clear();
+        return true;
+    } catch (const std::exception& ex) {
+        const std::string msg = ex.what();
+        if (msg.rfind("HTTP ", 0) == 0) {
+            err = "Finnhub " + msg + " for " + symbol + ".";
+        } else {
+            err = "Finnhub request failed for " + symbol + ": " + msg;
+        }
+        return false;
+    }
+}
+
+bool fetch_massive(const std::string& symbol, int count, TickerBlock& out,
+                   std::string& err) {
+    const std::string token = env_key("MASSIVE_API_KEY");
+    if (token.empty()) {
+        return false;
+    }
+    const std::string url =
+        "https://api.massive.com/v2/reference/news?ticker=" + symbol +
+        "&limit=" + std::to_string(count) + "&sort=published_utc&order=desc";
+    try {
+        const json payload =
+            get_json(url, "Authorization: Bearer " + token);
+        if (!payload.contains("results") || !payload["results"].is_array() ||
+            payload["results"].empty()) {
+            err = "No recent stories found for " + symbol + ".";
+            return false;
+        }
+        std::vector<Story> stories;
+        for (const auto& item : payload["results"]) {
+            if (static_cast<int>(stories.size()) >= count) {
+                break;
+            }
+            Story s;
+            s.title = item.value("title", "");
+            if (s.title.empty()) {
+                continue;
+            }
+            if (item.contains("publisher") && item["publisher"].is_object()) {
+                s.publisher = item["publisher"].value("name", "");
+            }
+            s.published = item.value("published_utc", "");
+            s.link = item.value("article_url", "");
+            if (s.link.empty()) {
+                s.link = item.value("url", "");
+            }
+            s.uuid = item.value("id", "");
+            stories.push_back(std::move(s));
+        }
+        if (stories.empty()) {
+            err = "No recent stories found for " + symbol + ".";
+            return false;
+        }
+        out = ticker_ok(symbol, symbol, std::move(stories), "massive");
+        err.clear();
+        return true;
+    } catch (const std::exception& ex) {
+        const std::string msg = ex.what();
+        if (msg.rfind("HTTP ", 0) == 0) {
+            err = "Massive " + msg + " for " + symbol + ".";
+        } else {
+            err = "Massive request failed for " + symbol + ": " + msg;
+        }
+        return false;
+    }
+}
+
+bool fetch_yahoo(const std::string& symbol, int count, TickerBlock& out,
+                 std::string& err) {
     const std::string variants[] = {
         "q=" + symbol + "&quotesCount=1&newsCount=" + std::to_string(count) +
             "&enableFuzzyQuery=false&newsQueryId=news_cie_vespa&lang=en-US&region=US",
@@ -295,29 +452,64 @@ TickerBlock fetch_stories_for_ticker(const std::string& ticker, int count) {
         for (const auto& params : variants) {
             const std::string url = std::string(host) + "?" + params;
             try {
-                const json payload = yahoo_get_json(url);
+                const json payload = get_json(url, "", true);
                 auto parsed = parse_search_payload(symbol, payload, count);
                 if (!parsed) {
                     last_error = "No recent stories found for " + symbol + ".";
                     continue;
                 }
-                remember_ticker(symbol, parsed->name, parsed->stories);
-                return *parsed;
+                out = *parsed;
+                err.clear();
+                return true;
             } catch (const std::exception& ex) {
                 const std::string msg = ex.what();
                 if (msg.rfind("HTTP ", 0) == 0) {
                     last_error = "Yahoo Finance " + msg + " for " + symbol + ".";
+                    if (msg == "HTTP 429") {
+                        err = last_error;
+                        return false;
+                    }
                 } else {
                     last_error = "Yahoo Finance request failed for " + symbol + ": " + msg;
                 }
             }
         }
     }
+    err = last_error;
+    return false;
+}
+
+TickerBlock fetch_stories_for_ticker(const std::string& ticker, int count) {
+    const std::string symbol = normalize_ticker(ticker);
+    if (symbol.empty()) {
+        TickerBlock empty;
+        empty.error = "Ticker is empty.";
+        return empty;
+    }
+    count = std::max(1, count);
+    std::string last_error = "No recent stories found for " + symbol + ".";
+    TickerBlock live;
+    if (!env_key("FINNHUB_API_KEY").empty() && fetch_finnhub(symbol, count, live, last_error)) {
+        remember_ticker(symbol, live.name, live.stories);
+        return live;
+    }
+    if (!env_key("MASSIVE_API_KEY").empty() && fetch_massive(symbol, count, live, last_error)) {
+        remember_ticker(symbol, live.name, live.stories);
+        return live;
+    }
+    if (fetch_yahoo(symbol, count, live, last_error)) {
+        remember_ticker(symbol, live.name, live.stories);
+        return live;
+    }
     if (auto cached = get_cached_ticker(symbol)) {
         cached->error = last_error + " Showing last saved headlines.";
         return *cached;
     }
-    return {symbol, symbol, {}, last_error, false};
+    TickerBlock empty;
+    empty.ticker = symbol;
+    empty.name = symbol;
+    empty.error = last_error;
+    return empty;
 }
 
 }  // namespace
@@ -375,7 +567,9 @@ FetchPairResult fetch_stories_for_tickers(const std::string& ticker1,
         t2 = kDefaultTicker2;
     }
     auto first = fetch_stories_for_ticker(t1, count);
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    if (first.source == "yahoo" || first.stories.empty()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
     auto second = fetch_stories_for_ticker(t2, count);
     std::vector<TickerBlock> results{std::move(first), std::move(second)};
     remember_pair(t1, t2, results);
@@ -393,7 +587,7 @@ FetchPairResult fetch_stories_for_tickers(const std::string& ticker1,
 
 std::string format_stories_for_prompt(const std::vector<TickerBlock>& ticker_results) {
     std::ostringstream b;
-    b << "Using only the recent Yahoo Finance headlines below, write a short "
+    b << "Using only the recent headlines below, write a short "
          "market briefing that compares the two tickers. Cite story titles "
          "where helpful. Do not invent facts beyond what the headlines imply.\n\n";
     for (const auto& block : ticker_results) {

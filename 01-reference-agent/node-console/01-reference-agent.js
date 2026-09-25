@@ -324,7 +324,9 @@ class App {
       const slot = index === 0 ? 1 : 2;
       const ticker = block.ticker || "?";
       const name = block.name || ticker;
-      const cache = block.from_cache ? " [cached]" : "";
+      const src = block.from_cache ? "cache" : String(block.source || "");
+      const srcLabel = { finnhub: "Finnhub", massive: "Massive", yahoo: "Yahoo Finance", cache: "cached" }[src] || "";
+      const cache = srcLabel ? ` [${srcLabel}]` : "";
       this.append(`  ${ticker} (${name})${cache}`, `ticker${slot}`);
       const items = block.stories || [];
       if (!items.length) {
@@ -385,7 +387,7 @@ class App {
 
   async cmdStories() {
     this.busy = true;
-    this.setFooter(`Fetching Yahoo stories for ${this.ticker1} and ${this.ticker2}…`, "busy");
+    this.setFooter(`Fetching headlines for ${this.ticker1} and ${this.ticker2}…`, "busy");
     this.render();
     try {
       const result = await fetchStoriesForTickers(this.ticker1, this.ticker2, 2);
