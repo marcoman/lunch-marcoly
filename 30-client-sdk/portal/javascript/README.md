@@ -10,6 +10,7 @@ JavaScript (browser SDK) examples.
 | **32 Identify** | 8320 |
 | **33 Synced segments** | 8330 |
 | **34 Twilio segments** | 8340 |
+| **35 Bootstrap** | 8350 |
 
 Keywords: **client-side SDK** · **client-side ID** · **series portal** · **iframe tabs**
 
@@ -48,7 +49,7 @@ Open [http://127.0.0.1:8300/](http://127.0.0.1:8300/). **Ctrl+C** stops the
 portal and all children.
 
 Override with `PORTAL_PORT`. The portal passes `PORT` to each child; solo apps
-still default to **:8310** / **:8320** / **:8330** / **:8340** when run from their own
+still default to **:8310** / **:8320** / **:8330** / **:8340** / **:8350** when run from their own
 folders.
 
 Series index: [../README.md](../README.md) · [../../README.md](../../README.md).

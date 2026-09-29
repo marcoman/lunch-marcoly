@@ -6,8 +6,7 @@ Work queue for new lunch-marcoly examples. Ship in this order.
 
 | Priority | Example | Series | Status |
 |----------|---------|--------|--------|
-| 1 | [35-client-bootstrap](30-client-sdk/35-client-bootstrap/) | 30-client-sdk | Stub |
-| 2 | [36-client-track-events](30-client-sdk/36-client-track-events/) | 30-client-sdk | Stub |
+| 1 | [36-client-track-events](30-client-sdk/36-client-track-events/) | 30-client-sdk | Stub |
 
 Other stubs already in the tree: [41-no-sdk-singleton](40-dont-do-this/41-no-sdk-singleton/), [42-local-if-no-sdk](40-dont-do-this/42-local-if-no-sdk/), [99-use-cases/17-migration-flags](99-use-cases/17-migration-flags/).
 

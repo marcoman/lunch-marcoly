@@ -56,7 +56,7 @@ lunch-marcoly/
 │   ├── 32-client-identify/
 │   ├── 33-synced-segments/
 │   ├── 34-synced-segments-twilio/
-│   ├── 35-client-bootstrap/     # Stub
+│   ├── 35-client-bootstrap/     # Bootstrap first paint :8350–:8352
 │   └── 36-client-track-events/  # Stub
 ├── 40-dont-do-this/             # Anti-patterns (do not ship)
 │   ├── README.md
@@ -138,7 +138,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 32 | [32-client-identify](30-client-sdk/32-client-identify/) | `identify()` context switch without reload (**JS :8320** · **React :8321** · **Vue :8322**) |
 | 33 | [33-synced-segments](30-client-sdk/33-synced-segments/) | Synced/big segment inner-circle badge (**JS :8330** · **React :8331** · **Vue :8332**) |
 | 34 | [34-synced-segments-twilio](30-client-sdk/34-synced-segments-twilio/) | Twilio Segment Audiences sync (**JS :8340** · **React :8341** · **Vue :8342**) |
-| 35 | [35-client-bootstrap](30-client-sdk/35-client-bootstrap/) | **Stub:** JS SDK bootstrap (first paint with initial flag values) |
+| 35 | [35-client-bootstrap](30-client-sdk/35-client-bootstrap/) | Bootstrap first paint (`green` / count on) before the client is ready |
 | 36 | [36-client-track-events](30-client-sdk/36-client-track-events/) | **Stub:** client `track()` — `login_completed`, `grid_move` |
 | 40 | [40-dont-do-this](40-dont-do-this/) | Anti-pattern series (do not ship) |
 | 41 | [41-no-sdk-singleton](40-dont-do-this/41-no-sdk-singleton/) | **Stub:** new server SDK client per evaluation |

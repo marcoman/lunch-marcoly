@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * portal.js — series shell for 30-client-sdk (JavaScript browser examples 31–34).
+ * portal.js — series shell for 30-client-sdk (JavaScript browser examples 31–35).
  *
  * Serves this folder's index.html on :8300 (PORTAL_PORT), spawns each example's
  * existing JavaScript static host with its assigned PORT, and stops all children
@@ -66,6 +66,18 @@ const CHILDREN = [
     ),
     cwd: path.join(SERIES_ROOT, "34-synced-segments-twilio", "javascript"),
     port: 8340,
+  },
+  {
+    id: "35",
+    label: "Bootstrap",
+    script: path.join(
+      SERIES_ROOT,
+      "35-client-bootstrap",
+      "javascript",
+      "35-client-bootstrap.js"
+    ),
+    cwd: path.join(SERIES_ROOT, "35-client-bootstrap", "javascript"),
+    port: 8350,
   },
 ];
 
@@ -274,7 +286,7 @@ async function main() {
   server.listen(PORTAL_PORT, "127.0.0.1", () => {
     console.log(APP_BANNER);
     console.log(`Open http://127.0.0.1:${PORTAL_PORT}/`);
-    console.log("Tabs embed JavaScript examples on 8310 / 8320 / 8330 / 8340.");
+    console.log("Tabs embed JavaScript examples on 8310 / 8320 / 8330 / 8340 / 8350.");
     console.log("Ctrl+C stops the portal and all children.");
   });
 }

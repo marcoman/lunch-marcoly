@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * portal.js — series shell for 30-client-sdk (React Web SDK examples 31–34).
+ * portal.js — series shell for 30-client-sdk (React Web SDK examples 31–35).
  *
  * Serves this folder's index.html on :8301 (PORTAL_PORT), spawns each example's
  * existing Vite host with its assigned PORT, and stops all children on exit.
@@ -48,6 +48,12 @@ const CHILDREN = [
     label: "Twilio segments",
     cwd: path.join(SERIES_ROOT, "34-synced-segments-twilio", LANG),
     port: 8341,
+  },
+  {
+    id: "35",
+    label: "Bootstrap",
+    cwd: path.join(SERIES_ROOT, "35-client-bootstrap", LANG),
+    port: 8351,
   },
 ];
 
@@ -257,7 +263,7 @@ async function main() {
   server.listen(PORTAL_PORT, "127.0.0.1", () => {
     console.log(APP_BANNER);
     console.log(`Open http://127.0.0.1:${PORTAL_PORT}/`);
-    console.log("Tabs embed React examples on 8311 / 8321 / 8331 / 8341.");
+    console.log("Tabs embed React examples on 8311 / 8321 / 8331 / 8341 / 8351.");
     console.log("Ctrl+C stops the portal and all children.");
   });
 }
