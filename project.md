@@ -156,7 +156,8 @@ lunch-marcoly/
 │   ├── 15-guarded-rollout/    # Percentage ramp with regression guardrails
 │   ├── 16-adaptive-triggers/  # Metric threshold switches flag variation
 │   ├── 17-migration-flags/    # Stub: migration flag dual-store cutover
-│   └── 18-sdk-fallbacks/      # SDK defaults vs last-known (web apps)
+│   ├── 18-sdk-fallbacks/      # SDK defaults vs last-known (web apps)
+│   └── 19-terraform-sentinel/ # Sentinel policies for Terraform flags (no SDK)
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── rest/
@@ -214,6 +215,7 @@ lunch-marcoly/
 - `61-reference` (under `60-observability/`) moves the 00 web navigator state into Python APIs without LaunchDarkly (**:8610**).
 - `62-server-traces` adds the Python `ObservabilityPlugin` and manual spans for successful login (`grid.login` with username) and successful moves (`grid.move`) (**:8620**). It evaluates no flags.
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive/guarded rollouts, adaptive triggers, SDK fallbacks, and a migration-flags stub).
+- `19-terraform-sentinel` (under `99-use-cases/`) is Sentinel policy for Terraform-managed flags (`temporary`, `sunset` custom property). Pass and fail fixtures only — no grid app and no SDK.
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author
 

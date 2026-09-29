@@ -78,7 +78,8 @@ lunch-marcoly/
 │   ├── 15-guarded-rollout/
 │   ├── 16-adaptive-triggers/
 │   ├── 17-migration-flags/      # Stub
-│   └── 18-sdk-fallbacks/
+│   ├── 18-sdk-fallbacks/
+│   └── 19-terraform-sentinel/   # Sentinel policies for Terraform flags
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -158,6 +159,7 @@ Each example may include implementations in any of these languages. Python, Node
 | — | [16-adaptive-triggers](99-use-cases/16-adaptive-triggers/) | Metric threshold switches flag variation |
 | — | [17-migration-flags](99-use-cases/17-migration-flags/) | **Stub:** migration flag dual-store cutover |
 | — | [18-sdk-fallbacks](99-use-cases/18-sdk-fallbacks/) | Init failure / stream loss → default vs last-known |
+| — | [19-terraform-sentinel](99-use-cases/19-terraform-sentinel/) | Sentinel pass/fail fixtures: temporary flags and a sunset custom property |
 
 ## Building code
 

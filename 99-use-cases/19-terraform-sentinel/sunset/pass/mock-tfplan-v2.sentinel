@@ -1,0 +1,25 @@
+# Slice of a tfplan/v2 resource_changes entry for sunset/pass/main.tf.
+# custom_properties matches the launchdarkly provider ~> 2.0 block shape.
+resource_changes = {
+	"launchdarkly_feature_flag.enable_sentinel_sunset": {
+		"address": "launchdarkly_feature_flag.enable_sentinel_sunset",
+		"mode":    "managed",
+		"type":    "launchdarkly_feature_flag",
+		"name":    "enable_sentinel_sunset",
+		"change": {
+			"actions": ["create"],
+			"after": {
+				"key":            "enable-sentinel-sunset",
+				"variation_type": "boolean",
+				"temporary":      true,
+				"custom_properties": [
+					{
+						"key":   "sunset",
+						"name":  "Sunset",
+						"value": ["2026-12-31"],
+					},
+				],
+			},
+		},
+	},
+}

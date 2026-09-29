@@ -1,0 +1,14 @@
+# Boolean flags in this plan must be temporary.
+# LaunchDarkly: temporary flags, flag lifecycle — https://launchdarkly.com/docs/home/flags/flag-lifecycle-settings
+# Terraform plan import: tfplan/v2 — https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan-v2
+import "tfplan/v2" as tfplan
+
+boolean_flags = filter tfplan.resource_changes as _, rc {
+	rc.type is "launchdarkly_feature_flag" and
+		rc.change.after is not null and
+		rc.change.after.variation_type is "boolean"
+}
+
+main = rule {
+	all boolean_flags as _, rc { rc.change.after.temporary is true }
+}

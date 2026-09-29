@@ -1,0 +1,18 @@
+# Slice of a tfplan/v2 resource_changes entry for temporary/pass/main.tf.
+# The policy reads type, change.after.variation_type, and change.after.temporary.
+resource_changes = {
+	"launchdarkly_feature_flag.enable_sentinel_temporary": {
+		"address": "launchdarkly_feature_flag.enable_sentinel_temporary",
+		"mode":    "managed",
+		"type":    "launchdarkly_feature_flag",
+		"name":    "enable_sentinel_temporary",
+		"change": {
+			"actions": ["create"],
+			"after": {
+				"key":            "enable-sentinel-temporary",
+				"variation_type": "boolean",
+				"temporary":      true,
+			},
+		},
+	},
+}

@@ -16,11 +16,12 @@ Each subdirectory demonstrates a specific product pattern (A/B testing, rollouts
 | [16-adaptive-triggers/](16-adaptive-triggers/) | Adaptive trigger: custom latency metric switches highlight variation (`green` → `none`) |
 | [17-migration-flags/](17-migration-flags/) | **Stub:** migration flag dual-store cutover (parked 10-series 16) |
 | [18-sdk-fallbacks/](18-sdk-fallbacks/) | Init failure / stream loss → default vs last-known evaluation (Python / Node / Java / .NET web) |
+| [19-terraform-sentinel/](19-terraform-sentinel/) | Sentinel policies for Terraform flags: `temporary` and a `sunset` custom property (pass and fail fixtures, no SDK) |
 
 ## Conventions
 
 - Baseline behavior inherits from [00-reference-code/application.md](../00-reference-code/application.md)
-- Each use case includes its own `application.md`, provisioning (`terraform/`, `rest/`), and language folders
+- Each use case includes its own `application.md`. Grid use cases add provisioning (`terraform/`, `rest/`) and language folders. [19-terraform-sentinel](19-terraform-sentinel/) is policies only: no SDK and no grid app.
 - Experiment utilities (where applicable) live alongside the application in each language folder
 
 ## Further reading

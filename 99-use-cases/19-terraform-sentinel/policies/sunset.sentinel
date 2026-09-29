@@ -1,0 +1,28 @@
+# Boolean flags in this plan must carry a sunset custom property (YYYY-MM-DD).
+# LaunchDarkly stores the property. It does not archive or turn the flag off on that date.
+# Custom properties — https://launchdarkly.com/docs/home/infrastructure/custom-properties
+# Terraform plan import: tfplan/v2 — https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan-v2
+import "tfplan/v2" as tfplan
+
+boolean_flags = filter tfplan.resource_changes as _, rc {
+	rc.type is "launchdarkly_feature_flag" and
+		rc.change.after is not null and
+		rc.change.after.variation_type is "boolean"
+}
+
+has_sunset = func(rc) {
+	raw = rc.change.after.custom_properties
+	props = raw else []
+	if props is null {
+		return false
+	}
+	return any props as _, prop {
+		prop.key is "sunset" and
+			length(prop.value else []) is 1 and
+			prop.value[0] matches "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+	}
+}
+
+main = rule {
+	all boolean_flags as _, rc { has_sunset(rc) }
+}

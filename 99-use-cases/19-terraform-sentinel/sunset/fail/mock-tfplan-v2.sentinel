@@ -1,0 +1,18 @@
+# Slice of a tfplan/v2 resource_changes entry for sunset/fail/main.tf.
+# No sunset custom property, so policies/sunset.sentinel rejects the plan.
+resource_changes = {
+	"launchdarkly_feature_flag.enable_sentinel_sunset": {
+		"address": "launchdarkly_feature_flag.enable_sentinel_sunset",
+		"mode":    "managed",
+		"type":    "launchdarkly_feature_flag",
+		"name":    "enable_sentinel_sunset",
+		"change": {
+			"actions": ["create"],
+			"after": {
+				"key":            "enable-sentinel-sunset",
+				"variation_type": "boolean",
+				"temporary":      true,
+			},
+		},
+	},
+}
