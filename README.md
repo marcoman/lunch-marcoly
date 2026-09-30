@@ -51,13 +51,13 @@ lunch-marcoly/
 │   └── 25-agent-graph/           # assess → specialist → finalize
 ├── 30-client-sdk/               # Browser JavaScript SDK
 │   ├── README.md
-│   ├── portal/                  # JS :8300 · React :8301 · Vue :8302 (31–34)
+│   ├── portal/                  # JS :8300 · React :8301 · Vue :8302 (31–36)
 │   ├── 31-client-evaluation/
 │   ├── 32-client-identify/
 │   ├── 33-synced-segments/
 │   ├── 34-synced-segments-twilio/
 │   ├── 35-client-bootstrap/     # Bootstrap first paint :8350–:8352
-│   └── 36-client-track-events/  # Stub
+│   └── 36-client-track-events/  # track() login_completed + grid_move :8360–:8362
 ├── 40-dont-do-this/             # Anti-patterns (do not ship)
 │   ├── README.md
 │   ├── 41-no-sdk-singleton/     # Stub: new LDClient per evaluation
@@ -133,13 +133,13 @@ Each example may include implementations in any of these languages. Python, Node
 | 23 | [23-agent-tools](20-agent-config/23-agent-tools/) | Library tools + tool loop + `track_tool_call` (web + Go console) |
 | 24 | [24-agent-judges](20-agent-config/24-agent-judges/) | Judges runtime gate + rewrite (Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console) |
 | 25 | [25-agent-graph](20-agent-config/25-agent-graph/) | Agent graph: assess → specialist → finalize (Python **8250** · Node **8251** · Java **8252** · .NET **8253**) |
-| 30 | [30-client-sdk](30-client-sdk/) | Browser client-side SDK series (client-side ID); [portal](30-client-sdk/portal/) JS **:8300** · React **:8301** · Vue **:8302** (31–34) |
+| 30 | [30-client-sdk](30-client-sdk/) | Browser client-side SDK series (client-side ID); [portal](30-client-sdk/portal/) JS **:8300** · React **:8301** · Vue **:8302** (31–36) |
 | 31 | [31-client-evaluation](30-client-sdk/31-client-evaluation/) | Initialize, client-side availability, `variation`, `change:` (**JS :8310** · **React :8311** · **Vue :8312**) |
 | 32 | [32-client-identify](30-client-sdk/32-client-identify/) | `identify()` context switch without reload (**JS :8320** · **React :8321** · **Vue :8322**) |
 | 33 | [33-synced-segments](30-client-sdk/33-synced-segments/) | Synced/big segment inner-circle badge (**JS :8330** · **React :8331** · **Vue :8332**) |
 | 34 | [34-synced-segments-twilio](30-client-sdk/34-synced-segments-twilio/) | Twilio Segment Audiences sync (**JS :8340** · **React :8341** · **Vue :8342**) |
 | 35 | [35-client-bootstrap](30-client-sdk/35-client-bootstrap/) | Bootstrap first paint (`green` / count on) before the client is ready |
-| 36 | [36-client-track-events](30-client-sdk/36-client-track-events/) | **Stub:** client `track()` — `login_completed`, `grid_move` |
+| 36 | [36-client-track-events](30-client-sdk/36-client-track-events/) | Client `track()` — `login_completed`, `grid_move` (**JS :8360** · **React :8361** · **Vue :8362**) |
 | 40 | [40-dont-do-this](40-dont-do-this/) | Anti-pattern series (do not ship) |
 | 41 | [41-no-sdk-singleton](40-dont-do-this/41-no-sdk-singleton/) | **Stub:** new server SDK client per evaluation |
 | 42 | [42-local-if-no-sdk](40-dont-do-this/42-local-if-no-sdk/) | **Stub:** local `if` / hardcoded boolean, never `variation()` |

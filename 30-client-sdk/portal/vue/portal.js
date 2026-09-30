@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * portal.js — series shell for 30-client-sdk (Vue SDK examples 31–35).
+ * portal.js — series shell for 30-client-sdk (Vue SDK examples 31–36).
  *
  * Serves this folder's index.html on :8302 (PORTAL_PORT), spawns each example's
  * existing Vite host with its assigned PORT, and stops all children on exit.
@@ -54,6 +54,12 @@ const CHILDREN = [
     label: "Bootstrap",
     cwd: path.join(SERIES_ROOT, "35-client-bootstrap", LANG),
     port: 8352,
+  },
+  {
+    id: "36",
+    label: "Track events",
+    cwd: path.join(SERIES_ROOT, "36-client-track-events", LANG),
+    port: 8362,
   },
 ];
 
@@ -263,7 +269,7 @@ async function main() {
   server.listen(PORTAL_PORT, "127.0.0.1", () => {
     console.log(APP_BANNER);
     console.log(`Open http://127.0.0.1:${PORTAL_PORT}/`);
-    console.log("Tabs embed Vue examples on 8312 / 8322 / 8332 / 8342 / 8352.");
+    console.log("Tabs embed Vue examples on 8312 / 8322 / 8332 / 8342 / 8352 / 8362.");
     console.log("Ctrl+C stops the portal and all children.");
   });
 }

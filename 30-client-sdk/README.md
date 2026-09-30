@@ -3,8 +3,8 @@
 LaunchDarkly **client-side SDK** examples for the lunch-marcoly grid navigator.
 The application runs in the browser. Evaluation uses a **client-side ID**, never
 a server-side SDK key. **JavaScript** (`javascript/`) uses the JS SDK.
-**React Web** (`react/`, 31–35) uses the [React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web).
-**Vue** (`vue/`, 31–35) uses the [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue).
+**React Web** (`react/`, 31–36) uses the [React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web).
+**Vue** (`vue/`, 31–36) uses the [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue).
 
 Baseline (no LaunchDarkly): [02-reference-client-code](../02-reference-client-code/).
 Server-side flags live in [10-code-control](../10-code-control/).
@@ -16,9 +16,9 @@ Server-side flags live in [10-code-control](../10-code-control/).
 | **33** | [33-synced-segments/](33-synced-segments/) | **Synced / big segment** — inner-circle badge + REST membership |
 | **34** | [34-synced-segments-twilio/](34-synced-segments-twilio/) | **Twilio Segment Audiences** — same badge; `identify`/`track` then sync |
 | **35** | [35-client-bootstrap/](35-client-bootstrap/) | **Bootstrap** initial flag values so the first paint is not the SDK default |
-| **36** | [36-client-track-events/](36-client-track-events/) | **Stub:** client SDK `track()` — `login_completed`, `grid_move` |
+| **36** | [36-client-track-events/](36-client-track-events/) | Client SDK **`track()`** — `login_completed`, `grid_move` |
 
-Work order: [TODO.md](../TODO.md). Portal covers **31–35**. **36** is still a stub.
+Work order: [TODO.md](../TODO.md). Portal covers **31–36**.
 
 ## Credentials
 
@@ -41,14 +41,14 @@ SDK credentials: [environment keys](https://launchdarkly.com/docs/home/account/e
 
 ## Portal
 
-One command starts **31**–**35** for a single client SDK in a
+One command starts **31**–**36** for a single client SDK in a
 tabbed shell: [portal/](portal/).
 
 | Client SDK | Command | Portal | Children |
 |------------|---------|--------|----------|
-| JavaScript | `(cd 30-client-sdk/portal/javascript && npm start)` | **:8300** | :8310 · :8320 · :8330 · :8340 · :8350 |
-| React | `(cd 30-client-sdk/portal/react && npm start)` | **:8301** | :8311 · :8321 · :8331 · :8341 · :8351 |
-| Vue | `(cd 30-client-sdk/portal/vue && npm start)` | **:8302** | :8312 · :8322 · :8332 · :8342 · :8352 |
+| JavaScript | `(cd 30-client-sdk/portal/javascript && npm start)` | **:8300** | :8310 · :8320 · :8330 · :8340 · :8350 · :8360 |
+| React | `(cd 30-client-sdk/portal/react && npm start)` | **:8301** | :8311 · :8321 · :8331 · :8341 · :8351 · :8361 |
+| Vue | `(cd 30-client-sdk/portal/vue && npm start)` | **:8302** | :8312 · :8322 · :8332 · :8342 · :8352 · :8362 |
 
 ```bash
 export LD_CLIENT_SIDE_ID="..."

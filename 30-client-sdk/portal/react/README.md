@@ -1,6 +1,6 @@
 # Portal (React)
 
-Series shell for **30-client-sdk**: tabbed UI that embeds **31**, **32**, **33**, and **34**
+Series shell for **30-client-sdk**: tabbed UI that embeds **31** through **36**
 React Web SDK examples.
 
 | | Port |
@@ -11,6 +11,7 @@ React Web SDK examples.
 | **33 Synced segments** | 8331 |
 | **34 Twilio segments** | 8341 |
 | **35 Bootstrap** | 8351 |
+| **36 Track events** | 8361 |
 
 Keywords: **client-side SDK** · **React Web SDK** · **client-side ID** · **series portal** · **iframe tabs**
 
@@ -28,7 +29,9 @@ entrypoints still work without this shell.
 for d in ../../31-client-evaluation/react \
          ../../32-client-identify/react \
          ../../33-synced-segments/react \
-         ../../34-synced-segments-twilio/react; do
+         ../../34-synced-segments-twilio/react \
+         ../../35-client-bootstrap/react \
+         ../../36-client-track-events/react; do
   (cd "$d" && npm install)
 done
 export LD_CLIENT_SIDE_ID="..."
@@ -49,7 +52,7 @@ Open [http://127.0.0.1:8301/](http://127.0.0.1:8301/). **Ctrl+C** stops the
 portal and all children.
 
 Override with `PORTAL_PORT`. The portal passes `PORT` to each Vite child; solo
-apps still default to **:8311** / **:8321** / **:8331** / **:8341** / **:8351** when run from their own
+apps still default to **:8311** / **:8321** / **:8331** / **:8341** / **:8351** / **:8361** when run from their own
 folders.
 
 Series index: [../README.md](../README.md) · [../../README.md](../../README.md).

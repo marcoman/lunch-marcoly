@@ -134,7 +134,7 @@ lunch-marcoly/
 │   │   ├── README.md · application.md · rest/ · terraform/
 │   │   └── javascript/ · react/ · vue/
 │   ├── 35-client-bootstrap/     # bootstrap first paint  :8350 JS · :8351 React · :8352 Vue
-│   └── 36-client-track-events/  # Stub: client track()
+│   └── 36-client-track-events/  # track() login_completed + grid_move  :8360 JS · :8361 React · :8362 Vue
 ├── 40-dont-do-this/             # Anti-patterns (do not ship)
 │   ├── README.md
 │   ├── 41-no-sdk-singleton/     # Stub: new LDClient per evaluation
@@ -203,7 +203,7 @@ lunch-marcoly/
 - `33-synced-segments` (under `30-client-sdk/`) demonstrates a boolean flag targeted by a synced/big-style segment (inner-circle badge; JavaScript **:8330**, React Web **:8331**, Vue **:8332**).
 - `34-synced-segments-twilio` (under `30-client-sdk/`) demonstrates the same badge with membership from **Twilio Segment** Analytics.js + LaunchDarkly Audiences sync (JavaScript **:8340**, React Web **:8341**, Vue **:8342**).
 - `35-client-bootstrap` (under `30-client-sdk/`) demonstrates bootstrapping client-side flag values so the grid paints before `ready` (JavaScript **:8350**, React Web **:8351**, Vue **:8352**).
-- `36-client-track-events` (under `30-client-sdk/`) will demonstrate client SDK `track()` for `login_completed` and `grid_move`.
+- `36-client-track-events` (under `30-client-sdk/`) demonstrates client SDK `track()` for `login_completed` and `grid_move` (JavaScript **:8360**, React Web **:8361**, Vue **:8362**).
 - `40-dont-do-this` groups **anti-pattern** examples (loud do-not-ship). Children start at **41**.
 - `41-no-sdk-singleton` (under `40-dont-do-this/`) will demonstrate a new server SDK client per evaluation instead of one process-wide client.
 - `42-local-if-no-sdk` (under `40-dont-do-this/`) will demonstrate a local `if` / hardcoded boolean instead of `variation()` — flipping the dashboard flag does nothing.

@@ -1,0 +1,13 @@
+{
+  "name": "36-client-track-events",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser grid with LaunchDarkly client SDK track()",
+  "main": "36-client-track-events.js",
+  "scripts": {
+    "start": "node 36-client-track-events.js"
+  },
+  "dependencies": {
+    "launchdarkly-js-client-sdk": "^3.5.0"
+  }
+}

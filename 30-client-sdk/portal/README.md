@@ -1,7 +1,6 @@
 # 30-client-sdk portal
 
-One-command series shells for **31-client-evaluation**, **32-client-identify**,
-**33-synced-segments**, and **34-synced-segments-twilio**. Each portal serves a tabbed UI, spawns that client
+One-command series shells for **31** through **36**. Each portal serves a tabbed UI, spawns that client
 SDK's existing hosts as children, and embeds them in **iframes**.
 
 Portals are keyed by **client SDK**, not by Python / Java / .NET. Those host
@@ -9,15 +8,15 @@ languages are the 10- and 20-series pattern.
 
 | Client SDK | Entry | Portal port | Child ports |
 |------------|-------|-------------|-------------|
-| **JavaScript** | [`javascript/`](javascript/) | **8300** | 8310 (31) · 8320 (32) · 8330 (33) · 8340 (34) · 8350 (35) |
-| **React** | [`react/`](react/) | **8301** | 8311 (31) · 8321 (32) · 8331 (33) · 8341 (34) · 8351 (35) |
-| **Vue** | [`vue/`](vue/) | **8302** | 8312 (31) · 8322 (32) · 8332 (33) · 8342 (34) · 8352 (35) |
+| **JavaScript** | [`javascript/`](javascript/) | **8300** | 8310 (31) · 8320 (32) · 8330 (33) · 8340 (34) · 8350 (35) · 8360 (36) |
+| **React** | [`react/`](react/) | **8301** | 8311 (31) · 8321 (32) · 8331 (33) · 8341 (34) · 8351 (35) · 8361 (36) |
+| **Vue** | [`vue/`](vue/) | **8302** | 8312 (31) · 8322 (32) · 8332 (33) · 8342 (34) · 8352 (35) · 8362 (36) |
 
 Keywords: **client-side SDK** · **client-side ID** · **series portal** · **iframe tabs** · **process supervisor**
 
 ## Prerequisites
 
-Export `LD_CLIENT_SIDE_ID` and provision the flags for 31–35. **34** also needs
+Export `LD_CLIENT_SIDE_ID` and provision the flags for 31–36. **34** also needs
 `SEGMENT_WRITE_KEY`. See each language folder’s README for child `npm install`.
 
 ## Run

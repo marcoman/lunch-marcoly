@@ -4,11 +4,11 @@ Work queue for new lunch-marcoly examples. Ship in this order.
 
 ## Next
 
-| Priority | Example | Series | Status |
-|----------|---------|--------|--------|
-| 1 | [36-client-track-events](30-client-sdk/36-client-track-events/) | 30-client-sdk | Stub |
+30-client-sdk **31–36** are in. Remaining stubs:
 
-Other stubs already in the tree: [41-no-sdk-singleton](40-dont-do-this/41-no-sdk-singleton/), [42-local-if-no-sdk](40-dont-do-this/42-local-if-no-sdk/), [99-use-cases/17-migration-flags](99-use-cases/17-migration-flags/).
+- [41-no-sdk-singleton](40-dont-do-this/41-no-sdk-singleton/)
+- [42-local-if-no-sdk](40-dont-do-this/42-local-if-no-sdk/)
+- [99-use-cases/17-migration-flags](99-use-cases/17-migration-flags/)
 
 ## Don't do
 
