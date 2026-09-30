@@ -19,6 +19,7 @@ this series.
 | **51** | [51-reference/](51-reference/) | Touch 2×2 navigator — **no LaunchDarkly** |
 | **52** | [52-mobile-evaluation/](52-mobile-evaluation/) | `init`, `variation`, listeners — **mobile key** |
 | **53** | [53-mobile-experiment/](53-mobile-experiment/) | One Android+iOS **Experimentation** test; exposure, conversion, platform analysis |
+| **54** | [54-platform-rollout/](54-platform-rollout/) | Staggered release: Android first, then iOS, via one targeting rule |
 
 There is no series HTTP portal. Run each app in an emulator or simulator.
 
@@ -26,7 +27,7 @@ There is no series HTTP portal. Run each app in an emulator or simulator.
 
 | Variable | Role |
 |----------|------|
-| `LD_MOBILE_KEY` | Mobile SDK (51 does **not** use this; 52/53 do) |
+| `LD_MOBILE_KEY` | Mobile SDK (51 does **not** use this; 52/53/54 do) |
 | `LD_SDK_KEY` | **Never embed in mobile apps**; 53's optional host-side simulator uses one |
 | `LD_CLIENT_SIDE_ID` | **Not used** — that is the browser 30-series |
 
@@ -43,8 +44,8 @@ See [client-side and mobile flags](https://launchdarkly.com/docs/home/flags/crea
 
 | Directory | Platform | Status |
 |-----------|----------|--------|
-| `android/` | Kotlin + Jetpack Compose | 51 + 52 + 53 |
-| `ios/` | Swift + SwiftUI | 51 + 52 + 53 |
+| `android/` | Kotlin + Jetpack Compose | 51 + 52 + 53 + 54 |
+| `ios/` | Swift + SwiftUI | 51 + 52 + 53 + 54 |
 | `react-native/` | React Native | Later — add after native twins exist |
 
 ## Prerequisites
@@ -57,4 +58,5 @@ See [client-side and mobile flags](https://launchdarkly.com/docs/home/flags/crea
 - [51-reference/application.md](51-reference/application.md) — 2×2 tap navigator spec
 - [52-mobile-evaluation/application.md](52-mobile-evaluation/application.md) — mobile SDK evaluation
 - [53-mobile-experiment/application.md](53-mobile-experiment/application.md) — one experiment, two platforms
+- [54-platform-rollout/application.md](54-platform-rollout/application.md) — Android first, then iOS
 - [project.md](../project.md) — `android/`, `ios/`, `react-native/` conventions
