@@ -14,6 +14,9 @@ import java.util.Set;
  * LaunchDarkly targeting rules: https://launchdarkly.com/docs/home/flags/target-rules
  */
 final class TeamStyle {
+    // LaunchDarkly: flag key=configure-team-label-style
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-team-label-style
+
     static final String FLAG_KEY = "configure-team-label-style";
     private static final String PLAIN = "plain";
     private static final Map<String, String> LABELS = Map.of(

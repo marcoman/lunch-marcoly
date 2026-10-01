@@ -45,12 +45,33 @@ const MESSAGES_DIR = path.join(EXAMPLE_ROOT, "rest", "messages");
 const CANNED_STORIES =
   "No ticker stories loaded yet. Ask the user to click Get Stories.";
 
+// LaunchDarkly: ai-config key=equity-briefing-graph mode=completion
+// https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-graph
+
 const DEFAULT_GRAPH_KEY = "equity-briefing-graph";
+// LaunchDarkly: ai-config key=equity-briefing-graph-assess name="Graph assess" mode=agent
+// https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-graph-assess
+
 const DEFAULT_NODE_ASSESS = "equity-briefing-graph-assess";
+// LaunchDarkly: ai-config key=equity-briefing-graph-report name="Graph report" mode=agent
+// https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-graph-report
+
 const DEFAULT_NODE_REPORT = "equity-briefing-graph-report";
+// LaunchDarkly: ai-config key=equity-briefing-graph-questions name="Graph questions" mode=agent
+// https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-graph-questions
+
 const DEFAULT_NODE_QUESTIONS = "equity-briefing-graph-questions";
+// LaunchDarkly: ai-config key=equity-briefing-graph-good name="Graph good" mode=agent
+// https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-graph-good
+
 const DEFAULT_NODE_GOOD = "equity-briefing-graph-good";
+// LaunchDarkly: ai-config key=equity-briefing-graph-joke name="Graph joke" mode=agent
+// https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-graph-joke
+
 const DEFAULT_NODE_JOKE = "equity-briefing-graph-joke";
+// LaunchDarkly: ai-config key=equity-briefing-graph-finalize name="Graph finalize" mode=agent
+// https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-graph-finalize
+
 const DEFAULT_NODE_FINALIZE = "equity-briefing-graph-finalize";
 const DEFAULT_OLLAMA_MODEL = "llama3.2:3b";
 // Joke path: higher temperature for more variety (not "never repeat").

@@ -13,6 +13,9 @@ import java.util.Set;
  * Feature flag evaluation: https://launchdarkly.com/docs/sdk/features/evaluating
  */
 final class ScheduledChange {
+    // LaunchDarkly: flag key=enable-grid-selection-highlight-sched
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-grid-selection-highlight-sched
+
     static final String FLAG_KEY = "enable-grid-selection-highlight-sched";
     static final String DEFAULT_VALUE = "none";
     private static final Set<String> VALID = Set.of("none", "green");

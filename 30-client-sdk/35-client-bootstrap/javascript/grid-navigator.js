@@ -7,7 +7,13 @@ const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
 
 /** Feature flags — string variation (highlight) + boolean variation (count). */
+// LaunchDarkly: flag key=enable-client-bootstrap-highlight
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-client-bootstrap-highlight
+
 const FLAG_HIGHLIGHT = "enable-client-bootstrap-highlight";
+// LaunchDarkly: flag key=show-client-bootstrap-move-count
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/show-client-bootstrap-move-count
+
 const FLAG_COUNT = "show-client-bootstrap-move-count";
 
 /**

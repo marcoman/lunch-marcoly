@@ -7,6 +7,9 @@
  * Keywords: synced segments, Twilio Segment Audiences, segmentMatch
  */
 
+// LaunchDarkly: flag key=show-twilio-inner-circle-badge
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/show-twilio-inner-circle-badge
+
 const FLAG_BADGE = "show-twilio-inner-circle-badge";
 const DEFAULT_SEGMENT_KEY = "marcoly-twilio-inner-circle";
 

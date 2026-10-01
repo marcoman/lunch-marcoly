@@ -11,6 +11,9 @@ from typing import Any
 
 from ldclient import Context
 
+# LaunchDarkly: flag key=show-partner-org-badge
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/show-partner-org-badge
+
 FLAG_PARTNER_BADGE = "show-partner-org-badge"
 
 ORG_LABELS = {

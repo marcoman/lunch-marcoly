@@ -8,6 +8,9 @@ const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
 
 /** Feature flags — boolean variation from segment membership. */
+// LaunchDarkly: flag key=show-twilio-inner-circle-badge
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/show-twilio-inner-circle-badge
+
 const FLAG_BADGE = "show-twilio-inner-circle-badge";
 const SEGMENT_TRACK_JOIN = "Joined Inner Circle";
 const SEGMENT_TRACK_LEAVE = "Left Inner Circle";

@@ -4,6 +4,9 @@
  * https://launchdarkly.com/docs/home/flags/target-rules
  */
 
+// LaunchDarkly: flag key=configure-team-label-style
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-team-label-style
+
 const FLAG_TEAM_LABEL_STYLE = "configure-team-label-style";
 const PLAIN = "plain";
 const TEAM_LABELS = {

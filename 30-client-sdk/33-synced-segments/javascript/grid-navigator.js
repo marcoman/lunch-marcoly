@@ -8,6 +8,9 @@ const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
 
 /** Feature flags — boolean variation from segment membership. */
+// LaunchDarkly: flag key=show-inner-circle-badge
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/show-inner-circle-badge
+
 const FLAG_BADGE = "show-inner-circle-badge";
 
 let username = "";

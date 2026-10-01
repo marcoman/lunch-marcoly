@@ -36,7 +36,6 @@ agent_configs:
     role: evaluation
   - path: 20-agent-config/21-agent-completion-config/rest/common.sh
     role: provisioning
-
 - key: equity-briefing-tracked-completion
   name: Equity briefing tracked completion
   mode: completion
@@ -63,7 +62,6 @@ agent_configs:
     role: evaluation
   - path: 20-agent-config/22-config-outside-code/rest/common.sh
     role: provisioning
-
 - key: equity-briefing-tools
   name: Equity briefing tools
   mode: completion
@@ -90,7 +88,6 @@ agent_configs:
     role: provisioning
   - path: 20-agent-config/23-agent-tools/rest/create-tools.sh
     role: provisioning
-
 - key: equity-briefing-judged
   name: Equity briefing judged
   mode: completion
@@ -113,7 +110,10 @@ agent_configs:
     role: provisioning
   - path: 20-agent-config/24-agent-judges/rest/messages
     role: provisioning
-
+  - path: 20-agent-config/24-agent-judges/java/src/main/java/AgentCore.java
+    role: evaluation
+  - path: 20-agent-config/24-agent-judges/node/agentCore.js
+    role: evaluation
 - key: equity-briefing-source-fidelity
   name: Equity briefing source fidelity
   mode: judge
@@ -122,7 +122,14 @@ agent_configs:
   sources:
   - path: 20-agent-config/24-agent-judges/rest/messages/judge-source-fidelity-system.txt
     role: provisioning
-
+  - path: 20-agent-config/24-agent-judges/java/src/main/java/AgentCore.java
+    role: evaluation
+  - path: 20-agent-config/24-agent-judges/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/24-agent-judges/python/agent_core.py
+    role: evaluation
+  - path: 20-agent-config/24-agent-judges/rest/common.sh
+    role: provisioning
 - key: equity-briefing-recommendation-discipline
   name: Equity briefing recommendation discipline
   mode: judge
@@ -131,7 +138,12 @@ agent_configs:
   sources:
   - path: 20-agent-config/24-agent-judges/rest/messages/judge-recommendation-discipline-system.txt
     role: provisioning
-
+  - path: 20-agent-config/24-agent-judges/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/24-agent-judges/python/agent_core.py
+    role: evaluation
+  - path: 20-agent-config/24-agent-judges/rest/common.sh
+    role: provisioning
 - key: equity-briefing-graph-assess
   name: Graph assess
   mode: agent
@@ -142,7 +154,12 @@ agent_configs:
     role: evaluation
   - path: 20-agent-config/25-agent-graph/rest
     role: provisioning
-
+  - path: 20-agent-config/25-agent-graph/java/src/main/java/AgentCore.java
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/rest/common.sh
+    role: provisioning
 - key: equity-briefing-graph-report
   name: Graph report
   mode: agent
@@ -160,27 +177,79 @@ agent_configs:
     role: evaluation
   - path: 20-agent-config/25-agent-graph/rest/update-report-targeting.sh
     role: provisioning
-
+  - path: 20-agent-config/25-agent-graph/java/src/main/java/AgentCore.java
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/rest/common.sh
+    role: provisioning
 - key: equity-briefing-graph-questions
   name: Graph questions
   mode: agent
   examples:
   - path: 20-agent-config/25-agent-graph
-
+  sources:
+  - path: 20-agent-config/25-agent-graph/java/src/main/java/AgentCore.java
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/python/agent_core.py
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/rest/common.sh
+    role: provisioning
 - key: equity-briefing-graph-good
   name: Graph good
   mode: agent
   examples:
   - path: 20-agent-config/25-agent-graph
-
+  sources:
+  - path: 20-agent-config/25-agent-graph/java/src/main/java/AgentCore.java
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/python/agent_core.py
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/rest/common.sh
+    role: provisioning
 - key: equity-briefing-graph-joke
   name: Graph joke
   mode: agent
   examples:
   - path: 20-agent-config/25-agent-graph
-
+  sources:
+  - path: 20-agent-config/25-agent-graph/java/src/main/java/AgentCore.java
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/python/agent_core.py
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/rest/common.sh
+    role: provisioning
 - key: equity-briefing-graph-finalize
   name: Graph finalize
   mode: agent
   examples:
   - path: 20-agent-config/25-agent-graph
+  sources:
+  - path: 20-agent-config/25-agent-graph/java/src/main/java/AgentCore.java
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/python/agent_core.py
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/rest/common.sh
+    role: provisioning
+- key: equity-briefing-graph
+  name: ''
+  mode: completion
+  examples:
+  - path: 20-agent-config/25-agent-graph
+  sources:
+  - path: 20-agent-config/25-agent-graph/java/src/main/java/AgentCore.java
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/python/agent_core.py
+    role: evaluation
+  - path: 20-agent-config/25-agent-graph/rest/common.sh
+    role: provisioning

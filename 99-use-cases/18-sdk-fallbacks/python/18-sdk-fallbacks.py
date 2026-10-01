@@ -30,6 +30,9 @@ from ldclient.context import Context
 PORT = int(os.environ.get("PORT", "8181"))
 GATE_PORT = int(os.environ.get("LD_STREAM_GATE_PORT", "8182"))
 ROOT = Path(__file__).resolve().parent
+# LaunchDarkly: flag key=enable-sdk-fallback-grid-highlight
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-sdk-fallback-grid-highlight
+
 FLAG_KEY = "enable-sdk-fallback-grid-highlight"
 FLAG_NAME = "Enable: SDK fallback grid highlight"
 CODE_DEFAULT = "none"

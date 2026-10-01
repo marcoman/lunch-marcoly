@@ -1,0 +1,6 @@
+# Paths ldctl skips when scanning the repo.
+# Gitignore syntax. Patterns are relative to the repo root, not this folder.
+# https://git-scm.com/docs/gitignore
+
+# Sentinel policy fixtures. Nothing here is deployed to an app.
+99-use-cases/19-terraform-sentinel/

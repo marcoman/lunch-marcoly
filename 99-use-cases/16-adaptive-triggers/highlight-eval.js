@@ -3,6 +3,9 @@
  * LaunchDarkly: server-side string variation with a code fallback of `none`.
  * https://launchdarkly.com/docs/sdk/features/evaluations
  */
+// LaunchDarkly: flag key=enable-adaptive-grid-highlight
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-adaptive-grid-highlight
+
 const FLAG_HIGHLIGHT = "enable-adaptive-grid-highlight";
 const VALID_COLORS = new Set(["green"]);
 

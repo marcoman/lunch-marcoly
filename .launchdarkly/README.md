@@ -32,6 +32,7 @@ code change → ldctl discover → ldctl instrument [--write] → polish invento
 │   └── metrics.yaml
 ├── plans/
 │   └── guarded-rollouts.yaml
+├── .ldctlignore
 ├── python/ldctl/
 └── bin/ldctl
 ```
@@ -67,8 +68,16 @@ export LD_ENVIRONMENT_KEY=test
 
 Scans **evaluation** (`.py` / `.js` / `.java`) and **provisioning** (`rest/`, `terraform/`). Each gap row includes provenance: `evaluation`, `provisioning`, or `both`.
 
+Kotlin (`.kt`) and Swift (`.swift`) are skipped, along with Go, Rust, and C++. `discover` and `instrument` share one language set: Python, Node, and Java. The 50-mobile apps are Kotlin and Swift, so a flag that lives only in those sources is not an evaluation hit.
+
+An AI Config hit is `CONFIG_KEY` / `configKey`, any other `*_KEY = "equity-…"`, `DEFAULT_NODE_* = "equity-…"`, or a shell default `${LD_…:=equity-…}`. Judge keys and graph node keys use those shapes. Variation names stay out.
+
+Provisioning files contain many `key` strings (variations, segments, metrics). A provisioning hit is kept when the key starts with `configure-` (a value the app reads), `show-` (a boolean that reveals a UI element), or `enable-` (turn a capability on).
+
+[`.ldctlignore`](.ldctlignore) uses gitignore syntax. Patterns are relative to the **repo root**, not to `.launchdarkly/`. `discover` and `instrument` skip matching paths before the prefix gate. `99-use-cases/19-terraform-sentinel/` is ignored because that example is a policy fixture, not an app that deploys a flag.
+
 - **In repo, not in inventory** — declare candidates  
-- **In inventory, not in repo** — unused inventory or non-scanned languages (go/rust/cpp)
+- **In inventory, not in repo** — unused inventory or non-scanned languages (Kotlin, Swift, Go, Rust, C++)
 
 Exit `1` if either gap list is non-empty. Text fits ~100 columns; use `--json` for CI receipts later.
 

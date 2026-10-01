@@ -7,7 +7,13 @@ const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
 
 /** Feature flags — string variation (highlight) + boolean variation (count). */
+// LaunchDarkly: flag key=enable-identify-grid-highlight
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-identify-grid-highlight
+
 const FLAG_HIGHLIGHT = "enable-identify-grid-highlight";
+// LaunchDarkly: flag key=show-identify-move-count
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/show-identify-move-count
+
 const FLAG_COUNT = "show-identify-move-count";
 
 const COLORS = new Set(["green", "yellow", "red", "blue", "purple"]);

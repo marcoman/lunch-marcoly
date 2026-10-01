@@ -5,6 +5,9 @@
  * https://launchdarkly.com/docs/sdk/client-side/vue
  */
 
+// LaunchDarkly: flag key=show-twilio-inner-circle-badge
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/show-twilio-inner-circle-badge
+
 export const FLAG_BADGE = "show-twilio-inner-circle-badge";
 
 export function formatChangeDetail(payload) {

@@ -4,6 +4,9 @@
  * https://launchdarkly.com/docs/home/flags/multi-contexts
  */
 
+// LaunchDarkly: flag key=show-partner-org-badge
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/show-partner-org-badge
+
 const FLAG_PARTNER_BADGE = "show-partner-org-badge";
 const ORG_LABELS = { acme: "Acme", globex: "Globex" };
 

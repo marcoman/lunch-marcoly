@@ -17,9 +17,11 @@ flags:
     kind: string
   - path: 99-use-cases/02-segments-by-name
     kind: string
-  notes: >
-    Shared string multivariate flag (none | green | yellow | red | blue | purple)
-    across 11-flag-enablement and 99-use-cases.
+  - path: 10-code-control
+  notes: 'Shared string multivariate flag (none | green | yellow | red | blue | purple) across
+    11-flag-enablement and 99-use-cases.
+
+    '
   sources:
   - path: 10-code-control/11-flag-enablement/highlight-style.js
     role: evaluation
@@ -31,11 +33,14 @@ flags:
     role: evaluation
   - path: 99-use-cases/02-segments-by-name/java/src/main/java/SegmentStyle.java
     role: evaluation
+  - path: 10-code-control/11-flag-enablement/rest/create-flags.sh
+    role: provisioning
 - key: enable-grid-highlight-color-override
   name: 'Enable: grid highlight color override'
   kind: boolean
   examples:
   - path: 10-code-control/11-flag-enablement
+  - path: 10-code-control
   sources:
   - path: 10-code-control/11-flag-enablement/highlight-style.js
     role: evaluation
@@ -45,11 +50,14 @@ flags:
     role: evaluation
   - path: 10-code-control/11-flag-enablement/java-console/src/main/java/HighlightStyle.java
     role: evaluation
+  - path: 10-code-control/11-flag-enablement/rest/create-flags.sh
+    role: provisioning
 - key: show-navigation-move-count
   name: 'Show: navigation move count'
   kind: boolean
   examples:
   - path: 10-code-control/11-flag-enablement
+  - path: 10-code-control
   sources:
   - path: 10-code-control/11-flag-enablement/highlight-style.js
     role: evaluation
@@ -66,6 +74,7 @@ flags:
   kind: boolean
   examples:
   - path: 10-code-control/11-flag-enablement
+  - path: 10-code-control
   sources:
   - path: 10-code-control/11-flag-enablement/host-os.js
     role: evaluation
@@ -82,6 +91,7 @@ flags:
   kind: boolean
   examples:
   - path: 10-code-control/12-flag-variations
+  - path: 10-code-control
   sources:
   - path: 10-code-control/12-flag-variations/host-os.js
     role: evaluation
@@ -99,6 +109,7 @@ flags:
   examples:
   - path: 10-code-control/12-flag-variations
   - path: 99-use-cases/01-abcd-test
+  - path: 10-code-control
   sources:
   - path: 10-code-control/12-flag-variations/flag-variations.js
     role: evaluation
@@ -115,6 +126,7 @@ flags:
   kind: number
   examples:
   - path: 10-code-control/12-flag-variations
+  - path: 10-code-control
   sources:
   - path: 10-code-control/12-flag-variations/flag-variations.js
     role: evaluation
@@ -129,6 +141,7 @@ flags:
   kind: json
   examples:
   - path: 10-code-control/12-flag-variations
+  - path: 10-code-control
   sources:
   - path: 10-code-control/12-flag-variations/flag-variations.js
     role: evaluation
@@ -152,3 +165,349 @@ flags:
     role: provisioning
   - path: 99-use-cases/02-segments-by-name/segment-context.js
     role: evaluation
+- key: acme-mobile-onboarding-v2
+  name: ''
+  kind: boolean
+  examples:
+  - path: 50-mobile
+  sources:
+  - path: 50-mobile/53-mobile-experiment/simulation/simulate.py
+    role: evaluation
+- key: configure-team-label-style
+  name: ''
+  kind: boolean
+  examples:
+  - path: 10-code-control
+  sources:
+  - path: 10-code-control/13-flag-targeting-rules/java/src/main/java/TeamStyle.java
+    role: evaluation
+  - path: 10-code-control/13-flag-targeting-rules/java-console/src/main/java/FlagEvaluator.java
+    role: evaluation
+  - path: 10-code-control/13-flag-targeting-rules/team-style.js
+    role: evaluation
+  - path: 10-code-control/13-flag-targeting-rules/team_style.py
+    role: evaluation
+- key: enable-adaptive-grid-highlight
+  name: ''
+  kind: boolean
+  examples:
+  - path: 99-use-cases/16-adaptive-triggers
+  sources:
+  - path: 99-use-cases/16-adaptive-triggers/highlight-eval.js
+    role: evaluation
+  - path: 99-use-cases/16-adaptive-triggers/highlight_eval.py
+    role: evaluation
+  - path: 99-use-cases/16-adaptive-triggers/java/src/main/java/HighlightEval.java
+    role: evaluation
+  - path: 99-use-cases/16-adaptive-triggers/rest/common.sh
+    role: provisioning
+- key: enable-client-bootstrap-highlight
+  name: ''
+  kind: boolean
+  examples:
+  - path: 30-client-sdk
+  sources:
+  - path: 30-client-sdk/35-client-bootstrap/javascript/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/35-client-bootstrap/javascript/grid-navigator.js
+    role: evaluation
+  - path: 30-client-sdk/35-client-bootstrap/react/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/35-client-bootstrap/vue/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/35-client-bootstrap/vue/src/ld.js
+    role: evaluation
+  - path: 30-client-sdk/35-client-bootstrap/rest/create-flags.sh
+    role: provisioning
+  - path: 30-client-sdk/35-client-bootstrap/terraform/main.tf
+    role: provisioning
+- key: enable-client-grid-highlight
+  name: ''
+  kind: boolean
+  examples:
+  - path: 30-client-sdk
+  sources:
+  - path: 30-client-sdk/31-client-evaluation/javascript/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/31-client-evaluation/javascript/grid-navigator.js
+    role: evaluation
+  - path: 30-client-sdk/31-client-evaluation/react/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/31-client-evaluation/vue/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/31-client-evaluation/vue/src/ld.js
+    role: evaluation
+  - path: 30-client-sdk/31-client-evaluation/rest/create-flags.sh
+    role: provisioning
+  - path: 30-client-sdk/31-client-evaluation/terraform/main.tf
+    role: provisioning
+- key: enable-client-track-highlight
+  name: ''
+  kind: boolean
+  examples:
+  - path: 30-client-sdk
+  sources:
+  - path: 30-client-sdk/36-client-track-events/javascript/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/36-client-track-events/javascript/grid-navigator.js
+    role: evaluation
+  - path: 30-client-sdk/36-client-track-events/react/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/36-client-track-events/vue/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/36-client-track-events/vue/src/ld.js
+    role: evaluation
+  - path: 30-client-sdk/36-client-track-events/rest/create-flags.sh
+    role: provisioning
+  - path: 30-client-sdk/36-client-track-events/terraform/main.tf
+    role: provisioning
+- key: enable-grid-selection-highlight-pct
+  name: ''
+  kind: boolean
+  examples:
+  - path: 10-code-control
+  sources:
+  - path: 10-code-control/16-percentage-rollout/java/src/main/java/Rollout.java
+    role: evaluation
+  - path: 10-code-control/16-percentage-rollout/java-console/src/main/java/FlagEvaluator.java
+    role: evaluation
+  - path: 10-code-control/16-percentage-rollout/rollout.js
+    role: evaluation
+  - path: 10-code-control/16-percentage-rollout/rollout.py
+    role: evaluation
+  - path: 10-code-control/16-percentage-rollout/rest/common.sh
+    role: provisioning
+  - path: 10-code-control/16-percentage-rollout/rest/create-flag.sh
+    role: provisioning
+- key: enable-grid-selection-highlight-prereq
+  name: ''
+  kind: boolean
+  examples:
+  - path: 10-code-control
+  sources:
+  - path: 10-code-control/15-prerequisite-flags/java/src/main/java/Prerequisite.java
+    role: evaluation
+  - path: 10-code-control/15-prerequisite-flags/java-console/src/main/java/FlagEvaluator.java
+    role: evaluation
+  - path: 10-code-control/15-prerequisite-flags/prerequisite.js
+    role: evaluation
+  - path: 10-code-control/15-prerequisite-flags/prerequisite.py
+    role: evaluation
+  - path: 10-code-control/15-prerequisite-flags/rest/create-flags.sh
+    role: provisioning
+- key: enable-grid-selection-highlight-sched
+  name: ''
+  kind: boolean
+  examples:
+  - path: 10-code-control
+  sources:
+  - path: 10-code-control/17-scheduled-changes/java/src/main/java/ScheduledChange.java
+    role: evaluation
+  - path: 10-code-control/17-scheduled-changes/java-console/src/main/java/ScheduledChange.java
+    role: evaluation
+  - path: 10-code-control/17-scheduled-changes/scheduled-change.js
+    role: evaluation
+  - path: 10-code-control/17-scheduled-changes/scheduled_change.py
+    role: evaluation
+  - path: 10-code-control/17-scheduled-changes/rest/common.sh
+    role: provisioning
+  - path: 10-code-control/17-scheduled-changes/rest/create-flag.sh
+    role: provisioning
+- key: enable-identify-grid-highlight
+  name: ''
+  kind: boolean
+  examples:
+  - path: 30-client-sdk
+  sources:
+  - path: 30-client-sdk/32-client-identify/javascript/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/32-client-identify/javascript/grid-navigator.js
+    role: evaluation
+  - path: 30-client-sdk/32-client-identify/react/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/32-client-identify/vue/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/32-client-identify/vue/src/ld.js
+    role: evaluation
+  - path: 30-client-sdk/32-client-identify/rest/create-flags.sh
+    role: provisioning
+  - path: 30-client-sdk/32-client-identify/terraform/main.tf
+    role: provisioning
+- key: enable-mobile-grid-highlight
+  name: 'Enable: mobile grid highlight'
+  kind: boolean
+  examples:
+  - path: 50-mobile/52-mobile-evaluation
+  - path: 50-mobile
+  sources:
+  - path: 50-mobile/52-mobile-evaluation/rest/create-flags.sh
+    role: provisioning
+  - path: 50-mobile/52-mobile-evaluation/terraform/main.tf
+    role: provisioning
+- key: enable-mobile-platform-rollout
+  name: 'Enable: mobile platform rollout'
+  kind: boolean
+  examples:
+  - path: 50-mobile/54-platform-rollout
+  - path: 50-mobile
+  sources:
+  - path: 50-mobile/54-platform-rollout/rest/create-flag.sh
+    role: provisioning
+  - path: 50-mobile/54-platform-rollout/terraform/main.tf
+    role: provisioning
+  - path: 50-mobile/54-platform-rollout/rest/advance-rollout.sh
+    role: provisioning
+  - path: 50-mobile/54-platform-rollout/rest/status.sh
+    role: provisioning
+- key: enable-sdk-fallback-grid-highlight
+  name: ''
+  kind: boolean
+  examples:
+  - path: 99-use-cases/18-sdk-fallbacks
+  sources:
+  - path: 99-use-cases/18-sdk-fallbacks/java/src/main/java/WebServer.java
+    role: evaluation
+  - path: 99-use-cases/18-sdk-fallbacks/node/18-sdk-fallbacks.js
+    role: evaluation
+  - path: 99-use-cases/18-sdk-fallbacks/python/18-sdk-fallbacks.py
+    role: evaluation
+  - path: 99-use-cases/18-sdk-fallbacks/rest/common.sh
+    role: provisioning
+- key: show-client-bootstrap-move-count
+  name: ''
+  kind: boolean
+  examples:
+  - path: 30-client-sdk
+  sources:
+  - path: 30-client-sdk/35-client-bootstrap/javascript/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/35-client-bootstrap/javascript/grid-navigator.js
+    role: evaluation
+  - path: 30-client-sdk/35-client-bootstrap/react/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/35-client-bootstrap/rest/create-flags.sh
+    role: provisioning
+  - path: 30-client-sdk/35-client-bootstrap/terraform/main.tf
+    role: provisioning
+- key: show-client-move-count
+  name: ''
+  kind: boolean
+  examples:
+  - path: 30-client-sdk
+  sources:
+  - path: 30-client-sdk/31-client-evaluation/javascript/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/31-client-evaluation/javascript/grid-navigator.js
+    role: evaluation
+  - path: 30-client-sdk/31-client-evaluation/react/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/31-client-evaluation/rest/create-flags.sh
+    role: provisioning
+  - path: 30-client-sdk/31-client-evaluation/terraform/main.tf
+    role: provisioning
+- key: show-client-track-move-count
+  name: ''
+  kind: boolean
+  examples:
+  - path: 30-client-sdk
+  sources:
+  - path: 30-client-sdk/36-client-track-events/javascript/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/36-client-track-events/javascript/grid-navigator.js
+    role: evaluation
+  - path: 30-client-sdk/36-client-track-events/react/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/36-client-track-events/rest/create-flags.sh
+    role: provisioning
+  - path: 30-client-sdk/36-client-track-events/terraform/main.tf
+    role: provisioning
+- key: show-identify-move-count
+  name: ''
+  kind: boolean
+  examples:
+  - path: 30-client-sdk
+  sources:
+  - path: 30-client-sdk/32-client-identify/javascript/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/32-client-identify/javascript/grid-navigator.js
+    role: evaluation
+  - path: 30-client-sdk/32-client-identify/react/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/32-client-identify/rest/create-flags.sh
+    role: provisioning
+  - path: 30-client-sdk/32-client-identify/terraform/main.tf
+    role: provisioning
+- key: show-inner-circle-badge
+  name: ''
+  kind: boolean
+  examples:
+  - path: 30-client-sdk
+  sources:
+  - path: 30-client-sdk/33-synced-segments/javascript/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/33-synced-segments/javascript/grid-navigator.js
+    role: evaluation
+  - path: 30-client-sdk/33-synced-segments/react/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/33-synced-segments/rest/create-flags.sh
+    role: provisioning
+  - path: 30-client-sdk/33-synced-segments/rest/create-flags.sh
+    role: provisioning
+- key: show-mobile-move-count
+  name: ''
+  kind: boolean
+  examples:
+  - path: 50-mobile
+  sources:
+  - path: 50-mobile/52-mobile-evaluation/rest/create-flags.sh
+    role: provisioning
+  - path: 50-mobile/52-mobile-evaluation/terraform/main.tf
+    role: provisioning
+- key: show-navigation-move-count-prereq
+  name: ''
+  kind: boolean
+  examples:
+  - path: 10-code-control
+  sources:
+  - path: 10-code-control/15-prerequisite-flags/java/src/main/java/Prerequisite.java
+    role: evaluation
+  - path: 10-code-control/15-prerequisite-flags/java-console/src/main/java/FlagEvaluator.java
+    role: evaluation
+  - path: 10-code-control/15-prerequisite-flags/prerequisite.js
+    role: evaluation
+  - path: 10-code-control/15-prerequisite-flags/prerequisite.py
+    role: evaluation
+  - path: 10-code-control/15-prerequisite-flags/rest/create-flags.sh
+    role: provisioning
+- key: show-partner-org-badge
+  name: ''
+  kind: boolean
+  examples:
+  - path: 10-code-control
+  sources:
+  - path: 10-code-control/14-multi-context-targeting/java/src/main/java/Partner.java
+    role: evaluation
+  - path: 10-code-control/14-multi-context-targeting/java-console/src/main/java/FlagEvaluator.java
+    role: evaluation
+  - path: 10-code-control/14-multi-context-targeting/partner.js
+    role: evaluation
+  - path: 10-code-control/14-multi-context-targeting/partner.py
+    role: evaluation
+  - path: 10-code-control/14-multi-context-targeting/rest/create-flags.sh
+    role: provisioning
+- key: show-twilio-inner-circle-badge
+  name: ''
+  kind: boolean
+  examples:
+  - path: 30-client-sdk
+  sources:
+  - path: 30-client-sdk/34-synced-segments-twilio/javascript/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/34-synced-segments-twilio/javascript/grid-navigator.js
+    role: evaluation
+  - path: 30-client-sdk/34-synced-segments-twilio/react/flag-controls.js
+    role: evaluation
+  - path: 30-client-sdk/34-synced-segments-twilio/rest/create-flags.sh
+    role: provisioning
+  - path: 30-client-sdk/34-synced-segments-twilio/rest/create-flags.sh
+    role: provisioning

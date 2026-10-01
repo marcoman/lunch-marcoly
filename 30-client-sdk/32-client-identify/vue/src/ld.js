@@ -5,7 +5,13 @@
  * https://launchdarkly.com/docs/sdk/client-side/vue
  */
 
+// LaunchDarkly: flag key=enable-identify-grid-highlight
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-identify-grid-highlight
+
 export const FLAG_HIGHLIGHT = "enable-identify-grid-highlight";
+// LaunchDarkly: flag key=show-identify-move-count
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/show-identify-move-count
+
 export const FLAG_COUNT = "show-identify-move-count";
 
 const COLORS = new Set(["green", "yellow", "red", "blue", "purple"]);

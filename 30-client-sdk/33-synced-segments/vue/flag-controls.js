@@ -7,6 +7,9 @@
  * Keywords: synced segments, big segments, addIncludedTargets
  */
 
+// LaunchDarkly: flag key=show-inner-circle-badge
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/show-inner-circle-badge
+
 const FLAG_BADGE = "show-inner-circle-badge";
 const SEGMENT_KEY = "marcoly-inner-circle";
 

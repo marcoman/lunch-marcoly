@@ -4,7 +4,13 @@
  * https://launchdarkly.com/docs/sdk/client-side/vue
  */
 
+// LaunchDarkly: flag key=enable-client-bootstrap-highlight
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-client-bootstrap-highlight
+
 export const FLAG_HIGHLIGHT = "enable-client-bootstrap-highlight";
+// LaunchDarkly: flag key=show-client-bootstrap-move-count
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/show-client-bootstrap-move-count
+
 export const FLAG_COUNT = "show-client-bootstrap-move-count";
 
 /**

@@ -53,13 +53,15 @@ def _inv_meta(inv: Inventory) -> dict[str, dict[str, Any]]:
 
 
 def plan_instrument(inv: Inventory) -> tuple[list[PlanItem], list[Hit]]:
-    """Plan comment inserts for evaluation hits only."""
+    """Plan comment inserts for evaluation hits. Return the full scan for reuse."""
     repo = repo_root_from_ld(inv.root)
-    hits = [h for h in scan_repository(repo) if h.role == "evaluation"]
+    hits = scan_repository(repo)
     meta = _inv_meta(inv)
     # One plan item per file:line:key (definitions)
     items: list[PlanItem] = []
     for h in hits:
+        if h.role != "evaluation":
+            continue
         path = repo / h.path
         try:
             lines = path.read_text(encoding="utf-8").splitlines()
@@ -91,11 +93,20 @@ def format_instrument_plan(items: list[PlanItem], *, write: bool) -> str:
     return "\n".join(lines)
 
 
-def apply_comments(inv: Inventory, items: list[PlanItem]) -> int:
-    """Apply inserts; return number of files modified."""
+def apply_comments(inv: Inventory, items: list[PlanItem], hits: list[Hit] | None = None) -> int:
+    """Apply inserts; return number of files modified.
+
+    Kind guesses come from the scan already done by plan_instrument.
+    Do not rescan the repo here — that made --write quadratic.
+    """
     repo = repo_root_from_ld(inv.root)
     project_key, api_host = project_settings(inv.project)
     meta = _inv_meta(inv)
+    kind_by_site = {
+        (h.path, h.line, h.key): h.kind_guess
+        for h in (hits or [])
+        if h.kind_guess
+    }
 
     # Group inserts by path, apply bottom-up so line numbers stay valid
     by_path: dict[str, list[PlanItem]] = {}
@@ -129,14 +140,8 @@ def apply_comments(inv: Inventory, items: list[PlanItem]) -> int:
                     style=style,
                 )
             else:
-                # Fill kind from scan if needed
                 if not kind:
-                    from .scan import scan_repository
-
-                    for h in scan_repository(repo):
-                        if h.path == rel and h.line == item.line and h.key == item.key:
-                            kind = h.kind_guess
-                            break
+                    kind = kind_by_site.get((rel, item.line, item.key), "")
                 block = format_flag_comment(
                     key=item.key,
                     name=name,

@@ -16,6 +16,9 @@ import java.util.Set;
  * https://launchdarkly.com/docs/sdk/features/events
  */
 public final class HighlightEval {
+    // LaunchDarkly: flag key=enable-adaptive-grid-highlight
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-adaptive-grid-highlight
+
     static final String FLAG_HIGHLIGHT = "enable-adaptive-grid-highlight";
     static final String EVENT_KEY = "adaptive-grid-nav-latency";
 

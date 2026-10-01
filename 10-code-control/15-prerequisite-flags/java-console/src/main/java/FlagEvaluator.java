@@ -11,7 +11,13 @@ import java.util.Set;
  * https://launchdarkly.com/docs/home/flags/prereqs
  */
 public final class FlagEvaluator {
+    // LaunchDarkly: flag key=enable-grid-selection-highlight-prereq
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-grid-selection-highlight-prereq
+
     static final String FLAG_HIGHLIGHT = "enable-grid-selection-highlight-prereq";
+    // LaunchDarkly: flag key=show-navigation-move-count-prereq
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/show-navigation-move-count-prereq
+
     static final String FLAG_COUNT = "show-navigation-move-count-prereq";
     private static final Set<String> VALID_COLORS = Set.of(
             "green", "yellow", "red", "blue", "purple", "pink");

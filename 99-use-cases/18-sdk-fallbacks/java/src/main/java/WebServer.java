@@ -51,6 +51,9 @@ public final class WebServer {
             trimSlash(env("LD_STREAM_ORIGIN", "https://stream.launchdarkly.com"));
     private static final String POLL_ORIGIN =
             trimSlash(env("LD_POLL_ORIGIN", "https://sdk.launchdarkly.com"));
+    // LaunchDarkly: flag key=enable-sdk-fallback-grid-highlight
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-sdk-fallback-grid-highlight
+
     private static final String FLAG_KEY = "enable-sdk-fallback-grid-highlight";
     private static final String FLAG_NAME = "Enable: SDK fallback grid highlight";
     private static final String CODE_DEFAULT = "none";

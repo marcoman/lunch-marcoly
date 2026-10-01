@@ -7,6 +7,9 @@ from typing import Any
 from ldclient.client import LDClient
 from ldclient.context import Context
 
+# LaunchDarkly: flag key=enable-grid-selection-highlight-pct
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-grid-selection-highlight-pct
+
 FLAG_KEY = "enable-grid-selection-highlight-pct"
 DEFAULT_VALUE = "none"
 

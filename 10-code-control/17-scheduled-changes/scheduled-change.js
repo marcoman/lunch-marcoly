@@ -4,6 +4,9 @@
  * https://launchdarkly.com/docs/api/scheduled-changes
  */
 
+// LaunchDarkly: flag key=enable-grid-selection-highlight-sched
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-grid-selection-highlight-sched
+
 const FLAG_KEY = "enable-grid-selection-highlight-sched";
 const DEFAULT_VALUE = "none";
 const API_HOST = process.env.LD_API_HOST || "https://app.launchdarkly.com";

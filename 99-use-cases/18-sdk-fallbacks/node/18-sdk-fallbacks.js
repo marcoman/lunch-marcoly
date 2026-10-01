@@ -20,6 +20,9 @@ const STREAM_ORIGIN = (process.env.LD_STREAM_ORIGIN || "https://stream.launchdar
 const POLL_ORIGIN = (process.env.LD_POLL_ORIGIN || "https://sdk.launchdarkly.com")
   .replace(/\/+$/, "");
 const INDEX = path.resolve(__dirname, "../python/index.html");
+// LaunchDarkly: flag key=enable-sdk-fallback-grid-highlight
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-sdk-fallback-grid-highlight
+
 const FLAG_KEY = "enable-sdk-fallback-grid-highlight";
 const FLAG_NAME = "Enable: SDK fallback grid highlight";
 const CODE_DEFAULT = "none";

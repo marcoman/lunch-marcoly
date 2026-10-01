@@ -13,6 +13,9 @@ from ldclient import Config
 from ldclient.client import LDClient
 from ldclient.context import Context
 
+# LaunchDarkly: flag key=acme-mobile-onboarding-v2
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/acme-mobile-onboarding-v2
+
 FLAG_KEY = "acme-mobile-onboarding-v2"
 EVENT_KEY = "mobile_onboarding_completed"
 

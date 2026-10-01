@@ -5,7 +5,13 @@
  * Keywords: prerequisites, dependent flag, off variation
  */
 
+// LaunchDarkly: flag key=enable-grid-selection-highlight-prereq
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-grid-selection-highlight-prereq
+
 const FLAG_HIGHLIGHT = "enable-grid-selection-highlight-prereq";
+// LaunchDarkly: flag key=show-navigation-move-count-prereq
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/show-navigation-move-count-prereq
+
 const FLAG_COUNT = "show-navigation-move-count-prereq";
 const VALID_COLORS = new Set(["green", "yellow", "red", "blue", "purple", "pink"]);
 

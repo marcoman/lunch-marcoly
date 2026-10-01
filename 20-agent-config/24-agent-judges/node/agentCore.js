@@ -29,8 +29,17 @@ const MESSAGES_DIR = path.join(EXAMPLE_ROOT, "rest", "messages");
 const CANNED_STORIES =
   "No ticker stories loaded yet. Ask the user to click Get Stories.";
 
+// LaunchDarkly: ai-config key=equity-briefing-judged name="Equity briefing judged" mode=completion
+// https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-judged
+
 const DEFAULT_CONFIG_KEY = "equity-briefing-judged";
+// LaunchDarkly: ai-config key=equity-briefing-source-fidelity name="Equity briefing source fidelity" mode=judge
+// https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-source-fidelity
+
 const DEFAULT_JUDGE_FIDELITY_KEY = "equity-briefing-source-fidelity";
+// LaunchDarkly: ai-config key=equity-briefing-recommendation-discipline name="Equity briefing recommendation discipline" mode=judge
+// https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-recommendation-discipline
+
 const DEFAULT_JUDGE_DISCIPLINE_KEY = "equity-briefing-recommendation-discipline";
 const DEFAULT_OLLAMA_MODEL = "llama3.2:3b";
 const DEFAULT_PASS_THRESHOLD = 0.65;

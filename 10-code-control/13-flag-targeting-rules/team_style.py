@@ -10,6 +10,9 @@ from typing import Any
 
 from ldclient import Context
 
+# LaunchDarkly: flag key=configure-team-label-style
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-team-label-style
+
 FLAG_TEAM_LABEL_STYLE = "configure-team-label-style"
 PLAIN = "plain"
 

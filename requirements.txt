@@ -21,6 +21,8 @@ openai>=1.0
 typing_extensions>=4.0
 PyYAML>=6.0
 # .launchdarkly/bin/ldctl (inventory validate / status / report)
+# pathspec reads .launchdarkly/.ldctlignore (gitignore syntax)
+pathspec>=0.12
 anthropic>=0.40
 # 22-config-outside-code Best Betty → Claude
 

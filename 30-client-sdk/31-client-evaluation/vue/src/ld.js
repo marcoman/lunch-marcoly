@@ -4,7 +4,13 @@
  * https://launchdarkly.com/docs/sdk/client-side/vue
  */
 
+// LaunchDarkly: flag key=enable-client-grid-highlight
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-client-grid-highlight
+
 export const FLAG_HIGHLIGHT = "enable-client-grid-highlight";
+// LaunchDarkly: flag key=show-client-move-count
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/show-client-move-count
+
 export const FLAG_COUNT = "show-client-move-count";
 
 const COLORS = new Set(["green", "yellow", "red", "blue", "purple"]);

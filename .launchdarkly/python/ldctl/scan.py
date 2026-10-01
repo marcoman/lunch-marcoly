@@ -6,6 +6,8 @@ import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+from pathspec.gitignore import GitIgnoreSpec
+
 IGNORE_DIR_NAMES = frozenset(
     {
         ".git",
@@ -22,14 +24,27 @@ IGNORE_DIR_NAMES = frozenset(
     }
 )
 
+# Evaluation languages instrument can annotate. Python comments use #.
+# JavaScript and Java use //.
+#
+# Kotlin (.kt) and Swift (.swift) are skipped. They are the 50-mobile apps.
+# discover and instrument share this one set (Python, Node, Java), same as
+# Go, Rust, and C++. A flag that exists only in a mobile source file is not
+# an evaluation hit.
 EVAL_SUFFIXES = frozenset({".py", ".js", ".mjs", ".cjs", ".java"})
 PROV_SUFFIXES = frozenset({".sh", ".tf", ".json", ".hcl"})
 
 # Likely LD keys: kebab-case with a hyphen, or VIP
 KEY_LITERAL = r"(?P<key>[A-Za-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)+|VIP)"
 
-# Top-level resources we care about (not variations / segments / metrics)
-_FLAG_PREFIXES = ("configure-", "show-")
+# Provisioning files contain many "key" strings (variations, segments, metrics).
+# This allowlist is the noise gate for those files:
+#   configure-  a value the app reads (label, number, json)
+#   show-       a boolean that reveals a UI element
+#   enable-     turn a capability on
+# Paths listed in .launchdarkly/.ldctlignore are skipped before this gate.
+# That is how a fixture tree such as 19-terraform-sentinel stays out.
+_FLAG_PREFIXES = ("configure-", "show-", "enable-")
 _AGENT_PREFIXES = ("equity-",)
 _SKIP_PREFIXES = ("seg-", "grid-")  # segments, metric keys
 _SKIP_KEYS = frozenset(
@@ -46,13 +61,22 @@ _SKIP_KEYS = frozenset(
 ASSIGN_FLAG_RE = re.compile(
     rf"(?P<lhs>(?:FLAG|flag)[_A-Za-z0-9]*)\s*=\s*[\"']{KEY_LITERAL}[\"']"
 )
+# CONFIG_KEY / configKey, any other *_KEY (not FLAG_*), and DEFAULT_NODE_*.
+# Judge keys are DEFAULT_JUDGE_*_KEY. Graph nodes are DEFAULT_NODE_*.
+# A *_KEY whose value is not an equity- AI Config is ignored later.
 ASSIGN_CONFIG_RE = re.compile(
-    rf"(?P<lhs>(?:DEFAULT_)?(?:LD_)?(?:AGENT_)?CONFIG_KEY|(?:configKey)|(?:CONFIG_KEY))"
+    rf"(?P<lhs>"
+    rf"(?:DEFAULT_)?(?:LD_)?(?:AGENT_)?CONFIG_KEY"
+    rf"|configKey"
+    rf"|DEFAULT_NODE_[A-Za-z0-9_]+"
+    rf"|(?<![A-Za-z0-9_])(?!(?:FLAG|flag)(?:_[A-Za-z0-9]+)*)[A-Za-z_][A-Za-z0-9_]*_KEY"
+    rf")"
     rf"\s*=\s*[\"']{KEY_LITERAL}[\"']"
 )
-# Bash : "${LD_CONFIG_KEY:=equity-briefing-completion}"
+# Bash: "${LD_CONFIG_KEY:=equity-briefing-completion}"
+# and "${LD_NODE_ASSESS:=...}" / "${LD_JUDGE_FIDELITY_KEY:=...}"
 BASH_DEFAULT_RE = re.compile(
-    rf"LD_(?:AGENT_)?CONFIG_KEY:=[\"']?{KEY_LITERAL}[\"']?"
+    rf"LD_[A-Za-z0-9_]+:=[\"']?{KEY_LITERAL}[\"']?"
 )
 # "key": "flag-key" (REST JSON)
 JSON_KEY_RE = re.compile(rf"[\"']key[\"']\s*:\s*[\"']{KEY_LITERAL}[\"']")
@@ -101,6 +125,20 @@ def _is_ignored(path: Path) -> bool:
     return any(part in IGNORE_DIR_NAMES for part in path.parts)
 
 
+def load_ldctlignore(repo: Path) -> GitIgnoreSpec | None:
+    """Load .launchdarkly/.ldctlignore. Patterns are repo-root relative.
+
+    Gitignore syntax (comments, globs, trailing slash). The file lives in
+    .launchdarkly/, but patterns are not relative to that directory — a
+    gitignore there would only see files inside it.
+    """
+    path = repo / ".launchdarkly" / ".ldctlignore"
+    if not path.is_file():
+        return None
+    lines = path.read_text(encoding="utf-8").splitlines()
+    return GitIgnoreSpec.from_lines(lines)
+
+
 def _role_for_path(rel: Path) -> str | None:
     parts = {p.lower() for p in rel.parts}
     if "rest" in parts or "terraform" in parts:
@@ -134,13 +172,23 @@ def _looks_like_noise_key(key: str) -> bool:
     return False
 
 
+def _is_named_config_var(lhs: str) -> bool:
+    """True for CONFIG_KEY / configKey, not for every *_KEY."""
+    return lhs == "configKey" or lhs.endswith("CONFIG_KEY")
+
+
+def _is_ai_config_key(key: str) -> bool:
+    low = key.lower()
+    return any(low.startswith(p) for p in _AGENT_PREFIXES) or "completion" in low
+
+
 def _accept_provisioning_key(key: str, resource: str) -> bool:
     """Provisioning JSON/TF emits many keys; keep teaching-repo flag/AI Config keys."""
     if key == "VIP":
         return True
     low = key.lower()
     if resource == "ai-config":
-        return any(low.startswith(p) for p in _AGENT_PREFIXES) or "completion" in low
+        return _is_ai_config_key(key)
     return any(low.startswith(p) for p in _FLAG_PREFIXES)
 
 
@@ -171,11 +219,14 @@ def scan_repository(repo: Path) -> list[Hit]:
     repo = repo.resolve()
     hits: list[Hit] = []
     seen: set[tuple[str, str, str, int]] = set()
+    ignored = load_ldctlignore(repo)
 
     for path in sorted(repo.rglob("*")):
         if not path.is_file() or _is_ignored(path.relative_to(repo)):
             continue
         rel = path.relative_to(repo)
+        if ignored is not None and ignored.match_file(rel.as_posix()):
+            continue
         role = _role_for_path(rel)
         if role is None:
             continue
@@ -202,7 +253,12 @@ def scan_repository(repo: Path) -> list[Hit]:
                 for m in ASSIGN_FLAG_RE.finditer(line):
                     found.append((m.group("key"), "flag", _kind_from_context(lines, i)))
                 for m in ASSIGN_CONFIG_RE.finditer(line):
-                    found.append((m.group("key"), "ai-config", ""))
+                    key = m.group("key")
+                    # CONFIG_KEY may name any AI Config. Other *_KEY / DEFAULT_NODE_*
+                    # count only when the value is an equity- key, so FLAG-like
+                    # show-/enable- constants stay flags.
+                    if _is_named_config_var(m.group("lhs")) or _is_ai_config_key(key):
+                        found.append((key, "ai-config", ""))
                 # Inline string in variation("…") rare but catch
                 if VARIATION_HINT.search(line):
                     for m in re.finditer(rf"[\"']{KEY_LITERAL}[\"']", line):
@@ -217,6 +273,7 @@ def scan_repository(repo: Path) -> list[Hit]:
                             or "ai-config" in line
                             or "ai-configs" in line
                             or "CONFIG_KEY" in line
+                            or _is_ai_config_key(key)
                         ):
                             resource = "ai-config"
                         if not _accept_provisioning_key(key, resource):

@@ -6,7 +6,13 @@
  * Keywords: turnFlagOn, turnFlagOff, updateFallthroughVariationOrRollout
  */
 
+// LaunchDarkly: flag key=enable-client-track-highlight
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-client-track-highlight
+
 const FLAG_HIGHLIGHT = "enable-client-track-highlight";
+// LaunchDarkly: flag key=show-client-track-move-count
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/show-client-track-move-count
+
 const FLAG_COUNT = "show-client-track-move-count";
 const DEFAULT_ON_COLOR = "green";
 

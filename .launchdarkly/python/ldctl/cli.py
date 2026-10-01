@@ -17,7 +17,6 @@ from .instrument import (
 )
 from .inventory import find_ld_root, load_inventory, validate_inventory
 from .report import collect_status, filter_rows, format_table, rows_to_dicts
-from .scan import scan_repository, repo_root_from_ld
 
 
 def _add_status_filters(parser: argparse.ArgumentParser) -> None:
@@ -125,15 +124,14 @@ def main(argv: list[str] | None = None) -> int:
         return 1 if (missing_inv or missing_repo) else 0
 
     if args.command == "instrument":
-        items, eval_hits = plan_instrument(inv)
+        items, hits = plan_instrument(inv)
         print(format_instrument_plan(items, write=args.write))
         if not args.write:
             print("\n(re-run with --write to apply comments and merge inventory stubs)")
             return 0
-        n_files = apply_comments(inv, items)
-        # Merge from all hits (evaluation + provisioning) so declare covers both
-        all_hits = scan_repository(repo_root_from_ld(inv.root))
-        added = merge_inventory_from_hits(inv, all_hits)
+        n_files = apply_comments(inv, items, hits)
+        # Same scan covers evaluation comments and provisioning inventory merges.
+        added = merge_inventory_from_hits(inv, hits)
         print(f"\nwrote comments in {n_files} file(s); inventory added keys: {added or '(none)'}")
         return 0
 

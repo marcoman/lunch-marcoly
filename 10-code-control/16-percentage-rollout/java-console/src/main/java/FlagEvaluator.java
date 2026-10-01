@@ -11,6 +11,9 @@ import java.util.Set;
  * LaunchDarkly percentage rollout: https://launchdarkly.com/docs/home/flags/rollouts
  */
 public final class FlagEvaluator {
+    // LaunchDarkly: flag key=enable-grid-selection-highlight-pct
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-grid-selection-highlight-pct
+
     static final String FLAG_KEY = "enable-grid-selection-highlight-pct";
     static final String DEFAULT_VALUE = "none";
     private static final Set<String> VALID = Set.of("none", "green");

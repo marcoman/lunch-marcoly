@@ -17,6 +17,9 @@ from typing import Any
 from ldclient.client import LDClient
 from ldclient.context import Context
 
+# LaunchDarkly: flag key=enable-grid-selection-highlight-sched
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-grid-selection-highlight-sched
+
 FLAG_KEY = "enable-grid-selection-highlight-sched"
 DEFAULT_VALUE = "none"
 LD_API_HOST = os.environ.get("LD_API_HOST") or "https://app.launchdarkly.com"

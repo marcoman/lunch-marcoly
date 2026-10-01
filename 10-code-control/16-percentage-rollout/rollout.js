@@ -5,6 +5,9 @@
  * Keywords: percentage rollout, context key, sticky bucketing, variation detail
  */
 
+// LaunchDarkly: flag key=enable-grid-selection-highlight-pct
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-grid-selection-highlight-pct
+
 const FLAG_KEY = "enable-grid-selection-highlight-pct";
 const DEFAULT_VALUE = "none";
 

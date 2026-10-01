@@ -13,6 +13,9 @@ import java.util.Set;
  * LaunchDarkly multi-contexts: https://launchdarkly.com/docs/home/flags/multi-contexts
  */
 final class Partner {
+    // LaunchDarkly: flag key=show-partner-org-badge
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/show-partner-org-badge
+
     static final String FLAG_KEY = "show-partner-org-badge";
     private static final Map<String, String> ORG_LABELS = Map.of(
             "acme", "Acme",

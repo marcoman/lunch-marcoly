@@ -8,6 +8,9 @@ from ldclient import Context
 
 # Feature flags — server-side string variation
 # https://launchdarkly.com/docs/sdk/features/evaluations
+# LaunchDarkly: flag key=enable-adaptive-grid-highlight
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-adaptive-grid-highlight
+
 FLAG_HIGHLIGHT = "enable-adaptive-grid-highlight"
 VALID_COLORS = frozenset({"green"})
 

@@ -61,7 +61,13 @@ public final class AgentCore {
     private static final String CANNED_STORIES =
             "No ticker stories loaded yet. Ask the user to click Get Stories.";
 
+    // LaunchDarkly: ai-config key=equity-briefing-judged name="Equity briefing judged" mode=completion
+    // https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-judged
+
     private static final String DEFAULT_CONFIG_KEY = "equity-briefing-judged";
+    // LaunchDarkly: ai-config key=equity-briefing-source-fidelity name="Equity briefing source fidelity" mode=judge
+    // https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-source-fidelity
+
     private static final String DEFAULT_JUDGE_FIDELITY_KEY = "equity-briefing-source-fidelity";
     private static final String DEFAULT_JUDGE_DISCIPLINE_KEY =
             "equity-briefing-recommendation-discipline";
