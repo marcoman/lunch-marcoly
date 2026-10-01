@@ -102,17 +102,49 @@ Exit `1` if either gap list is non-empty. Text fits ~100 columns; use `--json` f
 
 ### Comment contract
 
-```text
+`instrument --write` inserts two comment lines above the key assignment. Python uses `#`. JavaScript and Java use `//`. The project key and host come from `project.yaml`.
+
+Include **key**, **name**, and **kind** (or `mode` for an AI Config). Do not list variation values in comments.
+
+**Flag** — `configure-lucky-number`
+
+```python
 # LaunchDarkly: flag key=configure-lucky-number name="Configure: lucky number" kind=number
-# https://app.launchdarkly.com/projects/{project}/features/configure-lucky-number
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-lucky-number
+FLAG_LUCKY = "configure-lucky-number"
 ```
 
-```text
+```javascript
+// LaunchDarkly: flag key=configure-lucky-number name="Configure: lucky number" kind=number
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-lucky-number
+const FLAG_LUCKY = "configure-lucky-number";
+```
+
+```java
+// LaunchDarkly: flag key=configure-lucky-number name="Configure: lucky number" kind=number
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-lucky-number
+static final String FLAG_LUCKY = "configure-lucky-number";
+```
+
+**AI Config** — `equity-briefing-completion`
+
+```python
 # LaunchDarkly: ai-config key=equity-briefing-completion name="Equity briefing completion" mode=completion
-# https://app.launchdarkly.com/projects/{project}/ai-configs/equity-briefing-completion
+# https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-completion
+DEFAULT_CONFIG_KEY = "equity-briefing-completion"
 ```
 
-Include **key**, **name**, and **kind** (or `mode` for AI Config). Do not list variation values in comments.
+```javascript
+// LaunchDarkly: ai-config key=equity-briefing-completion name="Equity briefing completion" mode=completion
+// https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-completion
+const DEFAULT_CONFIG_KEY = "equity-briefing-completion";
+```
+
+```java
+// LaunchDarkly: ai-config key=equity-briefing-completion name="Equity briefing completion" mode=completion
+// https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-completion
+static final String DEFAULT_CONFIG_KEY = "equity-briefing-completion";
+```
 
 ### Environment variables
 
