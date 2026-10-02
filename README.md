@@ -71,6 +71,8 @@ lunch-marcoly/
 ├── 60-observability/            # Server-side observability series
 │   ├── 61-reference/            # Python-owned navigator API; no LaunchDarkly
 │   └── 62-server-traces/        # Python ObservabilityPlugin + manual move spans
+├── 70-model-demos/              # Model apps; children 01, 02, 03 inside the folder
+│   └── README.md                # 80 remains the next free decade
 ├── 99-use-cases/                # Product patterns on the grid navigator
 │   ├── 01-abcd-test/
 │   ├── 02-segments-by-name/
@@ -152,6 +154,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 60 | [60-observability](60-observability/) | Observability series: Python server-side telemetry on the grid navigator |
 | 61 | [61-reference](60-observability/61-reference/) | Server-owned Python navigator baseline (**:8610**; no LaunchDarkly) |
 | 62 | [62-server-traces](60-observability/62-server-traces/) | Python `ObservabilityPlugin` + `grid.login` / `grid.move` spans (**:8620**) |
+| 70 | [70-model-demos](70-model-demos/) | Model apps. Children are `01`–`03` inside the folder (image check, text origin, guess the animal). **80** stays free |
 | 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (experiments, segments, rollouts, adaptive triggers, SDK fallbacks, …) |
 | — | [01-abcd-test](99-use-cases/01-abcd-test/) | A-B-C-D experiment on the navigation count label |
 | — | [02-segments-by-name](99-use-cases/02-segments-by-name/) | Segment targeting from username-derived context |

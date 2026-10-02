@@ -22,6 +22,7 @@ Do not create folders for those two.
 ## Notes
 
 - 10-series **16** is percentage rollout, not migration flags. Migration remains [99-use-cases/17-migration-flags](99-use-cases/17-migration-flags/).
-- 20-series next number stays **26** only if a later AgentControl lesson is approved under a different name. **25-agent-graph** is in.
+- 20-series next number stays **26** only if a later AgentControl lesson is approved under a different name. **25-agent-graph** is in. The image / essay / animal apps are **70-model-demos**, not 26–28.
+- **70-model-demos** children are `01`, `02`, `03` inside that folder. **80** stays the next free decade.
 - Client bootstrap folder is `35-client-bootstrap`, not `bootstrapRender`.
 - Track events: `login_completed` + `grid_move` only unless `cell_selected` is specified later.
