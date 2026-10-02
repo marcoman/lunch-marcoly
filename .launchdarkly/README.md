@@ -91,7 +91,57 @@ Exit `1` if either gap list is non-empty. Text fits ~100 columns; use `--json` f
 | `--key SUBSTR` | Case-insensitive substring |
 | `--example` | Stub (warns; ignored) |
 | `--state` | Stub (warns; ignored) |
-| `--json` | Machine-readable |
+| `--json` | Machine-readable. Use this when the text table truncates `KEY`, `TAGS`, or `DETAIL`. |
+
+`status` and `report` are the same command. They compare `inventory/` to the project in `LD_PROJECT_KEY` and the environment in `LD_ENVIRONMENT_KEY` (`project.yaml` defaults to `test`). `ldctl` does not create, edit, or delete anything.
+
+Columns: `STATE`, `ON` (flag targeting in that environment), `KIND`, `KEY`, `TAGS`, `DETAIL`. The text table shortens long cells. `ON` is `on` or `off` for a flag, `n/a` for an AI Config, and `—` when the row has no targeting value (missing resources, model configs).
+
+#### States
+
+| State | Meaning | What to do |
+|-------|---------|------------|
+| `present` | The resource is in LaunchDarkly and matches the inventory field this command compares. | Nothing. `ON=off` is still `present`: the flag exists and its variation type matches. Off is a targeting choice, not drift. |
+| `drift` | The resource exists, and one compared field differs. | Read `DETAIL` (`--json` if the table cut it off). Fix the side that is wrong. This tool will not push the correction. |
+| `missing` | LaunchDarkly returned 404 for that key. | Create it from the example's `rest/` or `terraform/`, or remove the inventory entry if the key should not exist in this project. |
+| `error` | The API call failed (auth, network, or a non-404 status). | Fix the token, host, or project key and run the report again. |
+
+Compared fields:
+
+- **Flag** — variation type (`boolean`, `string`, `number`, `json`) versus `kind` in `inventory/flags.yaml`.
+- **AI Config** — `mode`, and any variation keys listed in `inventory/agent-configs.yaml` that are absent live.
+- **Metric** — `eventKey` versus `event_key` in `inventory/metrics.yaml`.
+- **Model config** — presence of the key. A found model config stays `present`.
+
+#### What a production report looks like
+
+`LD_ENVIRONMENT_KEY=production` on this repo produced `drift=10`, `missing=5`, `present=38` (`shown=53`). Counts move as flags are created. The shape of a row does not:
+
+```text
+project=lunch-marcoly  environment=production
+
+STATE    ON   KIND          KEY                              DETAIL
+-------  ---  ------------  -------------------------------  ------------------------------------
+present  on   flag          enable-grid-selection-highlight  env=production:on; variations=6
+present  off  flag          show-host-os-emoji               env=production:off; variations=2
+drift    off  flag          configure-team-label-style       … kind desired=boolean actual=string
+missing  —    flag          enable-mobile-platform-rollout   not found in project
+present  n/a  agent_config  equity-briefing-completion       variations=3; env=production:n/a
+missing  —    agent_config  equity-briefing-graph            not found
+```
+
+**Drift in that run** is flag kind. `instrument --write` stores `kind: boolean` when the scan cannot see a typed `variation` call. Several live flags are strings (a highlight color, or `configure-team-label-style`). `DETAIL` says `kind desired=boolean actual=string`.
+
+Set `kind` in `inventory/flags.yaml` to the type in that example's `application.md`. Do not change the live flag to boolean to satisfy a guessed inventory kind.
+
+**Missing in that run:**
+
+| Key | Next step |
+|-----|-----------|
+| `enable-client-bootstrap-highlight`, `show-client-bootstrap-move-count` | Provision [35-client-bootstrap](../30-client-sdk/35-client-bootstrap/rest/). |
+| `enable-mobile-platform-rollout` | Provision [54-platform-rollout](../50-mobile/54-platform-rollout/rest/). `create-flag.sh` is state 1 (Android only). |
+| `show-twilio-inner-circle-badge` | Provision [34-synced-segments-twilio](../30-client-sdk/34-synced-segments-twilio/rest/). |
+| `equity-briefing-graph` | This is the graph id (`DEFAULT_GRAPH_KEY`), not an AI Config. The node configs (`equity-briefing-graph-assess`, and the rest) are the AI Configs, and they reported `present`. Remove this key from `inventory/agent-configs.yaml`. Do not create an AI Config with this key. |
 
 ### `instrument`
 
