@@ -9,6 +9,8 @@ Work queue for new lunch-marcoly examples. Ship in this order.
 - [41-no-sdk-singleton](40-dont-do-this/41-no-sdk-singleton/)
 - [42-local-if-no-sdk](40-dont-do-this/42-local-if-no-sdk/)
 - [99-use-cases/17-migration-flags](99-use-cases/17-migration-flags/)
+- [99-use-cases/20-multi-arm-bandit](99-use-cases/20-multi-arm-bandit/) — grid bandit; not `53-mobile-experiment`
+- [20-agent-config/26-flags-vs-agent-control](20-agent-config/26-flags-vs-agent-control/) — flag conditional and JSON flag vs a completion config. Web only. `26-offline-evaluation` stays declined
 
 ## Don't do
 
@@ -22,7 +24,7 @@ Do not create folders for those two.
 ## Notes
 
 - 10-series **16** is percentage rollout, not migration flags. Migration remains [99-use-cases/17-migration-flags](99-use-cases/17-migration-flags/).
-- 20-series next number stays **26** only if a later AgentControl lesson is approved under a different name. **25-agent-graph** is in. The image / essay / animal apps are **70-model-demos**, not 26–28.
+- 20-series **26** is [26-flags-vs-agent-control](20-agent-config/26-flags-vs-agent-control/). Next AgentControl number is **27**. The image / essay / animal apps stay **70-model-demos**.
 - **70-model-demos** children are `01`, `02`, `03` inside that folder. **80** stays the next free decade.
 - Client bootstrap folder is `35-client-bootstrap`, not `bootstrapRender`.
 - Track events: `login_completed` + `grid_move` only unless `cell_selected` is specified later.

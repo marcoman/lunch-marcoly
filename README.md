@@ -48,7 +48,8 @@ lunch-marcoly/
 │   ├── 22-config-outside-code/
 │   ├── 23-agent-tools/
 │   ├── 24-agent-judges/
-│   └── 25-agent-graph/           # assess → specialist → finalize
+│   ├── 25-agent-graph/           # assess → specialist → finalize
+│   └── 26-flags-vs-agent-control/ # Stub: flag/JSON vs completion config
 ├── 30-client-sdk/               # Browser JavaScript SDK
 │   ├── README.md
 │   ├── portal/                  # JS :8300 · React :8301 · Vue :8302 (31–36)
@@ -82,7 +83,8 @@ lunch-marcoly/
 │   ├── 16-adaptive-triggers/
 │   ├── 17-migration-flags/      # Stub
 │   ├── 18-sdk-fallbacks/
-│   └── 19-terraform-sentinel/   # Sentinel policies for Terraform flags
+│   ├── 19-terraform-sentinel/   # Sentinel policies for Terraform flags
+│   └── 20-multi-arm-bandit/     # Stub: bandit shifts traffic; grid, not mobile
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -136,6 +138,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 23 | [23-agent-tools](20-agent-config/23-agent-tools/) | Library tools + tool loop + `track_tool_call` (web + Go console) |
 | 24 | [24-agent-judges](20-agent-config/24-agent-judges/) | Judges runtime gate + rewrite (Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console) |
 | 25 | [25-agent-graph](20-agent-config/25-agent-graph/) | Agent graph: assess → specialist → finalize (Python **8250** · Node **8251** · Java **8252** · .NET **8253**) |
+| 26 | [26-flags-vs-agent-control](20-agent-config/26-flags-vs-agent-control/) | **Stub:** flag conditional and JSON flag vs AgentControl completion config. Web only |
 | 30 | [30-client-sdk](30-client-sdk/) | Browser client-side SDK series (client-side ID); [portal](30-client-sdk/portal/) JS **:8300** · React **:8301** · Vue **:8302** (31–36) |
 | 31 | [31-client-evaluation](30-client-sdk/31-client-evaluation/) | Initialize, client-side availability, `variation`, `change:` (**JS :8310** · **React :8311** · **Vue :8312**) |
 | 32 | [32-client-identify](30-client-sdk/32-client-identify/) | `identify()` context switch without reload (**JS :8320** · **React :8321** · **Vue :8322**) |
@@ -165,6 +168,7 @@ Each example may include implementations in any of these languages. Python, Node
 | — | [17-migration-flags](99-use-cases/17-migration-flags/) | **Stub:** migration flag dual-store cutover |
 | — | [18-sdk-fallbacks](99-use-cases/18-sdk-fallbacks/) | Init failure / stream loss → default vs last-known |
 | — | [19-terraform-sentinel](99-use-cases/19-terraform-sentinel/) | Sentinel pass/fail fixtures: temporary flags and a sunset custom property |
+| — | [20-multi-arm-bandit](99-use-cases/20-multi-arm-bandit/) | **Stub:** multi-armed bandit on the grid navigator. Allocation moves with a metric |
 
 ## Building code
 

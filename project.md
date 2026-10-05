@@ -115,9 +115,11 @@ lunch-marcoly/
 │   ├── 24-agent-judges/             # Judges runtime gate + rewrite
 │   │   ├── README.md · application.md · rest/
 │   │   └── python/ · node/ · java/ · dotnet/ · go/  # Web :8240–:8243; Go console
-│   └── 25-agent-graph/              # Agent graph: assess → specialist → finalize
-│       ├── README.md · application.md · rest/
-│       └── python/ · node/ · java/ · dotnet/  # Web :8250–:8253
+│   ├── 25-agent-graph/              # Agent graph: assess → specialist → finalize
+│   │   ├── README.md · application.md · rest/
+│   │   └── python/ · node/ · java/ · dotnet/  # Web :8250–:8253
+│   └── 26-flags-vs-agent-control/   # Stub: flag conditional + JSON flag vs completion config
+│       └── README.md · application.md   # Web only, not built
 ├── 30-client-sdk/               # Browser client-side SDK (client-side ID)
 │   ├── README.md
 │   ├── portal/                  # Series shell: JS :8300 · React :8301 · Vue :8302
@@ -160,7 +162,8 @@ lunch-marcoly/
 │   ├── 16-adaptive-triggers/  # Metric threshold switches flag variation
 │   ├── 17-migration-flags/    # Stub: migration flag dual-store cutover
 │   ├── 18-sdk-fallbacks/      # SDK defaults vs last-known (web apps)
-│   └── 19-terraform-sentinel/ # Sentinel policies for Terraform flags (no SDK)
+│   ├── 19-terraform-sentinel/ # Sentinel policies for Terraform flags (no SDK)
+│   └── 20-multi-arm-bandit/   # Stub: bandit on the grid; not 53-mobile-experiment
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── rest/
@@ -191,6 +194,7 @@ lunch-marcoly/
 - `23-agent-tools` adds **Library tools**, a tool loop, and `TrackToolCall`.
 - `24-agent-judges` adds **custom Judges** as a runtime quality gate (draft → scores → one Charlie rewrite).
 - `25-agent-graph` (under `20-agent-config/`) adds an **agent graph** (assess → specialist → finalize; Python **8250** · Node **8251** · Java **8252** · .NET **8253**).
+- `26-flags-vs-agent-control` (under `20-agent-config/`) is a stub. Same briefing fields (model, temperature, prompt) from a flag conditional, a JSON flag, and an AgentControl completion config. Web only. `21` keeps `equity-briefing-completion`.
 - AgentControl **web** ports: Python / Node / Java / .NET. **Go** is console-only under this series (raw-terminal TUI).
 - `10-code-control` groups grid-navigator **feature flag** examples; shared portal lives in its `portal/`.
 - `11-flag-enablement` (under `10-code-control/`) demonstrates feature flag naming, provisioning, and boolean enablement.
@@ -221,6 +225,7 @@ lunch-marcoly/
 - `70-model-demos` groups fun model apps (image check, text origin, guess the animal). The series owns global **70**. Children are `01`, `02`, `03`, … inside the folder and may pass ten. **80** stays the next free decade. These apps may use an AI Config, a judge, or a tool. They are not the equity briefing and not the grid.
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive/guarded rollouts, adaptive triggers, SDK fallbacks, and a migration-flags stub).
 - `19-terraform-sentinel` (under `99-use-cases/`) is Sentinel policy for Terraform-managed flags (`temporary`, `sunset` custom property). Pass and fail fixtures only — no grid app and no SDK.
+- `20-multi-arm-bandit` (under `99-use-cases/`) is a stub. A multi-armed bandit on the grid navigator: a metric shifts traffic toward the winning variation. `01-abcd-test` keeps a fixed split. `53-mobile-experiment` stays in `50-mobile`.
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author
 

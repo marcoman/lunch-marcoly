@@ -17,6 +17,7 @@ Each subdirectory demonstrates a specific product pattern (A/B testing, rollouts
 | [17-migration-flags/](17-migration-flags/) | **Stub:** migration flag dual-store cutover (parked 10-series 16) |
 | [18-sdk-fallbacks/](18-sdk-fallbacks/) | Init failure / stream loss → default vs last-known evaluation (Python / Node / Java / .NET web) |
 | [19-terraform-sentinel/](19-terraform-sentinel/) | Sentinel policies for Terraform flags: `temporary` and a `sunset` custom property (pass and fail fixtures, no SDK) |
+| [20-multi-arm-bandit/](20-multi-arm-bandit/) | **Stub:** multi-armed bandit on the grid. Traffic shifts toward the winning variation. Not the fixed split in `01`, and not `53-mobile-experiment` |
 
 ## Conventions
 
