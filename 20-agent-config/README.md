@@ -26,14 +26,15 @@ Shared headline cache: [stories/](stories/) (`20-agent-config/stories/stories_ca
 | # | Directory | What it adds |
 |---|-----------|--------------|
 | — | [portal](portal/) | **Series shell**: tabs for **21–25** — Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
+| — | [20-capstone](20-capstone/) | **Stub:** one Node briefing that composes graph, tools, judges, and feedback. `21`–`25` stay as they are. Later `27`, `28`, … roll in here. English and Spanish live on this app. Outline: [application.md](20-capstone/application.md) |
 | 21 | [21-agent-completion-config](21-agent-completion-config/) | **Completion config**: runtime **model**, **system prompt**, and **user prompt** — provision with [rest/](21-agent-completion-config/rest/); `get-targeting-status.sh`. Web: Python/Node/Java/.NET. Console: Python (curses), **Go** (raw-terminal) |
 | 22 | [22-config-outside-code](22-config-outside-code/) | **Tracked completion**: **`track_metrics_of`**, thumbs feedback, Ollama / Anthropic (Best Betty) — Python **8220** · Node **8221** · Java **8222** · .NET **8223**; `get-feedback-status.sh`. Console: **Go** (raw-terminal, `+`/`-` feedback hotkeys) |
 | 23 | [23-agent-tools](23-agent-tools/) | **Library tools**: analyze-ticker-stories ×2 → compare-ticker-analyses; tool loop + `track_tool_call` — Python **8230** · Node **8231** · Java **8232** · .NET **8233**; `get-tools-status.sh`. Console: **Go** (raw-terminal, tool trace) |
 | 24 | [24-agent-judges](24-agent-judges/) | **Judges** runtime gate: Source Fidelity + Recommendation Discipline → show draft + scores → rewrite once as Charlie — Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console; `get-judges-status.sh`. Base: 21 surface (stories-only), not 23 tools |
 | 25 | [25-agent-graph](25-agent-graph/) | **Agent graph**: assess → specialist → finalize — Report / Questions / Good / Joke; Trace; Python **8250** · Node **8251** · Java **8252** · .NET **8253**. Spec: [application.md](25-agent-graph/application.md) |
-| 26 | [26-flags-vs-agent-control](26-flags-vs-agent-control/) | **Stub:** flag conditional and JSON flag vs a completion config (model, temperature, prompt). Web only. Outline: [application.md](26-flags-vs-agent-control/application.md) |
+| 26 | [26-flags-vs-agent-control](26-flags-vs-agent-control/) | **Python :8260**. Original, four flags, or one JSON flag. Judge scores only. Charlie and Toby. Outline: [application.md](26-flags-vs-agent-control/application.md) |
 
-More AgentControl patterns can land as further `NN-…` siblings under this folder.
+More AgentControl patterns can land as further `NN-…` siblings under this folder. [20-capstone](20-capstone/) is unnumbered on purpose: a later `27` or `28` keeps its own folder, and the behavior rolls into the capstone.
 
 ## Common setup
 
@@ -217,9 +218,10 @@ Per-example quirks live in each child `dotnet/README.md` and `go/README.md`.
 - [01-reference-agent](../01-reference-agent/) — baseline agent (file prompt + env model; no LaunchDarkly)
 - [project.md](../project.md) — repository conventions
 - [portal](portal/) — series shell (Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203**)
+- [20-capstone](20-capstone/) — **Stub:** composed graph, tools, judges, and feedback. Node only. Unnumbered so later lessons roll in. Not in the portal yet
 - [21-agent-completion-config](21-agent-completion-config/) — completion config
 - [22-config-outside-code](22-config-outside-code/) — tracked metrics + feedback
 - [23-agent-tools](23-agent-tools/) — Library tools + tool loop
 - [24-agent-judges](24-agent-judges/) — Judges runtime gate + Charlie rewrite
 - [25-agent-graph](25-agent-graph/) — Agent graph (assess → specialist → finalize); Python :8250 · Node :8251 · Java :8252 · .NET :8253
-- [26-flags-vs-agent-control](26-flags-vs-agent-control/) — **Stub:** flag conditional and JSON flag beside an AgentControl completion config. Web only. Not in the portal yet
+- [26-flags-vs-agent-control](26-flags-vs-agent-control/) — **Specified, not built:** AgentControl, four flags, or one JSON flag. Judge scores pass/fail only. Not in the portal yet

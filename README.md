@@ -44,12 +44,13 @@ lunch-marcoly/
 │   ├── README.md
 │   ├── portal/                   # Python :8200 · Node :8201 · Java :8202 · .NET :8203
 │   ├── stories/                  # Shared Yahoo headlines cache
+│   ├── 20-capstone/              # Stub: composed 21–25 flow; Node; en/es
 │   ├── 21-agent-completion-config/
 │   ├── 22-config-outside-code/
 │   ├── 23-agent-tools/
 │   ├── 24-agent-judges/
 │   ├── 25-agent-graph/           # assess → specialist → finalize
-│   └── 26-flags-vs-agent-control/ # Stub: flag/JSON vs completion config
+│   └── 26-flags-vs-agent-control/ # Specified: AgentControl vs flags vs JSON
 ├── 30-client-sdk/               # Browser JavaScript SDK
 │   ├── README.md
 │   ├── portal/                  # JS :8300 · React :8301 · Vue :8302 (31–36)
@@ -133,12 +134,13 @@ Each example may include implementations in any of these languages. Python, Node
 | 16 | [16-percentage-rollout](10-code-control/16-percentage-rollout/) | Static 30/70 percentage rollout, sticky context key (web **:8160–:8163** + Python / Node / Java / Go / Rust / C++ consoles) |
 | 17 | [17-scheduled-changes](10-code-control/17-scheduled-changes/) | Replaceable scheduled flag turn-on with elapsed timer (web **:8170–:8173** + Python / Node / Java / Go / Rust / C++ consoles + REST/Terraform) |
 | 20 | [20-agent-config](20-agent-config/) | AgentControl series (shared LLM / AWS / LD setup); [portal](20-agent-config/portal/) Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
+| — | [20-capstone](20-agent-config/20-capstone/) | **Stub:** one Node app composing graph, tools, judges, and feedback. Unnumbered so `27`, `28`, … roll in. English and Spanish live here |
 | 21 | [21-agent-completion-config](20-agent-config/21-agent-completion-config/) | Completion config: model + system/user prompts (web + Go console) |
 | 22 | [22-config-outside-code](20-agent-config/22-config-outside-code/) | Tracked completion: metrics + thumbs feedback (web + Go console) |
 | 23 | [23-agent-tools](20-agent-config/23-agent-tools/) | Library tools + tool loop + `track_tool_call` (web + Go console) |
 | 24 | [24-agent-judges](20-agent-config/24-agent-judges/) | Judges runtime gate + rewrite (Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console) |
 | 25 | [25-agent-graph](20-agent-config/25-agent-graph/) | Agent graph: assess → specialist → finalize (Python **8250** · Node **8251** · Java **8252** · .NET **8253**) |
-| 26 | [26-flags-vs-agent-control](20-agent-config/26-flags-vs-agent-control/) | **Stub:** flag conditional and JSON flag vs AgentControl completion config. Web only |
+| 26 | [26-flags-vs-agent-control](20-agent-config/26-flags-vs-agent-control/) | Python **:8260**. AgentControl, four flags, or one JSON flag. Judge scores pass/fail only |
 | 30 | [30-client-sdk](30-client-sdk/) | Browser client-side SDK series (client-side ID); [portal](30-client-sdk/portal/) JS **:8300** · React **:8301** · Vue **:8302** (31–36) |
 | 31 | [31-client-evaluation](30-client-sdk/31-client-evaluation/) | Initialize, client-side availability, `variation`, `change:` (**JS :8310** · **React :8311** · **Vue :8312**) |
 | 32 | [32-client-identify](30-client-sdk/32-client-identify/) | `identify()` context switch without reload (**JS :8320** · **React :8321** · **Vue :8322**) |

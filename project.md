@@ -103,6 +103,8 @@ lunch-marcoly/
 │   ├── README.md                # Ollama, AWS SSO, LD env — landing page
 │   ├── portal/                  # Series shell: Python :8200 · Node :8201 · Java :8202 · .NET :8203
 │   ├── stories/                 # Shared Yahoo headlines cache (all examples)
+│   ├── 20-capstone/             # Stub: composed graph + tools + judges + feedback
+│   │   └── README.md · application.md   # Node only, not built
 │   ├── 21-agent-completion-config/  # Completion config: model + system/user prompts
 │   │   ├── README.md · application.md · rest/
 │   │   └── python/ · node/ · java/ · dotnet/ · python-console/ · go/
@@ -118,7 +120,7 @@ lunch-marcoly/
 │   ├── 25-agent-graph/              # Agent graph: assess → specialist → finalize
 │   │   ├── README.md · application.md · rest/
 │   │   └── python/ · node/ · java/ · dotnet/  # Web :8250–:8253
-│   └── 26-flags-vs-agent-control/   # Stub: flag conditional + JSON flag vs completion config
+│   └── 26-flags-vs-agent-control/   # Specified: AgentControl vs flags vs JSON; score only
 │       └── README.md · application.md   # Web only, not built
 ├── 30-client-sdk/               # Browser client-side SDK (client-side ID)
 │   ├── README.md
@@ -189,12 +191,13 @@ lunch-marcoly/
 - `02-reference-client-code` is the same navigator **in the browser** (client JavaScript). It does **not** include LaunchDarkly. Later client-SDK examples (series **30**) build on this shape.
 - `01-reference-agent` is the baseline news → prompt → LLM agent UI (config/env and a prompt file only).
 - `20-agent-config` groups LaunchDarkly **AgentControl** examples; shared LLM/AWS/LD setup lives in its README.
+- `20-capstone` (under `20-agent-config/`) is an unnumbered stub. One Node briefing composes the graph, tools, judges, and feedback from `21`–`25`. Those lessons stay as they are. Later `27`, `28`, … keep their own numbers and roll into this app. English and Spanish belong here.
 - `21-agent-completion-config` (under `20-agent-config/`) adds a **completion config**: runtime **model**, **system prompt**, and **user prompt** on the agent shape from `01`.
 - `22-config-outside-code` adds **tracked completion** (`TrackMetricsOf` / feedback) on that same config shape.
 - `23-agent-tools` adds **Library tools**, a tool loop, and `TrackToolCall`.
 - `24-agent-judges` adds **custom Judges** as a runtime quality gate (draft → scores → one Charlie rewrite).
 - `25-agent-graph` (under `20-agent-config/`) adds an **agent graph** (assess → specialist → finalize; Python **8250** · Node **8251** · Java **8252** · .NET **8253**).
-- `26-flags-vs-agent-control` (under `20-agent-config/`) is a stub. Same briefing fields (model, temperature, prompt) from a flag conditional, a JSON flag, and an AgentControl completion config. Web only. `21` keeps `equity-briefing-completion`.
+- `26-flags-vs-agent-control` (under `20-agent-config/`) Python **Original** variation is on **:8260**: an AgentControl completion config plus a score-only judge, Charlie and Toby. Separate flags and the JSON flag are not built. `21` keeps `equity-briefing-completion`.
 - AgentControl **web** ports: Python / Node / Java / .NET. **Go** is console-only under this series (raw-terminal TUI).
 - `10-code-control` groups grid-navigator **feature flag** examples; shared portal lives in its `portal/`.
 - `11-flag-enablement` (under `10-code-control/`) demonstrates feature flag naming, provisioning, and boolean enablement.
