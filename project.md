@@ -120,7 +120,7 @@ lunch-marcoly/
 │   ├── 25-agent-graph/              # Agent graph: assess → specialist → finalize
 │   │   ├── README.md · application.md · rest/
 │   │   └── python/ · node/ · java/ · dotnet/  # Web :8250–:8253
-│   └── 26-flags-vs-agent-control/   # Specified: AgentControl vs flags vs JSON; score only
+│   └── 26-flags-vs-agent-control/   # Python :8260 · Node :8261 · Java :8262 · .NET :8263
 │       └── README.md · application.md   # Web only, not built
 ├── 30-client-sdk/               # Browser client-side SDK (client-side ID)
 │   ├── README.md
@@ -197,7 +197,7 @@ lunch-marcoly/
 - `23-agent-tools` adds **Library tools**, a tool loop, and `TrackToolCall`.
 - `24-agent-judges` adds **custom Judges** as a runtime quality gate (draft → scores → one Charlie rewrite).
 - `25-agent-graph` (under `20-agent-config/`) adds an **agent graph** (assess → specialist → finalize; Python **8250** · Node **8251** · Java **8252** · .NET **8253**).
-- `26-flags-vs-agent-control` (under `20-agent-config/`) Python **Original** variation is on **:8260**: an AgentControl completion config plus a score-only judge, Charlie and Toby. Separate flags and the JSON flag are not built. `21` keeps `equity-briefing-completion`.
+- `26-flags-vs-agent-control` (under `20-agent-config/`) compares an AgentControl completion config, four feature flags, and one JSON flag. Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**. The screen shows Toby. A failed guardrail on AgentControl can run `reduce-briefing-uncertainty`. `21` keeps `equity-briefing-completion`.
 - AgentControl **web** ports: Python / Node / Java / .NET. **Go** is console-only under this series (raw-terminal TUI).
 - `10-code-control` groups grid-navigator **feature flag** examples; shared portal lives in its `portal/`.
 - `11-flag-enablement` (under `10-code-control/`) demonstrates feature flag naming, provisioning, and boolean enablement.

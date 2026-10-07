@@ -32,7 +32,7 @@ Shared headline cache: [stories/](stories/) (`20-agent-config/stories/stories_ca
 | 23 | [23-agent-tools](23-agent-tools/) | **Library tools**: analyze-ticker-stories ×2 → compare-ticker-analyses; tool loop + `track_tool_call` — Python **8230** · Node **8231** · Java **8232** · .NET **8233**; `get-tools-status.sh`. Console: **Go** (raw-terminal, tool trace) |
 | 24 | [24-agent-judges](24-agent-judges/) | **Judges** runtime gate: Source Fidelity + Recommendation Discipline → show draft + scores → rewrite once as Charlie — Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console; `get-judges-status.sh`. Base: 21 surface (stories-only), not 23 tools |
 | 25 | [25-agent-graph](25-agent-graph/) | **Agent graph**: assess → specialist → finalize — Report / Questions / Good / Joke; Trace; Python **8250** · Node **8251** · Java **8252** · .NET **8253**. Spec: [application.md](25-agent-graph/application.md) |
-| 26 | [26-flags-vs-agent-control](26-flags-vs-agent-control/) | **Python :8260**. Original, four flags, or one JSON flag. Judge scores only. Charlie and Toby. Outline: [application.md](26-flags-vs-agent-control/application.md) |
+| 26 | [26-flags-vs-agent-control](26-flags-vs-agent-control/) | **Python :8260**, **Node :8261**, **Java :8262**, **.NET :8263**. AgentControl, four flags, or one JSON flag. Guardrail scores only |
 
 More AgentControl patterns can land as further `NN-…` siblings under this folder. [20-capstone](20-capstone/) is unnumbered on purpose: a later `27` or `28` keeps its own folder, and the behavior rolls into the capstone.
 
@@ -224,4 +224,4 @@ Per-example quirks live in each child `dotnet/README.md` and `go/README.md`.
 - [23-agent-tools](23-agent-tools/) — Library tools + tool loop
 - [24-agent-judges](24-agent-judges/) — Judges runtime gate + Charlie rewrite
 - [25-agent-graph](25-agent-graph/) — Agent graph (assess → specialist → finalize); Python :8250 · Node :8251 · Java :8252 · .NET :8253
-- [26-flags-vs-agent-control](26-flags-vs-agent-control/) — **Specified, not built:** AgentControl, four flags, or one JSON flag. Judge scores pass/fail only. Not in the portal yet
+- [26-flags-vs-agent-control](26-flags-vs-agent-control/) — Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**. AgentControl, four flags, or one JSON flag. Guardrail scores pass/fail. Not in the portal yet

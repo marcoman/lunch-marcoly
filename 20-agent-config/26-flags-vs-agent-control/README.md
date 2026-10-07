@@ -1,6 +1,6 @@
 # 26-flags-vs-agent-control
 
-**Status: Python app on :8260.** AgentControl, Separate flags, and JSON flag run side by side. Node, Java, and .NET are not started. Not in the series portal.
+**Status: Python :8260, Node :8261, Java :8262, .NET :8263.** AgentControl, Separate flags, and JSON flag run side by side. Not in the series portal.
 
 The [21](../21-agent-completion-config/) briefing, with a source control. The same four settings come from an AgentControl completion config, from four feature flags, or from one JSON flag.
 
@@ -10,7 +10,7 @@ Two personas: **Conservative Charlie** and **Thoughtless Toby**. One targeting r
 
 Outline: [application.md](application.md).
 
-Web only. Python first, then Node, Java, and .NET. Not in the series portal until it ships.
+Web only. Python, Node, Java, and .NET. Not in the series portal.
 
 ## Setup
 
@@ -65,6 +65,8 @@ python 26-flags-vs-agent-control.py
 
 Open **http://127.0.0.1:8260/**. Use the repo virtualenv (`../../.venv/bin/python`) if `python` cannot import `ldai`.
 
+Node **:8261**, Java **:8262**, and .NET **:8263** serve the same screen. See [node/README.md](node/README.md), [java/README.md](java/README.md), and [dotnet/README.md](dotnet/README.md).
+
 Keywords: **feature flags** · **JSON variations** · **AgentControl** · **completion config** · **judges**
 
 | Topic | Docs |
@@ -92,4 +94,6 @@ Toby’s draft should fail the guardrail. AgentControl then shows the tool outpu
 | Language | Directory | Status |
 |----------|-----------|--------|
 | Python web | [python/](python/) | **:8260**. AgentControl, Separate flags, and JSON flag |
-| Node, Java, .NET | — | Not started |
+| Node web | [node/](node/) | **:8261**. `completionConfig`, `variationDetail`, `judgeConfig` |
+| Java web | [java/](java/) | **:8262**. Server SDK JSON evaluation. No Java AI SDK |
+| .NET web | [dotnet/](dotnet/) | **:8263**. `CompletionConfig`, `JsonVariationDetail`, `JudgeConfig` |

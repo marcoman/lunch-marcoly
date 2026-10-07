@@ -10,7 +10,7 @@ Work queue for new lunch-marcoly examples. Ship in this order.
 - [42-local-if-no-sdk](40-dont-do-this/42-local-if-no-sdk/)
 - [99-use-cases/17-migration-flags](99-use-cases/17-migration-flags/)
 - [99-use-cases/20-multi-arm-bandit](99-use-cases/20-multi-arm-bandit/) — grid bandit; not `53-mobile-experiment`
-- [20-agent-config/26-flags-vs-agent-control](20-agent-config/26-flags-vs-agent-control/) — Python **:8260**. Original, separate flags, and JSON flag. Judge scores pass/fail only. `26-offline-evaluation` stays declined
+- [20-agent-config/26-flags-vs-agent-control](20-agent-config/26-flags-vs-agent-control/) — Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**. AgentControl, separate flags, and JSON flag. Guardrail scores pass/fail. `26-offline-evaluation` stays declined
 - [20-agent-config/20-capstone](20-agent-config/20-capstone/) — unnumbered. One Node app composes graph, tools, judges, and feedback. `21`–`25` stay as they are. English and Spanish live here. Later `27`, `28`, … roll in
 
 ## Don't do

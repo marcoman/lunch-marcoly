@@ -96,7 +96,7 @@ When the guardrail is on, the draft panel takes a pass or fail treatment: the wo
 ## Scope
 
 - Web twins: Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**.
-- Python first.
+- Python **:8260**, Node **:8261**, Java **:8262**, and .NET **:8263** are built.
 - One judge, score only. Threshold number is chosen at build time and printed next to the score.
 - `21` and `24` keep their keys, prompts, and rewrite behavior.
 

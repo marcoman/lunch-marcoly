@@ -50,7 +50,7 @@ lunch-marcoly/
 │   ├── 23-agent-tools/
 │   ├── 24-agent-judges/
 │   ├── 25-agent-graph/           # assess → specialist → finalize
-│   └── 26-flags-vs-agent-control/ # Specified: AgentControl vs flags vs JSON
+│   └── 26-flags-vs-agent-control/ # Python :8260 · Node :8261 · Java :8262 · .NET :8263
 ├── 30-client-sdk/               # Browser JavaScript SDK
 │   ├── README.md
 │   ├── portal/                  # JS :8300 · React :8301 · Vue :8302 (31–36)
@@ -140,7 +140,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 23 | [23-agent-tools](20-agent-config/23-agent-tools/) | Library tools + tool loop + `track_tool_call` (web + Go console) |
 | 24 | [24-agent-judges](20-agent-config/24-agent-judges/) | Judges runtime gate + rewrite (Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console) |
 | 25 | [25-agent-graph](20-agent-config/25-agent-graph/) | Agent graph: assess → specialist → finalize (Python **8250** · Node **8251** · Java **8252** · .NET **8253**) |
-| 26 | [26-flags-vs-agent-control](20-agent-config/26-flags-vs-agent-control/) | Python **:8260**. AgentControl, four flags, or one JSON flag. Judge scores pass/fail only |
+| 26 | [26-flags-vs-agent-control](20-agent-config/26-flags-vs-agent-control/) | Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**. AgentControl, four flags, or one JSON flag. Guardrail scores pass/fail |
 | 30 | [30-client-sdk](30-client-sdk/) | Browser client-side SDK series (client-side ID); [portal](30-client-sdk/portal/) JS **:8300** · React **:8301** · Vue **:8302** (31–36) |
 | 31 | [31-client-evaluation](30-client-sdk/31-client-evaluation/) | Initialize, client-side availability, `variation`, `change:` (**JS :8310** · **React :8311** · **Vue :8312**) |
 | 32 | [32-client-identify](30-client-sdk/32-client-identify/) | `identify()` context switch without reload (**JS :8320** · **React :8321** · **Vue :8322**) |
