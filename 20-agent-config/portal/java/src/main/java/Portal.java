@@ -1,5 +1,5 @@
 /**
- * Portal — series shell for 20-agent-config (Java web examples 21–25).
+ * Portal — series shell for 20-agent-config (Java web examples 21–26).
  *
  * One process for the user:
  *   - Serves this folder's index.html on :8202 (PORTAL_PORT)
@@ -57,7 +57,10 @@ public final class Portal {
                     "24-agent-judges.jar", 8242),
             new Child("25", "Graph",
                     SERIES_ROOT.resolve("25-agent-graph/java"),
-                    "25-agent-graph.jar", 8252)
+                    "25-agent-graph.jar", 8252),
+            new Child("26", "Flag compare",
+                    SERIES_ROOT.resolve("26-flags-vs-agent-control/java"),
+                    "26-flags-vs-agent-control.jar", 8262)
     );
 
     private static final Map<String, Process> PROCS = new ConcurrentHashMap<>();
@@ -83,7 +86,7 @@ public final class Portal {
 
         System.out.println(APP_BANNER);
         System.out.println("Open http://127.0.0.1:" + PORTAL_PORT + "/");
-        System.out.println("Tabs embed Java examples on 8212 / 8222 / 8232 / 8242 / 8252.");
+        System.out.println("Tabs embed Java examples on 8212 / 8222 / 8232 / 8242 / 8252 / 8262.");
         System.out.println("Ctrl+C stops the portal and all children.");
     }
 

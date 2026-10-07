@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-portal.py — series shell for 20-agent-config (Python web examples 21–25).
+portal.py — series shell for 20-agent-config (Python web examples 21–26).
 
 One process for the user:
   - Serves this folder's index.html on :8200 (PORTAL_PORT)
@@ -72,6 +72,16 @@ CHILDREN: list[dict[str, Any]] = [
         "script": SERIES_ROOT / "25-agent-graph" / "python" / "25-agent-graph.py",
         "cwd": SERIES_ROOT / "25-agent-graph" / "python",
         "port": 8250,
+    },
+    {
+        "id": "26",
+        "label": "Flag compare",
+        "script": SERIES_ROOT
+        / "26-flags-vs-agent-control"
+        / "python"
+        / "26-flags-vs-agent-control.py",
+        "cwd": SERIES_ROOT / "26-flags-vs-agent-control" / "python",
+        "port": 8260,
     },
 ]
 
@@ -290,7 +300,7 @@ def main() -> None:
 
     print(APP_BANNER, flush=True)
     print(f"Open http://127.0.0.1:{PORTAL_PORT}/", flush=True)
-    print("Tabs embed Python examples on 8210 / 8220 / 8230 / 8240 / 8250.", flush=True)
+    print("Tabs embed Python examples on 8210 / 8220 / 8230 / 8240 / 8250 / 8260.", flush=True)
     print("Ctrl+C stops the portal and all children.", flush=True)
     try:
         server.serve_forever()

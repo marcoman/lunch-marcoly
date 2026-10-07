@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * portal.js — series shell for 20-agent-config (Node web examples 21–25).
+ * portal.js — series shell for 20-agent-config (Node web examples 21–26).
  *
  * One process for the user:
  *   - Serves this folder's index.html on :8201 (PORTAL_PORT)
  *   - Spawns each example's existing Node server as a child
  *   - Embeds those pages in iframes (see index.html)
  *
- * Twin of ../python (Python on :8200 / *210–*250), ../java (:8202), ../dotnet (:8203).
+ * Twin of ../python (Python on :8200 / *210–*260), ../java (:8202), ../dotnet (:8203).
  * Standalone entrypoints under each example's node/ still work alone.
  * Ctrl+C / SIGTERM stops the portal and all children.
  */
@@ -67,6 +67,18 @@ const CHILDREN = [
     script: path.join(SERIES_ROOT, "25-agent-graph", "node", "25-agent-graph.js"),
     cwd: path.join(SERIES_ROOT, "25-agent-graph", "node"),
     port: 8251,
+  },
+  {
+    id: "26",
+    label: "Flag compare",
+    script: path.join(
+      SERIES_ROOT,
+      "26-flags-vs-agent-control",
+      "node",
+      "26-flags-vs-agent-control.js"
+    ),
+    cwd: path.join(SERIES_ROOT, "26-flags-vs-agent-control", "node"),
+    port: 8261,
   },
 ];
 
@@ -298,7 +310,7 @@ async function main() {
   server.listen(PORTAL_PORT, "127.0.0.1", () => {
     console.log(APP_BANNER);
     console.log(`Open http://127.0.0.1:${PORTAL_PORT}/`);
-    console.log("Tabs embed Node examples on 8211 / 8221 / 8231 / 8241 / 8251.");
+    console.log("Tabs embed Node examples on 8211 / 8221 / 8231 / 8241 / 8251 / 8261.");
     console.log("Ctrl+C stops the portal and all children.");
   });
 }

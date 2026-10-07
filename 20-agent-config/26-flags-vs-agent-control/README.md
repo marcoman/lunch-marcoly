@@ -1,6 +1,6 @@
 # 26-flags-vs-agent-control
 
-**Status: Python :8260, Node :8261, Java :8262, .NET :8263.** AgentControl, Separate flags, and JSON flag run side by side. Not in the series portal.
+**Status: Python :8260, Node :8261, Java :8262, .NET :8263.** AgentControl, Separate flags, and JSON flag run side by side. In the series portal as **Flag compare**.
 
 The [21](../21-agent-completion-config/) briefing, with a source control. The same four settings come from an AgentControl completion config, from four feature flags, or from one JSON flag.
 
@@ -10,7 +10,7 @@ Two personas: **Conservative Charlie** and **Thoughtless Toby**. One targeting r
 
 Outline: [application.md](application.md).
 
-Web only. Python, Node, Java, and .NET. Not in the series portal.
+Web only. Python, Node, Java, and .NET. Series portal tab **Flag compare**.
 
 ## Setup
 

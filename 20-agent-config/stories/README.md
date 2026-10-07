@@ -1,6 +1,6 @@
 # Series stories cache
 
-Shared headline cache for AgentControl examples **21–25**.
+Shared headline cache for AgentControl examples **21–26**.
 
 ```text
 20-agent-config/stories/stories_cache.json

@@ -6,7 +6,7 @@ Examples here keep the same news → generate product shape. What changes is **w
 
 ## Series portal
 
-Prefer a **portal** when you want to flip between **21–25** in one browser window:
+Prefer a **portal** when you want to flip between **21–26** in one browser window:
 
 | Language | Command | URL |
 |----------|---------|-----|
@@ -15,7 +15,7 @@ Prefer a **portal** when you want to flip between **21–25** in one browser win
 | **Java** | `cd portal/java && ./mvnw -q -DskipTests package && java -jar target/portal-java.jar` | http://127.0.0.1:8202/ |
 | **.NET** | `cd portal/dotnet && dotnet run` | http://127.0.0.1:8203/ |
 
-Each portal spawns that language’s web servers (Python `*210–*250`, Node `*211–*251`, Java `*212–*252`, .NET `*213–*253`) and embeds them as tabs. **Ctrl+C** stops portal + children. Details: [portal/README.md](portal/README.md).
+Each portal spawns that language’s web servers (Python `*210–*260`, Node `*211–*261`, Java `*212–*262`, .NET `*213–*263`) and embeds them as tabs. **Ctrl+C** stops portal + children. Details: [portal/README.md](portal/README.md).
 
 Standalone `NN-…/python/*.py`, `NN-…/node/`, `NN-…/java/`, and `NN-…/dotnet/` entrypoints still work alone.
 
@@ -25,7 +25,7 @@ Shared headline cache: [stories/](stories/) (`20-agent-config/stories/stories_ca
 
 | # | Directory | What it adds |
 |---|-----------|--------------|
-| — | [portal](portal/) | **Series shell**: tabs for **21–25** — Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
+| — | [portal](portal/) | **Series shell**: tabs for **21–26** — Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
 | — | [20-capstone](20-capstone/) | **Stub:** one Node briefing that composes graph, tools, judges, and feedback. `21`–`25` stay as they are. Later `27`, `28`, … roll in here. English and Spanish live on this app. Outline: [application.md](20-capstone/application.md) |
 | 21 | [21-agent-completion-config](21-agent-completion-config/) | **Completion config**: runtime **model**, **system prompt**, and **user prompt** — provision with [rest/](21-agent-completion-config/rest/); `get-targeting-status.sh`. Web: Python/Node/Java/.NET. Console: Python (curses), **Go** (raw-terminal) |
 | 22 | [22-config-outside-code](22-config-outside-code/) | **Tracked completion**: **`track_metrics_of`**, thumbs feedback, Ollama / Anthropic (Best Betty) — Python **8220** · Node **8221** · Java **8222** · .NET **8223**; `get-feedback-status.sh`. Console: **Go** (raw-terminal, `+`/`-` feedback hotkeys) |
@@ -224,4 +224,4 @@ Per-example quirks live in each child `dotnet/README.md` and `go/README.md`.
 - [23-agent-tools](23-agent-tools/) — Library tools + tool loop
 - [24-agent-judges](24-agent-judges/) — Judges runtime gate + Charlie rewrite
 - [25-agent-graph](25-agent-graph/) — Agent graph (assess → specialist → finalize); Python :8250 · Node :8251 · Java :8252 · .NET :8253
-- [26-flags-vs-agent-control](26-flags-vs-agent-control/) — Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**. AgentControl, four flags, or one JSON flag. Guardrail scores pass/fail. Not in the portal yet
+- [26-flags-vs-agent-control](26-flags-vs-agent-control/) — Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**. AgentControl, four flags, or one JSON flag. Guardrail scores pass/fail. Portal tab **Flag compare**

@@ -1,6 +1,6 @@
 # 20-agent-config portal — Node
 
-One-command **Node** shell for the AgentControl series examples **21–25**.
+One-command **Node** shell for the AgentControl series examples **21–26**.
 
 Twin of the [Python](../python/), [Java](../java/), and [.NET](../dotnet/) portals.
 This portal serves a tabbed UI on **:8201**, spawns each example’s existing Node
@@ -20,7 +20,8 @@ for d in \
   ../../22-config-outside-code/node \
   ../../23-agent-tools/node \
   ../../24-agent-judges/node \
-  ../../25-agent-graph/node
+  ../../25-agent-graph/node \
+  ../../26-flags-vs-agent-control/node
 do
   (cd "$d" && npm install)
 done
@@ -45,6 +46,7 @@ Open **http://127.0.0.1:8201/**
 | 23 | Tools | **8231** |
 | 24 | Judges | **8241** |
 | 25 | Graph | **8251** |
+| 26 | Flag compare | **8261** |
 
 **Ctrl+C** stops the portal **and** all child servers.
 
@@ -59,7 +61,8 @@ node portal.js
   ├─ child 22    → …/22-…/node/…js :8221
   ├─ child 23    → …/23-…/node/…js :8231
   ├─ child 24    → …/24-…/node/…js :8241
-  └─ child 25    → …/25-…/node/…js :8251
+  ├─ child 25    → …/25-…/node/…js :8251
+  └─ child 26    → …/26-…/node/…js :8261
 ```
 
 - Children inherit the portal’s environment (`LD_SDK_KEY`, Ollama, etc.).

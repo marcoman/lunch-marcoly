@@ -1,6 +1,6 @@
 # 20-agent-config portal — .NET
 
-One-command **.NET** shell for the AgentControl series examples **21–25**.
+One-command **.NET** shell for the AgentControl series examples **21–26**.
 
 Twin of the [Python](../python/), [Node](../node/), and [Java](../java/) portals.
 This portal serves a tabbed UI on **:8203**, spawns each example’s
@@ -36,6 +36,7 @@ Open **http://127.0.0.1:8203/**
 | 23 | Tools | **8233** |
 | 24 | Judges | **8243** |
 | 25 | Graph | **8253** |
+| 26 | Flag compare | **8263** |
 
 **Ctrl+C** stops the portal **and** all child servers.
 
@@ -50,7 +51,8 @@ dotnet run
   ├─ child 22    → …/22-…/dotnet run :8223
   ├─ child 23    → …/23-…/dotnet run :8233
   ├─ child 24    → …/24-…/dotnet run :8243
-  └─ child 25    → …/25-…/dotnet run :8253
+  ├─ child 25    → …/25-…/dotnet run :8253
+  └─ child 26    → …/26-…/dotnet run :8263
 ```
 
 - Children inherit the portal’s environment (`LD_SDK_KEY`, Ollama, etc.).

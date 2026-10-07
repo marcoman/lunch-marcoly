@@ -1,15 +1,15 @@
 # 20-agent-config portal
 
-One-command series shells for AgentControl examples **21–25**. Each portal serves
+One-command series shells for AgentControl examples **21–26**. Each portal serves
 a tabbed UI, spawns that language’s existing web servers as children, and embeds
 them in **iframes**.
 
 | Language | Entry | Portal port | Child ports |
 |----------|-------|-------------|-------------|
-| **Python** | [`python/`](python/) | **8200** | 8210 · 8220 · 8230 · 8240 · 8250 |
-| **Node** | [`node/`](node/) | **8201** | 8211 · 8221 · 8231 · 8241 · 8251 |
-| **Java** | [`java/`](java/) | **8202** | 8212 · 8222 · 8232 · 8242 · 8252 |
-| **.NET** | [`dotnet/`](dotnet/) | **8203** | 8213 · 8223 · 8233 · 8243 · 8253 |
+| **Python** | [`python/`](python/) | **8200** | 8210 · 8220 · 8230 · 8240 · 8250 · 8260 |
+| **Node** | [`node/`](node/) | **8201** | 8211 · 8221 · 8231 · 8241 · 8251 · 8261 |
+| **Java** | [`java/`](java/) | **8202** | 8212 · 8222 · 8232 · 8242 · 8252 · 8262 |
+| **.NET** | [`dotnet/`](dotnet/) | **8203** | 8213 · 8223 · 8233 · 8243 · 8253 · 8263 |
 
 Keywords: **AgentControl** · **series portal** · **iframe tabs** · **process supervisor**
 
@@ -60,7 +60,8 @@ python portal.py   (or node / java / dotnet twin)
   ├─ child 22    → …/22-…/<lang>/… :82x2
   ├─ child 23    → …/23-…/<lang>/… :82x3
   ├─ child 24    → …/24-…/<lang>/… :82x4
-  └─ child 25    → …/25-…/<lang>/… :82x5
+  ├─ child 25    → …/25-…/<lang>/… :82x5
+  └─ child 26    → …/26-…/<lang>/… :82x6
 ```
 
 - Children inherit the portal’s environment (`LD_SDK_KEY`, Ollama, etc.).
@@ -88,3 +89,4 @@ Standalone per-example entrypoints still work without the portal.
 - [23-agent-tools](../23-agent-tools/)
 - [24-agent-judges](../24-agent-judges/)
 - [25-agent-graph](../25-agent-graph/)
+- [26-flags-vs-agent-control](../26-flags-vs-agent-control/)

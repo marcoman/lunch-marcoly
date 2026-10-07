@@ -1,6 +1,6 @@
 # 20-agent-config portal — Python
 
-One-command **Python** shell for the AgentControl series examples **21–25**.
+One-command **Python** shell for the AgentControl series examples **21–26**.
 
 Twin of the [Node](../node/), [Java](../java/), and [.NET](../dotnet/) portals.
 This portal serves a tabbed UI on **:8200**, spawns each example’s existing
@@ -34,6 +34,7 @@ Open **http://127.0.0.1:8200/**
 | 23 | Tools | **8230** |
 | 24 | Judges | **8240** |
 | 25 | Graph | **8250** |
+| 26 | Flag compare | **8260** |
 
 **Ctrl+C** stops the portal **and** all child servers.
 
@@ -50,7 +51,8 @@ python portal.py
   ├─ child 22    → …/22-…/python/…py :8220
   ├─ child 23    → …/23-…/python/…py :8230
   ├─ child 24    → …/24-…/python/…py :8240
-  └─ child 25    → …/25-…/python/…py :8250
+  ├─ child 25    → …/25-…/python/…py :8250
+  └─ child 26    → …/26-…/python/…py :8260
 ```
 
 - Children inherit the portal’s environment (`LD_SDK_KEY`, Ollama, etc.).

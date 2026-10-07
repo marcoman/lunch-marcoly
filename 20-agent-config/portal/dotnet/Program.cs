@@ -1,4 +1,4 @@
-// Portal — series shell for 20-agent-config (.NET web examples 21–25).
+// Portal — series shell for 20-agent-config (.NET web examples 21–26).
 //
 // One process for the user:
 //   - Serves wwwroot/index.html on :8203 (PORTAL_PORT)
@@ -37,6 +37,9 @@ var children = new[]
     new Child("25", "Graph",
         Path.Combine(seriesRoot, "25-agent-graph", "dotnet"),
         "25-agent-graph.csproj", 8253),
+    new Child("26", "Flag compare",
+        Path.Combine(seriesRoot, "26-flags-vs-agent-control", "dotnet"),
+        "26-flags-vs-agent-control.csproj", 8263),
 };
 
 var procs = new Dictionary<string, Process>();
@@ -97,7 +100,7 @@ AppDomain.CurrentDomain.ProcessExit += (_, _) => StopChildren();
 
 Console.WriteLine(AppBanner);
 Console.WriteLine($"Open http://127.0.0.1:{portalPort}/");
-Console.WriteLine("Tabs embed .NET examples on 8213 / 8223 / 8233 / 8243 / 8253.");
+Console.WriteLine("Tabs embed .NET examples on 8213 / 8223 / 8233 / 8243 / 8253 / 8263.");
 Console.WriteLine("Ctrl+C stops the portal and all children.");
 
 app.Run();

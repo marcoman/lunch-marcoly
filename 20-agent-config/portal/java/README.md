@@ -1,6 +1,6 @@
 # 20-agent-config portal — Java
 
-One-command **Java** shell for the AgentControl series examples **21–25**.
+One-command **Java** shell for the AgentControl series examples **21–26**.
 
 Twin of the [Python](../python/), [Node](../node/), and [.NET](../dotnet/) portals.
 This portal serves a tabbed UI on **:8202**, spawns each example’s shaded jar,
@@ -37,6 +37,7 @@ Open **http://127.0.0.1:8202/**
 | 23 | Tools | **8232** |
 | 24 | Judges | **8242** |
 | 25 | Graph | **8252** |
+| 26 | Flag compare | **8262** |
 
 **Ctrl+C** stops the portal **and** all child servers.
 
@@ -51,7 +52,8 @@ java -jar target/portal-java.jar
   ├─ child 22    → …/22-…/java/target/….jar :8222
   ├─ child 23    → …/23-…/java/target/….jar :8232
   ├─ child 24    → …/24-…/java/target/….jar :8242
-  └─ child 25    → …/25-…/java/target/….jar :8252
+  ├─ child 25    → …/25-…/java/target/….jar :8252
+  └─ child 26    → …/26-…/java/target/….jar :8262
 ```
 
 - Children inherit the portal’s environment (`LD_SDK_KEY`, Ollama, etc.).
