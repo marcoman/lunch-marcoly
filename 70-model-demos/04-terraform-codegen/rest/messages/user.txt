@@ -1,0 +1,6 @@
+Write main.tf.
+
+The first line of the file must be exactly:
+# ancestry: model={{ model_name }} variation={{ variation_key }}
+
+Include every resource from the system instructions. Write each description from that resource's name.

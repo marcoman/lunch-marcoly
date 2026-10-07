@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>04 terraform codegen</title>
+  <style>
+    :root {
+      --bg: #e8ecef;
+      --ink: #1a2332;
+      --muted: #5c6b7a;
+      --bar: #1a2332;
+      --bar-ink: #f0f3f6;
+      --card: #fff;
+      --line: #d5dde6;
+      --ok: #1f7a4d;
+      --ok-bg: #e5f6ec;
+      --bad: #a33b3b;
+      --bad-bg: #fdecec;
+      --code: #0f141c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Source Sans 3", "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    header.bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem 1rem;
+      padding: 0.7rem 1rem;
+      background: var(--bar);
+      color: var(--bar-ink);
+    }
+    header.bar strong { font-size: 1rem; }
+    header.bar span { color: #9aa7b5; font-size: 0.85rem; }
+    button {
+      font: inherit;
+      background: #3d8fd1;
+      color: #fff;
+      border: 0;
+      border-radius: 6px;
+      padding: 0.45rem 0.85rem;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.55; cursor: wait; }
+    #status { margin-left: auto; font-size: 0.85rem; color: #c5d0db; }
+    .brief, .compare-wrap {
+      margin: 0.75rem 0.75rem 0;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+    }
+    .brief h2, .compare-wrap h2 {
+      margin: 0 0 0.4rem;
+      font-size: 0.95rem;
+    }
+    .brief ul {
+      margin: 0;
+      padding-left: 1.15rem;
+      columns: 2;
+      column-gap: 1.5rem;
+    }
+    @media (max-width: 800px) {
+      .brief ul { columns: 1; }
+    }
+    .brief li { margin: 0.15rem 0; font-size: 0.9rem; }
+    .brief code { font-size: 0.84rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.35rem 0.55rem;
+      border-bottom: 1px solid var(--line);
+      font-variant-numeric: tabular-nums;
+    }
+    th { color: var(--muted); font-weight: 600; }
+    td.better { background: var(--ok-bg); color: var(--ok); }
+    td.worse { background: var(--bad-bg); color: var(--bad); }
+    tr.key td {
+      font-weight: 700;
+      font-size: 0.98rem;
+      background: #eef3f8;
+      border-top: 2px solid var(--ink);
+      border-bottom: 2px solid var(--ink);
+    }
+    tr.key td.better { background: var(--ok-bg); }
+    tr.key td.worse { background: var(--bad-bg); }
+    .hint { margin: 0.45rem 0 0; color: var(--muted); font-size: 0.8rem; }
+    main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      padding: 0.75rem;
+    }
+    main.single { grid-template-columns: 1fr; }
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+    }
+    article {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    article[hidden] { display: none; }
+    article header {
+      padding: 0.7rem 0.85rem 0.3rem;
+    }
+    article h2 { margin: 0; font-size: 1rem; }
+    .sub { color: var(--muted); font-size: 0.82rem; margin-top: 0.2rem; }
+    pre {
+      margin: 0;
+      padding: 0.75rem;
+      overflow: auto;
+      background: var(--code);
+      color: #e7eef6;
+      font-size: 0.75rem;
+      line-height: 1.4;
+    }
+    pre.taller { max-height: 17.25rem; }
+    pre.shorter { max-height: 9.9rem; }
+    .view-sizes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.5rem;
+      margin: 0.75rem 0.75rem 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+    .view-sizes div { display: flex; align-items: center; gap: 0.4rem; }
+    .view-sizes button {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.15rem 0.6rem;
+      font-size: 0.78rem;
+    }
+    .view-sizes button[aria-pressed="true"] {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+    }
+    .validate { border-top: 1px solid var(--line); }
+    .validate.ok pre { background: #123024; }
+    .validate.bad pre { background: #3a1818; }
+    .label {
+      padding: 0.45rem 0.75rem 0;
+      font-size: 0.78rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .validate.ok .label { color: var(--ok); }
+    .validate.bad .label { color: var(--bad); }
+    .note { padding: 0.5rem 0.85rem 0.35rem; color: var(--muted); font-size: 0.85rem; }
+    .judge { padding: 0 0.85rem 0.8rem; font-size: 0.85rem; line-height: 1.4; }
+    .judge.pass { color: var(--ok); }
+    .judge.fail { color: var(--bad); }
+    .ld-fab {
+      position: fixed;
+      right: 1rem;
+      bottom: 1rem;
+      z-index: 40;
+    }
+    .ld-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(26, 35, 50, 0.28);
+      z-index: 50;
+    }
+    .ld-backdrop.open { display: block; }
+    .ld-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      width: min(32rem, 94vw);
+      background: var(--card);
+      border-left: 1px solid var(--line);
+      z-index: 60;
+      transform: translateX(100%);
+      transition: transform 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .ld-drawer.open { transform: translateX(0); }
+    .ld-drawer-header, .ld-source-row, .ld-tabs {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .ld-drawer-header h2 { margin: 0; font-size: 1rem; flex: 1; }
+    .ld-source-row { flex-wrap: wrap; }
+    .ld-source-row button, .ld-tab, .ld-drawer-header button {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.2rem 0.65rem;
+      font-size: 0.78rem;
+    }
+    .ld-source-row button.active, .ld-tab.active {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+    }
+    .ld-drawer-body { overflow: auto; padding: 0.9rem; }
+    .ld-block-title {
+      margin: 0.8rem 0 0.35rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .ld-msg { margin: 0.4rem 0 0.7rem; }
+    .ld-msg-role { font-size: 0.75rem; color: var(--muted); }
+    .ld-json, .ld-msg pre {
+      white-space: pre-wrap;
+      max-height: 16rem;
+      font-size: 0.75rem;
+    }
+    .ld-section { display: none; }
+    .ld-section.active { display: block; }
+    .models {
+      margin: 0.75rem 1rem 0;
+      padding: 0.45rem 0.8rem 0.65rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem 1.2rem;
+    }
+    .models legend { padding: 0 0.25rem; color: var(--muted); font-size: 0.8rem; }
+    .models label { display: flex; align-items: center; gap: 0.4rem; }
+    .run-state {
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border-radius: 999px;
+      padding: 0.15rem 0.55rem;
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+    header.bar .run-state { color: var(--bar-ink); border-color: #9aa7b5; }
+    header.bar .run-state.finished { color: #b7ebc9; border-color: #8ddeaf; }
+  </style>
+</head>
+<body>
+  <header class="bar">
+    <strong id="banner">04-terraform-codegen</strong>
+    <span id="config"></span>
+    <button id="generate" type="button">Generate</button>
+    <span id="run-state" class="run-state" hidden></span>
+    <div id="status" aria-live="polite"></div>
+  </header>
+  <fieldset class="models" id="models">
+    <legend>Models</legend>
+  </fieldset>
+  <section class="brief">
+    <h2>Same brief for every selected model</h2>
+    <ul>
+      <li>2 flags: <code>codegen-release</code> (boolean), <code>codegen-plan</code> (string)</li>
+      <li>2 environments: each flag on, fallthrough variation 0</li>
+      <li>6 segments, name and description only: <code>codegen-size-small</code>, <code>codegen-size-medium</code>, <code>codegen-size-large</code>, <code>codegen-cohort-internal</code>, <code>codegen-cohort-external</code>, <code>codegen-cohort-beta</code></li>
+      <li>3 metrics: <code>codegen-latency</code> (milliseconds), <code>codegen-error-rate</code> (percent), <code>codegen-thumbs</code> (count)</li>
+      <li>Descriptions come from the resource name</li>
+      <li>First line is an ancestry comment and should differ</li>
+    </ul>
+  </section>
+  <section class="compare-wrap">
+    <h2>Run comparison</h2>
+    <table>
+      <thead>
+        <tr id="compare-head"></tr>
+      </thead>
+      <tbody id="compare-body"></tbody>
+    </table>
+    <p class="hint">Terraform validate is the result that matters. Lower is better for time, input tokens, total tokens, and validate issues. Pass beats fail. Generated resources closer to 13 and generated descriptions closer to 11 win. Lines and output tokens have no winner. Cost appears when a model config has a price. A tie stays plain.</p>
+  </section>
+  <div class="view-sizes" id="view-sizes">
+    <div>
+      <span>main.tf</span>
+      <button type="button" data-pane="file" data-size="taller" aria-pressed="true">Taller</button>
+      <button type="button" data-pane="file" data-size="shorter" aria-pressed="false">Shorter</button>
+    </div>
+    <div>
+      <span>terraform validate</span>
+      <button type="button" data-pane="cli" data-size="taller" aria-pressed="false">Taller</button>
+      <button type="button" data-pane="cli" data-size="shorter" aria-pressed="true">Shorter</button>
+    </div>
+  </div>
+  <main id="columns"></main>
+  <button id="btn-ld-details" class="ld-fab" type="button">LD details</button>
+  <div id="ld-backdrop" class="ld-backdrop" hidden></div>
+  <aside id="ld-drawer" class="ld-drawer" aria-hidden="true">
+    <div class="ld-drawer-header">
+      <h2>LaunchDarkly · this generate</h2>
+      <button id="btn-ld-close" type="button">Close</button>
+    </div>
+    <div class="ld-source-row" id="ld-sources" role="tablist" aria-label="Which model"></div>
+    <div class="ld-tabs" role="tablist">
+      <button type="button" class="ld-tab active" data-tab="sent">Sent</button>
+      <button type="button" class="ld-tab" data-tab="received">Received</button>
+      <button type="button" class="ld-tab" data-tab="about">About</button>
+    </div>
+    <div class="ld-drawer-body">
+      <p id="ld-empty">Generate once. Each selected model keeps its own sent and received record, including the judge.</p>
+      <div id="ld-section-sent" class="ld-section"></div>
+      <div id="ld-section-received" class="ld-section"></div>
+      <div id="ld-section-about" class="ld-section">
+        <p>One Generate evaluates <code>terraform-codegen-compare</code> for each checked model, writes <code>main.tf</code>, and runs terraform validate. A separate judge config, <code>terraform-codegen-judge</code>, then scores that file with Sonnet. Pass and fail files are both scored. The score does not rewrite the file.</p>
+        <p>Switch models here to see what that run sent to AgentControl and what came back, including the judge prompt and the score.</p>
+      </div>
+    </div>
+  </aside>
+  <script>
+    const els = {
+      banner: document.getElementById("banner"),
+      config: document.getElementById("config"),
+      generate: document.getElementById("generate"),
+      run: document.getElementById("run-state"),
+      status: document.getElementById("status"),
+      columns: document.getElementById("columns"),
+      models: document.getElementById("models"),
+      head: document.getElementById("compare-head"),
+      body: document.getElementById("compare-body"),
+      drawer: document.getElementById("ld-drawer"),
+      backdrop: document.getElementById("ld-backdrop"),
+      sources: document.getElementById("ld-sources"),
+      empty: document.getElementById("ld-empty"),
+      sent: document.getElementById("ld-section-sent"),
+      received: document.getElementById("ld-section-received"),
+      about: document.getElementById("ld-section-about"),
+    };
+    let ldColumn = "";
+    let ldTab = "sent";
+
+    const ROWS = [
+      { key: "validate_ok", label: "Terraform validate", better: "true", emphasis: true },
+      { key: "validate_issues", label: "Validate issues", better: "lower" },
+      { key: "judge_score", label: "Judge score", better: "higher" },
+      { key: "judge_passed", label: "Judge", better: "true" },
+      { key: "duration_ms", label: "Duration (ms)", better: "lower" },
+      { key: "time_to_first_token_ms", label: "Time to first token (ms)", better: "lower" },
+      { key: "input_tokens", label: "Input tokens", better: "lower" },
+      { key: "output_tokens", label: "Output tokens", better: "none" },
+      { key: "total_tokens", label: "Total tokens", better: "lower" },
+      { key: "success", label: "Generation success", better: "true" },
+      { key: "cost", label: "Cost", better: "lower", whenPresent: true },
+      { key: "lines", label: "Lines", better: "none" },
+      { key: "resources", label: "Generated Resources", better: "closer", target: 13 },
+      { key: "descriptions", label: "Generated Descriptions", better: "closer", target: 11 },
+      { key: "ancestry", label: "Generated Ancestry Citation", better: "true" },
+    ];
+
+    const order = [];
+    const columns = new Map();
+    const paneSize = { file: "taller", cli: "shorter" };
+
+    function applyPaneSize() {
+      for (const view of columns.values()) {
+        view.file.classList.toggle("taller", paneSize.file === "taller");
+        view.file.classList.toggle("shorter", paneSize.file === "shorter");
+        view.cli.classList.toggle("taller", paneSize.cli === "taller");
+        view.cli.classList.toggle("shorter", paneSize.cli === "shorter");
+      }
+      for (const button of document.querySelectorAll("#view-sizes button")) {
+        button.setAttribute("aria-pressed", button.dataset.size === paneSize[button.dataset.pane] ? "true" : "false");
+      }
+    }
+
+    document.getElementById("view-sizes").addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+      paneSize[button.dataset.pane] = button.dataset.size;
+      applyPaneSize();
+    });
+
+    function setRun(state) {
+      els.run.hidden = !state;
+      els.run.className = "run-state" + (state === "finished" ? " finished" : "");
+      els.run.textContent = state === "running" ? "Running" : state === "finished" ? "Finished" : "";
+    }
+
+    function show(value, key) {
+      if (value === null || value === undefined || value === "") return "—";
+      if (key === "judge_score" && typeof value === "number") return value.toFixed(2);
+      if (key === "success" || key === "validate_ok" || key === "ancestry" || key === "judge_passed") return value ? "pass" : "fail";
+      if (typeof value === "boolean") return value ? "true" : "false";
+      return String(value);
+    }
+
+    function numeric(value) {
+      if (typeof value === "number" && Number.isFinite(value)) return value;
+      if (typeof value === "boolean") return value ? 1 : 0;
+      return null;
+    }
+
+    function score(row, value) {
+      const amount = numeric(value);
+      if (amount === null || row.better === "none") return null;
+      if (row.better === "closer") return Math.abs(amount - row.target);
+      if (row.better === "lower") return amount;
+      return -amount;
+    }
+
+    function selectedIds() {
+      return [...els.models.querySelectorAll("input:checked")].map((input) => input.value);
+    }
+
+    function renderCompare() {
+      const ids = order.filter((id) => columns.has(id) && selectedIds().includes(id));
+      for (const [id, view] of columns) view.article.hidden = !ids.includes(id);
+      els.columns.classList.toggle("single", ids.length < 2);
+      els.head.replaceChildren();
+      const labels = ["Metric", ...ids.map((id) => columns.get(id).label || id), "Looks better"];
+      for (const label of labels) {
+        const th = document.createElement("th");
+        th.textContent = label;
+        els.head.appendChild(th);
+      }
+      els.body.replaceChildren();
+      const views = ids.map((id) => columns.get(id));
+      const rows = ROWS.filter((row) => {
+        if (!row.whenPresent) return true;
+        return views.some((view) => numeric(view.metrics[row.key]) !== null);
+      });
+      for (const row of rows) {
+        const tr = document.createElement("tr");
+        if (row.emphasis) tr.className = "key";
+        const name = document.createElement("td");
+        name.textContent = row.label;
+        tr.appendChild(name);
+        const values = views.map((view) => view.metrics[row.key]);
+        const scores = values.map((value) => score(row, value));
+        const present = scores.filter((item) => item !== null);
+        const best = present.length >= 2 ? Math.min(...present) : null;
+        const tied = best !== null && present.every((item) => item === best);
+        const winners = [];
+        values.forEach((value, index) => {
+          const td = document.createElement("td");
+          td.textContent = show(value, row.key);
+          const item = scores[index];
+          if (best !== null && !tied && item !== null) {
+            td.className = item === best ? "better" : "worse";
+            if (item === best) winners.push(views[index].label || ids[index]);
+          }
+          tr.appendChild(td);
+        });
+        const who = document.createElement("td");
+        if (row.better === "none" || present.length < 2) who.textContent = "—";
+        else if (tied) who.textContent = "Tie";
+        else who.textContent = winners.join(", ");
+        tr.appendChild(who);
+        els.body.appendChild(tr);
+      }
+    }
+
+    function column(id, model) {
+      const article = document.createElement("article");
+      article.innerHTML = `
+        <header>
+          <h2></h2>
+          <div class="sub"></div>
+        </header>
+        <div class="label">main.tf</div>
+        <pre class="file taller"></pre>
+        <div class="validate">
+          <div class="label">terraform validate</div>
+          <pre class="cli shorter"></pre>
+        </div>
+        <div class="note"></div>
+        <div class="judge"></div>`;
+      article.querySelector("h2").textContent = id;
+      article.querySelector(".sub").textContent = model;
+      els.columns.appendChild(article);
+      const view = {
+        article,
+        sub: article.querySelector(".sub"),
+        file: article.querySelector(".file"),
+        validate: article.querySelector(".validate"),
+        cli: article.querySelector(".cli"),
+        note: article.querySelector(".note"),
+        judge: article.querySelector(".judge"),
+        label: model,
+        details: null,
+        metrics: {},
+      };
+      order.push(id);
+      columns.set(id, view);
+      return view;
+    }
+
+    function handle(event) {
+      if (event.type === "done") {
+        els.status.textContent = "Finished.";
+        setRun("finished");
+        renderCompare();
+        return;
+      }
+      if (event.type === "error" && !columns.has(event.column)) {
+        els.status.textContent = event.message || "Error";
+        return;
+      }
+      const view = columns.get(event.column);
+      if (!view) return;
+      if (event.type === "status") els.status.textContent = event.message || "";
+      if (event.type === "meta") {
+        view.label = event.model || view.label;
+        view.sub.textContent = `${event.model} · ${event.variationKey} · ${event.folder}`;
+      }
+      if (event.type === "metrics") {
+        view.metrics = { ...view.metrics, ...(event.metrics || {}) };
+        renderCompare();
+      }
+      if (event.type === "file") {
+        view.file.textContent = event.hcl || "";
+        view.note.textContent = event.path || "";
+        view.metrics = { ...view.metrics, ...(event.stats || {}) };
+        renderCompare();
+      }
+      if (event.type === "judge") {
+        const judged = event.judge || {};
+        view.metrics.judge_score = typeof judged.score === "number" ? judged.score : null;
+        view.metrics.judge_passed = judged.success ? Boolean(judged.passed) : null;
+        view.judge.classList.toggle("pass", Boolean(judged.passed));
+        view.judge.classList.toggle("fail", judged.success && !judged.passed);
+        if (typeof judged.score === "number") {
+          const mark = judged.passed ? "pass" : "fail";
+          view.judge.textContent = `Judge ${judged.score.toFixed(2)} · ${mark}. ${judged.reasoning || ""}`;
+        } else {
+          view.judge.textContent = judged.error || "Judge did not score.";
+        }
+        renderCompare();
+      }
+      if (event.type === "details") {
+        view.details = event.ldTransaction || null;
+        if (els.drawer.classList.contains("open")) renderDrawer();
+      }
+      if (event.type === "validate") {
+        view.metrics.validate_ok = Boolean(event.ok);
+        view.metrics.validate_issues = event.issue_count ?? null;
+        view.validate.classList.toggle("ok", Boolean(event.ok));
+        view.validate.classList.toggle("bad", !event.ok);
+        view.cli.textContent = event.output || "";
+        renderCompare();
+      }
+      if (event.type === "error") {
+        els.status.textContent = event.message || "Error";
+        view.note.textContent = event.message || "";
+        if (view.metrics.success === undefined) view.metrics.success = false;
+        renderCompare();
+      }
+    }
+
+    async function generate() {
+      const models = selectedIds();
+      if (!models.length) {
+        els.status.textContent = "Pick at least one model.";
+        return;
+      }
+      els.generate.disabled = true;
+      setRun("running");
+      els.status.textContent = "Starting…";
+      for (const [id, view] of columns) {
+        if (!models.includes(id)) continue;
+        view.file.textContent = "";
+        view.cli.textContent = "";
+        view.note.textContent = "";
+        view.judge.textContent = "";
+        view.judge.classList.remove("pass", "fail");
+        view.details = null;
+        view.validate.classList.remove("ok", "bad");
+        view.metrics = {};
+      }
+      renderCompare();
+      try {
+        const response = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ models }),
+        });
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const chunks = buffer.split("\n\n");
+          buffer = chunks.pop() || "";
+          for (const chunk of chunks) {
+            const line = chunk.split("\n").find((row) => row.startsWith("data: "));
+            if (!line) continue;
+            handle(JSON.parse(line.slice(6)));
+          }
+        }
+      } catch (error) {
+        els.status.textContent = String(error.message || error);
+      } finally {
+        els.generate.disabled = false;
+        if (els.run.textContent === "Running") setRun("");
+        renderCompare();
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+      }[ch]));
+    }
+
+    function messagesHtml(messages) {
+      return (messages || []).map((message) => `
+        <div class="ld-msg">
+          <div class="ld-msg-role">${escapeHtml(message.role)}</div>
+          <pre class="ld-json">${escapeHtml(message.content || "")}</pre>
+        </div>`).join("");
+    }
+
+    function setLdTab(tab) {
+      ldTab = tab;
+      for (const button of document.querySelectorAll(".ld-tab")) {
+        button.classList.toggle("active", button.dataset.tab === tab);
+      }
+      els.sent.classList.toggle("active", tab === "sent");
+      els.received.classList.toggle("active", tab === "received");
+      els.about.classList.toggle("active", tab === "about");
+    }
+
+    function renderDrawer() {
+      const ids = order.filter((id) => columns.get(id)?.details && selectedIds().includes(id));
+      if (!ids.includes(ldColumn)) ldColumn = ids[0] || "";
+      els.sources.replaceChildren();
+      for (const id of ids) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = columns.get(id).label || id;
+        button.classList.toggle("active", id === ldColumn);
+        button.addEventListener("click", () => {
+          ldColumn = id;
+          renderDrawer();
+        });
+        els.sources.appendChild(button);
+      }
+      const tx = ldColumn ? columns.get(ldColumn).details : null;
+      const hasTx = Boolean(tx);
+      els.empty.hidden = hasTx;
+      if (!hasTx) {
+        els.sent.classList.remove("active");
+        els.received.classList.remove("active");
+        setLdTab("about");
+        return;
+      }
+      const sent = tx.sent || {};
+      const received = tx.received || {};
+      const judge = received.judge || {};
+      const ctx = sent.context || {};
+      els.sent.innerHTML = `
+        <div class="ld-block-title">Completion config</div>
+        <p>${escapeHtml(sent.configKey || "")}</p>
+        <div class="ld-block-title">Context</div>
+        <pre class="ld-json">${escapeHtml(JSON.stringify(ctx, null, 2))}</pre>
+        <div class="ld-block-title">Variables</div>
+        <pre class="ld-json">${escapeHtml(JSON.stringify(sent.variables || {}, null, 2))}</pre>
+        <div class="ld-block-title">Messages</div>
+        ${messagesHtml(sent.messages)}`;
+      els.received.innerHTML = `
+        <div class="ld-block-title">Served variation</div>
+        <p>${escapeHtml(received.provider || "")} · ${escapeHtml(received.model || "")} · ${escapeHtml(received.variationKey || "")}</p>
+        <div class="ld-block-title">Reason</div>
+        <pre class="ld-json">${escapeHtml(JSON.stringify(received.reason || {}, null, 2))}</pre>
+        <div class="ld-block-title">Terraform validate</div>
+        <pre class="ld-json">${escapeHtml(JSON.stringify(received.validate || {}, null, 2))}</pre>
+        <div class="ld-block-title">Judge ${escapeHtml(judge.configKey || "")}</div>
+        <p>${escapeHtml(judge.model || "")} · score ${judge.score ?? "—"} · ${typeof judge.score === "number" ? (judge.passed ? "pass" : "fail") : "—"} · threshold ${judge.threshold ?? ""}</p>
+        <p>${escapeHtml(judge.reasoning || judge.error || "")}</p>
+        <div class="ld-block-title">Judge system</div>
+        <pre class="ld-json">${escapeHtml(judge.system || "")}</pre>
+        <div class="ld-block-title">Judge input</div>
+        <pre class="ld-json">${escapeHtml(judge.evaluationInput || "")}</pre>`;
+      setLdTab(ldTab);
+    }
+
+    function openDrawer() {
+      els.backdrop.hidden = false;
+      els.backdrop.classList.add("open");
+      els.drawer.classList.add("open");
+      els.drawer.setAttribute("aria-hidden", "false");
+      renderDrawer();
+    }
+
+    function closeDrawer() {
+      els.backdrop.classList.remove("open");
+      els.backdrop.hidden = true;
+      els.drawer.classList.remove("open");
+      els.drawer.setAttribute("aria-hidden", "true");
+    }
+
+    document.getElementById("btn-ld-details").addEventListener("click", openDrawer);
+    document.getElementById("btn-ld-close").addEventListener("click", closeDrawer);
+    els.backdrop.addEventListener("click", closeDrawer);
+    for (const button of document.querySelectorAll(".ld-tab")) {
+      button.addEventListener("click", () => setLdTab(button.dataset.tab));
+    }
+
+    els.generate.addEventListener("click", generate);
+
+    fetch("/api/bootstrap")
+      .then((response) => response.json())
+      .then((body) => {
+        els.banner.textContent = body.appBanner || els.banner.textContent;
+        els.config.textContent = body.configKey || "";
+        for (const generator of body.generators || []) {
+          column(generator.id, generator.model);
+          const label = document.createElement("label");
+          const input = document.createElement("input");
+          input.type = "checkbox";
+          input.value = generator.id;
+          input.checked = generator.enabled !== false;
+          input.addEventListener("change", renderCompare);
+          const caption = generator.note ? `${generator.model} · ${generator.note}` : generator.model;
+          label.append(input, document.createTextNode(caption));
+          els.models.appendChild(label);
+        }
+        renderCompare();
+      })
+      .catch((error) => {
+        els.status.textContent = String(error.message || error);
+      });
+  </script>
+</body>
+</html>

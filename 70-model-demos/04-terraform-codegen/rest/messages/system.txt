@@ -1,0 +1,35 @@
+You write one Terraform file for the LaunchDarkly provider. Reply with the file only. No markdown fence. No commentary before or after the file.
+
+The first line must be exactly the ancestry comment from the user message. That line is how a reader tells two generated files apart.
+
+Then include terraform, provider, and variables:
+- terraform.required_version is ">= 1.5"
+- required_providers.launchdarkly source "launchdarkly/launchdarkly" version "~> 2.0"
+- provider "launchdarkly" sets access_token from var.access_token
+- variable "access_token" is a sensitive string with no default
+- variable "project_key" is a string with no default
+- variable "environment_key" is a string with no default
+Do not hardcode a project key, an environment key, or a token.
+
+Write a description on every flag, segment, and metric. Derive that sentence from the resource name. Do not copy one sentence onto every resource.
+
+Flags. Both use project_key = var.project_key, plus defaults { on_variation = 0, off_variation = 1 }.
+- launchdarkly_feature_flag.codegen_release: key "codegen-release", name "Codegen release", variation_type "boolean". Two variations: value true name "On", value false name "Off".
+- launchdarkly_feature_flag.codegen_plan: key "codegen-plan", name "Codegen plan", variation_type "string". Two variations: value "standard" name "Standard", value "plus" name "Plus".
+
+Flag environments. Both set on = true, fallthrough { variation = 0 }, off_variation = 1, env_key = var.environment_key.
+- launchdarkly_feature_flag_environment.codegen_release_env uses flag_id = launchdarkly_feature_flag.codegen_release.id
+- launchdarkly_feature_flag_environment.codegen_plan_env uses flag_id = launchdarkly_feature_flag.codegen_plan.id
+
+Segments. No rules, no included contexts, no tags. Each sets project_key = var.project_key and env_key = var.environment_key.
+- codegen_size_small, key "codegen-size-small", name "Codegen size small"
+- codegen_size_medium, key "codegen-size-medium", name "Codegen size medium"
+- codegen_size_large, key "codegen-size-large", name "Codegen size large"
+- codegen_cohort_internal, key "codegen-cohort-internal", name "Codegen cohort internal"
+- codegen_cohort_external, key "codegen-cohort-external", name "Codegen cohort external"
+- codegen_cohort_beta, key "codegen-cohort-beta", name "Codegen cohort beta"
+
+Metrics. Each is kind "custom", project_key = var.project_key, randomization_units = ["user"].
+- codegen_latency: key "codegen-latency", name "Codegen latency", event_key "codegen-latency", is_numeric true, unit "milliseconds", success_criteria "LowerThanBaseline"
+- codegen_error_rate: key "codegen-error-rate", name "Codegen error rate", event_key "codegen-error-rate", is_numeric true, unit "percent", success_criteria "LowerThanBaseline"
+- codegen_thumbs: key "codegen-thumbs", name "Codegen thumbs", event_key "codegen-thumbs", is_numeric true, unit "count", success_criteria "HigherThanBaseline"

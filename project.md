@@ -152,8 +152,9 @@ lunch-marcoly/
 ├── 60-observability/            # Server-side observability series
 │   ├── 61-reference/            # Python-owned navigator API; no LaunchDarkly :8610
 │   └── 62-server-traces/        # ObservabilityPlugin + move spans :8620
-├── 70-model-demos/              # Model apps; children 01, 02, 03 inside the folder
-│   └── README.md                # 80 remains the next free decade
+├── 70-model-demos/              # Model apps; children 01–04 inside the folder
+│   ├── README.md                # 80 remains the next free decade
+│   └── 04-terraform-codegen/    # Two models, one Terraform file; Python :8740
 ├── 99-use-cases/              # Focused LaunchDarkly use-case examples
 │   ├── README.md
 │   ├── 01-abcd-test/          # A-B-C-D test on navigation count label
@@ -225,7 +226,7 @@ lunch-marcoly/
 - `60-observability` groups **server-side observability** examples. Children start at **61**; Python ships first.
 - `61-reference` (under `60-observability/`) moves the 00 web navigator state into Python APIs without LaunchDarkly (**:8610**).
 - `62-server-traces` adds the Python `ObservabilityPlugin` and manual spans for successful login (`grid.login` with username) and successful moves (`grid.move`) (**:8620**). It evaluates no flags.
-- `70-model-demos` groups fun model apps (image check, text origin, guess the animal). The series owns global **70**. Children are `01`, `02`, `03`, … inside the folder and may pass ten. **80** stays the next free decade. These apps may use an AI Config, a judge, or a tool. They are not the equity briefing and not the grid.
+- `70-model-demos` groups model apps (image check, text origin, guess the animal, and a Terraform code-generator comparison). The series owns global **70**. Children are `01`, `02`, `03`, … inside the folder and may pass ten. **80** stays the next free decade. `04-terraform-codegen` is the Python web app on **:8740**: two local models, one Terraform file, `terraform validate`, no apply. These apps may use an AI Config, a judge, or a tool. They are not the equity briefing and not the grid.
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive/guarded rollouts, adaptive triggers, SDK fallbacks, and a migration-flags stub).
 - `19-terraform-sentinel` (under `99-use-cases/`) is Sentinel policy for Terraform-managed flags (`temporary`, `sunset` custom property). Pass and fail fixtures only — no grid app and no SDK.
 - `20-multi-arm-bandit` (under `99-use-cases/`) is a stub. A multi-armed bandit on the grid navigator: a metric shifts traffic toward the winning variation. `01-abcd-test` keeps a fixed split. `53-mobile-experiment` stays in `50-mobile`.
