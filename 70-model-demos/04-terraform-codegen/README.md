@@ -2,7 +2,9 @@
 
 **Status: Python :8740.** Selected models write the same LaunchDarkly Terraform file. The app saves each `main.tf`, runs `terraform validate`, then a Sonnet judge scores the file. It does not apply and it does not rewrite. No series portal.
 
-One completion config, one click. The runs are sequential. Checkboxes choose which models run. `claude-haiku` and `claude-sonnet` are listed when `ANTHROPIC_API_KEY` is set. AgentControl serves each variation, and `track_metrics_of` records the call. The judge is a separate config.
+One completion config, one click. The runs are sequential. Checkboxes choose which models run. AgentControl serves each variation, and `track_metrics_of` records the call. The judge is a separate config.
+
+`ANTHROPIC_API_KEY` is required for the hosted models and for the judge. Without it, Haiku and Sonnet stay off the model list, and a local file is still validated but not scored. The key stays in the server process. It is never sent to the browser.
 
 | | |
 |--|--|
@@ -46,11 +48,14 @@ ollama pull llama3.2:3b
 
 ```bash
 export LD_SDK_KEY="sdk-..."
+export ANTHROPIC_API_KEY="sk-ant-..."
 cd 70-model-demos/04-terraform-codegen/python
 python 04-terraform-codegen.py
 ```
 
 Open **http://127.0.0.1:8740/**. Use the repo virtualenv if `python` cannot import `ldai`. `terraform` must be on `PATH` for validate. The first click downloads the provider into `output/.plugin-cache`.
+
+The server reads `ANTHROPIC_API_KEY` when it starts. Restart it after you export the key. Haiku (`claude-haiku-4-5-20251001`) and Sonnet (`claude-sonnet-5`) then appear as checkboxes. The judge calls Sonnet with that same key after every selected file, including the Ollama ones.
 
 ## What you will see
 
