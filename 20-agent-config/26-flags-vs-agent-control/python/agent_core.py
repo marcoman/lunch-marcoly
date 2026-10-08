@@ -83,6 +83,22 @@ SOURCE_ORIGINAL = "original"
 DEFAULT_BEDROCK_REGION = "us-east-1"
 DEFAULT_AWS_PROFILE = "Administrator"
 DEFAULT_OLLAMA_MODEL = "llama3.2:3b"
+# Hosted model for the optional Model override (see MODEL_OVERRIDE_CHOICES
+# below). Matches the constant used in 22-config-outside-code.
+DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-5"
+
+# Model override — a demo-only control, not a flag or a completion config.
+# The screen can force every source to call the same model, independent of
+# what AgentControl, the flags, or the JSON flag actually served. This shows
+# model diversity and lets the same persona/source produce a passing draft
+# with one model and a failing draft with another. The LD details drawer
+# still shows the model LaunchDarkly served; "called" is what ran instead.
+MODEL_OVERRIDE_CHOICES: tuple[dict[str, str], ...] = (
+    {"id": "llama3.2:1b", "label": "llama3.2:1b (local, small)"},
+    {"id": "llama3.2:3b", "label": "llama3.2:3b (local, best)"},
+    {"id": DEFAULT_ANTHROPIC_MODEL, "label": "Claude Sonnet (hosted)"},
+)
+_MODEL_OVERRIDE_IDS = {choice["id"] for choice in MODEL_OVERRIDE_CHOICES}
 
 
 @dataclass(frozen=True)
@@ -118,8 +134,17 @@ class Metrics:
 
 
 def demo_personas() -> tuple[Persona, ...]:
-    """The screen shows Toby. Charlie's name rule stays on the config."""
-    return tuple(p for p in PERSONAS if p.id == "thoughtless-toby")
+    """Both personas are on screen: Toby first (usually fails), then Charlie.
+
+    The Model override (MODEL_OVERRIDE_CHOICES) showed that swapping models
+    under Toby's reckless prompt does not flip the judge — the prompt text
+    itself trips it, regardless of model. Charlie's cautious prompt is the
+    other half of the pair: it is the positive outcome, and the override can
+    still be applied to either persona to compare models within one outcome.
+    """
+    toby = next(p for p in PERSONAS if p.id == "thoughtless-toby")
+    charlie = next(p for p in PERSONAS if p.id == "conservative-charlie")
+    return (toby, charlie)
 
 
 def persona_by_id(persona_id: str) -> Persona | None:
@@ -363,8 +388,14 @@ def build_ld_transaction(
     served_meta: dict[str, Any] | None,
     enabled: bool | None,
     tools: list[str] | None = None,
+    called_model: str | None = None,
 ) -> dict[str, object]:
-    """Payload for the UI 'LD details' overlay (last generate: sent + received)."""
+    """Payload for the UI 'LD details' overlay (last generate: sent + received).
+
+    called_model is set only when the Model override (see
+    MODEL_OVERRIDE_CHOICES) replaced the model this config served; model
+    stays the value AgentControl actually returned.
+    """
     context = build_context(persona)
     reason = (served_meta or {}).get("reason")
     return {
@@ -401,6 +432,8 @@ def build_ld_transaction(
             "modelVersion": (served_meta or {}).get("modelVersion"),
             "provider": provider,
             "model": model,
+            "calledModel": called_model,
+            "modelOverride": called_model is not None,
             "messages": messages,
             "tools": tools or [],
             "appWork": [
@@ -479,6 +512,34 @@ def resolve_runtime(config) -> tuple[str, str]:
         )
     # Unknown provider: try Ollama with the model id (classroom default).
     return "ollama", model
+
+
+def anthropic_available() -> bool:
+    """True when ANTHROPIC_API_KEY is set in the server process.
+
+    The key never reaches the browser; /api/bootstrap sends this boolean so
+    the UI can enable the Claude Sonnet model-override choice.
+    """
+    return bool(os.environ.get("ANTHROPIC_API_KEY", "").strip())
+
+
+def provider_for_model(model: str) -> str:
+    """Pick a caller for an explicit model id (used by the Model override)."""
+    if model.startswith("claude-"):
+        return "anthropic"
+    if model.startswith(("us.", "amazon.", "anthropic.", "meta.")):
+        return "bedrock"
+    return "ollama"
+
+
+def resolve_model_override(requested: str | None) -> str | None:
+    """Validate a client-requested override against the fixed choice list.
+
+    Returns None for "served" / empty / anything not in MODEL_OVERRIDE_CHOICES,
+    which means: call whatever the source actually served.
+    """
+    value = (requested or "").strip()
+    return value if value in _MODEL_OVERRIDE_IDS else None
 
 
 def _collect_tokens(
@@ -913,8 +974,14 @@ def _generate_from_resolved(
     judge_surface: str,
     missing: list[str],
     flag_evaluations: list[dict[str, Any]] | None = None,
+    requested_model: str | None = None,
 ) -> Iterator[dict[str, object]]:
-    """Stream a draft from flag-served fields, then score only when judge_on."""
+    """Stream a draft from flag-served fields, then score only when judge_on.
+
+    requested_model is the Model override (see MODEL_OVERRIDE_CHOICES): when
+    set, the app calls that model instead of the one this source served. The
+    flag/JSON evaluation above is unaffected — only the call that follows it.
+    """
     stories_text = format_stories(ticker_results)
     started = time.perf_counter()
     metrics = Metrics()
@@ -922,7 +989,10 @@ def _generate_from_resolved(
         {"role": "system", "content": system_template.strip()},
         {"role": "user", "content": _fill_stories(user_template, stories_text)},
     ]
-    provider = "bedrock" if model.startswith(("us.", "amazon.", "anthropic.", "meta.")) else "ollama"
+    served_model = model
+    override = bool(requested_model) and requested_model != served_model
+    call_model = requested_model if override else served_model
+    provider = provider_for_model(call_model)
     context = build_context(persona)
     yield {
         "type": "meta",
@@ -930,7 +1000,9 @@ def _generate_from_resolved(
         "input": messages[1]["content"],
         "userTemplate": user_template.strip(),
         "provider": provider,
-        "model": model,
+        "model": call_model,
+        "servedModel": served_model,
+        "modelOverride": override,
         "mode": source,
         "configKey": FLAG_JSON_KEY if source == SOURCE_JSON else FLAG_MODEL_KEY,
         "fallback": bool(missing),
@@ -948,7 +1020,9 @@ def _generate_from_resolved(
             },
             "received": {
                 "source": source,
-                "model": model,
+                "model": served_model,
+                "calledModel": call_model,
+                "modelOverride": override,
                 "judgeOn": judge_on,
                 "flagEvaluations": flag_evaluations or [],
                 "appWork": _flag_app_work(source, judge_on),
@@ -968,14 +1042,23 @@ def _generate_from_resolved(
                 "Provision with rest/create-flags.sh."
             ),
         }
+    if override:
+        yield {
+            "type": "status",
+            "message": (
+                f"Model override: {source} served {served_model!r}; "
+                f"calling {call_model!r} instead."
+            ),
+        }
 
     draft_parts: list[str] = []
     try:
-        stream = (
-            _generate_bedrock(model, messages, started, metrics)
-            if provider == "bedrock"
-            else _generate_ollama(model, messages, started, metrics)
-        )
+        if provider == "anthropic":
+            stream = _generate_anthropic(call_model, messages, started, metrics)
+        elif provider == "bedrock":
+            stream = _generate_bedrock(call_model, messages, started, metrics)
+        else:
+            stream = _generate_ollama(call_model, messages, started, metrics)
         yield from _collect_tokens(stream, draft_parts)
     except Exception as exc:  # noqa: BLE001
         yield {"type": "error", "message": str(exc)}
@@ -1013,6 +1096,7 @@ def generate_stream(
     persona: Persona,
     ticker_results: list[dict[str, Any]] | None = None,
     source: str = SOURCE_ORIGINAL,
+    requested_model: str | None = None,
 ) -> Iterator[dict[str, object]]:
     """Evaluate the completion config, stream the draft, then score it.
 
@@ -1024,6 +1108,12 @@ def generate_stream(
 
     source "flags" evaluates four feature flags. source "json" evaluates one
     JSON flag. Both score only when the served judge field is true.
+
+    requested_model is the Model override (see MODEL_OVERRIDE_CHOICES): a
+    demo-only control, independent of any flag or completion config, that
+    forces every source to call the same model. It can turn a failing draft
+    into a passing one (or the reverse) without touching Charlie or Toby's
+    prompts.
     """
     if source == SOURCE_FLAGS:
         model, system_text, user_text, judge_on, missing, flag_evaluations = (
@@ -1041,6 +1131,7 @@ def generate_stream(
             judge_surface="boolean-flag",
             missing=missing,
             flag_evaluations=flag_evaluations,
+            requested_model=requested_model,
         )
         return
     if source == SOURCE_JSON:
@@ -1059,6 +1150,7 @@ def generate_stream(
             judge_surface="json-flag",
             missing=missing,
             flag_evaluations=flag_evaluations,
+            requested_model=requested_model,
         )
         return
 
@@ -1091,7 +1183,10 @@ def generate_stream(
 
     if using_fallback:
         messages = baseline_messages(stories_text)
-        provider, model = "ollama", default_ollama_model()
+        served_model = default_ollama_model()
+        override = bool(requested_model) and requested_model != served_model
+        model = requested_model if override else served_model
+        provider = provider_for_model(model) if override else "ollama"
         mode = "baseline-fallback"
         print(
             f"[generate] {persona.name}: variation='code-baseline' reason='FALLBACK'",
@@ -1105,6 +1200,8 @@ def generate_stream(
             "input": prompt_preview,
             "provider": provider,
             "model": f"{model} (code baseline)",
+            "servedModel": served_model,
+            "modelOverride": override,
             "mode": mode,
             "configKey": config_key(),
             "fallback": True,
@@ -1128,9 +1225,12 @@ def generate_stream(
             yield {"type": "status", "message": fallback_reason}
         draft_parts: list[str] = []
         try:
-            yield from _collect_tokens(
-                _generate_ollama(model, messages, started, metrics), draft_parts
+            stream = (
+                _generate_anthropic(model, messages, started, metrics)
+                if provider == "anthropic"
+                else _generate_ollama(model, messages, started, metrics)
             )
+            yield from _collect_tokens(stream, draft_parts)
         except Exception as exc:  # noqa: BLE001
             yield {"type": "error", "message": str(exc)}
             metrics.finish_reason = "error"
@@ -1143,7 +1243,10 @@ def generate_stream(
 
     assert config is not None
     try:
-        provider, model = resolve_runtime(config)
+        served_provider, served_model = resolve_runtime(config)
+        override = bool(requested_model) and requested_model != served_model
+        provider = provider_for_model(requested_model) if override else served_provider
+        model = requested_model if override else served_model
         messages = messages_as_dicts(config)
         if not messages:
             raise RuntimeError("Served variation has no messages.")
@@ -1182,6 +1285,8 @@ def generate_stream(
         "input": prompt_preview,
         "provider": provider,
         "model": model,
+        "servedModel": served_model,
+        "modelOverride": override,
         "mode": "launchdarkly",
         "configKey": config_key(),
         "variationKey": (served_meta or {}).get("variationKey"),
@@ -1195,11 +1300,20 @@ def generate_stream(
             fallback=False,
             mode="launchdarkly",
             provider=provider,
-            model=model,
+            model=served_model,
             messages=messages,
-                served_meta=served_meta,
-                enabled=bool(config.enabled),
-                tools=attached_tool_names(config),
+            served_meta=served_meta,
+            enabled=bool(config.enabled),
+            tools=attached_tool_names(config),
+            called_model=model if override else None,
+        ),
+    }
+    if override:
+        yield {
+            "type": "status",
+            "message": (
+                f"Model override: AgentControl served {served_model!r}; "
+                f"calling {model!r} instead."
             ),
         }
     reason = (served_meta or {}).get("reason") or {}
@@ -1222,6 +1336,10 @@ def generate_stream(
         elif provider == "bedrock":
             yield from _collect_tokens(
                 _generate_bedrock(model, messages, started, metrics), draft_parts
+            )
+        elif provider == "anthropic":
+            yield from _collect_tokens(
+                _generate_anthropic(model, messages, started, metrics), draft_parts
             )
         else:
             raise RuntimeError(f"Unsupported runtime provider '{provider}'.")
@@ -1327,6 +1445,80 @@ def _ollama_stream(model: str, messages: list[dict[str, str]]) -> Iterator[str]:
             f"Ollama request failed ({host}, model={model}): {exc}. "
             "Is Ollama running, and does the AgentControl model id match `ollama list`?"
         ) from exc
+
+
+def _chunk_yield(text: str, metrics: Metrics, started: float) -> Iterator[dict[str, object]]:
+    """Yield UI tokens from a completed string (the Anthropic call is not streamed)."""
+    if not text:
+        metrics.finish_reason = "stop"
+        return
+    metrics.ttft_ms = int((time.perf_counter() - started) * 1000)
+    size = 24
+    for i in range(0, len(text), size):
+        yield {"type": "token", "text": text[i : i + size]}
+    metrics.finish_reason = "stop"
+
+
+def _anthropic_complete(model: str, messages: list[dict[str, str]]) -> dict[str, Any]:
+    """One Anthropic Messages call for the Model override.
+
+    This path is independent of AgentControl's own provider routing — the
+    Model override asks the app to call this model regardless of what any
+    source served. Requires ANTHROPIC_API_KEY (see anthropic_available()).
+    """
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+    if not api_key:
+        raise RuntimeError(
+            "ANTHROPIC_API_KEY is required for the Claude Sonnet model override."
+        )
+    try:
+        import anthropic
+    except ImportError as exc:
+        raise RuntimeError(
+            "Package 'anthropic' is required. pip install -r requirements.txt"
+        ) from exc
+
+    system_parts = [m["content"] for m in messages if m.get("role") == "system"]
+    chat = [
+        {"role": m["role"], "content": m["content"]}
+        for m in messages
+        if m.get("role") in {"user", "assistant"}
+    ]
+    client = anthropic.Anthropic(api_key=api_key)
+    kwargs: dict[str, Any] = {
+        "model": model,
+        "max_tokens": 1024,
+        "messages": chat or [{"role": "user", "content": "Summarize the stories."}],
+    }
+    if system_parts:
+        kwargs["system"] = "\n\n".join(system_parts)
+    msg = client.messages.create(**kwargs)
+    text_parts = []
+    for block in msg.content or []:
+        if getattr(block, "type", None) == "text":
+            text_parts.append(block.text)
+        elif isinstance(block, dict) and block.get("type") == "text":
+            text_parts.append(str(block.get("text") or ""))
+    return {"text": "".join(text_parts), "usage": getattr(msg, "usage", None)}
+
+
+def _generate_anthropic(
+    model: str,
+    messages: list[dict[str, str]],
+    started: float,
+    metrics: Metrics,
+) -> Iterator[dict[str, object]]:
+    """Model-override caller: one Anthropic call, chunked for the UI."""
+    result = _anthropic_complete(model, messages)
+    text = str(result.get("text") or "")
+    usage = result.get("usage")
+    if usage is not None:
+        metrics.prompt_tokens = int(getattr(usage, "input_tokens", 0) or 0)
+        metrics.completion_tokens = int(getattr(usage, "output_tokens", 0) or 0)
+        metrics.total_tokens = metrics.prompt_tokens + metrics.completion_tokens
+    yield from _chunk_yield(text, metrics, started)
+    if metrics.prompt_tokens is None or metrics.completion_tokens is None:
+        _fill_token_estimates(messages, text, metrics)
 
 
 def _generate_bedrock(

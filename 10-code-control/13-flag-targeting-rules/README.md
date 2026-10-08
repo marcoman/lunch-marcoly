@@ -4,6 +4,8 @@ LaunchDarkly **targeting rules** for the lunch-marcoly grid navigator.
 
 The web and console implementations evaluate `configure-team-label-style` against a public `team` [context attribute](https://launchdarkly.com/docs/home/flags/context-attributes). Provisioned [targeting rules](https://launchdarkly.com/docs/home/flags/target-rules) map Red, Blue, and Yellow teams to matching label styles; No team omits the attribute and receives `plain` fallthrough.
 
+On the web screens, login still chooses the first team. The header then offers **No team**, **Red**, **Blue**, and **Yellow**. Switching re-evaluates the same user, and the team label color follows the served variation.
+
 See [application.md](application.md) for the full specification.
 
 ## Targeting table

@@ -2,7 +2,9 @@
 
 Java 21 web implementation of [13-flag-targeting-rules](../application.md).
 The LaunchDarkly Java server SDK evaluates the public `team` context attribute;
-No team omits that attribute.
+No team omits that attribute. After login, the header switches among No team,
+Red, Blue, and Yellow without another login. Rebuild the jar so the page is
+packaged.
 
 ## Run
 

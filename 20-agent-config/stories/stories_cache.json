@@ -1,25 +1,25 @@
 {
-  "updated_at": "2026-09-24T18:24:14+00:00",
+  "updated_at": "2026-10-08T13:23:33+00:00",
   "tickers": {
     "NVDA": {
-      "name": "NVIDIA Corporation",
+      "name": "NVDA",
       "stories": [
         {
-          "title": "NVDA Stock Flattens As Retail Turns ‘Extremely Bearish’, But Wall Street Flags $20B CPU Opportunity Ahead of Earnings",
-          "publisher": "Stocktwits",
-          "published": "2026-08-20T15:26:22Z",
-          "link": "https://finance.yahoo.com/m/f3fd92f3-2496-3be4-86c1-d8c77f729b18/nvda-stock-flattens-as-retail.html",
-          "uuid": "f3fd92f3-2496-3be4-86c1-d8c77f729b18"
+          "title": "Elon Musk Just Shared Bad News for Intel Shareholders",
+          "publisher": "Yahoo",
+          "published": "2026-10-08T07:49:00-04:00",
+          "link": "https://finnhub.io/api/news?id=3032e77d284f79f7d44fadd6304bed9a2460e1b1769da2bc87d5e5541aebf78d",
+          "uuid": "142725968"
         },
         {
-          "title": "Market Chatter: Nvidia Plans Small-Batch Shipments of Bespoke AI Chip for Chinese Customers",
-          "publisher": "MT Newswires",
-          "published": "2026-08-20T17:15:36Z",
-          "link": "https://finance.yahoo.com/technology/ai/articles/market-chatter-nvidia-plans-small-171536333.html",
-          "uuid": "80be30a9-7a05-3bb3-b1ba-39661f810eed"
+          "title": "TSMC Q3 2026 revenue hits record on AI chip demand",
+          "publisher": "Yahoo",
+          "published": "2026-10-08T07:45:21-04:00",
+          "link": "https://finnhub.io/api/news?id=b91b3ebb60f5ca75ac4753e5b548fae86ba4bcc82525b654bc69dc18aaf63f7d",
+          "uuid": "142725978"
         }
       ],
-      "cached_at": "2026-08-20T21:32:29Z"
+      "cached_at": "2026-10-08T13:23:33+00:00"
     },
     "RKLB": {
       "name": "Rocket Lab Corporation",
@@ -40,24 +40,24 @@
       "cached_at": "2026-08-18T13:26:00Z"
     },
     "SPCX": {
-      "name": "Space Exploration Technologies",
+      "name": "SPCX",
       "stories": [
         {
-          "title": "SPCX Stock Lock-Up Expiry: SpotGamma Founder Flags This Key Resistance Level",
-          "publisher": "Stocktwits",
-          "published": "2026-08-20T15:46:58Z",
-          "link": "https://finance.yahoo.com/m/0b01ec4a-85db-3b03-87d9-c105a25dcb0a/spcx-stock-lock-up-expiry%3A.html",
-          "uuid": "0b01ec4a-85db-3b03-87d9-c105a25dcb0a"
+          "title": "Space Stocks’ Double-Digit Rally Masks Narrow Leadership as Scale and Profits Win",
+          "publisher": "ChartMill",
+          "published": "2026-10-08T08:06:03-04:00",
+          "link": "https://finnhub.io/api/news?id=965ba9f45ed5ae5121d508a4a044152108718260943fa4519eeb5feeedb77790",
+          "uuid": "142726231"
         },
         {
-          "title": "Grok 4.6 Matches the Frontier Models at a 60% Discount. Now SpaceX Has the Developers to Use It.",
-          "publisher": "Motley Fool",
-          "published": "2026-08-20T20:13:00Z",
-          "link": "https://finance.yahoo.com/m/94f1fd07-68e9-3908-8169-5dca6592aeb7/grok-4.6-matches-the-frontier.html",
-          "uuid": "94f1fd07-68e9-3908-8169-5dca6592aeb7"
+          "title": "Elon Musk Just Shared Bad News for Intel Shareholders",
+          "publisher": "Yahoo",
+          "published": "2026-10-08T07:49:00-04:00",
+          "link": "https://finnhub.io/api/news?id=3032e77d284f79f7d44fadd6304bed9a2460e1b1769da2bc87d5e5541aebf78d",
+          "uuid": "142725968"
         }
       ],
-      "cached_at": "2026-08-20T21:32:29Z"
+      "cached_at": "2026-10-08T13:23:33+00:00"
     }
   },
   "last_pair": {

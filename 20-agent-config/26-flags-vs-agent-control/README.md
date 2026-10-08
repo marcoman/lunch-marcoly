@@ -6,7 +6,9 @@ The [21](../21-agent-completion-config/) briefing, with a source control. The sa
 
 Settings: **model**, **system prompt**, **user prompt**, and **whether a judge scores the draft**. The judge reports a pass or fail on the screen. It does not rewrite the draft. That rewrite stays in [24](../24-agent-judges/).
 
-Two personas: **Conservative Charlie** and **Thoughtless Toby**. One targeting rule plus a fallthrough. The flag sources repeat that rule. The completion config holds it once.
+Two personas: **Conservative Charlie** and **Thoughtless Toby**, switchable with Previous/Next User. One targeting rule plus a fallthrough. The flag sources repeat that rule. The completion config holds it once.
+
+A **Model override** above the Persona panel can force every source to call `llama3.2:1b`, `llama3.2:3b`, or Claude Sonnet (requires `ANTHROPIC_API_KEY`) for one Generate, regardless of what each source served. It shows model diversity (text, latency, tokens, cost shape); the pass/fail pair still comes from the persona, since Toby's prompt fails under any model.
 
 Outline: [application.md](application.md).
 
@@ -23,7 +25,7 @@ Do this once before Generate. Series SDK key, Ollama, and news keys: [20-agent-c
 | Completion config | `equity-briefing-flag-compare` |
 | Judge | `equity-briefing-flag-compare-judge` |
 
-Charlie’s name rule serves `concise-skeptic` (`llama3.2:3b`). Toby is the fallthrough, `reckless-hype` (`llama3.2:1b`). The screen shows Toby. [`attach-repair-tool.sh`](rest/attach-repair-tool.sh) attaches `reduce-briefing-uncertainty` to `reckless-hype` only. The app runs that tool after a failed judge. The flag sources have no tool to run.
+Charlie’s name rule serves `concise-skeptic` (`llama3.2:3b`). Toby is the fallthrough, `reckless-hype` (`llama3.2:1b`). Both are on screen; Previous/Next User switches between them. [`attach-repair-tool.sh`](rest/attach-repair-tool.sh) attaches `reduce-briefing-uncertainty` to `reckless-hype` only. The app runs that tool after a failed judge. The flag sources have no tool to run.
 
 ```bash
 export LD_API_ACCESS_TOKEN="api-..."
@@ -36,6 +38,8 @@ cd 20-agent-config/26-flags-vs-agent-control/rest
 ollama pull llama3.2:3b
 ollama pull llama3.2:1b
 ```
+
+Optional, for the **Model override**'s Claude Sonnet choice: `export ANTHROPIC_API_KEY="sk-ant-..."` before starting the app. The key stays in the server process; without it, Sonnet is left off the override list and the other two choices still work.
 
 Details, including delete: [rest/README.md](rest/README.md).
 
@@ -87,7 +91,7 @@ One **Generate AI Report** runs all three sources on the same headlines and the 
 | Separate flags | Four flags: model, system prompt, user prompt, judge on/off. No tool |
 | JSON flag | One JSON body with those four fields. No tool |
 
-Toby’s draft should fail the guardrail. AgentControl then shows the tool output under the draft. The other two columns stay on the failed draft.
+Toby’s draft should fail the guardrail. AgentControl then shows the tool output under the draft. The other two columns stay on the failed draft. Previous/Next User switches to Charlie, whose draft should pass. The **Model override** above the persona panel forces every source to call the same model (local small, local best, or Sonnet) for one Generate, to compare models within either outcome.
 
 ## Implementation
 

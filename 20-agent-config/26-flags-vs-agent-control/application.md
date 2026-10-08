@@ -40,7 +40,15 @@ Two named personas. One targeting rule, one fallthrough. That is enough to show 
 
 No Amelia, no Nancy. A third persona would add another variation to every flag and would not teach a new idea.
 
-On the Original source the judge config always scores. The pass/fail split still comes from the voice: Charlie’s variation is written to pass, Toby’s to fail.
+On the Original source the judge config always scores. The pass/fail split still comes from the voice: Charlie’s variation is written to pass, Toby’s to fail. **Previous/Next User** switches between them; the screen is no longer Toby-only.
+
+### Model override
+
+A demo-only control above the Persona panel, not a flag: **LD served**, `llama3.2:1b`, `llama3.2:3b`, or Claude Sonnet (`claude-sonnet-5`, shown only when `ANTHROPIC_API_KEY` is set on the server). It forces every source to call the chosen model for one Generate, independent of what AgentControl, the flags, or the JSON flag actually served.
+
+This shows model **diversity** — text, latency, tokens, and cost shape differ by model — but it does not reliably flip the guardrail by itself. Toby’s prompt instructs hype language, and every model follows it, so Toby fails under llama3.2:1b, llama3.2:3b, and Sonnet alike. The positive/negative pair on this screen comes from the **persona** (Charlie usually passes, Toby usually fails); the override compares models *within* one outcome, on either persona.
+
+LD details still reports what was genuinely served; when the override changes the call, it adds a **Model served → Model called** line so nothing is hidden.
 
 ## Sources
 

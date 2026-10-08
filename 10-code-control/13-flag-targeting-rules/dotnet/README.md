@@ -2,7 +2,8 @@
 
 .NET 10 Minimal API implementation of
 [13-flag-targeting-rules](../application.md). The SDK evaluates a public `team`
-context attribute, omitted entirely for No team.
+context attribute, omitted entirely for No team. After login, the header
+switches among No team, Red, Blue, and Yellow without another login.
 
 ## Run
 

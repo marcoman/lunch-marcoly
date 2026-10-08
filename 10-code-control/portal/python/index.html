@@ -189,7 +189,7 @@
       const iframe = document.createElement("iframe");
       iframe.id = `frame-${c.id}`;
       iframe.title = `${c.id} ${c.label}`;
-      iframe.src = `http://127.0.0.1:${c.port}/`;
+      iframe.src = `http://127.0.0.1:${c.port}/?v=${Date.now()}`;
       iframe.setAttribute("loading", c.id === activeId ? "eager" : "lazy");
       framesEl.appendChild(iframe);
       frames.set(c.id, iframe);

@@ -1292,6 +1292,16 @@
         .join("");
     }
 
+    function receivedIntro(source) {
+      if (source === "flags") {
+        return "These are the details specific to separate feature flags. Each read returns a value, a variation index, and a reason, not a provider or a model config.";
+      }
+      if (source === "json") {
+        return "These are the details specific to a JSON feature flag. One read returns a value the app parses into a model and prompts.";
+      }
+      return "These are the details specific to AgentControl. One completion config returns the model, the provider, and the messages together.";
+    }
+
     function renderLdDrawer() {
       const tx = currentLd();
       if (!tx) {
@@ -1329,8 +1339,8 @@
           <pre class="ld-json">${escapeHtml(JSON.stringify(ctx, null, 2))}</pre>
         `;
         els.ldReceived.innerHTML = `
+          <p class="ld-about-p">${escapeHtml(receivedIntro(sent.source))}</p>
           <div class="ld-block-title">Flag evaluations</div>
-          <p class="ld-about-p">Each read returns a value, a variation index, and a reason. It does not return a provider, a model config, or messages with roles.</p>
           ${flagEvaluationsHtml(flagRows)}
           ${appWorkHtml(received.appWork)}
         `;
@@ -1344,6 +1354,7 @@
             ["Context name", ctx.name],
           ])}
           <div class="ld-block-title">Variables</div>
+          <p class="ld-about-p">Variables are values the app sends with the evaluation. AgentControl substitutes them into <code>{{ }}</code> placeholders in the served messages. <code>stories</code> is the headline text.</p>
           <div class="ld-msg">
             <div class="ld-msg-role">stories</div>
             <div class="ld-msg-body collapsed" id="ld-var-stories">${escapeHtml(vars.stories || "")}</div>
@@ -1363,6 +1374,7 @@
 
         const reason = received.reason || {};
         els.ldReceived.innerHTML = `
+          <p class="ld-about-p">${escapeHtml(receivedIntro(sent.source || "original"))}</p>
           <div class="ld-block-title">Evaluation</div>
           ${kvHtml([
             ["Fallback", received.fallback],

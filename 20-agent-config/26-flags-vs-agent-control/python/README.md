@@ -16,6 +16,7 @@ Keywords: **feature flags** · **JSON variations** · **AgentControl** · **comp
 export LD_SDK_KEY="sdk-..."
 # optional: export LD_AGENT_CONFIG_KEY="equity-briefing-flag-compare"
 # optional: export LD_JUDGE_KEY="equity-briefing-flag-compare-judge"
+# optional: export ANTHROPIC_API_KEY="sk-ant-..."  # enables Claude Sonnet in the Model override
 ollama pull llama3.2:3b    # Charlie, and the judge
 ollama pull llama3.2:1b    # Toby
 cd 20-agent-config/26-flags-vs-agent-control/python
@@ -28,10 +29,12 @@ Provision first: [../rest/create-original.sh](../rest/create-original.sh), [../r
 
 ## What you should see
 
-1. **Get Stories**. The user is **Thoughtless Toby**.
+1. **Get Stories**. The user starts as **Thoughtless Toby**.
 2. **Generate AI Report**. AgentControl runs, then Separate flags, then JSON flag.
 3. Toby’s draft should fail the guardrail. AgentControl then runs `reduce-briefing-uncertainty` and shows that text under the draft. The flag columns stay on the failed draft.
 4. **LD details** on AgentControl lists the attached tool. The flag tabs do not.
+5. **Previous/Next User** switches to **Conservative Charlie**, whose draft should pass.
+6. The **Model override** above the persona panel can force every source to call `llama3.2:1b`, `llama3.2:3b`, or Claude Sonnet for one Generate, independent of what each source served — useful for comparing models within one outcome. It needs `ANTHROPIC_API_KEY` for Sonnet. It does not flip Toby's guardrail: his prompt fails under any model.
 
 ## Files
 

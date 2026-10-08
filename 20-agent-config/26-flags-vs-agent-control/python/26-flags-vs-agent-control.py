@@ -20,13 +20,17 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 from agent_core import (  # noqa: E402
+    DEFAULT_ANTHROPIC_MODEL,
+    MODEL_OVERRIDE_CHOICES,
     Persona,
+    anthropic_available,
     config_key,
     demo_personas,
     generate_stream,
     init_launchdarkly,
     judge_key,
     persona_by_id,
+    resolve_model_override,
 )
 from yahoo_news import (  # noqa: E402
     DEFAULT_TICKER_1,
@@ -86,6 +90,12 @@ class Handler(BaseHTTPRequestHandler):
                     {"id": "flags", "label": "Separate flags", "enabled": True},
                     {"id": "json", "label": "JSON flag", "enabled": True},
                 ],
+                "modelOverrides": [
+                    choice
+                    for choice in MODEL_OVERRIDE_CHOICES
+                    if choice["id"] != DEFAULT_ANTHROPIC_MODEL or anthropic_available()
+                ],
+                "anthropicAvailable": anthropic_available(),
             }
             self._json(200, body)
             return
@@ -122,7 +132,8 @@ class Handler(BaseHTTPRequestHandler):
         source = str(payload.get("source") or "original")
         if source not in {"original", "flags", "json"}:
             source = "original"
-        self._sse_generate(persona, stories, source)
+        requested_model = resolve_model_override(payload.get("model"))
+        self._sse_generate(persona, stories, source, requested_model)
 
     def _serve_file(self, path: Path, content_type: str) -> None:
         if not path.is_file():
@@ -145,7 +156,13 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(raw)
 
-    def _sse_generate(self, persona: Persona, ticker_results: list, source: str) -> None:
+    def _sse_generate(
+        self,
+        persona: Persona,
+        ticker_results: list,
+        source: str,
+        requested_model: str | None = None,
+    ) -> None:
         self.send_response(200)
         self.send_header("Content-Type", "text/event-stream; charset=utf-8")
         self.send_header("Cache-Control", "no-store")
@@ -153,7 +170,10 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         try:
             for event in generate_stream(
-                persona, ticker_results=ticker_results, source=source
+                persona,
+                ticker_results=ticker_results,
+                source=source,
+                requested_model=requested_model,
             ):
                 payload = json.dumps(event, ensure_ascii=False)
                 self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))

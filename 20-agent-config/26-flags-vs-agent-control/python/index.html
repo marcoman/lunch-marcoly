@@ -145,6 +145,30 @@
     .persona-panel .persona-nav {
       display: contents;
     }
+    .model-panel {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .model-switch {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      justify-content: center;
+      margin: 0.4rem 0;
+    }
+    .model-choice {
+      padding: 0.3rem 0.7rem;
+    }
+    .model-choice.active {
+      outline: 2px solid var(--accent, #4a9);
+      font-weight: 600;
+    }
+    .model-hint {
+      font-size: 0.82rem;
+      color: var(--muted, #888);
+      max-width: 40rem;
+      margin: 0.2rem auto 0;
+    }
     /* Collapsible tickers + headlines chrome */
     .stories-chrome {
       border: 1px solid var(--line);
@@ -720,7 +744,7 @@
   <div class="wrap">
     <div class="app-banner" id="app-banner">26-flags-vs-agent-control[python]</div>
     <h1>Flags vs AgentControl</h1>
-    <p class="sub">Thoughtless Toby, three sources, one Generate. If the guardrail fails the draft, only AgentControl can run the attached repair tool. The flag columns keep the failed draft.</p>
+    <p class="sub">Thoughtless Toby or Conservative Charlie, three sources, one Generate. Toby's prompt usually fails the guardrail; Charlie's usually passes. If the guardrail fails the draft, only AgentControl can run the attached repair tool. The flag columns keep the failed draft.</p>
     <p class="subtitle">Pull ticker headlines, then stream three briefings side by side.</p>
 
     <section class="stories-chrome" id="stories-chrome" aria-label="Tickers and stories">
@@ -776,6 +800,12 @@
         <div class="profile" id="persona-profile">—</div>
       </div>
       <button id="btn-next" type="button">Next user →</button>
+    </div>
+
+    <div class="panel model-panel">
+      <div class="label">Model override</div>
+      <div class="model-switch" id="model-switch" role="group" aria-label="Model override"></div>
+      <p class="model-hint">Forces every source to call the same model for this Generate, independent of what each source actually served. Shows model diversity and lets the same persona pass with one model and fail with another.</p>
     </div>
 
     <div class="nav">
@@ -891,6 +921,9 @@
         <p class="ld-about-p">One Generate runs AgentControl, Separate flags, and JSON flag on the same headlines. The three drafts stay on screen. This drawer keeps each evaluation, so you can switch sources without running again.</p>
         <div class="ld-block-title">Why it matters</div>
         <p class="ld-about-p">A JSON flag can carry the same words. It does not know that one field is a model and another is a message. The app owns that schema. AgentControl serves those fields as a completion config.</p>
+        <div class="ld-block-title">Model override</div>
+        <p class="ld-about-p">The Model control above Persona is a demo-only switch, not a flag. It forces every source to call llama3.2:1b, llama3.2:3b, or Claude Sonnet for one Generate, regardless of what each source served. Claude Sonnet needs <code>ANTHROPIC_API_KEY</code> on the server.</p>
+        <p class="ld-about-p">Model choice alone does not flip the guardrail: Toby's prompt instructs hype language, and every model follows it, so Toby fails under llama3.2:1b, llama3.2:3b, and Sonnet alike. The positive outcome comes from <strong>Previous/Next User</strong> — Charlie's cautious prompt usually passes. The override is for comparing models <em>within</em> one outcome: text, latency, tokens, and cost shape differ even when pass/fail does not.</p>
       </div>
     </div>
   </aside>
@@ -929,8 +962,14 @@
     let traceEntries = [];
     const streamState = {};
 
+    // Model override — see MODEL_OVERRIDE_CHOICES in agent_core.py.
+    // "" means: call whatever each source actually served.
+    let modelOverride = "";
+    let modelOverrideChoices = [];
+
     const els = {
       banner: document.getElementById("app-banner"),
+      modelSwitch: document.getElementById("model-switch"),
       storiesChrome: document.getElementById("stories-chrome"),
       storiesToggle: document.getElementById("btn-stories-toggle"),
       storiesSummaryTickers: document.getElementById("stories-summary-tickers"),
@@ -1292,6 +1331,28 @@
         .join("");
     }
 
+    function modelCallHtml(received) {
+      if (!received.modelOverride) return "";
+      return (
+        `<div class="ld-block-title">Model override</div>` +
+        kvHtml([
+          ["Model served", received.model],
+          ["Model called", received.calledModel],
+        ]) +
+        `<p class="ld-about-p">The Model override (above Persona) replaced the model this source served for this Generate. Prompts, the judge, and the flag or variation values above are unaffected.</p>`
+      );
+    }
+
+    function receivedIntro(source) {
+      if (source === "flags") {
+        return "These are the details specific to separate feature flags. Each read returns a value, a variation index, and a reason, not a provider or a model config.";
+      }
+      if (source === "json") {
+        return "These are the details specific to a JSON feature flag. One read returns a value the app parses into a model and prompts.";
+      }
+      return "These are the details specific to AgentControl. One completion config returns the model, the provider, and the messages together.";
+    }
+
     function renderLdDrawer() {
       const tx = currentLd();
       if (!tx) {
@@ -1329,9 +1390,10 @@
           <pre class="ld-json">${escapeHtml(JSON.stringify(ctx, null, 2))}</pre>
         `;
         els.ldReceived.innerHTML = `
+          <p class="ld-about-p">${escapeHtml(receivedIntro(sent.source))}</p>
           <div class="ld-block-title">Flag evaluations</div>
-          <p class="ld-about-p">Each read returns a value, a variation index, and a reason. It does not return a provider, a model config, or messages with roles.</p>
           ${flagEvaluationsHtml(flagRows)}
+          ${modelCallHtml(received)}
           ${appWorkHtml(received.appWork)}
         `;
       } else {
@@ -1344,6 +1406,7 @@
             ["Context name", ctx.name],
           ])}
           <div class="ld-block-title">Variables</div>
+          <p class="ld-about-p">Variables are values the app sends with the evaluation. AgentControl substitutes them into <code>{{ }}</code> placeholders in the served messages. <code>stories</code> is the headline text.</p>
           <div class="ld-msg">
             <div class="ld-msg-role">stories</div>
             <div class="ld-msg-body collapsed" id="ld-var-stories">${escapeHtml(vars.stories || "")}</div>
@@ -1363,6 +1426,7 @@
 
         const reason = received.reason || {};
         els.ldReceived.innerHTML = `
+          <p class="ld-about-p">${escapeHtml(receivedIntro(sent.source || "original"))}</p>
           <div class="ld-block-title">Evaluation</div>
           ${kvHtml([
             ["Fallback", received.fallback],
@@ -1385,6 +1449,7 @@
           ])}
           <div class="ld-block-title">Messages (served)</div>
           ${messageBlocksHtml(received.messages || [], "ld-recv")}
+          ${modelCallHtml(received)}
           ${appWorkHtml(received.appWork)}
           <div class="ld-block-title">Raw reason JSON</div>
           <pre class="ld-json">${escapeHtml(JSON.stringify(reason, null, 2))}</pre>
@@ -1734,6 +1799,7 @@
           personaId: persona.id,
           source,
           stories: latestStories,
+          model: modelOverride,
         }),
         signal: abortController.signal,
       });
@@ -1842,9 +1908,12 @@
           event.evaluations == null
             ? ""
             : `${event.evaluations} evaluation${Number(event.evaluations) === 1 ? "" : "s"}`;
-        const base = [event.provider ? `${event.provider} / ${event.model}` : event.model || "—", judge, evals]
-          .filter(Boolean)
-          .join(" · ");
+        const modelText = event.modelOverride && event.servedModel
+          ? `${event.provider} / ${event.servedModel} → ${event.model} (override)`
+          : event.provider
+            ? `${event.provider} / ${event.model}`
+            : event.model || "—";
+        const base = [modelText, judge, evals].filter(Boolean).join(" · ");
         const meta = colField(source, "meta");
         meta.dataset.base = base;
         meta.textContent = base;
@@ -1934,6 +2003,31 @@
       btn.addEventListener("click", () => setLdSource(btn.dataset.ldSource));
     }
 
+    function renderModelSwitch() {
+      const choices = [{ id: "", label: "LD served" }, ...modelOverrideChoices];
+      els.modelSwitch.innerHTML = choices
+        .map(
+          (c) =>
+            `<button type="button" class="model-choice${c.id === modelOverride ? " active" : ""}" data-model="${escapeHtml(c.id)}">${escapeHtml(c.label)}</button>`
+        )
+        .join("");
+      for (const btn of els.modelSwitch.querySelectorAll(".model-choice")) {
+        btn.addEventListener("click", () => {
+          const next = btn.dataset.model;
+          if (next === modelOverride) return;
+          modelOverride = next;
+          renderModelSwitch();
+          appendTrace(
+            "model",
+            modelOverride
+              ? `Model override set to ${escapeHtml(modelOverride)}`
+              : "Model override cleared — back to LD served",
+            "model"
+          );
+        });
+      }
+    }
+
     async function boot() {
       restoreStoriesChromeState();
       restoreTraceDockState();
@@ -1942,6 +2036,8 @@
       const data = await res.json();
       personas = data.personas || [];
       els.banner.textContent = data.appBanner || els.banner.textContent;
+      modelOverrideChoices = data.modelOverrides || [];
+      renderModelSwitch();
 
       const local = loadStoriesLocally();
       const cached = data.cachedStories || null;

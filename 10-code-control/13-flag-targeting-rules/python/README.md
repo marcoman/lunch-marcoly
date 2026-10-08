@@ -17,7 +17,7 @@ python 13-flag-targeting-rules.py
 
 Open http://127.0.0.1:8080/. Set `PORT` to override the port.
 
-The server uses `Config(sdk_key)` without private attributes. Selected teams are public `team` context attributes; No team omits the attribute.
+The server uses `Config(sdk_key)` without private attributes. Selected teams are public `team` context attributes; No team omits the attribute. After login, the header switches among No team, Red, Blue, and Yellow without another login.
 
 ## APIs
 

@@ -72,6 +72,8 @@ Current position: m/m
 Previous position: —
 ```
 
+After login, the header keeps **No team**, **Red**, **Blue**, and **Yellow**. Choosing one updates the public `team` attribute and re-evaluates the flag. The username stays. **No team** omits the attribute, so the label takes the fallthrough color.
+
 Only the team label text changes color. `plain` and flag-off behavior must not assign a label color.
 
 ## LaunchDarkly lab
@@ -79,7 +81,7 @@ Only the team label text changes color. `plain` and flag-off behavior must not a
 The permanent shell matches example 12:
 
 - **Controls** — on/off and fallthrough selector for the one flag
-- **Context** — user key and public team, or `(omitted — No team)`
+- **Context** — user key and public team, or `(omitted — No team)`, plus that same context as JSON
 - **About** — targeting-rules explanation and provisioning note
 - **Trace** — login with team, SDK served style/team/reason, and REST control actions
 
@@ -114,5 +116,6 @@ The permanent shell matches example 12:
 4. Red, blue, and yellow rules serve their matching colored styles.
 5. No team, unmatched contexts, and flag-off evaluations serve `plain`.
 6. Controls modify only on/off and fallthrough, never rules.
-7. Trace logs login team, SDK evaluations, and REST actions.
+7. Trace logs login team, team switches, SDK evaluations, and REST actions.
 8. REST and Terraform provisioning create the four variations and three rules.
+9. The session can switch among No team, Red, Blue, and Yellow without another login. The next evaluation uses the new attribute, or omits it for No team.
