@@ -14,6 +14,9 @@ from ldclient import Context
 # https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-team-label-style
 
 FLAG_TEAM_LABEL_STYLE = "configure-team-label-style"
+# JSON flag: words shown in the UI. Values on the style flag stay unchanged.
+# https://launchdarkly.com/docs/sdk/features/flag-types
+FLAG_TEAM_DISPLAY_LABELS = "configure-team-display-labels"
 PLAIN = "plain"
 
 TEAM_LABELS = {
@@ -22,6 +25,7 @@ TEAM_LABELS = {
     "blue": "Team Blue",
     "yellow": "Team Yellow",
 }
+LABEL_KEYS = ("none", "red", "blue", "yellow")
 STYLE_COLORS = {
     "plain": None,
     "colored-red": "red",
@@ -65,8 +69,34 @@ def build_context(username: str, team: str) -> Context:
     return builder.build()
 
 
+def default_display_labels() -> dict[str, str]:
+    """Words used when the display-label flag is missing or incomplete."""
+    return {
+        "none": TEAM_LABELS[""],
+        "red": TEAM_LABELS["red"],
+        "blue": TEAM_LABELS["blue"],
+        "yellow": TEAM_LABELS["yellow"],
+    }
+
+
+def display_labels_from(value: Any) -> dict[str, str]:
+    """Keep red/blue/yellow/none, and fill any missing word from the default."""
+    labels = default_display_labels()
+    if not isinstance(value, dict):
+        return labels
+    for key in LABEL_KEYS:
+        text = value.get(key)
+        if isinstance(text, str) and text.strip():
+            labels[key] = text.strip()
+    return labels
+
+
 def evaluate_team_style(client: Any, username: str, team: str | None) -> dict[str, Any]:
-    """Evaluate the string flag and return display plus evaluation details."""
+    """Evaluate the style flag and the display-label flag.
+
+    The style flag still returns colored-red, colored-blue, colored-yellow, or
+    plain. The JSON flag only changes the words on screen.
+    """
     normalized_team = normalize_team(team)
     context = build_context(username, normalized_team)
     detail = (
@@ -80,13 +110,24 @@ def evaluate_team_style(client: Any, username: str, team: str | None) -> dict[st
     reason = _reason_payload(detail.reason) if detail is not None else {"kind": "OFFLINE"}
     variation_index = detail.variation_index if detail is not None else None
 
+    label_default = default_display_labels()
+    label_detail = (
+        client.variation_detail(FLAG_TEAM_DISPLAY_LABELS, context, label_default)
+        if client is not None
+        else None
+    )
+    label_value = label_detail.value if label_detail is not None else label_default
+    labels = display_labels_from(label_value)
+    label_key = "none" if not normalized_team else normalized_team
+
     attributes: dict[str, str] = {}
     if normalized_team:
         attributes["team"] = normalized_team
 
     return {
         "team": normalized_team,
-        "teamLabel": TEAM_LABELS[normalized_team],
+        "teamLabel": labels[label_key],
+        "labels": labels,
         "style": style,
         "colored": css_color is not None,
         "cssColor": css_color,
@@ -101,4 +142,10 @@ def evaluate_team_style(client: Any, username: str, team: str | None) -> dict[st
         },
         "variationIndex": variation_index,
         "reason": reason,
+        "labelEvaluation": {
+            "flagKey": FLAG_TEAM_DISPLAY_LABELS,
+            "value": labels,
+            "variationIndex": label_detail.variation_index if label_detail is not None else None,
+            "reason": _reason_payload(label_detail.reason) if label_detail is not None else {"kind": "OFFLINE"},
+        },
     }

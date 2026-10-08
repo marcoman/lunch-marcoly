@@ -15,7 +15,10 @@ export LD_PROJECT_KEY="default"
 export LD_ENVIRONMENT_KEY="test"
 chmod +x *.sh
 ./create-flags.sh
+./create-display-labels.sh
 ```
+
+`create-display-labels.sh` adds the JSON word flag. It does not add targeting rules. Switch its fallthrough in Controls to change Team Red / Team Blue / Team Yellow into Small / Medium / Large.
 
 The create script reads variation IDs after flag creation, then sends semantic-patch instructions for:
 

@@ -22,10 +22,11 @@
     body.grid-active #app-shell { display:grid!important; }
     #grid-screen { padding:1.5rem 1.25rem; overflow:auto; outline:none; }
     .header { line-height:1.65; margin-bottom:1.4rem; }
-    .team-plain { color:inherit; }
-    .team-colored-red { color:#ef5350; font-weight:700; }
-    .team-colored-blue { color:#64b5f6; font-weight:700; }
-    .team-colored-yellow { color:#fff176; font-weight:700; }
+    .team-pill { display:inline-block; padding:.15rem .65rem; border-radius:999px; font-weight:700; border:1px solid var(--line); background:#252535; }
+    .team-plain { color:var(--ink); }
+    .team-colored-red { color:#ef5350; border-color:#ef5350; background:#3a2222; }
+    .team-colored-blue { color:#64b5f6; border-color:#64b5f6; background:#1c2c40; }
+    .team-colored-yellow { color:#fff176; border-color:#c6b24a; background:#3a3520; }
     .team-switch { display:flex; flex-wrap:wrap; gap:.4rem; margin:.35rem 0 .8rem; }
     .team-choice { padding:.3rem .7rem; }
     .team-choice.active { outline:2px solid var(--accent); }
@@ -94,7 +95,7 @@
       <div class="header">
         <div class="app-banner">13-flag-targeting-rules[java]</div>
         <div>Name: <span id="hdr-name"></span></div>
-        <div>Team: <span id="hdr-team" class="team-plain">No team</span></div>
+        <div>Team: <span id="hdr-team" class="team-pill team-plain">No team</span></div>
         <div class="team-switch" role="group" aria-label="Switch team">
           <button type="button" class="team-choice" data-team="">No team</button>
           <button type="button" class="team-choice" data-team="red">Red</button>
@@ -131,7 +132,7 @@
           <div class="ld-block-title">What this teaches</div>
           <p class="ld-about-p">LaunchDarkly <strong>targeting rules</strong> evaluate the public <code>team</code> <strong>context attribute</strong>. Unlike example 11, the application does not parse a username into a cohort.</p>
           <div class="ld-block-title">Behavior</div>
-          <p class="ld-about-p"><code>red</code>, <code>blue</code>, and <code>yellow</code> rules serve matching colored styles. No team omits the attribute, skips all rules, and receives the plain fallthrough. The header switches team for the same user, and the label color follows the served variation.</p>
+          <p class="ld-about-p"><code>red</code>, <code>blue</code>, and <code>yellow</code> rules serve matching colored styles. No team omits the attribute, skips all rules, and receives the plain fallthrough. The header switches team for the same user, and the label color follows the served variation. A second JSON flag supplies the words, so the same team values can read Small, Medium, and Large.</p>
           <div class="ld-block-title">Controls</div>
           <p class="ld-about-p">Controls intentionally expose only flag on/off and fallthrough. Rules are provisioned via <code>terraform/</code> or <code>rest/create-flags.sh</code>, not edited in this lab.</p>
           <p class="ld-about-p"><a href="https://launchdarkly.com/docs/home/flags/target-rules" target="_blank">Targeting rules</a> · <a href="https://launchdarkly.com/docs/home/flags/context-attributes" target="_blank">Context attributes</a></p>
@@ -172,7 +173,8 @@
       document.getElementById("hdr-name").textContent=username;
       const teamEl=document.getElementById("hdr-team");
       teamEl.textContent=flags.teamLabel||"No team";
-      teamEl.className=`team-${flags.style||"plain"}`;
+      teamEl.className=`team-pill team-${flags.style||"plain"}`;
+      applyDisplayLabels();
       teamEl.style.color="";
       document.getElementById("hdr-current").textContent=pos(row,col);
       document.getElementById("hdr-previous").textContent=previous?pos(previous.row,previous.col):"—";
@@ -201,6 +203,28 @@
         render(); renderContext();
       }catch(error){trace("err",`SDK evaluation failed: ${esc(error)}`);}
     }
+    function applyDisplayLabels(){
+      const labels=flags.labels||{};
+      const text={"":labels.none||"No team",red:labels.red||"Team Red",blue:labels.blue||"Team Blue",yellow:labels.yellow||"Team Yellow"};
+      document.querySelectorAll(".team-choice").forEach(btn=>{
+        if(text[btn.dataset.team]) btn.textContent=text[btn.dataset.team];
+      });
+      const select=document.getElementById("team");
+      if(select) select.querySelectorAll("option").forEach(opt=>{
+        if(text[opt.value]) opt.textContent=text[opt.value];
+      });
+    }
+    function evaluationDocument(){
+      return {
+        style:{
+          flagKey:"configure-team-label-style",
+          value:flags.style||"plain",
+          variationIndex:flags.variationIndex??null,
+          reason:flags.reason||null
+        },
+        labels:flags.labelEvaluation||null
+      };
+    }
     function contextDocument(ctx){
       const doc={kind:ctx.kind||"user",key:ctx.key};
       if(!ctx.teamOmitted&&ctx.teamAttribute) doc.team=ctx.teamAttribute;
@@ -218,7 +242,10 @@
         `<div class="context-row"><div class="context-k">privacy</div><div class="context-v">public (analytics enabled)</div></div>`+
         `<p class="flag-summary">${esc(context.note)}</p>`+
         `<div class="ld-block-title">Context JSON</div>`+
-        `<pre class="context-pre">${esc(JSON.stringify(contextDocument(context),null,2))}</pre>`;
+        `<pre class="context-pre">${esc(JSON.stringify(contextDocument(context),null,2))}</pre>`+
+        `<div class="ld-block-title">Evaluation</div>`+
+        `<p class="flag-summary">LaunchDarkly sent back two evaluations. <code>style.value</code> colors the pill. <code>labels.value</code> supplies the words. The team values stay red, blue, and yellow.</p>`+
+        `<pre class="context-pre">${esc(JSON.stringify(evaluationDocument(),null,2))}</pre>`;
     }
     function start(){
       const name=document.getElementById("username").value.trim();
@@ -300,6 +327,14 @@
     dock.classList.toggle("collapsed",localStorage.getItem(TRACE_COLLAPSE_KEY)==="1");
     dock.classList.toggle("expanded",localStorage.getItem(TRACE_EXPAND_KEY)==="1");
     refreshControls();
+    fetch("/api/flags?username=label-preview&team=",{cache:"no-store"})
+      .then(response=>response.ok?response.json():null)
+      .then(data=>{
+        if(!data||!data.labels||username) return;
+        flags=Object.assign(flags,data);
+        applyDisplayLabels();
+      })
+      .catch(()=>{});
   </script>
 </body>
 </html>

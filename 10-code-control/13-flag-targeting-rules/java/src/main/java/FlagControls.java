@@ -26,7 +26,11 @@ final class FlagControls {
             metadata(
                     TeamStyle.FLAG_KEY,
                     "Configure team label style",
-                    "String style selected by provisioned targeting rules on public team."));
+                    "String style selected by provisioned targeting rules on public team."),
+            metadata(
+                    TeamStyle.LABELS_KEY,
+                    "Configure team display labels",
+                    "JSON words for the pill and the team switch. Team values stay red, blue, and yellow."));
 
     private FlagControls() {
     }
@@ -89,7 +93,8 @@ final class FlagControls {
 
     static Map<String, Object> applyFlagControl(
             String flagKey, Boolean turnOn, boolean hasFallthrough, Object fallthrough) {
-        if (!TeamStyle.FLAG_KEY.equals(flagKey)) {
+        boolean allowed = CONTROLLED_FLAGS.stream().anyMatch(item -> flagKey.equals(item.get("key")));
+        if (!allowed) {
             throw new IllegalArgumentException("Flag key not allowed for controls: " + flagKey);
         }
         if (turnOn == null && !hasFallthrough) {
@@ -221,7 +226,11 @@ final class FlagControls {
             item.put("value", value);
             item.put("name", string(source.get("name")));
             item.put("description", string(source.get("description")));
-            item.put("token", optionToken(value));
+            String name = string(source.get("name"));
+            String token = (value instanceof Map<?, ?> || value instanceof List<?>) && !name.isEmpty()
+                    ? name
+                    : optionToken(value);
+            item.put("token", token);
             variations.add(item);
             if (!"boolean".equals(kind)) {
                 Map<String, Object> option = new LinkedHashMap<>();
@@ -248,7 +257,12 @@ final class FlagControls {
         result.put("on", on);
         result.put("variationKind", kind);
         result.put("fallthroughOptions", options);
-        result.put("fallthroughToken", fallthroughValue == null ? null : optionToken(fallthroughValue));
+        String fallToken = fallthroughIndex != null
+                && fallthroughIndex >= 0
+                && fallthroughIndex < variations.size()
+                ? String.valueOf(variations.get(fallthroughIndex).get("token"))
+                : null;
+        result.put("fallthroughToken", fallToken);
         result.put("variations", variations);
         result.put("offVariation", offIndex);
         result.put("fallthroughVariation", fallthroughIndex);
@@ -262,8 +276,11 @@ final class FlagControls {
 
     private static Map<String, Object> fallthroughInstruction(
             Map<String, Object> flag, Object wanted) {
+        String wantedText = wanted == null ? "" : String.valueOf(wanted);
         for (Map<String, Object> variation : objectList(flag.get("variations"))) {
-            if (!valuesEqual(variation.get("value"), wanted)) continue;
+            String name = string(variation.get("name"));
+            boolean nameMatch = !name.isEmpty() && name.equals(wantedText);
+            if (!nameMatch && !valuesEqual(variation.get("value"), wanted)) continue;
             Object id = variation.get("_id") != null ? variation.get("_id") : variation.get("id");
             if (id != null && !id.toString().isBlank()) {
                 Map<String, Object> result = instruction("updateFallthroughVariationOrRollout");

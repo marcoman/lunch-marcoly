@@ -48,6 +48,27 @@ Rules are evaluated in this order:
 
 Rules are provisioned through [terraform/](terraform/) or [rest/create-flags.sh](rest/create-flags.sh). The in-app Controls tab does not edit them.
 
+## Display labels
+
+A second flag supplies only the words. It does not change `team` values or the style flag.
+
+| Attribute | Value |
+|-----------|-------|
+| Name | `Configure: team display labels` |
+| Key | `configure-team-display-labels` |
+| Type | JSON |
+| Off variation and fallthrough | Team names |
+| Rules | None |
+
+| Variation | `none` | `red` | `blue` | `yellow` |
+|-----------|--------|-------|--------|----------|
+| Team names | No team | Team Red | Team Blue | Team Yellow |
+| Customer sizes | No size | Small | Medium | Large |
+
+Controls can switch the fallthrough between those two variations. The pill, the team switch, and the login list use the served words. `red`, `blue`, and `yellow` stay the context values, and the color still comes from `configure-team-label-style`.
+
+If the flag is missing, the app uses the Team names words.
+
 ## Login and context
 
 Login requires a username and offers:
@@ -74,14 +95,14 @@ Previous position: —
 
 After login, the header keeps **No team**, **Red**, **Blue**, and **Yellow**. Choosing one updates the public `team` attribute and re-evaluates the flag. The username stays. **No team** omits the attribute, so the label takes the fallthrough color.
 
-Only the team label text changes color. `plain` and flag-off behavior must not assign a label color.
+The team name sits in a pill. Only that pill changes color. `plain` and flag-off behavior must not assign a label color.
 
 ## LaunchDarkly lab
 
 The permanent shell matches example 12:
 
-- **Controls** — on/off and fallthrough selector for the one flag
-- **Context** — user key and public team, or `(omitted — No team)`, plus that same context as JSON
+- **Controls** — on/off and fallthrough for the style flag and the display-label flag
+- **Context** — user key and public team, or `(omitted — No team)`, that context as JSON, and both evaluations LaunchDarkly sent back
 - **About** — targeting-rules explanation and provisioning note
 - **Trace** — login with team, SDK served style/team/reason, and REST control actions
 

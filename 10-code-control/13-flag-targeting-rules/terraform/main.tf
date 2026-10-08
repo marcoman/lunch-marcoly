@@ -128,6 +128,70 @@ resource "launchdarkly_feature_flag_environment" "team_label_style" {
   }
 }
 
+# Words on screen. No targeting rules: fallthrough chooses the vocabulary.
+# https://launchdarkly.com/docs/sdk/features/flag-types
+resource "launchdarkly_feature_flag" "team_display_labels" {
+  project_key = var.project_key
+  key         = "configure-team-display-labels"
+  name        = "Configure: team display labels"
+  description = "Words shown for red, blue, yellow, and no team. Does not change the style flag values."
+  temporary   = false
+
+  variation_type = "json"
+
+  variations {
+    value = jsonencode({
+      none   = "No team"
+      red    = "Team Red"
+      blue   = "Team Blue"
+      yellow = "Team Yellow"
+    })
+    name        = "Team names"
+    description = "Default words. Team values stay red, blue, and yellow."
+  }
+
+  variations {
+    value = jsonencode({
+      none   = "No size"
+      red    = "Small"
+      blue   = "Medium"
+      yellow = "Large"
+    })
+    name        = "Customer sizes"
+    description = "Customer vocabulary. Team values stay red, blue, and yellow."
+  }
+
+  defaults {
+    on_variation  = 0
+    off_variation = 0
+  }
+
+  tags = [
+    "grid-navigator",
+    "configure",
+    "header",
+    "json",
+    "display-labels",
+    "managed-by-terraform",
+  ]
+}
+
+resource "launchdarkly_feature_flag_environment" "team_display_labels" {
+  flag_id = launchdarkly_feature_flag.team_display_labels.id
+  env_key = var.environment_key
+
+  on            = true
+  off_variation = 0
+
+  fallthrough {
+    variation = 0
+  }
+}
+
 output "flag_key" {
   value = launchdarkly_feature_flag.team_label_style.key
+}
+
+output "display_labels_flag_key" {
+  value = launchdarkly_feature_flag.team_display_labels.key
 }

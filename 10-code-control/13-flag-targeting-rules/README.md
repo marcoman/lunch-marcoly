@@ -6,6 +6,8 @@ The web and console implementations evaluate `configure-team-label-style` agains
 
 On the web screens, login still chooses the first team. The header then offers **No team**, **Red**, **Blue**, and **Yellow**. Switching re-evaluates the same user, and the team label color follows the served variation.
 
+[`configure-team-display-labels`](rest/create-display-labels.sh) is a JSON flag for the words only. Fallthrough **Team names** keeps Team Red / Team Blue / Team Yellow. **Customer sizes** shows Small / Medium / Large. The context values stay `red`, `blue`, and `yellow`.
+
 See [application.md](application.md) for the full specification.
 
 ## Targeting table

@@ -8,6 +8,9 @@ using LaunchDarkly.Sdk.Server;
 sealed class TeamStyle : IDisposable
 {
     public const string FlagKey = "configure-team-label-style";
+    // JSON flag: words on screen. Style values stay colored-red/blue/yellow/plain.
+    // https://launchdarkly.com/docs/sdk/features/flag-types
+    public const string LabelsKey = "configure-team-display-labels";
     private const string Plain = "plain";
     private static readonly Dictionary<string, string> Labels = new()
     {
@@ -47,10 +50,12 @@ sealed class TeamStyle : IDisposable
         var candidate = detail?.Value ?? Plain;
         var style = Colors.ContainsKey(candidate) ? candidate : Plain;
         var color = Colors[style];
+        var labels = ReadLabels(context, out var labelIndex, out var labelReason);
         return new
         {
             team,
-            teamLabel = Labels[team],
+            teamLabel = labels[team.Length == 0 ? "none" : team],
+            labels,
             style,
             colored = color is not null,
             cssColor = color,
@@ -68,7 +73,50 @@ sealed class TeamStyle : IDisposable
             },
             variationIndex = detail?.VariationIndex,
             reason = detail is null ? new { kind = "OFFLINE" } : ReasonPayload(detail.Value.Reason),
+            labelEvaluation = new
+            {
+                flagKey = LabelsKey,
+                value = labels,
+                variationIndex = labelIndex,
+                reason = labelReason,
+            },
         };
+    }
+
+    private static Dictionary<string, string> DefaultLabels() => new()
+    {
+        ["none"] = Labels[""],
+        ["red"] = Labels["red"],
+        ["blue"] = Labels["blue"],
+        ["yellow"] = Labels["yellow"],
+    };
+
+    /// <summary>One JSON-flag read. Missing keys keep the built-in words.</summary>
+    private Dictionary<string, string> ReadLabels(
+        Context context, out int? variationIndex, out object reason)
+    {
+        var labels = DefaultLabels();
+        if (_client is null)
+        {
+            variationIndex = null;
+            reason = new { kind = "OFFLINE" };
+            return labels;
+        }
+        var fallback = LdValue.Parse(
+            "{\"none\":\"No team\",\"red\":\"Team Red\",\"blue\":\"Team Blue\",\"yellow\":\"Team Yellow\"}");
+        var detail = _client.JsonVariationDetail(LabelsKey, context, fallback);
+        if (detail.Value.Type == LdValueType.Object)
+        {
+            foreach (var key in new[] { "none", "red", "blue", "yellow" })
+            {
+                var text = detail.Value.Get(key);
+                if (text.Type == LdValueType.String && !string.IsNullOrWhiteSpace(text.AsString))
+                    labels[key] = text.AsString.Trim();
+            }
+        }
+        variationIndex = detail.VariationIndex;
+        reason = ReasonPayload(detail.Reason);
+        return labels;
     }
 
     private static string NormalizeTeam(string? raw)

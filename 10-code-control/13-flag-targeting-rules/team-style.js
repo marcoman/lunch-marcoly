@@ -8,6 +8,9 @@
 // https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-team-label-style
 
 const FLAG_TEAM_LABEL_STYLE = "configure-team-label-style";
+// JSON flag: words shown in the UI. Style values stay colored-red/blue/yellow/plain.
+// https://launchdarkly.com/docs/sdk/features/flag-types
+const FLAG_TEAM_DISPLAY_LABELS = "configure-team-display-labels";
 const PLAIN = "plain";
 const TEAM_LABELS = {
   "": "No team",
@@ -15,6 +18,7 @@ const TEAM_LABELS = {
   blue: "Team Blue",
   yellow: "Team Yellow",
 };
+const LABEL_KEYS = ["none", "red", "blue", "yellow"];
 const STYLE_COLORS = {
   plain: null,
   "colored-red": "red",
@@ -40,7 +44,26 @@ function buildContext(username, team) {
   return context;
 }
 
-/** Evaluate the string variation with detail so the UI can trace its reason. */
+function defaultDisplayLabels() {
+  return {
+    none: TEAM_LABELS[""],
+    red: TEAM_LABELS.red,
+    blue: TEAM_LABELS.blue,
+    yellow: TEAM_LABELS.yellow,
+  };
+}
+
+function displayLabelsFrom(value) {
+  const labels = defaultDisplayLabels();
+  if (!value || typeof value !== "object" || Array.isArray(value)) return labels;
+  for (const key of LABEL_KEYS) {
+    const text = value[key];
+    if (typeof text === "string" && text.trim()) labels[key] = text.trim();
+  }
+  return labels;
+}
+
+/** Evaluate the style flag and the JSON display-label flag. */
 async function evaluateTeamStyle(client, username, team) {
   const normalizedTeam = normalizeTeam(team);
   const context = buildContext(username, normalizedTeam);
@@ -52,10 +75,16 @@ async function evaluateTeamStyle(client, username, team) {
     ? candidate
     : PLAIN;
   const attributes = normalizedTeam ? { team: normalizedTeam } : {};
+  const labelDefault = defaultDisplayLabels();
+  const labelDetail = client
+    ? await client.variationDetail(FLAG_TEAM_DISPLAY_LABELS, context, labelDefault)
+    : null;
+  const labels = displayLabelsFrom(labelDetail ? labelDetail.value : labelDefault);
 
   return {
     team: normalizedTeam,
-    teamLabel: TEAM_LABELS[normalizedTeam],
+    teamLabel: labels[normalizedTeam || "none"],
+    labels,
     style,
     colored: STYLE_COLORS[style] !== null,
     cssColor: STYLE_COLORS[style],
@@ -70,11 +99,18 @@ async function evaluateTeamStyle(client, username, team) {
     },
     variationIndex: detail?.variationIndex ?? null,
     reason: detail?.reason ?? { kind: "OFFLINE" },
+    labelEvaluation: {
+      flagKey: FLAG_TEAM_DISPLAY_LABELS,
+      value: labels,
+      variationIndex: labelDetail?.variationIndex ?? null,
+      reason: labelDetail?.reason ?? { kind: "OFFLINE" },
+    },
   };
 }
 
 module.exports = {
   FLAG_TEAM_LABEL_STYLE,
+  FLAG_TEAM_DISPLAY_LABELS,
   normalizeTeam,
   buildContext,
   evaluateTeamStyle,

@@ -21,31 +21,54 @@ sealed class FlagControls
 
     public async Task<object> ListAsync()
     {
+        var catalog = new (string Key, string Label, string Summary)[]
+        {
+            (TeamStyle.FlagKey, "Configure team label style", "String style selected by provisioned targeting rules on public team."),
+            (TeamStyle.LabelsKey, "Configure team display labels", "JSON words for the pill and the team switch. Team values stay red, blue, and yellow."),
+        };
         if (Missing().Count > 0)
-            return ConfigWithFlags([
-                new
+            return ConfigWithFlags(catalog.Select(item => (object)new
+            {
+                key = item.Key,
+                label = item.Label,
+                summary = item.Summary,
+                on = (bool?)null,
+                targetingHint = "Set missing environment variables to enable controls.",
+            }).ToList());
+        var flags = new List<object>();
+        var errors = new List<object>();
+        foreach (var item in catalog)
+        {
+            try
+            {
+                flags.Add(Summarize(await GetFlagAsync(item.Key), item.Label, item.Summary));
+            }
+            catch (Exception exception)
+            {
+                errors.Add(new { key = item.Key, error = exception.Message });
+                flags.Add(new
                 {
-                    key = TeamStyle.FlagKey,
-                    label = "Configure team label style",
-                    summary = "String targeting by public team context attribute.",
+                    key = item.Key,
+                    label = item.Label,
+                    summary = item.Summary,
                     on = (bool?)null,
-                    targetingHint = "Set missing environment variables to enable controls.",
-                },
-            ]);
-        var flag = await GetFlagAsync();
-        return ConfigWithFlags([Summarize(flag)], []);
+                    targetingHint = exception.Message,
+                });
+            }
+        }
+        return ConfigWithFlags(flags, errors);
     }
 
     public async Task<object> ApplyAsync(
         string key, bool? on, bool hasFallthrough, string? fallthrough)
     {
-        if (key != TeamStyle.FlagKey)
+        if (key != TeamStyle.FlagKey && key != TeamStyle.LabelsKey)
             throw new ArgumentException($"Flag key not allowed for controls: {key}");
         if (on is null && !hasFallthrough)
             throw new ArgumentException("Provide \"on\" and/or \"fallthrough\"");
         RequireConfigured();
 
-        var flag = await GetFlagAsync();
+        var flag = await GetFlagAsync(key);
         var instructions = new JsonArray();
         if (on is true) instructions.Add(new JsonObject { ["kind"] = "turnFlagOn" });
         else if (on is false) instructions.Add(new JsonObject { ["kind"] = "turnFlagOff" });
@@ -61,14 +84,14 @@ sealed class FlagControls
             });
         }
         await RequestAsync(HttpMethod.Patch,
-            $"/flags/{Escape(Project)}/{TeamStyle.FlagKey}",
+            $"/flags/{Escape(Project)}/{Escape(key)}",
             new JsonObject
             {
                 ["environmentKey"] = EnvironmentKey,
                 ["comment"] = "13-flag-targeting-rules UI: on/off or fallthrough",
                 ["instructions"] = instructions,
             });
-        flag = await GetFlagAsync();
+        flag = await GetFlagAsync(key);
         return new
         {
             ok = true,
@@ -76,7 +99,12 @@ sealed class FlagControls
             instructions = instructions.Select(item => item?["kind"]?.ToString()).ToArray(),
             projectKey = Project,
             environmentKey = EnvironmentKey,
-            flag = Summarize(flag),
+            flag = Summarize(
+                flag,
+                key == TeamStyle.LabelsKey ? "Configure team display labels" : "Configure team label style",
+                key == TeamStyle.LabelsKey
+                    ? "JSON words for the pill and the team switch. Team values stay red, blue, and yellow."
+                    : "String style selected by provisioned targeting rules on public team."),
         };
     }
 
@@ -91,30 +119,39 @@ sealed class FlagControls
         errors = errors ?? [],
     };
 
-    private static object Summarize(JsonObject flag)
+    private static object Summarize(JsonObject flag, string label, string summary)
     {
         var environment = flag["environments"]?[EnvironmentKey] as JsonObject ?? new JsonObject();
         var variations = flag["variations"] as JsonArray ?? [];
         var fallIndex = Int(environment["fallthrough"]?["variation"]);
         var offIndex = Int(environment["offVariation"]);
         var fallValue = VariationValue(variations, fallIndex);
-        var options = variations.Select(node => new
+        var options = variations.Select(node =>
         {
-            token = node?["value"]?.GetValue<string>(),
-            label = node?["name"]?.ToString() ?? node?["value"]?.GetValue<string>(),
-            value = node?["value"]?.GetValue<string>(),
+            var valueNode = node?["value"];
+            var name = node?["name"]?.ToString();
+            var token = valueNode is JsonObject or JsonArray
+                ? name
+                : valueNode?.ToString()?.Trim('"');
+            return new
+            {
+                token,
+                label = name ?? token,
+                value = valueNode,
+            };
         }).ToArray();
         var ruleCount = (environment["rules"] as JsonArray)?.Count ?? 0;
+        var fallToken = fallIndex is >= 0 && fallIndex < options.Length ? options[fallIndex.Value].token : null;
         return new
         {
-            key = TeamStyle.FlagKey,
-            name = flag["name"]?.ToString() ?? "Configure team label style",
-            label = "Configure team label style",
-            summary = "String style selected by provisioned targeting rules on public team.",
+            key = flag["key"]?.ToString(),
+            name = flag["name"]?.ToString() ?? label,
+            label,
+            summary,
             on = environment["on"]?.GetValue<bool>() ?? false,
             variationKind = "string",
             fallthroughOptions = options,
-            fallthroughToken = fallValue,
+            fallthroughToken = fallToken,
             servedWhenOff = VariationValue(variations, offIndex),
             servedWhenOnFallthrough = fallValue,
             ruleCount,
@@ -122,9 +159,9 @@ sealed class FlagControls
         };
     }
 
-    private async Task<JsonObject> GetFlagAsync() =>
+    private async Task<JsonObject> GetFlagAsync(string key) =>
         await RequestAsync(HttpMethod.Get,
-            $"/flags/{Escape(Project)}/{TeamStyle.FlagKey}?env={Escape(EnvironmentKey)}");
+            $"/flags/{Escape(Project)}/{Escape(key)}?env={Escape(EnvironmentKey)}");
 
     private async Task<JsonObject> RequestAsync(
         HttpMethod method, string path, JsonObject? body = null)
@@ -156,14 +193,21 @@ sealed class FlagControls
     {
         foreach (var node in flag["variations"] as JsonArray ?? [])
         {
-            if (node?["value"]?.GetValue<string>() == wanted)
+            var name = node?["name"]?.ToString();
+            var raw = node?["value"]?.ToString()?.Trim('"');
+            if (name == wanted || raw == wanted)
                 return node?["_id"]?.ToString() ?? node?["id"]?.ToString();
         }
         return null;
     }
 
-    private static string? VariationValue(JsonArray values, int? index) =>
-        index is >= 0 && index < values.Count ? values[index.Value]?["value"]?.GetValue<string>() : null;
+    private static object? VariationValue(JsonArray values, int? index)
+    {
+        if (index is not >= 0 || index >= values.Count) return null;
+        var node = values[index.Value]?["value"];
+        if (node is JsonValue value && value.TryGetValue<string>(out var text)) return text;
+        return node;
+    }
     private static int? Int(JsonNode? node) =>
         node is JsonValue value && value.TryGetValue<int>(out var number) ? number : null;
     private static string Escape(string value) => Uri.EscapeDataString(value);

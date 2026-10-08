@@ -5,7 +5,7 @@ Python web implementation of [13-flag-targeting-rules](../application.md), with 
 ## Prerequisites
 
 - Python 3.12+ and `launchdarkly-server-sdk`
-- Provisioned `configure-team-label-style`
+- Provisioned `configure-team-label-style` and, for custom words, `configure-team-display-labels`
 - `LD_SDK_KEY`
 - For Controls: `LD_API_ACCESS_TOKEN`, `LD_PROJECT_KEY`, `LD_ENVIRONMENT_KEY`
 

@@ -3,7 +3,7 @@
 Web implementation of [13-flag-targeting-rules](../application.md). It evaluates
 the string flag against a public `team` context attribute and exposes Controls
 for flag on/off and fallthrough only. After login, the header switches among
-No team, Red, Blue, and Yellow without another login.
+No team, Red, Blue, and Yellow without another login. `configure-team-display-labels` can rename those words to Small, Medium, and Large.
 
 ## Prerequisites
 

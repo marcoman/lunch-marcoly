@@ -3,7 +3,12 @@
  * https://launchdarkly.com/docs/api/feature-flags/patch-feature-flag
  */
 
-const { FLAG_TEAM_LABEL_STYLE } = require("./team-style");
+const { FLAG_TEAM_DISPLAY_LABELS, FLAG_TEAM_LABEL_STYLE } = require("./team-style");
+
+const CONTROLLED_FLAGS = [
+  [FLAG_TEAM_LABEL_STYLE, "Configure team label style", "String style selected by provisioned targeting rules on public team."],
+  [FLAG_TEAM_DISPLAY_LABELS, "Configure team display labels", "JSON words for the pill and the team switch. Team values stay red, blue, and yellow."],
+];
 
 const API_HOST = process.env.LD_API_HOST || "https://app.launchdarkly.com";
 const API_VERSION = process.env.LD_API_VERSION || "20240415";
@@ -51,24 +56,33 @@ function variationValue(flag, index) {
   return Number.isInteger(index) ? flag.variations?.[index]?.value ?? null : null;
 }
 
-function summarize(flag, environmentKey) {
+function optionToken(variation) {
+  const value = variation.value;
+  if (value && typeof value === "object") return variation.name || JSON.stringify(value);
+  return value;
+}
+
+function summarize(flag, environmentKey, label, summary) {
   const environment = flag.environments?.[environmentKey] || {};
   const fallthroughIndex = environment.fallthrough?.variation;
-  const options = (flag.variations || []).map((variation) => ({
-    token: variation.value,
-    label: variation.name || variation.value,
+  const variations = flag.variations || [];
+  const options = variations.map((variation) => ({
+    token: optionToken(variation),
+    label: variation.name || optionToken(variation),
     value: variation.value,
   }));
   const ruleCount = (environment.rules || []).length;
+  const fallVariation = Number.isInteger(fallthroughIndex) ? variations[fallthroughIndex] : null;
+  const kind = variations.some((item) => item.value && typeof item.value === "object") ? "json" : "string";
   return {
-    key: FLAG_TEAM_LABEL_STYLE,
-    name: flag.name || "Configure team label style",
-    label: "Configure team label style",
-    summary: "String style selected by provisioned targeting rules on public team.",
+    key: flag.key,
+    name: flag.name || label,
+    label,
+    summary,
     on: Boolean(environment.on),
-    variationKind: "string",
+    variationKind: kind,
     fallthroughOptions: options,
-    fallthroughToken: variationValue(flag, fallthroughIndex),
+    fallthroughToken: fallVariation ? optionToken(fallVariation) : null,
     servedWhenOff: variationValue(flag, environment.offVariation),
     servedWhenOnFallthrough: variationValue(flag, fallthroughIndex),
     ruleCount,
@@ -81,22 +95,32 @@ async function listFlagControls() {
   if (!config.configured) {
     return {
       ...config,
-      flags: [{
-        key: FLAG_TEAM_LABEL_STYLE,
-        label: "Configure team label style",
-        summary: "String targeting by public team context attribute.",
+      flags: CONTROLLED_FLAGS.map(([key, label, summary]) => ({
+        key,
+        label,
+        summary,
         on: null,
         targetingHint: "Set missing environment variables to enable controls.",
-      }],
+      })),
     };
   }
   const query = `?env=${encodeURIComponent(config.environmentKey)}`;
-  const flag = await request("GET", `/flags/${encodeURIComponent(config.projectKey)}/${FLAG_TEAM_LABEL_STYLE}${query}`);
-  return { ...config, flags: [summarize(flag, config.environmentKey)], errors: [] };
+  const flags = [];
+  const errors = [];
+  for (const [key, label, summary] of CONTROLLED_FLAGS) {
+    try {
+      const flag = await request("GET", `/flags/${encodeURIComponent(config.projectKey)}/${key}${query}`);
+      flags.push(summarize(flag, config.environmentKey, label, summary));
+    } catch (error) {
+      errors.push({ key, error: error.message });
+      flags.push({ key, label, summary, on: null, targetingHint: error.message });
+    }
+  }
+  return { ...config, flags, errors };
 }
 
 async function applyFlagControl(flagKey, options = {}) {
-  if (flagKey !== FLAG_TEAM_LABEL_STYLE) {
+  if (!CONTROLLED_FLAGS.some(([key]) => key === flagKey)) {
     throw new Error(`Flag key not allowed for controls: ${flagKey}`);
   }
   const hasOn = Object.prototype.hasOwnProperty.call(options, "on");
@@ -110,7 +134,8 @@ async function applyFlagControl(flagKey, options = {}) {
   const instructions = [];
   if (hasOn) instructions.push({ kind: options.on ? "turnFlagOn" : "turnFlagOff" });
   if (hasFallthrough) {
-    const variation = (flag.variations || []).find((item) => item.value === String(options.fallthrough));
+    const wanted = String(options.fallthrough);
+    const variation = (flag.variations || []).find((item) => optionToken(item) === wanted || item.value === wanted);
     const variationId = variation?._id || variation?.id;
     if (!variationId) throw new Error(`No variation matching fallthrough=${JSON.stringify(options.fallthrough)}`);
     instructions.push({ kind: "updateFallthroughVariationOrRollout", variationId });
@@ -127,7 +152,12 @@ async function applyFlagControl(flagKey, options = {}) {
     instructions: instructions.map((item) => item.kind),
     projectKey: config.projectKey,
     environmentKey: config.environmentKey,
-    flag: summarize(updated, config.environmentKey),
+    flag: summarize(
+      updated,
+      config.environmentKey,
+      CONTROLLED_FLAGS.find(([key]) => key === flagKey)[1],
+      CONTROLLED_FLAGS.find(([key]) => key === flagKey)[2],
+    ),
   };
 }
 

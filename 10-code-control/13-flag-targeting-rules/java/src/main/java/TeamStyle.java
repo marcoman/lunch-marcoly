@@ -1,6 +1,8 @@
 import com.launchdarkly.sdk.EvaluationDetail;
 import com.launchdarkly.sdk.EvaluationReason;
 import com.launchdarkly.sdk.LDContext;
+import com.launchdarkly.sdk.LDValue;
+import com.launchdarkly.sdk.LDValueType;
 import com.launchdarkly.sdk.server.LDClient;
 
 import java.io.IOException;
@@ -18,6 +20,9 @@ final class TeamStyle {
     // https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-team-label-style
 
     static final String FLAG_KEY = "configure-team-label-style";
+    // JSON flag: words on screen. Style values stay colored-red/blue/yellow/plain.
+    // https://launchdarkly.com/docs/sdk/features/flag-types
+    static final String LABELS_KEY = "configure-team-display-labels";
     private static final String PLAIN = "plain";
     private static final Map<String, String> LABELS = Map.of(
             "", "No team",
@@ -98,9 +103,11 @@ final class TeamStyle {
         shownContext.put("privateAttributes", List.of());
         shownContext.put("note", "team is public; No team omits the attribute so rules skip to fallthrough.");
 
+        LabelRead labels = readLabels(context);
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("team", team);
-        result.put("teamLabel", LABELS.get(team));
+        result.put("teamLabel", labels.words.get(team.isEmpty() ? "none" : team));
+        result.put("labels", labels.words);
         result.put("style", style);
         result.put("colored", color != null);
         result.put("cssColor", color);
@@ -109,7 +116,48 @@ final class TeamStyle {
         result.put("reason", detail == null
                 ? Map.of("kind", "OFFLINE")
                 : reasonPayload(detail.getReason()));
+        result.put("labelEvaluation", labels.evaluation);
         return result;
+    }
+
+    private static Map<String, String> defaultLabels() {
+        Map<String, String> labels = new LinkedHashMap<>();
+        labels.put("none", LABELS.get(""));
+        labels.put("red", LABELS.get("red"));
+        labels.put("blue", LABELS.get("blue"));
+        labels.put("yellow", LABELS.get("yellow"));
+        return labels;
+    }
+
+    /** One JSON-flag read. Missing keys keep the built-in words. */
+    private static LabelRead readLabels(LDContext context) {
+        Map<String, String> labels = defaultLabels();
+        Map<String, Object> evaluation = new LinkedHashMap<>();
+        evaluation.put("flagKey", LABELS_KEY);
+        if (client == null) {
+            evaluation.put("value", labels);
+            evaluation.put("variationIndex", null);
+            evaluation.put("reason", Map.of("kind", "OFFLINE"));
+            return new LabelRead(labels, evaluation);
+        }
+        EvaluationDetail<LDValue> detail = client.jsonValueVariationDetail(
+                LABELS_KEY, context, LDValue.parse(Json.stringify(labels)));
+        LDValue value = detail.getValue();
+        if (value != null && value.getType() == LDValueType.OBJECT) {
+            for (String key : List.of("none", "red", "blue", "yellow")) {
+                LDValue text = value.get(key);
+                if (text != null && text.getType() == LDValueType.STRING && !text.stringValue().isBlank()) {
+                    labels.put(key, text.stringValue().trim());
+                }
+            }
+        }
+        evaluation.put("value", labels);
+        evaluation.put("variationIndex", detail.getVariationIndex());
+        evaluation.put("reason", reasonPayload(detail.getReason()));
+        return new LabelRead(labels, evaluation);
+    }
+
+    private record LabelRead(Map<String, String> words, Map<String, Object> evaluation) {
     }
 
     private static Map<String, Object> reasonPayload(EvaluationReason reason) {

@@ -20,4 +20,6 @@ terraform apply \
 
 The environment is on by default. Off and fallthrough serve `plain`; rules map public `team` values `red`, `blue`, and `yellow` to their matching colored variations. When No team omits the attribute, no clause matches.
 
+`configure-team-display-labels` is a JSON flag with no rules. Fallthrough **Team names** is the default. **Customer sizes** changes the words to Small, Medium, and Large.
+
 See [targeting rules](https://launchdarkly.com/docs/home/flags/target-rules) and [context attributes](https://launchdarkly.com/docs/home/flags/context-attributes).
