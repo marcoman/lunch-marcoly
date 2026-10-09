@@ -37,7 +37,8 @@ every pending change and turn the flag off. The elapsed clock then holds its
 last value until you start a new schedule.
 
 The elapsed clock is observational. Only the LaunchDarkly flag evaluation can
-turn the selection green.
+turn the selection green. The server-response trace keeps unchanged polls on
+one line and expands the evaluation that first returns `green`.
 
 ## Why the highlight lags the delay
 

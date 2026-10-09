@@ -14,7 +14,8 @@ Scheduled flag changes require a LaunchDarkly **Enterprise** plan.
 Log in, choose a delay starting at one minute, and click **Start scheduled
 change**. The lab resets the flag off and replaces any pending schedule. Watch
 elapsed time—not a countdown—until LaunchDarkly turns the highlight green.
-The clock is in LaunchDarkly, not in the app.
+The clock is in LaunchDarkly, not in the app. A short trace shows the schedule
+acceptance, one line for the unchanged polls, and the evaluation that turns green.
 
 A one-minute schedule typically turns green near 1:30, because LaunchDarkly
 executes close to the execution date, the change has to reach the SDK stream,

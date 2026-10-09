@@ -38,6 +38,8 @@ with a semantic patch, and schedules `turnFlagOn`.
 The second button reads **Stop schedule** while a change is pending and
 **Turn flag off** after it applies. Both states delete pending changes and turn
 the flag off. The elapsed clock then freezes until another schedule starts.
+The server-response trace keeps unchanged polls on one line and expands the
+evaluation that first returns `green`.
 
 ## Why the highlight can lag
 

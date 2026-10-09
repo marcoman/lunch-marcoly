@@ -60,7 +60,7 @@ See the [README architecture](README.md#architecture) for keys and the full diag
 3. Mint tracker; keep `resumption_token` for the UI (Java: synthetic token + `LDClient.track`).
 4. Python/Node: `tracker.track_metrics_of(extractor, llm_call)`.
 5. Chunk response to SSE for the browser.
-6. On thumbs: `create_tracker(token, context)` → `track_feedback` (Java: `$ld:ai:feedback:*` via `track`).
+6. On thumbs: `create_tracker(token, context)` → `track_feedback` (Java: `$ld:ai:feedback:*` via `track`). The LD details Feedback tab shows that metric event and the local acknowledgement.
 
 Ports: Python **8220** · Node **8221** · Java **8222** · .NET **8223**.
 

@@ -391,6 +391,7 @@
     }
     .ld-tabs {
       display: flex;
+      flex-wrap: wrap;
       gap: 0.35rem;
       padding: 0.65rem 1.1rem 0;
       border-bottom: 1px solid var(--line);
@@ -800,12 +801,13 @@
   <aside id="ld-drawer" class="ld-drawer" aria-hidden="true">
     <div class="ld-drawer-resize" id="ld-drawer-resize" title="Drag to resize"></div>
     <div class="ld-drawer-header">
-      <h2>LaunchDarkly · last generate</h2>
+      <h2>LaunchDarkly</h2>
       <button id="btn-ld-close" type="button">Close</button>
     </div>
     <div class="ld-tabs" role="tablist">
       <button type="button" class="ld-tab active" data-tab="sent" role="tab" aria-selected="true">Sent</button>
       <button type="button" class="ld-tab" data-tab="received" role="tab" aria-selected="false">Received</button>
+      <button type="button" class="ld-tab" data-tab="feedback" role="tab" aria-selected="false">Feedback</button>
       <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
     </div>
     <div class="ld-drawer-body">
@@ -814,11 +816,12 @@
       </p>
       <div id="ld-section-sent" class="ld-section active" hidden></div>
       <div id="ld-section-received" class="ld-section" hidden></div>
+      <div id="ld-section-feedback" class="ld-section" hidden></div>
       <div id="ld-section-about" class="ld-section" hidden>
         <div class="ld-block-title">What this example is</div>
         <p class="ld-about-p">This example builds on completion config and headlines <strong>tracked metrics</strong> and thumbs feedback: every generate is wrapped so tokens, latency, and success land in the config Monitoring tab.</p>
         <div class="ld-block-title">What we show</div>
-        <p class="ld-about-p">Generate a briefing, then use thumbs up/down. Sent / Received mirror the evaluation; Monitoring (and feedback via a resumption token) show what actually ran for each persona.</p>
+        <p class="ld-about-p">Generate a briefing, then use thumbs up/down. Sent and Received mirror the evaluation. Feedback shows the metric event and the acknowledgement the app receives.</p>
         <div class="ld-block-title">Why it matters</div>
         <p class="ld-about-p">You get an operational receipt for AI traffic—so you can see quality and cost signals in LaunchDarkly, not only in app logs.</p>
       </div>
@@ -846,6 +849,7 @@
     let abortController = null;
     let latestStories = [];
     let lastLdTransaction = null;
+    let lastFeedback = null;
     let ldTab = "sent";
     let traceEntries = [];
     let traceStreamKind = null; // "draft" while tokens flow
@@ -895,6 +899,7 @@
       ldEmpty: document.getElementById("ld-empty"),
       ldSent: document.getElementById("ld-section-sent"),
       ldReceived: document.getElementById("ld-section-received"),
+      ldFeedback: document.getElementById("ld-section-feedback"),
       ldAbout: document.getElementById("ld-section-about"),
       traceDock: document.getElementById("trace-dock"),
       traceToggle: document.getElementById("btn-trace-toggle"),
@@ -930,20 +935,22 @@
       }
       els.ldSent.classList.toggle("active", tab === "sent");
       els.ldReceived.classList.toggle("active", tab === "received");
+      if (els.ldFeedback) els.ldFeedback.classList.toggle("active", tab === "feedback");
       if (els.ldAbout) els.ldAbout.classList.toggle("active", tab === "about");
-      // About is always available; Sent/Received need a generate first.
       if (els.ldEmpty) {
-        const needGenerate = !lastLdTransaction && tab !== "about";
-        els.ldEmpty.hidden = !needGenerate;
-        if (needGenerate) {
-          els.ldEmpty.textContent = "Generate to see the last LD evaluation.";
+        let empty = "";
+        if (tab === "feedback" && !lastFeedback) {
+          empty = "Record thumbs up or down to see the feedback event.";
+        } else if (tab !== "about" && tab !== "feedback" && !lastLdTransaction) {
+          empty = "Generate to see the last LD evaluation.";
         }
+        els.ldEmpty.hidden = !empty;
+        if (empty) els.ldEmpty.textContent = empty;
       }
-      if (!lastLdTransaction) {
-        els.ldSent.hidden = true;
-        els.ldReceived.hidden = true;
-        if (els.ldAbout) els.ldAbout.hidden = false;
-      }
+      els.ldSent.hidden = !lastLdTransaction;
+      els.ldReceived.hidden = !lastLdTransaction;
+      if (els.ldFeedback) els.ldFeedback.hidden = !lastFeedback;
+      if (els.ldAbout) els.ldAbout.hidden = false;
     }
 
 
@@ -1212,7 +1219,67 @@
         .join("");
     }
 
+    function feedbackSentDocument(kind) {
+      const positive = kind === "positive";
+      const meta = parseResumptionMeta(lastResumptionToken);
+      const sent = (lastLdTransaction && lastLdTransaction.sent) || {};
+      const received = (lastLdTransaction && lastLdTransaction.received) || {};
+      const ctx = sent.context || {};
+      return {
+        eventKey: positive
+          ? "$ld:ai:feedback:user:positive"
+          : "$ld:ai:feedback:user:negative",
+        kind: positive ? "positive" : "negative",
+        metricValue: 1,
+        context: {
+          kind: ctx.kind || "user",
+          key: ctx.key || "",
+          name: ctx.name || "",
+        },
+        configKey: meta.configKey || received.configKey || sent.configKey || "",
+        variationKey: meta.variationKey || received.variationKey || "",
+        runId: meta.runId || "",
+      };
+    }
+
+    function renderFeedbackSection() {
+      if (!els.ldFeedback) return;
+      if (!lastFeedback) {
+        els.ldFeedback.innerHTML = "";
+        return;
+      }
+      const sent = lastFeedback.sent || {};
+      const received = lastFeedback.received || {};
+      const ctx = sent.context || {};
+      els.ldFeedback.innerHTML = `
+        <div class="ld-block-title">Sent</div>
+        <p class="ld-about-p">This is the metric event the thumbs button sends. <a href="https://launchdarkly.com/docs/sdk/features/events">Custom events</a></p>
+        ${kvHtml([
+          ["Event key", sent.eventKey],
+          ["Kind", sent.kind],
+          ["Metric value", sent.metricValue],
+          ["Context kind", ctx.kind],
+          ["Context key", ctx.key],
+          ["Context name", ctx.name],
+          ["Config key", sent.configKey],
+          ["Variation", sent.variationKey],
+          ["Run id", sent.runId],
+        ])}
+        <div class="ld-block-title">Raw event JSON</div>
+        <pre class="ld-json">${escapeHtml(JSON.stringify(sent, null, 2))}</pre>
+        <div class="ld-block-title">Received</div>
+        <p class="ld-about-p">The SDK accepted the event locally. LaunchDarkly does not return the ingested event.</p>
+        ${kvHtml([
+          ["ok", received.ok],
+          ["Kind", received.kind],
+        ])}
+        <div class="ld-block-title">Raw acknowledgement JSON</div>
+        <pre class="ld-json">${escapeHtml(JSON.stringify(received, null, 2))}</pre>
+      `;
+    }
+
     function renderLdDrawer() {
+      renderFeedbackSection();
       if (!lastLdTransaction) {
         els.ldSent.hidden = true;
         els.ldReceived.hidden = true;
@@ -1603,6 +1670,8 @@
       els.response.textContent = "";
       clearMetrics();
       lastResumptionToken = null;
+      lastFeedback = null;
+      if (els.ldDrawer.classList.contains("open")) renderLdDrawer();
       setFeedbackEnabled(false);
       if (els.feedbackStatus) els.feedbackStatus.textContent = "";
       clearTrace();
@@ -1732,7 +1801,9 @@
         setFeedbackEnabled(false);
         if (els.feedbackStatus) {
           els.feedbackStatus.textContent =
-            kind === "positive" ? "Recorded 👍 in LaunchDarkly" : "Recorded 👎 in LaunchDarkly";
+            kind === "positive"
+              ? "Recorded 👍 in LaunchDarkly as a positive metric event"
+              : "Recorded 👎 in LaunchDarkly as a negative metric event";
         }
         // Trace: eventKey matches Monitoring; variation/runId from resumption token data.
         appendTrace(
@@ -1740,6 +1811,12 @@
           formatFeedbackTraceText(kind),
           kind === "positive" ? "pass" : "fail"
         );
+        lastFeedback = {
+          sent: feedbackSentDocument(kind),
+          received: data,
+        };
+        ldTab = "feedback";
+        openLdDrawer();
         setTraceCollapsed(false);
       } catch (err) {
         if (els.feedbackStatus) els.feedbackStatus.textContent = String(err.message || err);

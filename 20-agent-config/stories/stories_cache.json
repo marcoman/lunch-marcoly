@@ -1,25 +1,25 @@
 {
-  "updated_at": "2026-10-08T13:23:33+00:00",
+  "updated_at": "2026-10-08T19:27:03+00:00",
   "tickers": {
     "NVDA": {
       "name": "NVDA",
       "stories": [
         {
-          "title": "Elon Musk Just Shared Bad News for Intel Shareholders",
-          "publisher": "Yahoo",
-          "published": "2026-10-08T07:49:00-04:00",
-          "link": "https://finnhub.io/api/news?id=3032e77d284f79f7d44fadd6304bed9a2460e1b1769da2bc87d5e5541aebf78d",
-          "uuid": "142725968"
+          "title": "Looking for the most active stocks in the S&P500 index on Thursday?",
+          "publisher": "ChartMill",
+          "published": "2026-10-08T14:05:04-04:00",
+          "link": "https://finnhub.io/api/news?id=e8f0d85eb95a24026ef2036ad49410e7fd9a4f34d744d8ecfa17937b899da51a",
+          "uuid": "142731429"
         },
         {
-          "title": "TSMC Q3 2026 revenue hits record on AI chip demand",
-          "publisher": "Yahoo",
-          "published": "2026-10-08T07:45:21-04:00",
-          "link": "https://finnhub.io/api/news?id=b91b3ebb60f5ca75ac4753e5b548fae86ba4bcc82525b654bc69dc18aaf63f7d",
-          "uuid": "142725978"
+          "title": "These stocks are making the most noise in today's session.",
+          "publisher": "ChartMill",
+          "published": "2026-10-08T14:00:00-04:00",
+          "link": "https://finnhub.io/api/news?id=486ec9b62192404986b037c11f7a81fd99615022a57cd4f009110a968bcde536",
+          "uuid": "142731428"
         }
       ],
-      "cached_at": "2026-10-08T13:23:33+00:00"
+      "cached_at": "2026-10-08T19:27:03+00:00"
     },
     "RKLB": {
       "name": "Rocket Lab Corporation",
@@ -43,21 +43,21 @@
       "name": "SPCX",
       "stories": [
         {
-          "title": "Space Stocks’ Double-Digit Rally Masks Narrow Leadership as Scale and Profits Win",
-          "publisher": "ChartMill",
-          "published": "2026-10-08T08:06:03-04:00",
-          "link": "https://finnhub.io/api/news?id=965ba9f45ed5ae5121d508a4a044152108718260943fa4519eeb5feeedb77790",
-          "uuid": "142726231"
+          "title": "Oracle stock falls on more debt to fund AI chip buying, Open AI revenue disclosure",
+          "publisher": "Yahoo",
+          "published": "2026-10-08T14:02:33-04:00",
+          "link": "https://finnhub.io/api/news?id=365876ff2d29ee64f387574fd6b7079725dc7c9d226fdb59c768e438d32400b5",
+          "uuid": "142731336"
         },
         {
-          "title": "Elon Musk Just Shared Bad News for Intel Shareholders",
+          "title": "Nvidia and SpaceX: Top Analyst Daniel Ives Says These 2 AI Giants Have More Room to Run",
           "publisher": "Yahoo",
-          "published": "2026-10-08T07:49:00-04:00",
-          "link": "https://finnhub.io/api/news?id=3032e77d284f79f7d44fadd6304bed9a2460e1b1769da2bc87d5e5541aebf78d",
-          "uuid": "142725968"
+          "published": "2026-10-08T13:20:00-04:00",
+          "link": "https://finnhub.io/api/news?id=bd9f326fe88bdbdccb4ed56c3ec60228c02d912931c67f7f41734ea34075573c",
+          "uuid": "142730881"
         }
       ],
-      "cached_at": "2026-10-08T13:23:33+00:00"
+      "cached_at": "2026-10-08T19:27:03+00:00"
     }
   },
   "last_pair": {

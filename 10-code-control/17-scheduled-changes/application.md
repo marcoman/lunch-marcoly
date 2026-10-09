@@ -54,6 +54,12 @@ not control the UI. Around the scheduled wall time, LaunchDarkly executes
    from the selected delay are expected.
 7. Record the elapsed time at which `green` first appears and show it next to
    the scheduled time, so the observed lag is visible.
+8. Play a short start tone after the schedule is created. The Start click
+   unlocks browser audio. Play a higher finish tone only on the first SDK
+   evaluation transition from `none` to `green`.
+9. Show a short server-response trace: schedule accepted, the first evaluation,
+   one updating line for unchanged polls, then the `none` → `green` change and
+   the finish tone. Do not print every two-second poll.
 
 Starting while a schedule is pending **replaces** it.
 

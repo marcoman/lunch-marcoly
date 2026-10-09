@@ -40,6 +40,8 @@ a semantic `turnFlagOff` patch, and schedules `turnFlagOn`.
 The second button reads **Stop schedule** while a change is pending and
 **Turn flag off** after it applies. Both actions delete pending changes and
 turn the flag off. The elapsed clock freezes when stopped and resets on start.
+The server-response trace keeps unchanged polls on one line and expands the
+evaluation that first returns `green`. Rebuild the jar so the page is packaged.
 
 ## Why the highlight can lag
 

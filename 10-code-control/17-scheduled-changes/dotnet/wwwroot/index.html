@@ -26,6 +26,8 @@
     .controls{display:flex;gap:.55rem;align-items:end;flex-wrap:wrap}.controls label{display:grid;gap:.25rem}
     .clock{font:700 1.65rem ui-monospace,SFMono-Regular,Menlo,monospace;margin:.35rem 0}
     .status{padding:.65rem;border-left:4px solid #777;background:#29293a}.status.pending{border-color:#ffb74d}.status.applied{border-color:#66bb6a}.status.stopped{border-color:#90a4ae}
+    .trace-card{max-height:8.5rem;overflow:auto;font:0.8rem/1.45 ui-monospace,SFMono-Regular,Menlo,monospace}
+    .trace-kind{color:#90caf9}.trace-line{margin:.15rem 0}
     a{color:#90caf9}
   </style>
 </head>
@@ -83,6 +85,11 @@
         <p id="assignment">NONE · X only</p><p id="reason" class="muted"></p>
         <p class="muted">The browser only re-evaluates the SDK value. It does not turn the highlight on with a local timer.</p>
       </div>
+      <div class="block-title">Server responses</div>
+      <div class="card trace-card">
+        <p id="trace-empty" class="muted">Start a schedule. Repeated polls stay on one line.</p>
+        <div id="trace-lines"></div>
+      </div>
       <div class="block-title">About</div>
       <p class="muted">Scheduled flag changes are a LaunchDarkly Enterprise feature.</p>
       <p><a href="https://launchdarkly.com/docs/home/flags/scheduled-changes" target="_blank">Scheduled changes documentation</a></p>
@@ -93,8 +100,52 @@
     let username="",row=1,col=1,previous=null;
     let flags={flagValue:"none",highlightColor:"none"},startedAt=null,executionDate=null;
     let hadPending=false,pendingNow=false,stoppedAt=null,observedAt=null,controlsReady=false;
+    let audioContext=null,traceLines=[],pollCount=0;
     const pos=(r,c)=>`${ROWS[r]}/${COLS[c]}`;
     const clock=ms=>`${Math.floor(ms/60000)}:${String(Math.floor(ms/1000)%60).padStart(2,"0")}`;
+    // The Start click unlocks browser audio; later SDK evaluations may then play the finish tone.
+    function unlockAudio(){
+      const AudioContext=window.AudioContext||window.webkitAudioContext;
+      if(!AudioContext)return null;
+      audioContext=audioContext||new AudioContext();
+      if(audioContext.state==="suspended")audioContext.resume().catch(()=>{});
+      return audioContext;
+    }
+    function playTone(frequency,duration){
+      const context=unlockAudio();if(!context)return;
+      const oscillator=context.createOscillator(),gain=context.createGain(),now=context.currentTime;
+      oscillator.type="sine";oscillator.frequency.setValueAtTime(frequency,now);
+      gain.gain.setValueAtTime(0.0001,now);
+      gain.gain.exponentialRampToValueAtTime(0.08,now+0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001,now+duration);
+      oscillator.connect(gain);gain.connect(context.destination);
+      oscillator.start(now);oscillator.stop(now+duration+0.02);
+    }
+    // Quiet trace of server evaluations. Identical polls update one line.
+    // LaunchDarkly: evaluation reasons — https://launchdarkly.com/docs/sdk/features/evaluation-reasons
+    function escapeHtml(text){
+      return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+    function flagSummary(data){
+      const reason=(data.reason||{}).kind||"UNKNOWN";
+      const variation=data.variationIndex==null?"default":data.variationIndex;
+      return `${data.highlightColor||data.flagValue||"none"} · ${reason} · variation ${variation}`;
+    }
+    function renderTrace(){
+      const lines=document.getElementById("trace-lines"),empty=document.getElementById("trace-empty");
+      if(!lines||!empty)return;
+      empty.classList.toggle("hidden",traceLines.length>0);
+      lines.innerHTML=traceLines.map(line=>
+        `<div class="trace-line"><span class="trace-kind">${escapeHtml(line.kind)}</span> ${escapeHtml(line.text)}</div>`
+      ).join("");
+    }
+    function pushTrace(kind,text){traceLines.push({kind,text});renderTrace()}
+    function setPollLine(count,summary){
+      const text=`× ${count} unchanged · ${summary}`;
+      const last=traceLines[traceLines.length-1];
+      if(last&&last.kind==="poll")last.text=text;else traceLines.push({kind:"poll",text});
+      renderTrace();
+    }
     function render(){
       const green=flags.highlightColor==="green",name=document.getElementById("hdr-name");
       name.textContent=username;name.className=green?"green":"";
@@ -139,10 +190,24 @@
       }else{status.textContent="No pending change.";status.className="status"}
       renderControls();renderClock();
     }
-    async function evaluate(){
+    async function evaluate(source){
       const response=await fetch(`/api/flags?username=${encodeURIComponent(username)}`,{cache:"no-store"}),data=await response.json();
-      if(!response.ok)throw new Error(data.error||`HTTP ${response.status}`);flags=data;
-      if(hadPending&&!stoppedAt&&!observedAt&&flags.highlightColor==="green")observedAt=Date.now();
+      if(!response.ok)throw new Error(data.error||`HTTP ${response.status}`);
+      const becameGreen=hadPending&&!stoppedAt&&!observedAt
+        &&flags.highlightColor!=="green"&&data.highlightColor==="green";
+      const previous=flags.highlightColor||"none";
+      flags=data;
+      if(becameGreen){
+        observedAt=Date.now();
+        pushTrace("change",`${previous} → green · ${flagSummary(data)}`);
+        playTone(880,0.32);
+        pushTrace("tone","finish");
+      }else if(source==="start"||source==="stop"){
+        pushTrace("evaluate",flagSummary(data));
+      }else if(hadPending&&!stoppedAt&&!observedAt){
+        pollCount+=1;
+        setPollLine(pollCount,flagSummary(data));
+      }
       render();renderControls();
     }
     async function checkSchedule(){
@@ -152,13 +217,18 @@
     }
     async function startSchedule(){
       const button=document.getElementById("start-schedule"),error=document.getElementById("schedule-error");
+      unlockAudio();
       button.disabled=true;error.classList.add("hidden");
       try{
         const minutes=Number(document.getElementById("duration").value);
         const response=await fetch("/api/schedule",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({minutes})});
         const data=await response.json();if(!response.ok)throw new Error(data.error||`HTTP ${response.status}`);
         startedAt=data.startedAt;executionDate=data.scheduledChange.executionDate;hadPending=true;stoppedAt=null;observedAt=null;
-        await evaluate();renderSchedule(data.scheduledChange);
+        traceLines=[];pollCount=0;
+        pushTrace("schedule",`accepted · ${new Date(executionDate).toLocaleTimeString()}`);
+        playTone(440,0.16);
+        pushTrace("tone","start");
+        await evaluate("start");renderSchedule(data.scheduledChange);
       }catch(err){error.textContent=err.message;error.classList.remove("hidden")}finally{button.disabled=false}
     }
     async function stopSchedule(){
@@ -167,7 +237,7 @@
       try{
         const response=await fetch("/api/schedule",{method:"DELETE"}),data=await response.json();
         if(!response.ok)throw new Error(data.error||`HTTP ${response.status}`);
-        stoppedAt=data.stoppedAt;await evaluate();renderSchedule(null);
+        stoppedAt=data.stoppedAt;await evaluate("stop");renderSchedule(null);
       }catch(err){error.textContent=err.message;error.classList.remove("hidden");renderControls()}
     }
     async function start(name){
