@@ -41,3 +41,14 @@ python 17-scheduled-changes.py
 | **Q** | Quit |
 
 The clock is observational. Only the SDK evaluation can turn the selection green.
+
+## Where to look
+
+| What you see | Where it is |
+|--------------|-------------|
+| SDK client starts | `init_launchdarkly` |
+| Poll that picks up the scheduled change | `run_grid` |
+| The highlight evaluation | `../scheduled_change.py` `evaluate_highlight` |
+| The scheduled `turnFlagOn` | `../scheduled_change.py` `start_scheduled_change` |
+
+Keywords: feature flags · scheduled changes · evaluation reasons · semantic patch

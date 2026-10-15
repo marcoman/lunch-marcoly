@@ -7,9 +7,8 @@ from typing import Any
 from ldclient.client import LDClient
 from ldclient.context import Context
 
-# LaunchDarkly: flag key=enable-grid-selection-highlight-pct
-# https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-grid-selection-highlight-pct
-
+# Feature flags — percentage rollout. The user key is the bucket, not a random draw.
+# https://launchdarkly.com/docs/home/flags/rollouts
 FLAG_KEY = "enable-grid-selection-highlight-pct"
 DEFAULT_VALUE = "none"
 
@@ -25,7 +24,10 @@ def normalize_username(value: str) -> str:
 def evaluate_rollout(client: LDClient | None, username: str) -> dict[str, Any]:
     """Evaluate the static rollout without implementing bucketing in app code.
 
-    LaunchDarkly percentage rollout:
+    Look here. The app does not compute a percent. ``variation_detail`` returns
+    the bucket LaunchDarkly already assigned to this context key.
+
+    LaunchDarkly: percentage rollouts · evaluation reasons
     https://launchdarkly.com/docs/home/flags/rollouts
     """
     username = normalize_username(username)
@@ -42,6 +44,7 @@ def evaluate_rollout(client: LDClient | None, username: str) -> dict[str, Any]:
             "stickyNote": "Safe SDK default; LaunchDarkly client is not ready.",
         }
 
+    # String flag. "none" is the value used when the flag cannot be evaluated.
     detail = client.variation_detail(FLAG_KEY, context, DEFAULT_VALUE)
     value = detail.value if detail.value in {"none", "green"} else DEFAULT_VALUE
     return {

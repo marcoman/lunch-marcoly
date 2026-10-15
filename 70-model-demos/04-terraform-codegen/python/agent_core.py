@@ -55,6 +55,9 @@ MESSAGES_DIR = EXAMPLE_ROOT / "rest" / "messages"
 OUTPUT_ROOT = EXAMPLE_ROOT / "output"
 PLUGIN_CACHE = OUTPUT_ROOT / ".plugin-cache"
 
+# LaunchDarkly: ai-config key=terraform-codegen-compare mode=completion
+# https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/terraform-codegen-compare
+
 DEFAULT_CONFIG_KEY = "terraform-codegen-compare"
 DEFAULT_JUDGE_KEY = "terraform-codegen-judge"
 DEFAULT_JUDGE_METRIC = "$ld:ai:judge:terraform-brief"

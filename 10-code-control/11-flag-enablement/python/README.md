@@ -63,3 +63,14 @@ Open [http://127.0.0.1:8100/](http://127.0.0.1:8100/). See [portal/python/README
 4. Turn on `show-navigation-move-count` to display `Count: N` in the header (starts at 0, increments on each move).
 5. Flag changes appear within ~2 seconds without navigating.
 6. After login the screen is a fixed lab layout: grid on the left, **LD lab** on the right, **Trace** across the bottom (taller / shorter / collapse).
+
+## Where to look
+
+| What you see | Where it is |
+|--------------|-------------|
+| SDK client starts, hostOs marked private | `init_launchdarkly` |
+| Four flag reads | `evaluate_flags` |
+| Private hostOs on the context | `../host_os.py` `build_evaluation_context` |
+| On/off and fallthrough | `../ld_flag_controls.py` `apply_flag_control` |
+
+Keywords: feature flags · boolean variations · contexts · private attributes

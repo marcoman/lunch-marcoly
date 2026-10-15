@@ -22,3 +22,13 @@ python 15-prerequisite-flags.py
 Login with a username. Flag changes refresh about every 500 ms. The header
 shows parent/child values and evaluation reasons. Count appears only when the
 child variation is `true`. Press `L` to log out or `Q` to quit.
+
+## Where to look
+
+| What you see | Where it is |
+|--------------|-------------|
+| SDK client starts | `init_launchdarkly` |
+| Poll that picks up a flag change | `run_grid` |
+| Parent and child evaluations, including `PREREQUISITE_FAILED` | `../prerequisite.py` `evaluate_prerequisite_flags` |
+
+Keywords: feature flags · flag prerequisites · evaluation reasons

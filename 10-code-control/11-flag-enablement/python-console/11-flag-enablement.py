@@ -48,6 +48,11 @@ _host_os = detect_host_os()
 
 
 def init_launchdarkly() -> None:
+    """Start the server SDK and mark hostOs private.
+
+    LaunchDarkly: server-side Python SDK · private attributes
+    https://launchdarkly.com/docs/sdk/server-side/python
+    """
     global _ld_client
     sdk_key = os.environ.get("LD_SDK_KEY")
     if not sdk_key:
@@ -57,6 +62,11 @@ def init_launchdarkly() -> None:
 
 
 def evaluate_flags(username: str) -> dict[str, object]:
+    """Read the four flags for this user. Look at the variation calls below.
+
+    LaunchDarkly: boolean variations
+    https://launchdarkly.com/docs/home/flags/boolean
+    """
     if _ld_client is None or not _ld_client.is_initialized():
         return build_flag_response(username, False, False, False, False, _host_os)
     context, host_os = build_evaluation_context(username)
@@ -193,6 +203,7 @@ def run_grid(stdscr: curses.window, username: str) -> str:
 
     try:
         while True:
+            # LaunchDarkly: boolean variations — https://launchdarkly.com/docs/home/flags/boolean
             flags = evaluate_flags(username)
             draw_screen(stdscr, username, row, col, previous, move_count, flags)
             key = stdscr.getch()

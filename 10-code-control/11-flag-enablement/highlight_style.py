@@ -11,19 +11,14 @@ from __future__ import annotations
 
 from host_os import os_emoji_for
 
-# LaunchDarkly: flag key=enable-grid-selection-highlight
-# name="Enable: grid selection highlight" kind=string
-# https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-grid-selection-highlight
-
+# Feature flags — string variation. Off serves none; fallthrough serves a color.
+# https://launchdarkly.com/docs/sdk/features/flag-types
 FLAG_HIGHLIGHT = "enable-grid-selection-highlight"
-# LaunchDarkly: flag key=enable-grid-highlight-color-override
-# name="Enable: grid highlight color override" kind=boolean
-# https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-grid-highlight-color-override
-
+# Feature flags — boolean variation. Turns cohort words on the label on or off.
+# https://launchdarkly.com/docs/home/flags/boolean
 FLAG_CONTEXT = "enable-grid-highlight-color-override"
-# LaunchDarkly: flag key=show-navigation-move-count
-# https://app.launchdarkly.com/projects/lunch-marcoly/features/show-navigation-move-count
-
+# Feature flags — boolean variation. Shows the move count.
+# https://launchdarkly.com/docs/home/flags/boolean
 FLAG_COUNT = "show-navigation-move-count"
 
 VALID_COLORS = frozenset({"pink", "yellow", "red", "blue", "green", "purple", "none"})

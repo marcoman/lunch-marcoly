@@ -46,7 +46,13 @@ public final class AgentCore {
 
     private static final String CANNED_STORIES =
             "No ticker stories loaded yet. Ask the user to click Get Stories.";
+    // LaunchDarkly: ai-config key=equity-briefing-flag-compare mode=completion
+    // https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-flag-compare
+
     private static final String DEFAULT_CONFIG_KEY = "equity-briefing-flag-compare";
+    // LaunchDarkly: ai-config key=equity-briefing-flag-compare-judge mode=completion
+    // https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/equity-briefing-flag-compare-judge
+
     private static final String DEFAULT_JUDGE_KEY = "equity-briefing-flag-compare-judge";
     private static final String DEFAULT_JUDGE_METRIC = "$ld:ai:judge:flag-compare";
     private static final double DEFAULT_PASS_THRESHOLD = 0.65;
@@ -56,10 +62,25 @@ public final class AgentCore {
             "Respond with JSON only: {\"score\": <number from 0 to 1>, \"reasoning\": \"<short text>\"}";
     private static final String EVENT_TOOL_CALL = "$ld:ai:tool:call";
 
+    // LaunchDarkly: flag key=configure-briefing-model
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-briefing-model
+
     private static final String FLAG_MODEL_KEY = "configure-briefing-model";
+    // LaunchDarkly: flag key=configure-briefing-system-prompt
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-briefing-system-prompt
+
     private static final String FLAG_SYSTEM_KEY = "configure-briefing-system-prompt";
+    // LaunchDarkly: flag key=configure-briefing-user-prompt
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-briefing-user-prompt
+
     private static final String FLAG_USER_KEY = "configure-briefing-user-prompt";
+    // LaunchDarkly: flag key=enable-briefing-judge
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-briefing-judge
+
     private static final String FLAG_JUDGE_KEY = "enable-briefing-judge";
+    // LaunchDarkly: flag key=configure-briefing-json
+    // https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-briefing-json
+
     private static final String FLAG_JSON_KEY = "configure-briefing-json";
 
     private static final List<Persona> PERSONAS = List.of(

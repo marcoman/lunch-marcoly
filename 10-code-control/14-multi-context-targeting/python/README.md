@@ -38,3 +38,13 @@ Walk the 2×2 from the lab rail, or:
 ```bash
 python ../collect-results.py --url http://127.0.0.1:8080
 ```
+
+## Where to look
+
+| What you see | Where it is |
+|--------------|-------------|
+| SDK client starts | `init_launchdarkly` |
+| Browser poll | `GET /api/flags` |
+| User + organization context and the badge evaluation | `../partner.py` `evaluate_partner` |
+
+Keywords: feature flags · multi-contexts · context kinds · evaluation reasons

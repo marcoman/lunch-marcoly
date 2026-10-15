@@ -114,7 +114,11 @@ def _summarize(flag: dict[str, Any], environment: str) -> dict[str, Any]:
 
 
 def list_flag_controls() -> dict[str, Any]:
-    """Fetch status for the partner-badge flag."""
+    """Read on/off and fallthrough. This does not edit the multi-context rules.
+
+    LaunchDarkly: get feature flag
+    https://launchdarkly.com/docs/api/feature-flags/get-feature-flag
+    """
     cfg = api_config()
     if not cfg["configured"]:
         return {
@@ -136,7 +140,12 @@ def list_flag_controls() -> dict[str, Any]:
 def apply_flag_control(
     flag_key: str, *, turn_on: bool | None = None, fallthrough: object | None = None
 ) -> dict[str, Any]:
-    """Apply on/off and fallthrough semantic patches without editing rules."""
+    """Change on/off or fallthrough. The multi-context rules stay as provisioned.
+
+    LaunchDarkly: semantic patch — turnFlagOn, turnFlagOff,
+    updateFallthroughVariationOrRollout
+    https://launchdarkly.com/docs/api/feature-flags/patch-feature-flag
+    """
     if flag_key != FLAG_PARTNER_BADGE:
         raise ValueError(f"Flag key not allowed for controls: {flag_key}")
     if turn_on is None and fallthrough is None:

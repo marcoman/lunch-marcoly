@@ -11,9 +11,8 @@ from typing import Any
 
 from ldclient import Context
 
-# LaunchDarkly: flag key=show-partner-org-badge
-# https://app.launchdarkly.com/projects/lunch-marcoly/features/show-partner-org-badge
-
+# Feature flags — boolean variation. Rules match user and organization together.
+# https://launchdarkly.com/docs/home/flags/multi-contexts
 FLAG_PARTNER_BADGE = "show-partner-org-badge"
 
 ORG_LABELS = {
@@ -79,10 +78,15 @@ def build_multi_context(username: str, org: str) -> Context:
 
 
 def evaluate_partner(client: Any, username: str, org: str | None) -> dict[str, Any]:
-    """Evaluate show-partner-org-badge. The SDK variation is the source of truth."""
+    """Read the partner badge. The multi-context is the LaunchDarkly call's context.
+
+    LaunchDarkly: multi-contexts · evaluation reasons
+    https://launchdarkly.com/docs/home/flags/multi-contexts
+    """
     user_key = normalize_username(username)
     org_key = normalize_org(org)
     context = build_multi_context(user_key, org_key)
+    # Boolean flag. False is the value used when the SDK is down.
     detail = (
         client.variation_detail(FLAG_PARTNER_BADGE, context, False)
         if client is not None

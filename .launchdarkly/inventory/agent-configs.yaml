@@ -253,3 +253,39 @@ agent_configs:
     role: evaluation
   - path: 20-agent-config/25-agent-graph/rest/common.sh
     role: provisioning
+- key: equity-briefing-flag-compare
+  name: ''
+  mode: completion
+  examples:
+  - path: 20-agent-config/26-flags-vs-agent-control
+  sources:
+  - path: 20-agent-config/26-flags-vs-agent-control/java/src/main/java/AgentCore.java
+    role: evaluation
+  - path: 20-agent-config/26-flags-vs-agent-control/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/26-flags-vs-agent-control/python/agent_core.py
+    role: evaluation
+  - path: 20-agent-config/26-flags-vs-agent-control/rest/common.sh
+    role: provisioning
+- key: equity-briefing-flag-compare-judge
+  name: ''
+  mode: completion
+  examples:
+  - path: 20-agent-config/26-flags-vs-agent-control
+  sources:
+  - path: 20-agent-config/26-flags-vs-agent-control/java/src/main/java/AgentCore.java
+    role: evaluation
+  - path: 20-agent-config/26-flags-vs-agent-control/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/26-flags-vs-agent-control/python/agent_core.py
+    role: evaluation
+  - path: 20-agent-config/26-flags-vs-agent-control/rest/common.sh
+    role: provisioning
+- key: terraform-codegen-compare
+  name: ''
+  mode: completion
+  examples:
+  - path: 70-model-demos
+  sources:
+  - path: 70-model-demos/04-terraform-codegen/python/agent_core.py
+    role: evaluation

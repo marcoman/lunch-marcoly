@@ -17,9 +17,8 @@ from typing import Any
 from ldclient.client import LDClient
 from ldclient.context import Context
 
-# LaunchDarkly: flag key=enable-grid-selection-highlight-sched
-# https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-grid-selection-highlight-sched
-
+# Feature flags — scheduled changes. The app polls; LaunchDarkly owns the clock.
+# https://launchdarkly.com/docs/home/flags/scheduled-changes
 FLAG_KEY = "enable-grid-selection-highlight-sched"
 DEFAULT_VALUE = "none"
 LD_API_HOST = os.environ.get("LD_API_HOST") or "https://app.launchdarkly.com"
@@ -35,7 +34,11 @@ def normalize_username(value: str) -> str:
 
 
 def evaluate_highlight(client: LDClient | None, username: str) -> dict[str, Any]:
-    """Evaluate the highlight; LaunchDarkly applies the scheduled on change."""
+    """Read the highlight. A scheduled turnFlagOn shows up on a later poll.
+
+    LaunchDarkly: scheduled flag changes · evaluation reasons
+    https://launchdarkly.com/docs/home/flags/scheduled-changes
+    """
     username = normalize_username(username)
     context = Context.builder(username).kind("user").name(username).build()
     if client is None or not client.is_initialized():
@@ -48,6 +51,7 @@ def evaluate_highlight(client: LDClient | None, username: str) -> dict[str, Any]
             "ldContext": {"kind": "user", "key": username, "name": username},
         }
 
+    # String flag. "none" is the value used until LaunchDarkly turns the flag on.
     detail = client.variation_detail(FLAG_KEY, context, DEFAULT_VALUE)
     value = detail.value if detail.value in {"none", "green"} else DEFAULT_VALUE
     return {
@@ -146,7 +150,11 @@ def _delete_pending_changes() -> int:
 
 
 def _turn_flag_off(comment: str) -> None:
-    """Turn the flag off now with a semantic patch, independent of schedules."""
+    """Turn the flag off now. This is separate from the scheduled change.
+
+    LaunchDarkly: semantic patch — turnFlagOff
+    https://launchdarkly.com/docs/api/feature-flags/patch-feature-flag
+    """
     cfg = api_config()
     project = urllib.parse.quote(str(cfg["projectKey"]), safe="")
     flag = urllib.parse.quote(FLAG_KEY, safe="")
@@ -190,6 +198,9 @@ def start_scheduled_change(minutes: int) -> dict[str, Any]:
 
     Resetting first makes repeated classroom runs visible: X-only now, green
     after LaunchDarkly executes the scheduled ``turnFlagOn`` instruction.
+
+    LaunchDarkly: scheduled changes API
+    https://launchdarkly.com/docs/api/scheduled-changes
     """
     if minutes < 1 or minutes > 60:
         raise ValueError("minutes must be between 1 and 60")

@@ -22,3 +22,13 @@ python 14-multi-context-targeting.py
 Choose Alice/Bob and Acme/Globex at login. On the grid, `1`/`2` switch user and
 `3`/`4` switch org without logging out. The badge refreshes about every 500 ms.
 Press `L` to log out or `Q` to quit.
+
+## Where to look
+
+| What you see | Where it is |
+|--------------|-------------|
+| SDK client starts | `init_launchdarkly` |
+| Poll that picks up a flag change | `run_grid` |
+| User + organization context and the badge evaluation | `../partner.py` `evaluate_partner` |
+
+Keywords: feature flags · multi-contexts · context kinds · evaluation reasons

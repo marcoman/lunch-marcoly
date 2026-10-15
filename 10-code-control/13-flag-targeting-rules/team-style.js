@@ -10,6 +10,9 @@
 const FLAG_TEAM_LABEL_STYLE = "configure-team-label-style";
 // JSON flag: words shown in the UI. Style values stay colored-red/blue/yellow/plain.
 // https://launchdarkly.com/docs/sdk/features/flag-types
+// LaunchDarkly: flag key=configure-team-display-labels
+// https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-team-display-labels
+
 const FLAG_TEAM_DISPLAY_LABELS = "configure-team-display-labels";
 const PLAIN = "plain";
 const TEAM_LABELS = {

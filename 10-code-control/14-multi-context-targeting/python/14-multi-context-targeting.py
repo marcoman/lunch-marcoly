@@ -26,7 +26,11 @@ _ld_client: LDClient | None = None
 
 
 def init_launchdarkly() -> None:
-    """Initialize the server-side SDK. Evaluation stays in this process."""
+    """Start the server SDK. The browser never holds the SDK key.
+
+    LaunchDarkly: server-side Python SDK
+    https://launchdarkly.com/docs/sdk/server-side/python
+    """
     global _ld_client
     sdk_key = (os.environ.get("LD_SDK_KEY") or "").strip()
     if not sdk_key:
@@ -75,6 +79,8 @@ class Handler(SimpleHTTPRequestHandler):
             except ValueError as exc:
                 _json_response(self, 400, {"error": str(exc)})
                 return
+            # The page polls this. The next read is evaluate_partner.
+            # LaunchDarkly: multi-contexts — https://launchdarkly.com/docs/home/flags/multi-contexts
             _json_response(self, 200, evaluate_partner(_ld_client, username, org))
             return
         if parsed.path == "/api/bootstrap":

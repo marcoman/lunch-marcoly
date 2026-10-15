@@ -790,10 +790,25 @@ def _repair_if_failed(
 # Feature flags — string, boolean, and JSON variations.
 # https://launchdarkly.com/docs/sdk/features/flag-types
 # Separate flags: one key per field. JSON flag: the same four fields in one body.
+# LaunchDarkly: flag key=configure-briefing-model
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-briefing-model
+
 FLAG_MODEL_KEY = "configure-briefing-model"
+# LaunchDarkly: flag key=configure-briefing-system-prompt
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-briefing-system-prompt
+
 FLAG_SYSTEM_KEY = "configure-briefing-system-prompt"
+# LaunchDarkly: flag key=configure-briefing-user-prompt
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-briefing-user-prompt
+
 FLAG_USER_KEY = "configure-briefing-user-prompt"
+# LaunchDarkly: flag key=enable-briefing-judge
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/enable-briefing-judge
+
 FLAG_JUDGE_KEY = "enable-briefing-judge"
+# LaunchDarkly: flag key=configure-briefing-json
+# https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-briefing-json
+
 FLAG_JSON_KEY = "configure-briefing-json"
 SOURCE_FLAGS = "flags"
 SOURCE_JSON = "json"

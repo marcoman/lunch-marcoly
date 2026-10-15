@@ -43,3 +43,13 @@ the rollout weights remain unchanged.
 ## Safe default
 
 When `LD_SDK_KEY` is missing or the client is not ready, the value is `none`.
+
+## Where to look
+
+| What you see | Where it is |
+|--------------|-------------|
+| SDK client starts | `init_launchdarkly` |
+| Browser poll | `GET /api/flags` |
+| The rollout evaluation | `../rollout.py` `evaluate_rollout` |
+
+Keywords: feature flags · percentage rollouts · contexts · evaluation reasons

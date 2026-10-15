@@ -11,9 +11,8 @@ import platform
 
 HOST_OS_ATTR = "hostOs"
 ANONYMOUS_CONTEXT_KEY = "anonymous"
-# LaunchDarkly: flag key=show-anonymous-host-os-emoji name="Show: anonymous host OS emoji" kind=boolean
-# https://app.launchdarkly.com/projects/lunch-marcoly/features/show-anonymous-host-os-emoji
-
+# Feature flags — boolean variation on an anonymous context.
+# https://launchdarkly.com/docs/sdk/features/anonymous
 FLAG_ANON_OS_EMOJI = "show-anonymous-host-os-emoji"
 
 OS_EMOJI = {
@@ -42,7 +41,11 @@ def os_emoji_for(host_os: str, show_os_emoji: bool) -> str:
 
 
 def build_anonymous_context():
-    """Build anonymous LD context with private hostOs."""
+    """Build the anonymous context. hostOs is private, so events hide it.
+
+    LaunchDarkly: anonymous contexts · private attributes
+    https://launchdarkly.com/docs/sdk/features/anonymous
+    """
     from ldclient import Context
 
     host_os = detect_host_os()
@@ -57,7 +60,11 @@ def build_anonymous_context():
 
 
 def build_user_context(username: str):
-    """Build logged-in user context for string/number/JSON flags."""
+    """Build the logged-in user context for the string, number, and JSON flags.
+
+    LaunchDarkly: contexts
+    https://launchdarkly.com/docs/home/flags/contexts
+    """
     from ldclient import Context
 
     return Context.builder(username).build()

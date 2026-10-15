@@ -47,3 +47,14 @@ to the execution date rather than exactly on it, the change still has to reach
 this server's SDK stream, and the page re-evaluates only every two seconds. The
 panel reports the elapsed time at which `green` first appeared so the lag is
 visible.
+
+## Where to look
+
+| What you see | Where it is |
+|--------------|-------------|
+| SDK client starts | `init_launchdarkly` |
+| Browser poll | `GET /api/flags` |
+| The highlight evaluation | `../scheduled_change.py` `evaluate_highlight` |
+| The scheduled `turnFlagOn` | `../scheduled_change.py` `start_scheduled_change` |
+
+Keywords: feature flags · scheduled changes · evaluation reasons · semantic patch

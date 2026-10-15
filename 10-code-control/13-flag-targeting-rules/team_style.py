@@ -10,11 +10,10 @@ from typing import Any
 
 from ldclient import Context
 
-# LaunchDarkly: flag key=configure-team-label-style
-# https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-team-label-style
-
+# Feature flags — string variation. Rules on public team serve the color.
+# https://launchdarkly.com/docs/home/flags/target-rules
 FLAG_TEAM_LABEL_STYLE = "configure-team-label-style"
-# JSON flag: words shown in the UI. Values on the style flag stay unchanged.
+# Feature flags — JSON variation. Words only; team values stay red, blue, yellow.
 # https://launchdarkly.com/docs/sdk/features/flag-types
 FLAG_TEAM_DISPLAY_LABELS = "configure-team-display-labels"
 PLAIN = "plain"
@@ -59,8 +58,8 @@ def normalize_team(team: str | None) -> str:
 def build_context(username: str, team: str) -> Context:
     """Build the user context; omit ``team`` entirely for No team.
 
-    LaunchDarkly: ``team`` is intentionally public so evaluations appear in
-    analytics and targeting rules can inspect it.
+    LaunchDarkly: ``team`` stays public so analytics and the Context tab show
+    the value the rules matched. No team omits the attribute instead.
     https://launchdarkly.com/docs/home/flags/context-attributes
     """
     builder = Context.builder(username)
@@ -92,13 +91,19 @@ def display_labels_from(value: Any) -> dict[str, str]:
 
 
 def evaluate_team_style(client: Any, username: str, team: str | None) -> dict[str, Any]:
-    """Evaluate the style flag and the display-label flag.
+    """Read both flags and return the color and the words for this user.
 
-    The style flag still returns colored-red, colored-blue, colored-yellow, or
-    plain. The JSON flag only changes the words on screen.
+    Look here first. ``variation_detail`` is the LaunchDarkly call. The style
+    flag's rules match ``team`` and serve a color. The JSON flag only supplies
+    the words. No team omits ``team``, so those rules miss and fallthrough
+    serves ``plain``.
+
+    LaunchDarkly: evaluation reasons — value, variation index, and reason
+    https://launchdarkly.com/docs/sdk/features/evaluation-reasons
     """
     normalized_team = normalize_team(team)
     context = build_context(username, normalized_team)
+    # String flag. The third argument is the value used when the SDK is down.
     detail = (
         client.variation_detail(FLAG_TEAM_LABEL_STYLE, context, PLAIN)
         if client is not None
@@ -111,6 +116,7 @@ def evaluate_team_style(client: Any, username: str, team: str | None) -> dict[st
     variation_index = detail.variation_index if detail is not None else None
 
     label_default = default_display_labels()
+    # JSON flag. Fallthrough chooses the vocabulary. Missing keys keep the defaults.
     label_detail = (
         client.variation_detail(FLAG_TEAM_DISPLAY_LABELS, context, label_default)
         if client is not None

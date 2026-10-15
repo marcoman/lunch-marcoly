@@ -33,7 +33,11 @@ _ld_client: LDClient | None = None
 
 
 def init_launchdarkly() -> None:
-    """Initialize the server SDK used for both detailed evaluations."""
+    """Start the server SDK. Both flags are evaluated in this process.
+
+    LaunchDarkly: server-side Python SDK · flag prerequisites
+    https://launchdarkly.com/docs/sdk/server-side/python
+    """
     global _ld_client
     sdk_key = (os.environ.get("LD_SDK_KEY") or "").strip()
     if not sdk_key:
@@ -82,6 +86,7 @@ class Handler(SimpleHTTPRequestHandler):
                 username = normalize_username(
                     (params.get("username") or [""])[0]
                 )
+                # LaunchDarkly: flag prerequisites — https://launchdarkly.com/docs/home/flags/prereqs
                 payload = evaluate_prerequisite_flags(_ld_client, username)
                 _json_response(self, 200, payload)
             except ValueError as exc:

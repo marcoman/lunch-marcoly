@@ -155,7 +155,11 @@ def _summarize(
 
 
 def list_flag_controls() -> dict[str, Any]:
-    """Fetch parent/child status and expose the child's prerequisite evidence."""
+    """Read both flags, including the child's prerequisite, for the Controls tab.
+
+    LaunchDarkly: get feature flag · flag prerequisites
+    https://launchdarkly.com/docs/api/feature-flags/get-feature-flag
+    """
     cfg = api_config()
     if not cfg["configured"]:
         return {
@@ -200,7 +204,12 @@ def apply_flag_control(
     turn_on: bool | None = None,
     fallthrough_value: str | None = None,
 ) -> dict[str, Any]:
-    """Apply allowed semantic patches while preserving prerequisites."""
+    """Change on/off or the parent fallthrough. The prerequisite stays as provisioned.
+
+    LaunchDarkly: semantic patch — turnFlagOn, turnFlagOff,
+    updateFallthroughVariationOrRollout
+    https://launchdarkly.com/docs/api/feature-flags/patch-feature-flag
+    """
     if flag_key not in _ALLOWED_KEYS:
         raise ValueError(f"Flag key not allowed for controls: {flag_key}")
     if turn_on is None and fallthrough_value is None:

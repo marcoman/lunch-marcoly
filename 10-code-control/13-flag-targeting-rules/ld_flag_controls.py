@@ -135,7 +135,11 @@ def _summarize(
 
 
 def list_flag_controls() -> dict[str, Any]:
-    """Fetch status and variations for the style flag and the display-label flag."""
+    """Read both flags so Controls can show on/off and the current fallthrough.
+
+    LaunchDarkly: get feature flag
+    https://launchdarkly.com/docs/api/feature-flags/get-feature-flag
+    """
     cfg = api_config()
     if not cfg["configured"]:
         return {
@@ -174,7 +178,12 @@ def list_flag_controls() -> dict[str, Any]:
 def apply_flag_control(
     flag_key: str, *, turn_on: bool | None = None, fallthrough: object | None = None
 ) -> dict[str, Any]:
-    """Apply on/off and fallthrough semantic patches without editing rules."""
+    """Change on/off or fallthrough. Targeting rules stay as provisioned.
+
+    LaunchDarkly: semantic patch — turnFlagOn, turnFlagOff,
+    updateFallthroughVariationOrRollout
+    https://launchdarkly.com/docs/api/feature-flags/patch-feature-flag
+    """
     allowed = {key for key, _, _ in CONTROLLED_FLAGS}
     if flag_key not in allowed:
         raise ValueError(f"Flag key not allowed for controls: {flag_key}")

@@ -41,3 +41,13 @@ Press `L` to log out or `Q` to quit.
 2. Header shows Name (optional OS emoji), positions, `{label}: N`, and `Lucky Number is: N`.
 3. Flag values refresh about every 500 ms on the grid screen only.
 4. Navigation stops after `maxMoves` successful moves (default 100).
+
+## Where to look
+
+| What you see | Where it is |
+|--------------|-------------|
+| SDK client starts | `init_launchdarkly` |
+| Poll that picks up a flag change | `run_grid` |
+| String, number, JSON, and anonymous boolean reads | `../flag_variations.py` `evaluate_flags` |
+
+Keywords: feature flags · flag types · anonymous contexts · private attributes

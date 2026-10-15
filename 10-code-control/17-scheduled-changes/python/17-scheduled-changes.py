@@ -29,7 +29,11 @@ _ld_client: LDClient | None = None
 
 
 def init_launchdarkly() -> None:
-    """Initialize one SDK client; scheduled changes alter its flag remotely."""
+    """Start the server SDK. The schedule changes the flag from outside this process.
+
+    LaunchDarkly: server-side Python SDK · scheduled flag changes
+    https://launchdarkly.com/docs/sdk/server-side/python
+    """
     global _ld_client
     sdk_key = (os.environ.get("LD_SDK_KEY") or "").strip()
     if not sdk_key:
@@ -78,6 +82,8 @@ class Handler(SimpleHTTPRequestHandler):
             params = parse_qs(parsed.query, keep_blank_values=True)
             try:
                 username = normalize_username((params.get("username") or [""])[0])
+                # The page polls this. The next read is evaluate_highlight.
+                # LaunchDarkly: scheduled flag changes — https://launchdarkly.com/docs/home/flags/scheduled-changes
                 json_response(self, 200, evaluate_highlight(_ld_client, username))
             except ValueError as exc:
                 json_response(self, 400, {"error": str(exc)})

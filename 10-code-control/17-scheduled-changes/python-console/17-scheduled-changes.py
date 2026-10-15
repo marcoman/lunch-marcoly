@@ -38,7 +38,11 @@ _ld_client: LDClient | None = None
 
 
 def init_launchdarkly() -> None:
-    """Initialize one SDK client; scheduled changes alter its flag remotely."""
+    """Start the server SDK. The schedule changes the flag from outside this process.
+
+    LaunchDarkly: server-side Python SDK · scheduled flag changes
+    https://launchdarkly.com/docs/sdk/server-side/python
+    """
     global _ld_client
     sdk_key = (os.environ.get("LD_SDK_KEY") or "").strip()
     if not sdk_key:
@@ -254,6 +258,7 @@ def run_grid(stdscr: curses.window, username: str) -> str:
     stdscr.timeout(500)
     try:
         while True:
+            # LaunchDarkly: scheduled flag changes — https://launchdarkly.com/docs/home/flags/scheduled-changes
             flags = evaluate_highlight(_ld_client, username)
             if (
                 started_at

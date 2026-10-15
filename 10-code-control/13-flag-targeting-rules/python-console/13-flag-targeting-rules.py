@@ -22,7 +22,14 @@ _ld_client: LDClient | None = None
 
 
 def init_launchdarkly() -> None:
-    """Initialize the server SDK without private context attributes."""
+    """Start the server SDK once. Later evaluations reuse this client.
+
+    No private attributes are configured. ``team`` stays on the context so a
+    reader can see the value the targeting rules matched.
+
+    LaunchDarkly: server-side Python SDK
+    https://launchdarkly.com/docs/sdk/server-side/python
+    """
     global _ld_client
     sdk_key = os.environ.get("LD_SDK_KEY")
     if not sdk_key:
@@ -106,6 +113,7 @@ def draw_screen(
     stdscr.addstr(0, 0, APP_BANNER)
     stdscr.addstr(1, 0, f"Name: {username}")
     stdscr.addstr(2, 0, "Team: ")
+    # Color comes from the style flag. The words come from the JSON flag.
     stdscr.addstr(style["teamLabel"], color_pairs.get(style["style"], curses.A_NORMAL))
     stdscr.addstr(3, 0, f"Current position: {format_pos(row, col)}")
     prev_text = format_pos(*previous) if previous else "—"
@@ -124,12 +132,17 @@ def run_grid(
     team: str,
     color_pairs: dict[str, int],
 ) -> str:
-    """Re-evaluate the team style every 500 ms while navigating."""
+    """Redraw on a timer so a flag change appears without another login.
+
+    The next place to read is ``evaluate_team_style`` in ``team_style.py``.
+    """
     row, col = 1, 1
     previous: tuple[int, int] | None = None
     stdscr.timeout(500)
     try:
         while True:
+            # LaunchDarkly: targeting rules on the public team attribute
+            # https://launchdarkly.com/docs/home/flags/target-rules
             style = evaluate_team_style(_ld_client, username, team)
             draw_screen(stdscr, username, row, col, previous, style, color_pairs)
             key = stdscr.getch()

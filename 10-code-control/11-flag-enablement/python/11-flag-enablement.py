@@ -48,7 +48,11 @@ _host_os = detect_host_os()
 
 
 def init_launchdarkly() -> None:
-    """Initialize the server-side SDK from LD_SDK_KEY."""
+    """Start the server SDK and mark hostOs private.
+
+    LaunchDarkly: server-side Python SDK · private attributes
+    https://launchdarkly.com/docs/sdk/server-side/python
+    """
     global _ld_client
     sdk_key = os.environ.get("LD_SDK_KEY")
     if not sdk_key:
@@ -69,7 +73,8 @@ def evaluate_flags(username: str) -> dict[str, object]:
         response = build_flag_response(username, False, False, False, False, host_os)
     else:
         context, host_os = build_evaluation_context(username)
-        # Highlight may be boolean or string ("none" / color) depending on the project flag.
+        # Each variation call is one flag. The last argument is the safe default.
+        # LaunchDarkly: boolean variations — https://launchdarkly.com/docs/home/flags/boolean
         highlight_raw = _ld_client.variation(FLAG_HIGHLIGHT, context, "none")
         highlight, served_color = interpret_highlight_variation(highlight_raw)
         context_highlight = bool(_ld_client.variation(FLAG_CONTEXT, context, False))
@@ -148,6 +153,7 @@ class Handler(SimpleHTTPRequestHandler):
             if not username:
                 self.send_error(400, "username query parameter is required")
                 return
+            # The page polls this. The four variation calls are in evaluate_flags.
             _json_response(self, 200, evaluate_flags(username))
             return
 

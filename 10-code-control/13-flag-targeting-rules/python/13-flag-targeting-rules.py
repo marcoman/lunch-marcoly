@@ -26,7 +26,14 @@ _ld_client: LDClient | None = None
 
 
 def init_launchdarkly() -> None:
-    """Initialize the SDK without private attributes; team stays public."""
+    """Start the server SDK once. The browser never holds the SDK key.
+
+    No private attributes are configured. ``team`` stays on the context so the
+    Context tab shows the value the targeting rules matched.
+
+    LaunchDarkly: server-side Python SDK · context attributes
+    https://launchdarkly.com/docs/sdk/server-side/python
+    """
     global _ld_client
     sdk_key = (os.environ.get("LD_SDK_KEY") or "").strip()
     if not sdk_key:
@@ -73,6 +80,8 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         if parsed.path == "/api/flags":
+            # The page polls this. The next read is evaluate_team_style.
+            # LaunchDarkly: contexts — https://launchdarkly.com/docs/home/flags/contexts
             params = parse_qs(parsed.query, keep_blank_values=True)
             username = (params.get("username") or [""])[0].strip()
             if not username:
@@ -92,6 +101,9 @@ class Handler(SimpleHTTPRequestHandler):
             })
             return
         if parsed.path == "/api/flag-controls":
+            # Read on/off and fallthrough. This handler does not edit rules.
+            # LaunchDarkly: get feature flag
+            # https://launchdarkly.com/docs/api/feature-flags/get-feature-flag
             try:
                 _json_response(self, 200, list_flag_controls())
             except Exception as exc:  # noqa: BLE001
@@ -103,6 +115,8 @@ class Handler(SimpleHTTPRequestHandler):
         if urlparse(self.path).path != "/api/flag-controls":
             self.send_error(404, "Not found")
             return
+        # LaunchDarkly: semantic patch — turnFlagOn, turnFlagOff, fallthrough
+        # https://launchdarkly.com/docs/api/feature-flags/patch-feature-flag
         try:
             data = _read_json(self)
             key = str(data.get("key") or "").strip()

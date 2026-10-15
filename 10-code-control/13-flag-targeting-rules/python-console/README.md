@@ -14,6 +14,16 @@ Console application for [13-flag-targeting-rules](../application.md), demonstrat
 
 This console app evaluates the flag but has no web lab or REST Controls UI.
 
+## Where to look
+
+| What you see | Where it is |
+|--------------|-------------|
+| SDK client starts | `init_launchdarkly` |
+| Poll that picks up a flag change | `run_grid` |
+| Context, both evaluations, and the reason | `../team_style.py` `evaluate_team_style` |
+
+Keywords: feature flags · targeting rules · context attributes · evaluation reasons
+
 ## Run
 
 ```bash

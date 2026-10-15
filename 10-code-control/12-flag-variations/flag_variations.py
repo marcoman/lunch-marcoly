@@ -15,17 +15,10 @@ from host_os import (
 # LaunchDarkly capability: Multivariate flag evaluation (string, number, JSON)
 # See: https://launchdarkly.com/docs/sdk/features/flag-types
 
-# LaunchDarkly: flag key=configure-navigation-count-label name="Configure: navigation count label" kind=string
-# https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-navigation-count-label
-
+# Feature flags — string, number, and JSON variations.
+# https://launchdarkly.com/docs/sdk/features/flag-types
 FLAG_COUNT_LABEL = "configure-navigation-count-label"
-# LaunchDarkly: flag key=configure-lucky-number name="Configure: lucky number" kind=number
-# https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-lucky-number
-
 FLAG_LUCKY_NUMBER = "configure-lucky-number"
-# LaunchDarkly: flag key=configure-max-navigation-moves name="Configure: max navigation moves" kind=json
-# https://app.launchdarkly.com/projects/lunch-marcoly/features/configure-max-navigation-moves
-
 FLAG_MAX_MOVES = "configure-max-navigation-moves"
 
 DEFAULT_COUNT_LABEL = "Count"
@@ -62,7 +55,11 @@ def build_flag_response(
 
 
 def evaluate_flags(client, username: str, host_os: str) -> dict[str, Any]:
-    """Evaluate all four flags; anonymous emoji uses anonymous context."""
+    """Read four flags. The emoji flag uses an anonymous context; the rest use the user.
+
+    LaunchDarkly: flag types — string, number, JSON, and boolean
+    https://launchdarkly.com/docs/sdk/features/flag-types
+    """
     if client is None or not client.is_initialized():
         return build_flag_response(
             username,
@@ -76,11 +73,13 @@ def evaluate_flags(client, username: str, host_os: str) -> dict[str, Any]:
     user_context = build_user_context(username)
     host = host_os or detected_os
 
+    # Boolean flag on the anonymous context. The other three use the logged-in user.
     show_emoji = bool(client.variation(FLAG_ANON_OS_EMOJI, anon_context, False))
     count_label = str(
         client.variation(FLAG_COUNT_LABEL, user_context, DEFAULT_COUNT_LABEL)
     )
     lucky_number = client.variation(FLAG_LUCKY_NUMBER, user_context, DEFAULT_LUCKY_NUMBER)
+    # JSON flag. The default object is used when the SDK is down.
     max_moves_raw = client.variation(
         FLAG_MAX_MOVES,
         user_context,

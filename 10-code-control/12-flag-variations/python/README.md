@@ -45,3 +45,14 @@ configure-navigation-count-label
 configure-lucky-number
 configure-max-navigation-moves
 ```
+
+## Where to look
+
+| What you see | Where it is |
+|--------------|-------------|
+| SDK client starts | `init_launchdarkly` |
+| Browser poll | `GET /api/flags` |
+| String, number, JSON, and anonymous boolean reads | `../flag_variations.py` `evaluate_flags` |
+| Anonymous context | `../host_os.py` `build_anonymous_context` |
+
+Keywords: feature flags · flag types · anonymous contexts · private attributes

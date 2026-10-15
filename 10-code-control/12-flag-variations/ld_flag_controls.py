@@ -284,7 +284,11 @@ def _summarize_flag(flag: dict[str, Any], environment_key: str, meta: dict[str, 
 
 
 def list_flag_controls() -> dict[str, Any]:
-    """Fetch on/off status + variation summary for controlled flags."""
+    """Read on/off and fallthrough so Controls can show the current flag state.
+
+    LaunchDarkly: get feature flag
+    https://launchdarkly.com/docs/api/feature-flags/get-feature-flag
+    """
     cfg = api_config()
     if not cfg["configured"]:
         return {

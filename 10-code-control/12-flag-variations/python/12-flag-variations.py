@@ -39,6 +39,11 @@ _host_os = detect_host_os()
 
 
 def init_launchdarkly() -> None:
+    """Start the server SDK. hostOs stays private on the anonymous context.
+
+    LaunchDarkly: server-side Python SDK · anonymous contexts
+    https://launchdarkly.com/docs/sdk/server-side/python
+    """
     global _ld_client
     sdk_key = os.environ.get("LD_SDK_KEY")
     if not sdk_key:
@@ -109,10 +114,13 @@ class Handler(SimpleHTTPRequestHandler):
             if not username:
                 self.send_error(400, "username query parameter is required")
                 return
+            # The page polls this. The four variation calls are in flag_variations.py.
             _json_response(self, 200, evaluate_flags(username))
             return
 
         if parsed.path == "/api/flag-controls":
+            # LaunchDarkly: get feature flag
+            # https://launchdarkly.com/docs/api/feature-flags/get-feature-flag
             _json_response(self, 200, list_flag_controls())
             return
 

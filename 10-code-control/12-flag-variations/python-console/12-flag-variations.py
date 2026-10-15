@@ -24,6 +24,11 @@ _host_os = detect_host_os()
 
 
 def init_launchdarkly() -> None:
+    """Start the server SDK. hostOs stays private on the anonymous context.
+
+    LaunchDarkly: server-side Python SDK · anonymous contexts
+    https://launchdarkly.com/docs/sdk/server-side/python
+    """
     global _ld_client
     sdk_key = os.environ.get("LD_SDK_KEY")
     if not sdk_key:
@@ -125,6 +130,7 @@ def run_grid(stdscr: curses.window, username: str) -> str:
 
     try:
         while True:
+            # LaunchDarkly: flag types — https://launchdarkly.com/docs/sdk/features/flag-types
             flags = evaluate_flags(_ld_client, username, _host_os)
             max_moves = int(flags["maxMoves"])
             draw_screen(stdscr, username, row, col, previous, move_count, flags)

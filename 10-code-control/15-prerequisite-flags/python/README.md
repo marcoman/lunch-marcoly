@@ -45,3 +45,13 @@ curl "http://127.0.0.1:8080/api/flag-controls"
 
 Without `LD_SDK_KEY`, evaluation uses safe defaults: no highlight and no
 count.
+
+## Where to look
+
+| What you see | Where it is |
+|--------------|-------------|
+| SDK client starts | `init_launchdarkly` |
+| Browser poll | `GET /api/flags` |
+| Parent and child evaluations, including `PREREQUISITE_FAILED` | `../prerequisite.py` `evaluate_prerequisite_flags` |
+
+Keywords: feature flags · flag prerequisites · evaluation reasons

@@ -511,3 +511,73 @@ flags:
     role: provisioning
   - path: 30-client-sdk/34-synced-segments-twilio/rest/create-flags.sh
     role: provisioning
+- key: configure-briefing-json
+  name: ''
+  kind: boolean
+  examples:
+  - path: 20-agent-config/26-flags-vs-agent-control
+  sources:
+  - path: 20-agent-config/26-flags-vs-agent-control/java/src/main/java/AgentCore.java
+    role: evaluation
+  - path: 20-agent-config/26-flags-vs-agent-control/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/26-flags-vs-agent-control/python/agent_core.py
+    role: evaluation
+- key: configure-briefing-model
+  name: ''
+  kind: boolean
+  examples:
+  - path: 20-agent-config/26-flags-vs-agent-control
+  sources:
+  - path: 20-agent-config/26-flags-vs-agent-control/java/src/main/java/AgentCore.java
+    role: evaluation
+  - path: 20-agent-config/26-flags-vs-agent-control/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/26-flags-vs-agent-control/python/agent_core.py
+    role: evaluation
+- key: configure-briefing-system-prompt
+  name: ''
+  kind: boolean
+  examples:
+  - path: 20-agent-config/26-flags-vs-agent-control
+  sources:
+  - path: 20-agent-config/26-flags-vs-agent-control/java/src/main/java/AgentCore.java
+    role: evaluation
+  - path: 20-agent-config/26-flags-vs-agent-control/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/26-flags-vs-agent-control/python/agent_core.py
+    role: evaluation
+- key: configure-briefing-user-prompt
+  name: ''
+  kind: boolean
+  examples:
+  - path: 20-agent-config/26-flags-vs-agent-control
+  sources:
+  - path: 20-agent-config/26-flags-vs-agent-control/java/src/main/java/AgentCore.java
+    role: evaluation
+  - path: 20-agent-config/26-flags-vs-agent-control/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/26-flags-vs-agent-control/python/agent_core.py
+    role: evaluation
+- key: configure-team-display-labels
+  name: ''
+  kind: boolean
+  examples:
+  - path: 10-code-control
+  sources:
+  - path: 10-code-control/13-flag-targeting-rules/team-style.js
+    role: evaluation
+  - path: 10-code-control/13-flag-targeting-rules/team_style.py
+    role: evaluation
+- key: enable-briefing-judge
+  name: ''
+  kind: boolean
+  examples:
+  - path: 20-agent-config/26-flags-vs-agent-control
+  sources:
+  - path: 20-agent-config/26-flags-vs-agent-control/java/src/main/java/AgentCore.java
+    role: evaluation
+  - path: 20-agent-config/26-flags-vs-agent-control/node/agentCore.js
+    role: evaluation
+  - path: 20-agent-config/26-flags-vs-agent-control/python/agent_core.py
+    role: evaluation

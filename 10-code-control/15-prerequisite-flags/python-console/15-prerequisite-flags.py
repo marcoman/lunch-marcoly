@@ -32,7 +32,11 @@ _ld_client: LDClient | None = None
 
 
 def init_launchdarkly() -> None:
-    """Initialize the server SDK used for both detailed evaluations."""
+    """Start the server SDK. Both flags are evaluated in this process.
+
+    LaunchDarkly: server-side Python SDK · flag prerequisites
+    https://launchdarkly.com/docs/sdk/server-side/python
+    """
     global _ld_client
     sdk_key = os.environ.get("LD_SDK_KEY")
     if not sdk_key:
@@ -149,6 +153,7 @@ def run_grid(stdscr: curses.window, username: str) -> str:
     stdscr.timeout(500)
     try:
         while True:
+            # LaunchDarkly: flag prerequisites — https://launchdarkly.com/docs/home/flags/prereqs
             flags = evaluate_prerequisite_flags(_ld_client, username)
             draw_screen(stdscr, flags["username"], row, col, previous, move_count, flags)
             key = stdscr.getch()

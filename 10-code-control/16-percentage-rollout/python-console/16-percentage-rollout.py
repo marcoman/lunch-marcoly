@@ -31,7 +31,11 @@ _ld_client: LDClient | None = None
 
 
 def init_launchdarkly() -> None:
-    """Initialize one process-wide SDK client for percentage evaluation."""
+    """Start the server SDK. Bucketing stays inside LaunchDarkly.
+
+    LaunchDarkly: server-side Python SDK · percentage rollouts
+    https://launchdarkly.com/docs/sdk/server-side/python
+    """
     global _ld_client
     sdk_key = (os.environ.get("LD_SDK_KEY") or "").strip()
     if not sdk_key:
@@ -216,6 +220,7 @@ def run_grid(stdscr: curses.window, base_username: str) -> str:
     stdscr.timeout(500)
     try:
         while True:
+            # LaunchDarkly: percentage rollouts — https://launchdarkly.com/docs/home/flags/rollouts
             flags = evaluate_rollout(_ld_client, username)
             remember(username, flags, seen, history)
             draw_screen(

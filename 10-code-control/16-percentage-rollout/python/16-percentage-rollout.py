@@ -22,7 +22,11 @@ _ld_client: LDClient | None = None
 
 
 def init_launchdarkly() -> None:
-    """Initialize one process-wide SDK client for percentage evaluation."""
+    """Start the server SDK. Bucketing stays inside LaunchDarkly.
+
+    LaunchDarkly: server-side Python SDK · percentage rollouts
+    https://launchdarkly.com/docs/sdk/server-side/python
+    """
     global _ld_client
     sdk_key = (os.environ.get("LD_SDK_KEY") or "").strip()
     if not sdk_key:
@@ -59,6 +63,7 @@ class Handler(SimpleHTTPRequestHandler):
             params = parse_qs(parsed.query, keep_blank_values=True)
             try:
                 username = normalize_username((params.get("username") or [""])[0])
+                # LaunchDarkly: percentage rollouts — https://launchdarkly.com/docs/home/flags/rollouts
                 json_response(self, 200, evaluate_rollout(_ld_client, username))
             except ValueError as exc:
                 json_response(self, 400, {"error": str(exc)})

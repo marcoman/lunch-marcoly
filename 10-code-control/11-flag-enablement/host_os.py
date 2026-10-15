@@ -9,9 +9,8 @@ import platform
 # See: https://launchdarkly.com/docs/sdk/features/private-attributes
 
 HOST_OS_ATTR = "hostOs"
-# LaunchDarkly: flag key=show-host-os-emoji name="Show: host OS emoji" kind=boolean
-# https://app.launchdarkly.com/projects/lunch-marcoly/features/show-host-os-emoji
-
+# Feature flags — boolean variation. The private hostOs attribute selects the emoji.
+# https://launchdarkly.com/docs/home/flags/boolean
 FLAG_OS_EMOJI = "show-host-os-emoji"
 
 OS_EMOJI = {
@@ -40,7 +39,11 @@ def os_emoji_for(host_os: str, show_os_emoji: bool) -> str:
 
 
 def build_evaluation_context(username: str):
-    """Build an LD context with private hostOs for flag evaluation."""
+    """Build the user context. hostOs is private: targeting can see it, events cannot.
+
+    LaunchDarkly: private attributes
+    https://launchdarkly.com/docs/sdk/features/private-attributes
+    """
     from ldclient import Context
 
     host_os = detect_host_os()

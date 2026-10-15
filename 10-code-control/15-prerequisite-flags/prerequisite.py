@@ -11,9 +11,8 @@ from typing import Any
 
 from ldclient import Context
 
-# Dedicated keys — cite 11, do not share 11's inventory.
-# LaunchDarkly: flag key=enable-grid-selection-highlight-prereq kind=string
-# LaunchDarkly: flag key=show-navigation-move-count-prereq kind=boolean
+# Feature flags — prerequisites. The child evaluates only when the parent is green.
+# https://launchdarkly.com/docs/home/flags/prereqs
 FLAG_HIGHLIGHT = "enable-grid-selection-highlight-prereq"
 FLAG_COUNT = "show-navigation-move-count-prereq"
 VALID_COLORS = frozenset({"green", "yellow", "red", "blue", "purple", "pink"})
@@ -65,6 +64,9 @@ def evaluate_prerequisite_flags(
     The application deliberately calls variation_detail for the child even when
     the parent is off or non-green. A PREREQUISITE_FAILED reason proves the
     dependency came from flag configuration rather than application branching.
+
+    LaunchDarkly: flag prerequisites · evaluation reasons
+    https://launchdarkly.com/docs/sdk/features/evaluation-reasons
     """
     user_key = normalize_username(username)
     context = Context.builder(user_key).kind("user").build()
@@ -75,6 +77,7 @@ def evaluate_prerequisite_flags(
         child_value = False
         parent_reason = child_reason = {"kind": "OFFLINE"}
     else:
+        # Parent string flag. The child is still evaluated so the reason stays visible.
         parent_detail = client.variation_detail(
             FLAG_HIGHLIGHT, context, "none"
         )
