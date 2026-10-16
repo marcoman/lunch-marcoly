@@ -129,6 +129,18 @@
     }
     pre.taller { max-height: 17.25rem; }
     pre.shorter { max-height: 9.9rem; }
+    pre.file {
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      white-space: pre;
+    }
+    pre.file .ln {
+      display: inline-block;
+      min-width: 2.6em;
+      margin-right: 0.85em;
+      color: #8b98a6;
+      text-align: right;
+      user-select: none;
+    }
     .view-sizes {
       display: flex;
       flex-wrap: wrap;
@@ -219,6 +231,7 @@
       border-color: var(--ink);
     }
     .ld-drawer-body { overflow: auto; padding: 0.9rem; }
+    .ld-drawer-body a { color: #1d6fb8; }
     .ld-block-title {
       margin: 0.8rem 0 0.35rem;
       font-size: 0.75rem;
@@ -289,7 +302,7 @@
       </thead>
       <tbody id="compare-body"></tbody>
     </table>
-    <p class="hint">Terraform validate is the result that matters. Lower is better for time, input tokens, total tokens, and validate issues. Pass beats fail. Generated resources closer to 13 and generated descriptions closer to 11 win. Lines and output tokens have no winner. Cost appears when a model config has a price. A tie stays plain.</p>
+    <p class="hint">Terraform validate is the result that matters. Lower is better for time, input tokens, total tokens, cost, and validate issues. Pass beats fail. Generated resources closer to 13 and generated descriptions closer to 11 win. Lines and output tokens have no winner. Cost is this run's tokens times the model config's per-token price. A model config with no price, including Ollama, is $0. A tie stays plain.</p>
   </section>
   <div class="view-sizes" id="view-sizes">
     <div>
@@ -322,7 +335,7 @@
       <div id="ld-section-sent" class="ld-section"></div>
       <div id="ld-section-received" class="ld-section"></div>
       <div id="ld-section-about" class="ld-section">
-        <p>One Generate evaluates <code>terraform-codegen-compare</code> for each checked model, writes <code>main.tf</code>, and runs terraform validate. A separate judge config, <code>terraform-codegen-judge</code>, then scores that file with Sonnet. Pass and fail files are both scored. The score does not rewrite the file.</p>
+        <p>One Generate evaluates <code id="about-config">terraform-codegen-compare</code> for each checked model, writes <code>main.tf</code>, and runs terraform validate. A separate judge config, <code id="about-judge">terraform-codegen-judge</code>, then scores that file with Sonnet. Pass and fail files are both scored. The score does not rewrite the file.</p>
         <p>Switch models here to see what that run sent to AgentControl and what came back, including the judge prompt and the score.</p>
       </div>
     </div>
@@ -360,7 +373,7 @@
       { key: "output_tokens", label: "Output tokens", better: "none" },
       { key: "total_tokens", label: "Total tokens", better: "lower" },
       { key: "success", label: "Generation success", better: "true" },
-      { key: "cost", label: "Cost", better: "lower", whenPresent: true },
+      { key: "cost", label: "Cost (USD)", better: "lower", whenPresent: true },
       { key: "lines", label: "Lines", better: "none" },
       { key: "resources", label: "Generated Resources", better: "closer", target: 13 },
       { key: "descriptions", label: "Generated Descriptions", better: "closer", target: 11 },
@@ -396,8 +409,19 @@
       els.run.textContent = state === "running" ? "Running" : state === "finished" ? "Finished" : "";
     }
 
+    function formatCost(value) {
+      if (value === null || value === undefined || value === "") return "—";
+      const amount = Number(value);
+      if (!Number.isFinite(amount)) return "—";
+      if (amount === 0) return "$0";
+      const digits = amount >= 0.01 ? 4 : amount >= 0.00000001 ? 8 : 12;
+      const text = amount.toFixed(digits).replace(/0+$/, "").replace(/\.$/, "");
+      return `$${text}`;
+    }
+
     function show(value, key) {
       if (value === null || value === undefined || value === "") return "—";
+      if (key === "cost") return formatCost(value);
       if (key === "judge_score" && typeof value === "number") return value.toFixed(2);
       if (key === "success" || key === "validate_ok" || key === "ancestry" || key === "judge_passed") return value ? "pass" : "fail";
       if (typeof value === "boolean") return value ? "true" : "false";
@@ -528,7 +552,7 @@
         renderCompare();
       }
       if (event.type === "file") {
-        view.file.textContent = event.hcl || "";
+        setNumberedFile(view.file, event.hcl || "");
         view.note.textContent = event.path || "";
         view.metrics = { ...view.metrics, ...(event.stats || {}) };
         renderCompare();
@@ -618,6 +642,40 @@
       }
     }
 
+    function setNumberedFile(pre, text) {
+      const raw = String(text || "");
+      if (!raw) {
+        pre.textContent = "";
+        return;
+      }
+      const lines = raw.split("\n");
+      if (lines.length && lines[lines.length - 1] === "") lines.pop();
+      const width = String(Math.max(lines.length, 1)).length;
+      pre.innerHTML = lines.map((line, index) => {
+        const number = String(index + 1).padStart(width, " ");
+        return `<span class="ln">${number}</span>${escapeHtml(line)}`;
+      }).join("\n");
+    }
+
+    function configAnchor(key, url) {
+      const label = escapeHtml(key || "");
+      if (!key || !url) return label;
+      return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${label}</a>`;
+    }
+
+    function linkCode(id, key, url) {
+      const node = document.getElementById(id);
+      if (!node) return;
+      if (key) node.textContent = key;
+      if (!url) return;
+      const link = document.createElement("a");
+      link.href = url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = node.textContent;
+      node.replaceWith(link);
+    }
+
     function escapeHtml(value) {
       return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
@@ -672,7 +730,7 @@
       const ctx = sent.context || {};
       els.sent.innerHTML = `
         <div class="ld-block-title">Completion config</div>
-        <p>${escapeHtml(sent.configKey || "")}</p>
+        <p>${configAnchor(sent.configKey, sent.configUrl)}</p>
         <div class="ld-block-title">Context</div>
         <pre class="ld-json">${escapeHtml(JSON.stringify(ctx, null, 2))}</pre>
         <div class="ld-block-title">Variables</div>
@@ -682,11 +740,15 @@
       els.received.innerHTML = `
         <div class="ld-block-title">Served variation</div>
         <p>${escapeHtml(received.provider || "")} · ${escapeHtml(received.model || "")} · ${escapeHtml(received.variationKey || "")}</p>
+        <div class="ld-block-title">Price</div>
+        <p>${escapeHtml((received.price || {}).modelConfigKey || "no model config")}</p>
+        <p>${escapeHtml((received.price || {}).note || "")}</p>
+        <p>input ${formatCost((received.price || {}).inputPerToken)} / token · output ${formatCost((received.price || {}).outputPerToken)} / token · run ${formatCost((received.price || {}).cost)}</p>
         <div class="ld-block-title">Reason</div>
         <pre class="ld-json">${escapeHtml(JSON.stringify(received.reason || {}, null, 2))}</pre>
         <div class="ld-block-title">Terraform validate</div>
         <pre class="ld-json">${escapeHtml(JSON.stringify(received.validate || {}, null, 2))}</pre>
-        <div class="ld-block-title">Judge ${escapeHtml(judge.configKey || "")}</div>
+        <div class="ld-block-title">Judge ${configAnchor(judge.configKey, judge.configUrl)}</div>
         <p>${escapeHtml(judge.model || "")} · score ${judge.score ?? "—"} · ${typeof judge.score === "number" ? (judge.passed ? "pass" : "fail") : "—"} · threshold ${judge.threshold ?? ""}</p>
         <p>${escapeHtml(judge.reasoning || judge.error || "")}</p>
         <div class="ld-block-title">Judge system</div>
@@ -725,6 +787,8 @@
       .then((body) => {
         els.banner.textContent = body.appBanner || els.banner.textContent;
         els.config.textContent = body.configKey || "";
+        linkCode("about-config", body.configKey, body.configUrl);
+        if (body.judgeKey && body.judgeUrl) linkCode("about-judge", body.judgeKey, body.judgeUrl);
         for (const generator of body.generators || []) {
           column(generator.id, generator.model);
           const label = document.createElement("label");

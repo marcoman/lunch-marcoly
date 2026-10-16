@@ -12,7 +12,7 @@ Checkboxes pick the models. One **Generate** runs them in order. Each selected m
 4. Context key `codegen-haiku` → variation `claude-haiku` → `claude-haiku-4-5-20251001` (smaller hosted, checked)
 5. Context key `codegen-sonnet` → variation `claude-sonnet` → `claude-sonnet-5` (reference, checked)
 
-After validate, `terraform-codegen-judge` scores the file with Sonnet. Pass and fail files are both scored. The pass line is 0.65. The score and a short reason appear on the column. The file is not rewritten. **LD details** keeps each model's sent and received record, including the judge prompt.
+After validate, `terraform-codegen-judge` scores the file with Sonnet. Pass and fail files are both scored. The pass line is 0.65. The score and a short reason appear on the column. The file is not rewritten. **LD details** keeps each model's sent and received record, including the judge prompt. The config name in that drawer links to the AI Config variations page, built from `LD_PROJECT_KEY`, `LD_ENVIRONMENT_KEY`, and the config key.
 
 Screenshots of that screen are in [README.md](README.md): the comparison table, the file panels, and the Received tab.
 
@@ -46,7 +46,7 @@ After the write, the app runs `terraform init -backend=false` and `terraform val
 
 ## Generation metrics
 
-`track_metrics_of` records duration, time to first token, input tokens, output tokens, total tokens, and generation success for every served model, including Claude. That success means the model call finished. Terraform validate is a separate pass or fail. The comparison table marks the better value green and the worse value red across however many models are checked. Lower time, input tokens, total tokens, cost, and validate issues win. Resources closer to 13 and descriptions closer to 11 win. Pass beats fail. Lines and output tokens have no winner. The Python SDK summary has no cost field. The screen prints a cost or price parameter when the served model config has one, and leaves cost blank otherwise. No multiplication into a per-token price.
+`track_metrics_of` records duration, time to first token, input tokens, output tokens, total tokens, and generation success for every served model, including Claude. That success means the model call finished. Terraform validate is a separate pass or fail. The comparison table marks the better value green and the worse value red across however many models are checked. Lower time, input tokens, total tokens, cost, and validate issues win. Resources closer to 13 and descriptions closer to 11 win. Pass beats fail. Lines and output tokens have no winner. Cost is this run's input tokens times `costPerInputToken`, plus output tokens times `costPerOutputToken`, from the AI model config. Those rates are USD per token. A model config with no price, including Ollama, is $0. The lookup uses `LD_API_ACCESS_TOKEN` and `LD_PROJECT_KEY`.
 
 ## Out of this version
 
@@ -58,4 +58,4 @@ After the write, the app runs `terraform init -backend=false` and `terraform val
 
 Segment options for a later revision: a rule clause such as `size is small`, an included context list, or tags.
 
-Claude's price shows when the served model config carries a cost or price parameter. Same click.
+Claude's price is the global model config's per-token rates times this run's tokens. Ollama cites $0 when its model config has no price. Same click.

@@ -24,6 +24,7 @@ Keywords: **AgentControl** · **completion config** · **runtime variables** · 
 | Topic | Docs |
 |-------|------|
 | Python AI SDK | [Python AI SDK](https://launchdarkly.com/docs/sdk/ai/python) |
+| Model config price | [List AI model configs](https://launchdarkly.com/docs/api/agent-control/list-model-configs) |
 | Completion config | [Quickstart](https://launchdarkly.com/docs/home/agentcontrol/quickstart) |
 | Terraform | [Terraform](https://launchdarkly.com/docs/guides/infrastructure/terraform) |
 
@@ -48,6 +49,8 @@ ollama pull llama3.2:3b
 
 ```bash
 export LD_SDK_KEY="sdk-..."
+export LD_API_ACCESS_TOKEN="api-..."
+export LD_PROJECT_KEY="lunch-marcoly"
 export ANTHROPIC_API_KEY="sk-ant-..."
 cd 70-model-demos/04-terraform-codegen/python
 python 04-terraform-codegen.py
@@ -55,23 +58,23 @@ python 04-terraform-codegen.py
 
 Open **http://127.0.0.1:8740/**. Use the repo virtualenv if `python` cannot import `ldai`. `terraform` must be on `PATH` for validate. The first click downloads the provider into `output/.plugin-cache`.
 
-The server reads `ANTHROPIC_API_KEY` when it starts. Restart it after you export the key. Haiku (`claude-haiku-4-5-20251001`) and Sonnet (`claude-sonnet-5`) then appear as checkboxes. The judge calls Sonnet with that same key after every selected file, including the Ollama ones.
+The server reads `ANTHROPIC_API_KEY` when it starts. Restart it after you export the key. Haiku (`claude-haiku-4-5-20251001`) and Sonnet (`claude-sonnet-5`) then appear as checkboxes. The judge calls Sonnet with that same key after every selected file, including the Ollama ones. Cost reads each AI model config with `LD_API_ACCESS_TOKEN` and `LD_PROJECT_KEY` ([list AI model configs](https://launchdarkly.com/docs/api/agent-control/list-model-configs)). `costPerInputToken` and `costPerOutputToken` are USD per token. The run cost multiplies those rates by this run's token counts. A config with no price, including Ollama, shows $0.
 
 ## What you will see
 
 **Generate** runs the checked models in order. Each writes `output/<model-id>/main.tf`, validates it, then the Sonnet judge scores it. Unchecked models stay off the table and off the file panels. The header shows **Running** while Generate is in flight and **Finished** when the stream ends.
 
-The comparison table leads with Terraform validate. A fail is red and a pass is green. The judge row uses the same colors against the 0.65 line. Lower time, input tokens, total tokens, and validate issues win. Generated resources closer to 13 and generated descriptions closer to 11 win. Lines and output tokens have no winner. A tie stays plain. Cost stays off the table until a served model config has a price.
+The comparison table leads with Terraform validate. A fail is red and a pass is green. The judge row uses the same colors against the 0.65 line. Lower time, input tokens, total tokens, cost, and validate issues win. Generated resources closer to 13 and generated descriptions closer to 11 win. Lines and output tokens have no winner. A tie stays plain. Cost is the run's tokens times the model config's per-token price. Ollama is $0 when that config has no price.
 
 In this run, `llama3.2:1b` fails validate with one issue and the judge scores it 0.35. Haiku and Sonnet both pass validate. Haiku scores 0.90. Sonnet scores 0.92 and wins the judge row. Haiku wins generated descriptions because 11 is the target and Sonnet wrote 14.
 
 ![Comparison table: llama3.2:1b fails validate and the judge, Haiku and Sonnet pass both, green and red cells, Looks better column](docs/comparison-table.png)
 
-Each selected model then shows `main.tf` and the validate output. **Taller** is the default for the file. **Shorter** is the default for validate. A failed validate stays on screen in red. A success is green. The judge sentence sits under the file path.
+Each selected model then shows `main.tf` with line numbers and the validate output. **Taller** is the default for the file. **Shorter** is the default for validate. A failed validate stays on screen in red. A success is green. The judge sentence sits under the file path.
 
 ![File panels: local-1b missing the required provider, judge 0.35 fail; claude-haiku validate success, judge 0.90 pass](docs/file-panels.png)
 
-**LD details** opens a drawer. The model switcher keeps one sent/received record per selected model. Received shows the served variation, the evaluation reason, the validate result, and the judge score plus the prompt Sonnet used.
+**LD details** opens a drawer. The model switcher keeps one sent/received record per selected model. The config name links to that AI Config when `LD_PROJECT_KEY` and `LD_ENVIRONMENT_KEY` are set. Received shows the served variation, the evaluation reason, the validate result, and the judge score plus the prompt Sonnet used.
 
 ![LD details drawer, Received tab for claude-haiku: RULE_MATCH, validate ok, judge 0.9 pass](docs/ld-details-received.png)
 

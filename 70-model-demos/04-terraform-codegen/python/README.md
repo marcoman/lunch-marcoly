@@ -17,16 +17,19 @@ Keywords: **AgentControl** · **completion config** · **track_metrics_of**
 | Topic | Docs |
 |-------|------|
 | Python AI SDK | [Python AI SDK](https://launchdarkly.com/docs/sdk/ai/python) |
+| Model config price | [List AI model configs](https://launchdarkly.com/docs/api/agent-control/list-model-configs) |
 | Quickstart | [AgentControl quickstart](https://launchdarkly.com/docs/home/agentcontrol/quickstart) |
 
 ## Run
 
 ```bash
 export LD_SDK_KEY="sdk-..."
+export LD_API_ACCESS_TOKEN="api-..."
+export LD_PROJECT_KEY="lunch-marcoly"
 cd 70-model-demos/04-terraform-codegen/python
 python 04-terraform-codegen.py
 ```
 
-Open **http://127.0.0.1:8740/**. Provision first with [../rest/README.md](../rest/README.md). Ollama and `terraform` need to be on the machine.
+Open **http://127.0.0.1:8740/**. Provision first with [../rest/README.md](../rest/README.md). Ollama and `terraform` need to be on the machine. The token and project key are what the cost row uses to read `costPerInputToken` and `costPerOutputToken`.
 
 What the screen looks like after Generate: [../README.md](../README.md#what-you-will-see).

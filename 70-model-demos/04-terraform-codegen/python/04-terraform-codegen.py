@@ -23,8 +23,10 @@ sys.path.insert(0, str(HERE))
 from agent_core import (  # noqa: E402
     available_generators,
     config_key,
+    dashboard_config_url,
     generate_stream,
     init_launchdarkly,
+    judge_key,
 )
 
 APP_BANNER = "04-terraform-codegen[python]"
@@ -48,6 +50,9 @@ class Handler(BaseHTTPRequestHandler):
                 {
                     "appBanner": APP_BANNER,
                     "configKey": config_key(),
+                    "configUrl": dashboard_config_url(config_key()),
+                    "judgeKey": judge_key(),
+                    "judgeUrl": dashboard_config_url(judge_key()),
                     "generators": [
                         {
                             "id": spec["id"],

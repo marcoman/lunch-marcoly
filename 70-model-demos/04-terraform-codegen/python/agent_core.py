@@ -28,6 +28,7 @@ import os
 import re
 import shutil
 import subprocess
+from urllib.parse import quote
 import time
 import urllib.error
 import urllib.request
@@ -55,8 +56,8 @@ MESSAGES_DIR = EXAMPLE_ROOT / "rest" / "messages"
 OUTPUT_ROOT = EXAMPLE_ROOT / "output"
 PLUGIN_CACHE = OUTPUT_ROOT / ".plugin-cache"
 
-# LaunchDarkly: ai-config key=terraform-codegen-compare mode=completion
-# https://app.launchdarkly.com/projects/lunch-marcoly/ai-configs/terraform-codegen-compare
+# LaunchDarkly: AI Config — completion mode
+# https://launchdarkly.com/docs/home/ai-configs
 
 DEFAULT_CONFIG_KEY = "terraform-codegen-compare"
 DEFAULT_JUDGE_KEY = "terraform-codegen-judge"
@@ -145,6 +146,25 @@ def config_key() -> str:
 def judge_key() -> str:
     key = os.environ.get("LD_JUDGE_KEY", "").strip()
     return key or DEFAULT_JUDGE_KEY
+
+
+def dashboard_config_url(key: str) -> str | None:
+    """Deep link to an AI Config variations page.
+
+    Built from LD_PROJECT_KEY, LD_ENVIRONMENT_KEY, and the config key.
+    Host defaults to https://app.launchdarkly.com. Returns None when
+    the project or environment is unset, so the name stays plain text.
+    """
+    project = os.environ.get("LD_PROJECT_KEY", "").strip()
+    environment = os.environ.get("LD_ENVIRONMENT_KEY", "").strip()
+    if not project or not environment or not key:
+        return None
+    host = (os.environ.get("LD_APP_HOST") or "https://app.launchdarkly.com").rstrip("/")
+    return (
+        f"{host}/projects/{quote(project, safe='')}"
+        f"/ai-configs/{quote(key, safe='')}/variations"
+        f"?env={quote(environment, safe='')}&selected-env={quote(environment, safe='')}"
+    )
 
 
 def pass_threshold() -> float:
@@ -251,21 +271,237 @@ def folder_name(model: str) -> str:
     return cleaned.strip("-") or "model"
 
 
-def price_fields(config: Any) -> dict[str, Any]:
-    """Raw price or cost parameters on the served model. No per-token math."""
-    model = getattr(config, "model", None)
-    blob: dict[str, Any] = {}
-    if model is not None and hasattr(model, "to_dict"):
-        rendered = model.to_dict() or {}
-        for section in ("parameters", "custom"):
-            section_value = rendered.get(section) or {}
-            if isinstance(section_value, dict):
-                blob.update(section_value)
-    found: dict[str, Any] = {}
-    for key, value in blob.items():
-        if re.search(r"cost|price", str(key), re.I):
-            found[str(key)] = value
-    return found
+_price_catalog: dict[str, Any] | None = None
+
+
+def _rate(value: Any) -> float | None:
+    if isinstance(value, bool) or value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value)
+        except ValueError:
+            return None
+    return None
+
+
+def _token_counts(summary: Any) -> tuple[int, int]:
+    tokens = getattr(summary, "tokens", None)
+    if tokens is None:
+        return 0, 0
+    return int(getattr(tokens, "input", 0) or 0), int(getattr(tokens, "output", 0) or 0)
+
+
+def token_cost(
+    input_tokens: int,
+    output_tokens: int,
+    input_rate: float | None,
+    output_rate: float | None,
+) -> float:
+    """USD for one run. Missing rates count as zero once a model config was found."""
+    return input_tokens * (input_rate or 0.0) + output_tokens * (output_rate or 0.0)
+
+
+def _ld_api_get(path: str) -> Any:
+    """LaunchDarkly REST GET. The token stays in the process.
+
+    https://launchdarkly.com/docs/guides/api/rest-api
+    """
+    token = os.environ.get("LD_API_ACCESS_TOKEN", "").strip()
+    if not token:
+        raise RuntimeError("LD_API_ACCESS_TOKEN is unset")
+    host = (os.environ.get("LD_API_HOST") or "https://app.launchdarkly.com").rstrip("/")
+    version = os.environ.get("LD_API_VERSION", "").strip() or "beta"
+    request = urllib.request.Request(
+        f"{host}/api/v2{path}",
+        headers={"Authorization": token, "LD-API-Version": version},
+        method="GET",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=20) as response:
+            return json.loads(response.read().decode())
+    except urllib.error.HTTPError as exc:
+        raise RuntimeError(f"GET {path} → HTTP {exc.code}") from exc
+
+
+def price_catalog() -> dict[str, Any]:
+    """Model configs for this project, loaded once.
+
+    LaunchDarkly: list AI model configs. costPerInputToken and
+    costPerOutputToken are USD per token. The variation's modelConfigKey
+    wins when the AI Config names one.
+    https://launchdarkly.com/docs/api/agent-control/list-model-configs
+    """
+    global _price_catalog
+    if _price_catalog is not None:
+        return _price_catalog
+    empty: dict[str, Any] = {"error": None, "by_key": {}, "by_id": {}, "variation": {}}
+    project = os.environ.get("LD_PROJECT_KEY", "").strip()
+    if not project:
+        empty["error"] = "LD_PROJECT_KEY is unset"
+        _price_catalog = empty
+        return empty
+    try:
+        listed = _collect_model_configs(project)
+    except (RuntimeError, urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
+        empty["error"] = str(exc)
+        _price_catalog = empty
+        return empty
+    by_key: dict[str, dict[str, Any]] = {}
+    by_id: dict[str, list[dict[str, Any]]] = {}
+    for item in listed:
+        if not isinstance(item, dict) or not item.get("key"):
+            continue
+        by_key[str(item["key"])] = item
+        model_id = str(item.get("id") or "")
+        if model_id:
+            by_id.setdefault(model_id, []).append(item)
+    variation: dict[str, str] = {}
+    try:
+        config_doc = _ld_api_get(
+            f"/projects/{quote(project, safe='')}/ai-configs/{quote(config_key(), safe='')}"
+        )
+    except (RuntimeError, urllib.error.URLError, TimeoutError, json.JSONDecodeError):
+        config_doc = None
+    if isinstance(config_doc, dict):
+        for item in config_doc.get("variations") or []:
+            if not isinstance(item, dict):
+                continue
+            key = item.get("key")
+            model_config_key = item.get("modelConfigKey")
+            if key and model_config_key:
+                variation[str(key)] = str(model_config_key)
+    empty["by_key"] = by_key
+    empty["by_id"] = by_id
+    empty["variation"] = variation
+    empty["missing"] = set()
+    _price_catalog = empty
+    return empty
+
+
+def _collect_model_configs(project: str) -> list[Any]:
+    path = f"/projects/{quote(project, safe='')}/ai-configs/model-configs"
+    rows: list[Any] = []
+    seen: set[str] = set()
+    while path and path not in seen:
+        seen.add(path)
+        listed = _ld_api_get(path)
+        if isinstance(listed, list):
+            return listed
+        if not isinstance(listed, dict):
+            return rows
+        rows.extend(listed.get("items") or [])
+        href = str(((listed.get("_links") or {}).get("next") or {}).get("href") or "")
+        if not href:
+            return rows
+        marker = "/api/v2"
+        if href.startswith("http"):
+            index = href.find(marker)
+            path = href[index + len(marker) :] if index >= 0 else ""
+        elif href.startswith(marker):
+            path = href[len(marker) :]
+        else:
+            path = href
+    return rows
+
+
+def _config_by_key(model_config_key: str) -> dict[str, Any] | None:
+    catalog = price_catalog()
+    found = catalog["by_key"].get(model_config_key)
+    if found or catalog.get("error") or model_config_key in catalog.get("missing", ()):
+        return found
+    project = os.environ.get("LD_PROJECT_KEY", "").strip()
+    if not project:
+        return None
+    try:
+        doc = _ld_api_get(
+            f"/projects/{quote(project, safe='')}/ai-configs/model-configs/{quote(model_config_key, safe='')}"
+        )
+    except (RuntimeError, urllib.error.URLError, TimeoutError, json.JSONDecodeError):
+        catalog.setdefault("missing", set()).add(model_config_key)
+        return None
+    if isinstance(doc, dict) and doc.get("key"):
+        catalog["by_key"][str(doc["key"])] = doc
+        return doc
+    catalog.setdefault("missing", set()).add(model_config_key)
+    return None
+
+
+def pick_model_config(model: str, variation_key: str | None) -> dict[str, Any] | None:
+    """The model config this run used. Variation key first, then provider model id."""
+    catalog = price_catalog()
+    if variation_key:
+        model_config_key = catalog["variation"].get(variation_key)
+        if model_config_key:
+            chosen = _config_by_key(model_config_key)
+            if chosen:
+                return chosen
+    matches = list(catalog["by_id"].get(model) or [])
+    if not matches:
+        return _config_by_key(model)
+    if len(matches) == 1:
+        return matches[0]
+    global_ones = [item for item in matches if item.get("global")]
+    custom_ones = [item for item in matches if not item.get("global")]
+    if uses_anthropic(model) and global_ones:
+        return global_ones[0]
+    if custom_ones:
+        return custom_ones[0]
+    return matches[0]
+
+
+def acquired_run_cost(model: str, variation_key: str | None, summary: Any) -> dict[str, Any]:
+    """Price LaunchDarkly stored on the model config, times this run's tokens.
+
+    Ollama and any other config with no token price cite 0. A hosted model
+    with no matching config leaves cost empty.
+    """
+    incoming, outgoing = _token_counts(summary)
+    chosen = pick_model_config(model, variation_key)
+    if chosen is None:
+        if uses_anthropic(model):
+            catalog = price_catalog()
+            return {
+                "cost": None,
+                "inputTokens": incoming,
+                "outputTokens": outgoing,
+                "inputPerToken": None,
+                "outputPerToken": None,
+                "modelConfigKey": None,
+                "note": catalog.get("error") or "No model config matched this model.",
+            }
+        return {
+            "cost": 0.0,
+            "inputTokens": incoming,
+            "outputTokens": outgoing,
+            "inputPerToken": 0.0,
+            "outputPerToken": 0.0,
+            "modelConfigKey": None,
+            "note": "No model config price. Run cost is 0.",
+        }
+    input_rate = _rate(chosen.get("costPerInputToken"))
+    output_rate = _rate(chosen.get("costPerOutputToken"))
+    if input_rate is None and output_rate is None:
+        return {
+            "cost": 0.0,
+            "inputTokens": incoming,
+            "outputTokens": outgoing,
+            "inputPerToken": 0.0,
+            "outputPerToken": 0.0,
+            "modelConfigKey": chosen.get("key"),
+            "note": "The model config has no token price. Run cost is 0.",
+        }
+    return {
+        "cost": token_cost(incoming, outgoing, input_rate, output_rate),
+        "inputTokens": incoming,
+        "outputTokens": outgoing,
+        "inputPerToken": input_rate or 0.0,
+        "outputPerToken": output_rate or 0.0,
+        "modelConfigKey": chosen.get("key"),
+        "note": "Input tokens × costPerInputToken, plus output tokens × costPerOutputToken.",
+    }
 
 
 def variation_key_served(context_key: str) -> str | None:
@@ -533,7 +769,7 @@ def terraform_validate(folder: Path) -> dict[str, Any]:
 
 def metric_payload(summary: Any, prices: dict[str, Any]) -> dict[str, Any]:
     tokens = getattr(summary, "tokens", None)
-    cost = prices.get("cost")
+    cost = prices.get("cost") if isinstance(prices, dict) else None
     return {
         "duration_ms": getattr(summary, "duration_ms", None),
         "time_to_first_token_ms": getattr(summary, "time_to_first_token", None),
@@ -656,18 +892,21 @@ def generate_one(spec: dict[str, str]) -> Iterator[dict[str, Any]]:
         text = tracker.track_metrics_of(extract, run)
     except Exception as exc:
         yield {"type": "error", "column": column, "message": str(exc)}
+        summary = tracker.get_summary()
+        price = acquired_run_cost(model, served_variation or spec["variation_key"], summary)
         yield {
             "type": "metrics",
             "column": column,
-            "metrics": metric_payload(tracker.get_summary(), price_fields(config)),
+            "metrics": metric_payload(summary, price),
         }
         return
 
     summary = tracker.get_summary()
+    price = acquired_run_cost(model, served_variation or spec["variation_key"], summary)
     yield {
         "type": "metrics",
         "column": column,
-        "metrics": metric_payload(summary, price_fields(config)),
+        "metrics": metric_payload(summary, price),
     }
 
     record = served_record(spec["context_key"])
@@ -680,6 +919,7 @@ def generate_one(spec: dict[str, str]) -> Iterator[dict[str, Any]]:
         context_key=spec["context_key"],
         served=record,
         config=config,
+        price=price,
     )
 
 
@@ -872,6 +1112,7 @@ def publish_file(
     context_key: str,
     served: dict[str, Any],
     config: Any,
+    price: dict[str, Any] | None = None,
 ) -> Iterator[dict[str, Any]]:
     hcl = extract_hcl(text)
     if not hcl.strip():
@@ -904,6 +1145,7 @@ def publish_file(
         "ldTransaction": {
             "sent": {
                 "configKey": config_key(),
+                "configUrl": dashboard_config_url(config_key()),
                 "context": {"kind": "user", "key": context_key, "name": context_key},
                 "variables": variables,
                 "messages": messages,
@@ -913,6 +1155,7 @@ def publish_file(
                 "provider": provider_name or ("anthropic" if uses_anthropic(model) else "ollama"),
                 "model": model,
                 "variationKey": served.get("variationKey"),
+                "price": price or {},
                 "reason": served.get("reason") or {},
                 "enabled": served.get("enabled"),
                 "version": served.get("version"),
@@ -924,6 +1167,7 @@ def publish_file(
                 },
                 "judge": {
                     "configKey": judged.get("configKey") or judge_key(),
+                    "configUrl": dashboard_config_url(str(judged.get("configKey") or judge_key())),
                     "model": judged.get("model"),
                     "score": judged.get("score"),
                     "passed": judged.get("passed"),
