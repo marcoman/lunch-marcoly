@@ -73,6 +73,8 @@ Persona context keys stay `Charlie`, `Amelia`, and `Toby`. The locale control do
 
 A run with no trace, no judge score, and no feedback event fails the lesson. A run with every tool unchecked still passes when those three are present. A checked tool that does not appear in the trace fails the lesson.
 
+One captured run is Generate AI Report with Pig Latin and the joke tagline, Anonymous Amelia, English, NVDA and SPCX. The figures are in the [overview](README.md#example-generate-ai-report-pig-latin-and-joke-tagline).
+
 ## Tools
 
 Library tools. Schemas live in LaunchDarkly. Handlers are deterministic app code. The checkbox forces the call. The model is not offered the choice, because these transforms do not help it write the draft and it would skip them.

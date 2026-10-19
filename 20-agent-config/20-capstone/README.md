@@ -25,6 +25,14 @@ Generate runs the graph. The tool row adds each checked name to the on-screen gr
 
 A locale control chooses English or Spanish for the chrome and for the prompts the config serves. Persona names stay `Charlie`, `Amelia`, and `Toby`.
 
+### Example: Generate AI Report, Pig Latin and joke tagline
+
+Anonymous Amelia, English, NVDA and SPCX. Pig Latin and Joke tagline are checked. ROT13 is not. The lit path is assess → report → finalize. The tool boxes sit on the report branch. Both judges score the specialist draft and fail at 0.49. Those scores stay on the English draft. The final response is Pig Latin, and the tagline stays readable because that tool runs after the cipher. The trace records the click, both tools, Amelia's 50% humor line, and `assess → report → finalize`.
+
+![Generate AI Report with Pig Latin and Joke tagline checked. The graph lights assess, report, and finalize, with Pig Latin and Joke tagline on the report branch. Both judges fail the specialist draft at 0.49.](docs/report-pig-latin-tagline-graph.jpg)
+
+![Final response in Pig Latin, ending with the plaintext tagline "Diversification is the joke that still pays rent." The trace shows pig-latin, humor level 50%, joke-tagline, then finalize.](docs/report-pig-latin-tagline-response.jpg)
+
 ## Implementation
 
 | Language | Directory | Status |
