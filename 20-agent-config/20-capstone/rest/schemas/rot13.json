@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "text": {
+      "type": "string",
+      "description": "Current text to convert with ROT13."
+    }
+  },
+  "required": ["text"]
+}

@@ -1,0 +1,15 @@
+Identificas señales constructivas (buenas) y preocupantes (malas) en los titulares.
+
+Responde con exactamente dos secciones, con estos encabezados:
+
+## Good
+- Viñetas cortas solo para noticias positivas o constructivas.
+- Cita solo lo que dicen los titulares. No inventes números.
+
+## Bad
+- Viñetas cortas para riesgo, incertidumbre o información que falta, basadas en los titulares.
+- Cita solo lo que dicen los titulares. No inventes números.
+
+Cada sección: unas 2 a 5 viñetas. Si un lado tiene poco apoyo, dilo bajo ese encabezado. No inventes relleno.
+
+Escribe el texto de las viñetas en español. Conserva los encabezados ## Good y ## Bad.

@@ -1,25 +1,25 @@
 {
-  "updated_at": "2026-10-08T19:27:03+00:00",
+  "updated_at": "2026-10-19T19:02:20Z",
   "tickers": {
     "NVDA": {
       "name": "NVDA",
       "stories": [
         {
-          "title": "Looking for the most active stocks in the S&P500 index on Thursday?",
-          "publisher": "ChartMill",
-          "published": "2026-10-08T14:05:04-04:00",
-          "link": "https://finnhub.io/api/news?id=e8f0d85eb95a24026ef2036ad49410e7fd9a4f34d744d8ecfa17937b899da51a",
-          "uuid": "142731429"
+          "title": "Why EOS Energy Soared as Much as 11% Today",
+          "publisher": "Yahoo",
+          "published": "2026-10-19T17:50:57Z",
+          "link": "https://finnhub.io/api/news?id=c22d903841adccf4df301d76d827ee3eab9b8d314160ebeef474229643628f09",
+          "uuid": "143009420"
         },
         {
-          "title": "These stocks are making the most noise in today's session.",
-          "publisher": "ChartMill",
-          "published": "2026-10-08T14:00:00-04:00",
-          "link": "https://finnhub.io/api/news?id=486ec9b62192404986b037c11f7a81fd99615022a57cd4f009110a968bcde536",
-          "uuid": "142731428"
+          "title": "AMZN Stock Set For Best Day In Three Months: Morgan Stanley Expects Amazon's AWS To Grow 47% In 2027, Denotes Stock As 'Top Pick'",
+          "publisher": "Yahoo",
+          "published": "2026-10-19T17:48:58Z",
+          "link": "https://finnhub.io/api/news?id=948792b45d937f2b1377bed687c0cd01d2b00ef91cf990f3dbb58b1ae98faf0b",
+          "uuid": "143009424"
         }
       ],
-      "cached_at": "2026-10-08T19:27:03+00:00"
+      "cached_at": "2026-10-19T19:02:20Z"
     },
     "RKLB": {
       "name": "Rocket Lab Corporation",
@@ -43,21 +43,21 @@
       "name": "SPCX",
       "stories": [
         {
-          "title": "Oracle stock falls on more debt to fund AI chip buying, Open AI revenue disclosure",
+          "title": "Buying dip in tech market, Anthropic's \"Public Benefit\" fund, and Musk's SpaceX pledge",
           "publisher": "Yahoo",
-          "published": "2026-10-08T14:02:33-04:00",
-          "link": "https://finnhub.io/api/news?id=365876ff2d29ee64f387574fd6b7079725dc7c9d226fdb59c768e438d32400b5",
-          "uuid": "142731336"
+          "published": "2026-10-19T17:45:44Z",
+          "link": "https://finnhub.io/api/news?id=9387af110791488e2a9628e7723ac62dc7071431fce61ec140ddc13a3bb12581",
+          "uuid": "143009834"
         },
         {
-          "title": "Nvidia and SpaceX: Top Analyst Daniel Ives Says These 2 AI Giants Have More Room to Run",
+          "title": "5 Dividend Stocks for Investors Who Want Income Without the Market’s Wild Swings",
           "publisher": "Yahoo",
-          "published": "2026-10-08T13:20:00-04:00",
-          "link": "https://finnhub.io/api/news?id=bd9f326fe88bdbdccb4ed56c3ec60228c02d912931c67f7f41734ea34075573c",
-          "uuid": "142730881"
+          "published": "2026-10-19T17:45:10Z",
+          "link": "https://finnhub.io/api/news?id=4982dffdeb351849a404906646263fd5d01cb6bb6967bbf33d83da719d37b0ce",
+          "uuid": "143009597"
         }
       ],
-      "cached_at": "2026-10-08T19:27:03+00:00"
+      "cached_at": "2026-10-19T19:02:20Z"
     }
   },
   "last_pair": {

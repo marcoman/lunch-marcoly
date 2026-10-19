@@ -1,0 +1,14 @@
+# Curated follow-up questions for the questions specialist (25-agent-graph).
+# Score each against available headlines; prefer items with the largest information gaps.
+# Return the top 2–3 highest-priority questions with a short why.
+#
+# Format: one question per line. Lines starting with # are ignored.
+
+Are there concrete metrics tied to revenue, earnings, or guidance in the headlines?
+Is there a clear date, deadline, or time horizon attached to the news?
+Do the headlines name a specific catalyst (product, deal, regulation, lawsuit, executive change)?
+Is the impact on each ticker distinguished, or are the two names blurred together?
+Is there any mention of risk, downside, or uncertainty—or only upside language?
+Do sources conflict, or is everything one-sided?
+Is valuation, price target, or “cheap/expensive” claimed without numbers in the headlines?
+What material fact would an analyst still need before forming a view?

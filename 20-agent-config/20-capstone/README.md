@@ -1,16 +1,16 @@
 # 20-capstone
 
-**Status: stub — not implemented yet.**
+**Status: Node app built on port 8291. Not in the series portal.**
 
-One equity briefing that composes the AgentControl lessons from [21](../21-agent-completion-config/) through [25](../25-agent-graph/). Those folders stay the single-idea lessons. This app is where they meet.
+One equity briefing that composes [21](../21-agent-completion-config/) through [25](../25-agent-graph/). Those folders stay the single-idea lessons. This app is where they meet. [26](../26-flags-vs-agent-control/) stays the flag comparison.
 
-The graph is the spine. Tools run on the report node. A judge gates that draft. Feedback is recorded on the finished response. Later numbered lessons (`27`, `28`, …) keep their own folders, and their behavior rolls into this app. The capstone does not take their number.
+The graph is assess → specialist → finalize. There is no joke specialist. Pig Latin, ROT13, and a joke tagline are checkboxes, none checked by default. The app runs the checked tools after the specialist and before finalize, in that order. The model cannot skip them. Judges score the specialist draft, and thumbs record that same draft. The response panel shows the text after tools and finalize.
 
-Node web only. English and Spanish live here when it is built, and only here. Not in the series portal.
+Node web on **8291**. English and Spanish live here, and only here. The series portal stays on `21`–`26`.
 
-Outline: [application.md](application.md).
+Spec: [application.md](application.md).
 
-Keywords: **AgentControl** · **agent graphs** · **tools** · **judges** · **tracked completion**
+Keywords: **AgentControl** · **agent graphs** · **Library tools** · **judges** · **tracked completion**
 
 | Topic | Docs |
 |-------|------|
@@ -21,12 +21,12 @@ Keywords: **AgentControl** · **agent graphs** · **tools** · **judges** · **t
 
 ## What you will see
 
-One briefing screen. Generate runs the graph. The trace shows the nodes. The rail shows the tool call, the judge scores, and the feedback event.
+Generate runs the graph. The tool row adds each checked name to the on-screen graph immediately, and the trace shows that step when it runs. The rail shows the judge scores and the feedback event for the specialist draft.
 
-A locale control chooses English or Spanish for the chrome and for the prompts the config serves. Persona names stay the targeting keys they already are.
+A locale control chooses English or Spanish for the chrome and for the prompts the config serves. Persona names stay `Charlie`, `Amelia`, and `Toby`.
 
 ## Implementation
 
 | Language | Directory | Status |
 |----------|-----------|--------|
-| *(none yet)* | — | Stub. Node web only. Port chosen at build time |
+| Node web | `node/` | Built. Port **8291** |

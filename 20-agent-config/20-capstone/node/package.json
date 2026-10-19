@@ -1,0 +1,17 @@
+{
+  "name": "20-capstone",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AgentControl capstone — graph, forced tools, judges, and feedback",
+  "main": "20-capstone.js",
+  "scripts": {
+    "start": "node 20-capstone.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0",
+    "@launchdarkly/server-sdk-ai": "^2.0.0"
+  }
+}
