@@ -26,7 +26,7 @@ Shared headline cache: [stories/](stories/) (`20-agent-config/stories/stories_ca
 | # | Directory | What it adds |
 |---|-----------|--------------|
 | — | [portal](portal/) | **Series shell**: tabs for **21–26** — Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
-| — | [20-capstone](20-capstone/) | **Node :8291 built, not in the portal.** Composes `21`–`25`. Checked tools run after the specialist and before finalize. Judges and feedback stay on the draft. English and Spanish live here. Spec: [application.md](20-capstone/application.md) |
+| — | [20-capstone](20-capstone/) | **Python :8290 · Node :8291 · Java :8292 · .NET :8293, not in the portal.** Composes `21`–`25`. Checked tools run after the specialist and before finalize. Judges and feedback stay on the draft. English and Spanish live here. Spec: [application.md](20-capstone/application.md) |
 | 21 | [21-agent-completion-config](21-agent-completion-config/) | **Completion config**: runtime **model**, **system prompt**, and **user prompt** — provision with [rest/](21-agent-completion-config/rest/); `get-targeting-status.sh`. Web: Python/Node/Java/.NET. Console: Python (curses), **Go** (raw-terminal) |
 | 22 | [22-config-outside-code](22-config-outside-code/) | **Tracked completion**: **`track_metrics_of`**, thumbs feedback, Ollama / Anthropic (Best Betty) — Python **8220** · Node **8221** · Java **8222** · .NET **8223**; `get-feedback-status.sh`. Console: **Go** (raw-terminal, `+`/`-` feedback hotkeys) |
 | 23 | [23-agent-tools](23-agent-tools/) | **Library tools**: analyze-ticker-stories ×2 → compare-ticker-analyses; tool loop + `track_tool_call` — Python **8230** · Node **8231** · Java **8232** · .NET **8233**; `get-tools-status.sh`. Console: **Go** (raw-terminal, tool trace) |
@@ -218,7 +218,7 @@ Per-example quirks live in each child `dotnet/README.md` and `go/README.md`.
 - [01-reference-agent](../01-reference-agent/) — baseline agent (file prompt + env model; no LaunchDarkly)
 - [project.md](../project.md) — repository conventions
 - [portal](portal/) — series shell (Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203**)
-- [20-capstone](20-capstone/) — Node **:8291**, built, not in the portal. Unnumbered so later lessons roll in
+- [20-capstone](20-capstone/) — Python **:8290** · Node **:8291** · Java **:8292** · .NET **:8293**, built, not in the portal. Unnumbered so later lessons roll in
 - [21-agent-completion-config](21-agent-completion-config/) — completion config
 - [22-config-outside-code](22-config-outside-code/) — tracked metrics + feedback
 - [23-agent-tools](23-agent-tools/) — Library tools + tool loop

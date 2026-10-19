@@ -44,7 +44,7 @@ lunch-marcoly/
 │   ├── README.md
 │   ├── portal/                   # Python :8200 · Node :8201 · Java :8202 · .NET :8203
 │   ├── stories/                  # Shared Yahoo headlines cache
-│   ├── 20-capstone/              # Node :8291 built; en/es; not in the portal
+│   ├── 20-capstone/              # Python :8290 · Node :8291 · Java :8292 · .NET :8293; en/es; not in the portal
 │   ├── 21-agent-completion-config/
 │   ├── 22-config-outside-code/
 │   ├── 23-agent-tools/
@@ -135,7 +135,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 16 | [16-percentage-rollout](10-code-control/16-percentage-rollout/) | Static 30/70 percentage rollout, sticky context key (web **:8160–:8163** + Python / Node / Java / Go / Rust / C++ consoles) |
 | 17 | [17-scheduled-changes](10-code-control/17-scheduled-changes/) | Replaceable scheduled flag turn-on with elapsed timer (web **:8170–:8173** + Python / Node / Java / Go / Rust / C++ consoles + REST/Terraform) |
 | 20 | [20-agent-config](20-agent-config/) | AgentControl series (shared LLM / AWS / LD setup); [portal](20-agent-config/portal/) Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
-| — | [20-capstone](20-agent-config/20-capstone/) | **Node :8291 built, not in the portal.** Composes `21`–`25`. Checked tools run before finalize. Judges and feedback stay on the draft. English and Spanish live here |
+| — | [20-capstone](20-agent-config/20-capstone/) | **Python :8290 · Node :8291 · Java :8292 · .NET :8293, not in the portal.** Composes `21`–`25`. Checked tools run before finalize. Judges and feedback stay on the draft. English and Spanish live here |
 | 21 | [21-agent-completion-config](20-agent-config/21-agent-completion-config/) | Completion config: model + system/user prompts (web + Go console) |
 | 22 | [22-config-outside-code](20-agent-config/22-config-outside-code/) | Tracked completion: metrics + thumbs feedback (web + Go console) |
 | 23 | [23-agent-tools](20-agent-config/23-agent-tools/) | Library tools + tool loop + `track_tool_call` (web + Go console) |

@@ -1,12 +1,12 @@
 # 20-capstone
 
-**Status: Node app built on port 8291. Not in the series portal.**
+**Status: Python :8290, Node :8291, Java :8292, and .NET :8293 are built. Not in the series portal.**
 
 One equity briefing that composes [21](../21-agent-completion-config/) through [25](../25-agent-graph/). Those folders stay the single-idea lessons. This app is where they meet. [26](../26-flags-vs-agent-control/) stays the flag comparison.
 
 The graph is assess → specialist → finalize. There is no joke specialist. Pig Latin, ROT13, and a joke tagline are checkboxes, none checked by default. The app runs the checked tools after the specialist and before finalize, in that order. The model cannot skip them. Judges score the specialist draft, and thumbs record that same draft. The response panel shows the text after tools and finalize.
 
-Node web on **8291**. English and Spanish live here, and only here. The series portal stays on `21`–`26`.
+Python **8290**, Node **8291**, Java **8292**, and .NET **8293**. English and Spanish live here, and only here. The series portal stays on `21`–`26`. Lesson 27 can still take the `827x` ports.
 
 Spec: [application.md](application.md).
 
@@ -37,4 +37,7 @@ Anonymous Amelia, English, NVDA and SPCX. Pig Latin and Joke tagline are checked
 
 | Language | Directory | Status |
 |----------|-----------|--------|
+| Python web | `python/` | Built. Port **8290** |
 | Node web | `node/` | Built. Port **8291** |
+| Java web | `java/` | Built. Port **8292** |
+| .NET web | `dotnet/` | Built. Port **8293** |

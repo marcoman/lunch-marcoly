@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgentControl capstone</title>
+  <style>
+    :root {
+      --bg: #f4f1ea; --ink: #1c1a16; --muted: #6b645a; --panel: #fffdf8;
+      --line: #d9d0c3; --accent: #2f5d50; --accent-soft: #e5f3ee;
+      --danger: #a0463d; --warn: #9a6b13; --console: #1c2430;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "IBM Plex Sans", "Segoe UI", sans-serif; background: var(--bg); color: var(--ink); }
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 1.25rem 1.25rem 3rem; }
+    h1 { font-family: Georgia, serif; margin: 0.1rem 0 0.25rem; font-size: 2.15rem; }
+    h2 { margin: 0; font-size: 1rem; }
+    .muted { color: var(--muted); }
+    .app-banner { color: var(--muted); font: 0.75rem "IBM Plex Mono", ui-monospace, monospace; letter-spacing: 0.04em; }
+    button, select, input { font: inherit; }
+    button { background: var(--accent); color: white; border: 1px solid var(--accent); border-radius: 6px; padding: 0.48rem 0.8rem; cursor: pointer; }
+    button.ghost { background: var(--panel); color: var(--ink); border-color: var(--line); }
+    button:hover { filter: brightness(0.96); }
+    button:disabled { opacity: 0.5; cursor: wait; }
+    select, input { border: 1px solid var(--line); border-radius: 6px; padding: 0.42rem 0.55rem; background: var(--panel); color: var(--ink); }
+    .row { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; margin: 0.75rem 0; }
+    label { display: inline-flex; gap: 0.35rem; align-items: center; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 0.85rem 1rem; }
+    .controls { margin: 1rem 0; }
+    .actions button { min-width: 10rem; }
+    .actions button.running { background: var(--accent); color: #fff; border-color: var(--accent); opacity: 1; box-shadow: 0 0 0 3px rgba(47,93,80,.22); }
+    .actions button.running::before { content: "● "; animation: pulse 1s ease-in-out infinite; }
+    .actions button.last-run { border-color: var(--accent); color: var(--accent); font-weight: 700; }
+    @keyframes pulse { 50% { opacity: 0.25; } }
+    .tool-pick { margin: 0; padding: 0.65rem 0.85rem; }
+    .tool-pick legend { color: var(--muted); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .story-state { margin-left: auto; color: var(--muted); font: 0.76rem "IBM Plex Mono", ui-monospace, monospace; }
+    .story-state.ready { color: var(--accent); font-weight: 700; }
+    .main-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.75fr); gap: 0.85rem; align-items: stretch; }
+    @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+
+    /* Agent graph: boxes and edges mirror the 25-agent-graph teaching surface. */
+    .graph-panel { min-height: 24rem; }
+    .section-head { display: flex; justify-content: space-between; gap: 0.75rem; align-items: baseline; margin-bottom: 0.7rem; }
+    .section-kicker { color: var(--muted); font: 0.72rem "IBM Plex Mono", ui-monospace, monospace; }
+    .agent-graph { position: relative; min-height: 20.5rem; }
+    .agent-graph svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .graph-edge { stroke: #cabfae; stroke-width: 1.25; fill: none; transition: 0.18s ease; }
+    .graph-edge.on { stroke: var(--accent); stroke-width: 2.8; }
+    .graph-rows { position: relative; z-index: 1; height: 20.5rem; display: grid; grid-template-rows: 3.5rem 4rem 4.2rem 3.5rem; align-content: space-between; }
+    .graph-row { display: flex; justify-content: center; align-items: center; gap: 0.75rem; }
+    .graph-row.specialists { display: grid; grid-template-columns: repeat(3, 1fr); justify-items: center; align-items: center; }
+    .graph-node {
+      width: 8.6rem; min-height: 2.7rem; display: grid; place-items: center; text-align: center;
+      border: 1px solid #bfb5a7; border-radius: 7px; background: #fff; padding: 0.35rem 0.45rem;
+      font: 700 0.75rem "IBM Plex Mono", ui-monospace, monospace; box-shadow: 0 1px 2px rgba(28,26,22,.05);
+    }
+    .graph-node.on { border-color: var(--accent); background: var(--accent-soft); color: #21463c; box-shadow: 0 0 0 2px rgba(47,93,80,.11); }
+    .graph-node.current { outline: 2px solid rgba(47,93,80,.38); outline-offset: 2px; }
+    .graph-node.target { border: 2px dashed var(--accent); color: var(--accent); }
+    .tool-lane { min-height: 3.6rem; display: grid; grid-template-columns: repeat(3, 1fr); align-items: center; }
+    .tool-stack { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.4rem; justify-self: center; max-width: 12rem; }
+    .tool-lane.branch-report .tool-stack { grid-column: 1; }
+    .tool-lane.branch-questions .tool-stack { grid-column: 2; }
+    .tool-lane.branch-good .tool-stack { grid-column: 3; }
+    .tool-node { border: 1px dashed #a97b22; background: #fff9e8; color: #694a0e; border-radius: 6px; padding: 0.4rem 0.55rem; font: 700 0.7rem "IBM Plex Mono", ui-monospace, monospace; }
+    .tool-node::after { content: " →"; color: #aa9b82; margin-left: 0.35rem; }
+    .tool-node:last-child::after { content: ""; margin: 0; }
+    .tool-node.on { border-style: solid; background: #f8e8b9; }
+    .tool-empty { grid-column: 1 / -1; justify-self: center; color: var(--muted); font-size: 0.78rem; font-style: italic; }
+
+    .response-panel { margin-top: 0.85rem; }
+    .response-panel .section-head { align-items: center; }
+    .rot13-back { margin-left: auto; font: 700 0.78rem "IBM Plex Mono", ui-monospace, monospace; }
+    .rot13-back[hidden] { display: none; }
+    .response {
+      margin: 0.65rem 0 0; min-height: 8rem; white-space: pre-wrap; overflow-wrap: anywhere;
+      background: #f8f5ee; border: 1px solid var(--line); border-radius: 8px; padding: 0.85rem;
+      font: 0.88rem/1.55 "IBM Plex Mono", ui-monospace, monospace;
+    }
+
+    /* Rail reads like an operational status panel. */
+    .rail { display: flex; flex-direction: column; min-height: 24rem; }
+    .rail-note { margin: 0.15rem 0 0.75rem; color: var(--muted); font-size: 0.8rem; line-height: 1.4; }
+    .judge-list { display: grid; gap: 0.55rem; }
+    .judge-card { border: 1px solid var(--line); border-left: 4px solid #9b958d; border-radius: 8px; padding: 0.65rem; background: #faf8f2; }
+    .judge-card.pass { border-left-color: var(--accent); }
+    .judge-card.fail { border-left-color: var(--danger); }
+    .judge-top { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+    .judge-name { font: 700 0.72rem "IBM Plex Mono", ui-monospace, monospace; overflow-wrap: anywhere; }
+    .badge { border-radius: 999px; padding: 0.15rem 0.48rem; font: 700 0.69rem "IBM Plex Mono", ui-monospace, monospace; background: #e8e4dc; }
+    .badge.pass { color: #215c4b; background: #dcefe8; }
+    .badge.fail { color: #822f29; background: #f4dedb; }
+    .score-row { display: grid; grid-template-columns: 3rem 1fr; align-items: center; gap: 0.45rem; margin-top: 0.55rem; }
+    .score { font: 800 1.05rem "IBM Plex Mono", ui-monospace, monospace; }
+    .score-track { height: 6px; border-radius: 999px; background: #e2ddd3; overflow: hidden; }
+    .score-fill { height: 100%; background: var(--accent); }
+    .judge-card.fail .score-fill { background: var(--danger); }
+    .judge-reason { margin-top: 0.5rem; color: var(--muted); font-size: 0.77rem; line-height: 1.4; }
+    .judge-empty { color: var(--muted); font-size: 0.84rem; padding: 1rem 0; }
+    .feedback-block { margin-top: auto; padding-top: 0.85rem; border-top: 1px solid var(--line); }
+    .feedback-label { font: 700 0.72rem "IBM Plex Mono", ui-monospace, monospace; text-transform: uppercase; color: var(--muted); }
+    .feedback-status { display: block; margin-top: 0.45rem; min-height: 1.2rem; color: var(--accent); font-size: 0.8rem; }
+
+    /* Fixed-font, color-coded trace console shared with the 20-series. */
+    .trace-dock { margin-top: 0.85rem; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--panel); }
+    .trace-head { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.75rem; }
+    .trace-title { font-weight: 700; display: flex; gap: 0.45rem; align-items: center; }
+    .trace-dot { width: 0.45rem; height: 0.45rem; border-radius: 50%; background: #aaa; }
+    .trace-dot.on { background: var(--accent); box-shadow: 0 0 0 2px rgba(47,93,80,.2); }
+    .trace-meta { color: var(--muted); font-size: 0.78rem; font-weight: 500; }
+    .trace-console { background: var(--console); color: #c8d0da; padding: 0.7rem; min-height: 6rem; max-height: 17rem; overflow: auto; font: 0.78rem/1.5 "IBM Plex Mono", "SFMono-Regular", Consolas, monospace; }
+    .trace-empty { color: #8b97a8; font-style: italic; padding: 0.3rem; }
+    .trace-line { display: grid; grid-template-columns: 2.5rem 5.8rem 1fr; gap: 0.5rem; padding: 0.12rem 0.3rem; border-radius: 3px; }
+    .trace-line:hover { background: rgba(255,255,255,.04); }
+    .trace-num { color: #5c6b7e; text-align: right; user-select: none; }
+    .trace-kind { font-weight: 800; }
+    .trace-text { color: #aeb8c6; overflow-wrap: anywhere; }
+    .trace-id { color: #e8d5a3; font-weight: 700; }
+    .k-run .trace-kind, .k-info .trace-kind { color: #7eb6ff; }
+    .k-click .trace-kind { color: #ff9e64; }
+    .k-guard .trace-kind { color: #f0a060; }
+    .k-assess .trace-kind, .k-tool .trace-kind, .k-judge .trace-kind { color: #e6c35c; }
+    .k-report .trace-kind, .k-questions .trace-kind, .k-good .trace-kind { color: #c4a5ff; }
+    .k-finalize .trace-kind, .k-done .trace-kind, .k-feedback .trace-kind { color: #7dcea0; }
+    .k-error .trace-kind, .k-fail .trace-kind { color: #f07178; }
+    .status { margin: 0.55rem 0 0; color: var(--muted); font: 0.78rem "IBM Plex Mono", ui-monospace, monospace; }
+
+    /* LaunchDarkly Details overlay. */
+    .ld-fab { position: fixed; top: 1rem; right: 1rem; z-index: 40; box-shadow: 0 2px 10px rgba(28,26,22,.14); }
+    .ld-backdrop { display: none; position: fixed; inset: 0; background: rgba(28,26,22,.3); z-index: 50; }
+    .ld-backdrop.open { display: block; }
+    .ld-drawer { position: fixed; inset: 0 0 0 auto; width: min(34rem, 94vw); background: var(--panel); border-left: 1px solid var(--line); z-index: 60; transform: translateX(100%); transition: transform .2s ease; display: flex; flex-direction: column; box-shadow: -8px 0 24px rgba(28,26,22,.16); }
+    .ld-drawer.open { transform: translateX(0); }
+    .ld-drawer-head { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--line); }
+    .ld-tabs { display: flex; gap: 0.3rem; padding: 0.55rem 1rem 0; border-bottom: 1px solid var(--line); }
+    .ld-tab { color: var(--muted); background: transparent; border: 0; border-bottom: 2px solid transparent; border-radius: 0; }
+    .ld-tab.active { color: var(--ink); border-bottom-color: var(--accent); font-weight: 700; }
+    .ld-body { overflow: auto; padding: 1rem; }
+    .ld-section { display: none; }
+    .ld-section.active { display: block; }
+    .ld-title { margin: 1rem 0 0.4rem; color: var(--muted); font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+    .ld-title:first-child { margin-top: 0; }
+    .ld-kv { display: grid; grid-template-columns: 8rem 1fr; gap: 0.3rem 0.6rem; margin: 0; font-size: 0.82rem; }
+    .ld-kv dt { color: var(--muted); }
+    .ld-kv dd { margin: 0; font-family: "IBM Plex Mono", ui-monospace, monospace; overflow-wrap: anywhere; }
+    .ld-json { white-space: pre-wrap; overflow-wrap: anywhere; background: var(--console); color: #d7dee8; border-radius: 8px; padding: 0.75rem; font: 0.74rem/1.45 "IBM Plex Mono", ui-monospace, monospace; }
+    .ld-empty, .ld-about { color: var(--muted); line-height: 1.55; font-size: 0.86rem; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="app-banner" id="banner">20-capstone[node]</div>
+    <h1 id="title">AgentControl capstone</h1>
+    <p class="muted" id="subtitle"></p>
+
+    <section class="panel controls">
+      <div class="row">
+        <label><span data-i18n="locale">Locale</span>
+          <select id="locale"><option value="en">English</option><option value="es">Español</option></select>
+        </label>
+        <label><span data-i18n="persona">Persona</span><select id="persona"></select></label>
+        <input id="ticker1" value="NVDA" size="6" aria-label="First ticker">
+        <input id="ticker2" value="SPCX" size="6" aria-label="Second ticker">
+        <button type="button" id="stories" class="ghost" data-i18n="stories">Get stories</button>
+        <span id="story-state" class="story-state">no stories loaded</span>
+      </div>
+      <div class="row actions" id="actions"></div>
+      <fieldset class="tool-pick">
+        <legend data-i18n="tools">Tools</legend>
+        <div class="row" id="tool-row"></div>
+      </fieldset>
+    </section>
+
+    <div class="main-grid">
+      <section class="panel graph-panel">
+        <div class="section-head">
+          <h2 data-i18n="graph">Agent graph</h2>
+          <span class="section-kicker">LaunchDarkly nodes · app-run tools</span>
+        </div>
+        <div class="agent-graph" id="agent-graph">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <line class="graph-edge" data-edge="assess-report" x1="50" y1="11" x2="16.7" y2="34"/>
+            <line class="graph-edge" data-edge="assess-questions" x1="50" y1="11" x2="50" y2="34"/>
+            <line class="graph-edge" data-edge="assess-good" x1="50" y1="11" x2="83.3" y2="34"/>
+            <line class="graph-edge" data-edge="report-finalize" x1="16.7" y1="43" x2="50" y2="89"/>
+            <line class="graph-edge" data-edge="questions-finalize" x1="50" y1="43" x2="50" y2="89"/>
+            <line class="graph-edge" data-edge="good-finalize" x1="83.3" y1="43" x2="50" y2="89"/>
+          </svg>
+          <div class="graph-rows">
+            <div class="graph-row"><div class="graph-node" data-node="assess">Capstone Assess</div></div>
+            <div class="graph-row specialists">
+              <div class="graph-node" data-node="report">Capstone Report</div>
+              <div class="graph-node" data-node="questions">Capstone Questions</div>
+              <div class="graph-node" data-node="good">Capstone Good / Bad</div>
+            </div>
+            <div class="tool-lane" id="tool-lane"><span class="tool-empty">No app tools selected</span></div>
+            <div class="graph-row"><div class="graph-node" data-node="finalize">Capstone Finalize</div></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel rail">
+        <div class="section-head"><h2 data-i18n="rail">Run status</h2><span class="section-kicker">specialist draft</span></div>
+        <p class="rail-note" data-i18n="railNote"></p>
+        <div class="judge-list" id="judges"><div class="judge-empty">Generate to run both judges.</div></div>
+        <div class="feedback-block">
+          <div class="feedback-label">Draft feedback</div>
+          <div class="row">
+            <button type="button" id="up" class="ghost">👍 Positive</button>
+            <button type="button" id="down" class="ghost">👎 Negative</button>
+          </div>
+          <span id="feedback" class="feedback-status"></span>
+        </div>
+      </aside>
+    </div>
+
+    <section class="panel response-panel">
+      <div class="section-head">
+        <h2 data-i18n="response">Final response</h2>
+        <label id="rot13-back-label" class="rot13-back" hidden>
+          <input id="rot13-back" type="checkbox">
+          <span data-i18n="rot13Back">ROT13 back</span>
+        </label>
+      </div>
+      <div class="response" id="response">—</div>
+    </section>
+
+    <section class="trace-dock" aria-label="Run trace">
+      <div class="trace-head">
+        <span class="trace-title"><span class="trace-dot" id="trace-dot"></span><span data-i18n="trace">Trace</span> <span class="trace-meta" id="trace-meta">under the hood</span></span>
+      </div>
+      <div class="trace-console" id="trace-console">
+        <div class="trace-empty" id="trace-empty">Graph nodes, judges, tools, and feedback appear here.</div>
+        <div id="trace-lines"></div>
+      </div>
+    </section>
+    <p id="status" class="status">Loading…</p>
+  </main>
+
+  <button id="btn-ld-details" class="ld-fab" type="button">LD details</button>
+  <div id="ld-backdrop" class="ld-backdrop"></div>
+  <aside id="ld-drawer" class="ld-drawer" aria-hidden="true">
+    <div class="ld-drawer-head"><h2>LaunchDarkly · last generate</h2><button id="btn-ld-close" type="button">Close</button></div>
+    <div class="ld-tabs" role="tablist">
+      <button class="ld-tab active" data-tab="sent" role="tab">Sent</button>
+      <button class="ld-tab" data-tab="received" role="tab">Received</button>
+      <button class="ld-tab" data-tab="about" role="tab">About</button>
+    </div>
+    <div class="ld-body">
+      <p id="ld-empty" class="ld-empty">Generate to see the last AgentControl evaluation.</p>
+      <section id="ld-sent" class="ld-section active"></section>
+      <section id="ld-received" class="ld-section"></section>
+      <section id="ld-about" class="ld-section">
+        <div class="ld-title">What this example is</div>
+        <p class="ld-about">A capstone graph combining AgentControl nodes, judges, feedback, and deterministic Library tools. The LaunchDarkly graph remains assess → specialist → finalize.</p>
+        <div class="ld-title">What to watch</div>
+        <p class="ld-about">Sent shows context, locale, stories, and selected tools. Received shows the graph path, served nodes, judge results, and tools that the app executed.</p>
+        <div class="ld-title">Why the rail differs from the response</div>
+        <p class="ld-about">Judges and thumbs attach to the specialist draft. Checked tools transform that draft before finalize produces the visible response.</p>
+      </section>
+    </div>
+  </aside>
+
+  <script>
+    const I18N = {
+      en: {
+        title: "AgentControl capstone",
+        subtitle: "Assess → specialist → judges → checked tools → finalize.",
+        locale: "Locale", persona: "Persona", stories: "Get stories", tools: "Tools",
+        graph: "Agent graph", response: "Final response", rail: "Run status",
+        railNote: "Scores and thumbs refer to the specialist draft, before app-run tools.",
+        trace: "Trace", actionReport: "Generate AI Report", actionQuestions: "Identify questions",
+        actionGood: "Identify good & bad",
+        rot13Back: "ROT13 back",
+        toolNames: { "pig-latin": "Pig Latin", rot13: "ROT13", "joke-tagline": "Joke tagline" },
+      },
+      es: {
+        title: "Capstone de AgentControl",
+        subtitle: "Evaluar → especialista → jueces → herramientas → cierre.",
+        locale: "Idioma", persona: "Persona", stories: "Cargar noticias", tools: "Herramientas",
+        graph: "Grafo de agentes", response: "Respuesta final", rail: "Estado de ejecución",
+        railNote: "Las puntuaciones y los pulgares corresponden al borrador, antes de las herramientas.",
+        trace: "Traza", actionReport: "Generar informe", actionQuestions: "Identificar preguntas",
+        actionGood: "Identificar lo bueno y lo malo",
+        rot13Back: "ROT13 de vuelta",
+        toolNames: { "pig-latin": "Pig Latin", rot13: "ROT13", "joke-tagline": "Lema con chiste" },
+      },
+    };
+    const TOOLS = ["pig-latin", "rot13", "joke-tagline"];
+    let stories = [];
+    let resumptionToken = "";
+    let action = "report";
+    let activeSpecialist = null;
+    let running = false;
+    let completed = new Set();
+    let traceEntries = [];
+    let lastLdTransaction = null;
+    let ldTab = "sent";
+    let responseSource = "";
+    let showRot13Back = false;
+
+    const $ = (id) => document.getElementById(id);
+    const els = {
+      banner: $("banner"), persona: $("persona"), locale: $("locale"), response: $("response"),
+      judges: $("judges"), feedback: $("feedback"), status: $("status"), storyState: $("story-state"),
+      toolLane: $("tool-lane"), traceLines: $("trace-lines"), traceEmpty: $("trace-empty"),
+      traceMeta: $("trace-meta"), traceConsole: $("trace-console"), traceDot: $("trace-dot"),
+      ldDrawer: $("ld-drawer"), ldBackdrop: $("ld-backdrop"), ldEmpty: $("ld-empty"),
+      ldSent: $("ld-sent"), ldReceived: $("ld-received"), ldAbout: $("ld-about"),
+    };
+
+    function t() { return I18N[els.locale.value] || I18N.en; }
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+    function checkedTools() {
+      return [...document.querySelectorAll("#tool-row input:checked")].map((input) => input.value);
+    }
+    function shortKey(key) {
+      return String(key || "").replace(/^equity-briefing-capstone-/, "").replace(/^\$ld:ai:judge:/, "");
+    }
+    function toolLabel(key) { return t().toolNames[key] || key; }
+
+    /** ROT13 is its own inverse. Shifts the whole response, tagline included. */
+    function toRot13(text) {
+      return String(text || "").replace(/[A-Za-z]/g, (ch) => {
+        const base = ch <= "Z" ? 65 : 97;
+        return String.fromCharCode(((ch.charCodeAt(0) - base + 13) % 26) + base);
+      });
+    }
+
+    function paintResponse() {
+      const shown = showRot13Back ? toRot13(responseSource) : responseSource;
+      els.response.textContent = shown || "—";
+    }
+
+    function setResponse(text) {
+      responseSource = text || "";
+      paintResponse();
+    }
+
+    /** The revert control exists only for a run that actually applied ROT13. */
+    function revealRot13Back(visible) {
+      $("rot13-back-label").hidden = !visible;
+      if (!visible) {
+        $("rot13-back").checked = false;
+        showRot13Back = false;
+      }
+    }
+
+    function applyChrome() {
+      const text = t();
+      $("title").textContent = text.title;
+      $("subtitle").textContent = text.subtitle;
+      for (const node of document.querySelectorAll("[data-i18n]")) {
+        if (text[node.dataset.i18n]) node.textContent = text[node.dataset.i18n];
+      }
+      for (const button of document.querySelectorAll("#actions button")) {
+        button.textContent = text[button.dataset.label] || button.dataset.label;
+      }
+      for (const input of document.querySelectorAll("#tool-row input")) {
+        input.parentElement.querySelector("span").textContent = toolLabel(input.value);
+      }
+      renderGraph();
+    }
+
+    function renderGraph() {
+      document.querySelectorAll(".graph-node").forEach((node) => {
+        const id = node.dataset.node;
+        node.classList.toggle("on", completed.has(id));
+        node.classList.toggle("current", id === activeSpecialist);
+        node.classList.toggle("target", running && id === action && !completed.has(id));
+      });
+      document.querySelectorAll(".graph-edge").forEach((edge) => edge.classList.remove("on"));
+      if (activeSpecialist || [...completed].some((id) => ["report", "questions", "good"].includes(id))) {
+        const specialist = activeSpecialist || [...completed].find((id) => ["report", "questions", "good"].includes(id));
+        document.querySelector(`[data-edge="assess-${specialist}"]`)?.classList.add("on");
+        if (completed.has("finalize")) document.querySelector(`[data-edge="${specialist}-finalize"]`)?.classList.add("on");
+      }
+      const selected = checkedTools();
+      const branch = activeSpecialist || ["report", "questions", "good"].find((id) => completed.has(id)) || action;
+      els.toolLane.classList.remove("branch-report", "branch-questions", "branch-good");
+      if (!selected.length) {
+        els.toolLane.innerHTML = '<span class="tool-empty">No app tools selected</span>';
+        return;
+      }
+      els.toolLane.classList.add(`branch-${branch}`);
+      els.toolLane.innerHTML = `<div class="tool-stack">${selected.map((key) => `<span class="tool-node ${completed.has(key) ? "on" : ""}" data-tool="${escapeHtml(key)}">${escapeHtml(toolLabel(key))}</span>`).join("")}</div>`;
+    }
+
+    function id(text) { return `<span class="trace-id">${escapeHtml(text)}</span>`; }
+    function q(text, max = 90) {
+      const clean = String(text || "").replace(/\s+/g, " ").trim();
+      const clipped = clean.length > max ? `${clean.slice(0, max - 1)}…` : clean;
+      return `"${escapeHtml(clipped)}"`;
+    }
+    function appendTrace(kind, text, level = kind) {
+      traceEntries.push({ kind, text, level });
+      els.traceEmpty.hidden = true;
+      els.traceMeta.textContent = `${traceEntries.length} step${traceEntries.length === 1 ? "" : "s"}`;
+      els.traceLines.innerHTML = traceEntries.map((entry, index) =>
+        `<div class="trace-line k-${escapeHtml(entry.level)}"><span class="trace-num">${String(index + 1).padStart(3, "0")}</span><span class="trace-kind">${escapeHtml(entry.kind)}</span><span class="trace-text">${entry.text}</span></div>`
+      ).join("");
+      els.traceConsole.scrollTop = els.traceConsole.scrollHeight;
+    }
+    function resetRun() {
+      traceEntries = [];
+      completed = new Set();
+      activeSpecialist = null;
+      els.traceLines.innerHTML = "";
+      els.traceEmpty.hidden = false;
+      els.traceMeta.textContent = "under the hood";
+      els.traceDot.classList.add("on");
+      revealRot13Back(false);
+      setResponse("");
+      els.feedback.textContent = "";
+      els.judges.innerHTML = '<div class="judge-empty">Waiting for the specialist draft…</div>';
+      renderGraph();
+    }
+
+    function renderJudges(results) {
+      els.judges.innerHTML = (results || []).map((result) => {
+        const score = Number(result.score);
+        const valid = Number.isFinite(score);
+        const state = result.passed ? "pass" : "fail";
+        const label = result.passed ? "PASS" : "FAIL";
+        return `<article class="judge-card ${state}">
+          <div class="judge-top"><span class="judge-name">${escapeHtml(shortKey(result.key))}</span><span class="badge ${state}">${label}</span></div>
+          <div class="score-row"><span class="score">${valid ? score.toFixed(2) : "—"}</span><span class="score-track"><span class="score-fill" style="width:${valid ? Math.max(0, Math.min(100, score * 100)) : 0}%"></span></span></div>
+          <div class="judge-reason">${escapeHtml(result.reasoning || result.error || "No reasoning returned.")}</div>
+        </article>`;
+      }).join("");
+    }
+
+    function storyCount() {
+      return stories.reduce((count, block) => count + ((block && block.stories) || []).length, 0);
+    }
+    function setStoryState(source, savedAt) {
+      const count = storyCount();
+      els.storyState.classList.toggle("ready", count > 0);
+      els.storyState.textContent = count
+        ? `${count} stories · ${source}${savedAt ? ` · ${new Date(savedAt).toLocaleString()}` : ""}`
+        : "no stories loaded";
+    }
+
+    function fmt(value) {
+      if (value === null || value === undefined || value === "") return "—";
+      if (typeof value === "object") return JSON.stringify(value);
+      return String(value);
+    }
+    function kv(rows) {
+      return `<dl class="ld-kv">${rows.map(([key, value]) => `<dt>${escapeHtml(key)}</dt><dd>${escapeHtml(fmt(value))}</dd>`).join("")}</dl>`;
+    }
+    function renderLdDetails() {
+      if (!lastLdTransaction) {
+        els.ldEmpty.hidden = false;
+        els.ldSent.innerHTML = "";
+        els.ldReceived.innerHTML = "";
+        return;
+      }
+      els.ldEmpty.hidden = true;
+      const sent = lastLdTransaction.sent || {};
+      const received = lastLdTransaction.received || {};
+      const context = sent.context || {};
+      const variables = sent.variables || {};
+      els.ldSent.innerHTML = `
+        <div class="ld-title">Request</div>
+        ${kv([["Graph key", sent.graphKey], ["Context kind", context.kind], ["Context key", context.key], ["Context name", context.name], ["Locale", context.locale], ["Action", variables.action]])}
+        <div class="ld-title">Selected tools</div>
+        ${kv([["Order", (variables.selectedTools || []).join(" → ") || "none"]])}
+        <div class="ld-title">Stories variable</div>
+        <pre class="ld-json">${escapeHtml(variables.stories || "")}</pre>
+        <div class="ld-title">Raw sent JSON</div>
+        <pre class="ld-json">${escapeHtml(JSON.stringify(sent, null, 2))}</pre>`;
+      els.ldReceived.innerHTML = `
+        <div class="ld-title">Graph evaluation</div>
+        ${kv([["Graph key", received.graph && received.graph.key], ["Enabled", received.graph && received.graph.enabled], ["Variation", received.graph && received.graph.variationKey], ["Route", received.route], ["Path", (received.path || []).map(shortKey).join(" → ")], ["Tools run", (received.tools || []).join(" → ") || "none"]])}
+        <div class="ld-title">Served nodes</div>
+        <pre class="ld-json">${escapeHtml(JSON.stringify(received.nodes || [], null, 2))}</pre>
+        <div class="ld-title">Judge results</div>
+        <pre class="ld-json">${escapeHtml(JSON.stringify(received.judges || [], null, 2))}</pre>
+        <div class="ld-title">Raw received JSON</div>
+        <pre class="ld-json">${escapeHtml(JSON.stringify(received, null, 2))}</pre>`;
+    }
+    function setLdTab(tab) {
+      ldTab = tab;
+      document.querySelectorAll(".ld-tab").forEach((button) => button.classList.toggle("active", button.dataset.tab === tab));
+      for (const [name, section] of [["sent", els.ldSent], ["received", els.ldReceived], ["about", els.ldAbout]]) {
+        section.classList.toggle("active", name === tab);
+      }
+    }
+    function openLd() {
+      renderLdDetails();
+      els.ldDrawer.classList.add("open");
+      els.ldBackdrop.classList.add("open");
+      els.ldDrawer.setAttribute("aria-hidden", "false");
+      setLdTab(lastLdTransaction ? ldTab : "about");
+    }
+    function closeLd() {
+      els.ldDrawer.classList.remove("open");
+      els.ldBackdrop.classList.remove("open");
+      els.ldDrawer.setAttribute("aria-hidden", "true");
+    }
+
+    $("tool-row").innerHTML = TOOLS.map((key) => `<label><input type="checkbox" value="${key}"> <span>${key}</span></label>`).join("");
+    $("tool-row").addEventListener("change", renderGraph);
+    els.locale.addEventListener("change", applyChrome);
+    $("btn-ld-details").addEventListener("click", openLd);
+    $("btn-ld-close").addEventListener("click", closeLd);
+    els.ldBackdrop.addEventListener("click", closeLd);
+    document.querySelectorAll(".ld-tab").forEach((button) => button.addEventListener("click", () => setLdTab(button.dataset.tab)));
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeLd(); });
+
+    async function boot() {
+      const body = await (await fetch("/api/bootstrap")).json();
+      els.banner.textContent = body.appBanner || els.banner.textContent;
+      if (body.defaultTickers) {
+        $("ticker1").value = body.defaultTickers.ticker1;
+        $("ticker2").value = body.defaultTickers.ticker2;
+      }
+      if (body.persistedStories && Array.isArray(body.persistedStories.tickers)) {
+        stories = body.persistedStories.tickers;
+        setStoryState("disk cache", body.persistedStories.savedAt);
+      } else {
+        setStoryState("none");
+      }
+      for (const persona of body.personas || []) {
+        const option = document.createElement("option");
+        option.value = persona.id;
+        option.textContent = persona.name;
+        option.selected = persona.id === "anonymous-amelia";
+        els.persona.appendChild(option);
+      }
+      for (const item of body.actions || []) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "ghost";
+        button.dataset.label = item.labelKey;
+        button.addEventListener("click", () => generate(item.id, button));
+        $("actions").appendChild(button);
+      }
+      applyChrome();
+      els.status.textContent = storyCount() ? "Restored saved stories. Ready." : "Get stories to begin.";
+    }
+
+    $("rot13-back").addEventListener("change", () => {
+      showRot13Back = $("rot13-back").checked;
+      paintResponse();
+    });
+
+    $("stories").addEventListener("click", async () => {
+      els.status.textContent = "Fetching stories…";
+      const query = new URLSearchParams({ ticker1: $("ticker1").value, ticker2: $("ticker2").value });
+      const body = await (await fetch(`/api/stories?${query}`)).json();
+      stories = body.tickers || [];
+      setStoryState(stories.some((block) => block.from_cache) ? "disk cache" : "live");
+      els.status.textContent = storyCount() ? "Stories loaded and saved for the next restart." : "No stories available.";
+    });
+
+    function handleEvent(event) {
+      if (event.type === "run") {
+        appendTrace("run", `${id(event.action)}  ${id(event.personaName)}  ${id(event.graphKey)}`);
+      } else if (event.type === "status") {
+        els.status.textContent = event.message || "";
+        if (["report", "questions", "good"].includes(event.message)) activeSpecialist = event.message;
+      } else if (event.type === "node") {
+        completed.add("assess");
+        activeSpecialist = event.specialist;
+        appendTrace("assess", `${id(event.specialist)}  ${q(event.reason)}`);
+      } else if (event.type === "draft") {
+        completed.add(event.specialist);
+        activeSpecialist = event.specialist;
+        resumptionToken = event.resumptionToken || "";
+        appendTrace(event.specialist, q(event.clip));
+      } else if (event.type === "judges") {
+        renderJudges(event.results);
+        for (const result of event.results || []) {
+          appendTrace("judge", `${id(shortKey(result.key))}  score ${id(result.score ?? "—")}  ${result.passed ? "PASS" : "FAIL"}`);
+        }
+      } else if (event.type === "info") {
+        const kind = event.kind === "guard" ? "guard" : "info";
+        appendTrace(kind, escapeHtml(event.message || ""), kind);
+      } else if (event.type === "tool") {
+        completed.add(event.key);
+        if (event.key === "rot13") revealRot13Back(true);
+        appendTrace("tool", `${id(event.key)}  ${q(event.clip, 60)}`);
+      } else if (event.type === "finalize") {
+        completed.add("finalize");
+        activeSpecialist = null;
+        setResponse(event.text || "");
+        appendTrace("finalize", q(event.clip));
+      } else if (event.type === "error") {
+        els.status.textContent = event.message || "Error";
+        appendTrace("error", q(event.message || "error"), "error");
+      } else if (event.type === "done") {
+        lastLdTransaction = event.ldTransaction || lastLdTransaction;
+        renderLdDetails();
+        appendTrace("done", (event.path || []).map((part) => id(shortKey(part))).join(" → "));
+        els.traceDot.classList.remove("on");
+        els.status.textContent = "Complete.";
+      }
+      renderGraph();
+    }
+
+    function setRunning(button) {
+      running = Boolean(button);
+      document.querySelectorAll("#actions button").forEach((other) => {
+        other.classList.toggle("running", other === button);
+        other.classList.remove("last-run");
+        other.disabled = Boolean(button);
+      });
+    }
+
+    async function generate(nextAction, button) {
+      action = nextAction;
+      resumptionToken = "";
+      lastLdTransaction = null;
+      resetRun();
+      setRunning(button);
+      renderGraph();
+      const label = button ? button.textContent : nextAction;
+      const tools = checkedTools();
+      appendTrace("click", `${id(label)}  → specialist ${id(nextAction)}  tools ${id(tools.join(", ") || "none")}`);
+      els.status.textContent = `Running “${label}”…`;
+      try {
+        const response = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ personaId: els.persona.value, action, locale: els.locale.value, tools, stories }),
+        });
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        while (true) {
+          const chunk = await reader.read();
+          if (chunk.done) break;
+          buffer += decoder.decode(chunk.value, { stream: true });
+          const records = buffer.split("\n\n");
+          buffer = records.pop() || "";
+          for (const record of records) {
+            const line = record.split("\n").find((row) => row.startsWith("data: "));
+            if (line) handleEvent(JSON.parse(line.slice(6)));
+          }
+        }
+      } finally {
+        setRunning(null);
+        if (button) button.classList.add("last-run");
+        renderGraph();
+      }
+    }
+
+    async function sendFeedback(kind) {
+      const body = await (await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ personaId: els.persona.value, locale: els.locale.value, resumptionToken, kind }),
+      })).json();
+      els.feedback.textContent = body.ok ? `${body.kind} recorded on the draft.` : (body.error || "Feedback failed.");
+      appendTrace(body.ok ? "feedback" : "error", escapeHtml(els.feedback.textContent), body.ok ? "feedback" : "error");
+    }
+    $("up").addEventListener("click", () => sendFeedback("positive"));
+    $("down").addEventListener("click", () => sendFeedback("negative"));
+    boot().catch((error) => { els.status.textContent = error.message || String(error); });
+  </script>
+</body>
+</html>

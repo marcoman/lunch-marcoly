@@ -103,7 +103,7 @@ lunch-marcoly/
 │   ├── README.md                # Ollama, AWS SSO, LD env — landing page
 │   ├── portal/                  # Series shell: Python :8200 · Node :8201 · Java :8202 · .NET :8203
 │   ├── stories/                 # Shared Yahoo headlines cache (all examples)
-│   ├── 20-capstone/             # Node :8291 built; not in the portal
+│   ├── 20-capstone/             # Python :8290 · Node :8291 · Java :8292 · .NET :8293; not in the portal
 │   │   └── README.md · application.md · node/ · rest/
 │   ├── 21-agent-completion-config/  # Completion config: model + system/user prompts
 │   │   ├── README.md · application.md · rest/
@@ -192,7 +192,7 @@ lunch-marcoly/
 - `02-reference-client-code` is the same navigator **in the browser** (client JavaScript). It does **not** include LaunchDarkly. Later client-SDK examples (series **30**) build on this shape.
 - `01-reference-agent` is the baseline news → prompt → LLM agent UI (config/env and a prompt file only).
 - `20-agent-config` groups LaunchDarkly **AgentControl** examples; shared LLM/AWS/LD setup lives in its README.
-- `20-capstone` (under `20-agent-config/`) is an unnumbered Node capstone. The Node app is built on port **8291** and is not a portal tab. It composes `21`–`25`: assess → specialist → finalize, with Pig Latin, ROT13, and a joke tagline forced after the draft and before finalize. Judges and feedback stay on the draft. Those lessons stay as they are. Later `27`, `28`, … keep their own numbers and roll into this app. English and Spanish belong here.
+- `20-capstone` (under `20-agent-config/`) is an unnumbered capstone. Python **8290**, Node **8291**, Java **8292**, and .NET **8293** are built and are not portal tabs. It composes `21`–`25`: assess → specialist → finalize, with Pig Latin, ROT13, and a joke tagline forced after the draft and before finalize. Judges and feedback stay on the draft. Those lessons stay as they are. Later `27`, `28`, … keep their own numbers and roll into this app. English and Spanish belong here. Java uses `jsonValueVariationDetail` because there is no Java AI SDK.
 - `21-agent-completion-config` (under `20-agent-config/`) adds a **completion config**: runtime **model**, **system prompt**, and **user prompt** on the agent shape from `01`.
 - `22-config-outside-code` adds **tracked completion** (`TrackMetricsOf` / feedback) on that same config shape.
 - `23-agent-tools` adds **Library tools**, a tool loop, and `TrackToolCall`.

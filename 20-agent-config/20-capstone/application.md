@@ -1,6 +1,6 @@
 # AgentControl capstone — application specification
 
-**Status: Node app built. Port 8291. Not in the series portal.**
+**Status: Python :8290, Node :8291, Java :8292, and .NET :8293 are built. Not in the series portal.**
 
 One Node briefing composes the lessons in `21`–`25`. Those folders stay the single-idea lessons. This app is where they meet. `26` stays the flag comparison and does not roll in here.
 
@@ -31,7 +31,7 @@ Keywords: **AgentControl** · **agent graphs** · **Library tools** · **judges*
 
 ```mermaid
 flowchart TB
-  UI["Node UI :8291"]
+  UI["Web UI :8290–8293"]
   UI --> Assess["assess"]
   Assess --> Report["report"]
   Assess --> Questions["questions"]
@@ -56,7 +56,7 @@ The screen text and the judged text differ once any tool is checked. The rail sa
 
 ## Screen
 
-Node only. Port **8291**, so lesson 27 can still take the `8271` slot.
+Python **8290**, Node **8291**, Java **8292**, .NET **8293**. Lesson 27 can still take the `827x` ports.
 
 | Surface | What the learner sees |
 |---------|------------------------|
@@ -163,7 +163,7 @@ restarts.
 
 ## When implementing
 
-1. Node web on **8291**. One Generate runs the path above.
+1. Python **8290**, Node **8291**, Java **8292**, and .NET **8293**. One Generate runs the path above. Java evaluates configs with `jsonValueVariationDetail` because there is no Java AI SDK.
 2. REST scripts create only the capstone keys.
 3. The tool row updates the on-screen graph before Generate.
 4. Trace and rail distinguish the specialist draft from the finalized response.
