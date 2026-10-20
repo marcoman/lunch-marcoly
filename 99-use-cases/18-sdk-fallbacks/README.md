@@ -44,7 +44,7 @@ toggles “block init” vs “drop stream” and watches the source line change
 
 ## When implementing
 
-1. Write `application.md` (dedicated flag key so 11 stays independent, how to
+1. Write `application.md` (dedicated flag key so 101 stays independent, how to
    force each mode, acceptance criteria for the three sources).
 2. Python web first; rail always visible.
 3. Confirm current SDK knobs (init timeout, offline, persistent store) per

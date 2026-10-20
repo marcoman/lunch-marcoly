@@ -12,13 +12,13 @@ const CONTROLLED_FLAGS = [
     key: FLAG_HIGHLIGHT,
     label: "Parent · grid selection highlight",
     summary:
-      "15-prerequisite-flags parent (cites 11's enable-grid-selection-highlight). Must be on and serving green to satisfy the prerequisite.",
+      "105-prerequisite-flags parent (cites 101's enable-grid-selection-highlight). Must be on and serving green to satisfy the prerequisite.",
   },
   {
     key: FLAG_COUNT,
     label: "Child · navigation move count",
     summary:
-      "15-prerequisite-flags child (cites 11's show-navigation-move-count). Unmet prerequisite serves its off variation.",
+      "105-prerequisite-flags child (cites 101's show-navigation-move-count). Unmet prerequisite serves its off variation.",
   },
 ];
 const ALLOWED = new Set(CONTROLLED_FLAGS.map((item) => item.key));
@@ -157,7 +157,7 @@ async function applyFlagControl(flagKey, options = {}) {
   }
   await request("PATCH", path, {
     environmentKey: config.environmentKey,
-    comment: "15-prerequisite-flags UI control",
+    comment: "105-prerequisite-flags UI control",
     instructions,
   });
   const updated = await request("GET", path + query);

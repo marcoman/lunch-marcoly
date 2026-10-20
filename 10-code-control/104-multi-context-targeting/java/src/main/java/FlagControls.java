@@ -135,7 +135,7 @@ final class FlagControls {
         String action = actions.isEmpty() ? "noop" : String.join("+", actions);
         Map<String, Object> patch = new LinkedHashMap<>();
         patch.put("environmentKey", environment);
-        patch.put("comment", "14-multi-context-targeting UI: on/off or fallthrough");
+        patch.put("comment", "104-multi-context-targeting UI: on/off or fallthrough");
         patch.put("instructions", instructions);
         request("PATCH", flagPath, patch);
 

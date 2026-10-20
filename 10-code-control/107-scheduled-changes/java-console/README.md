@@ -1,4 +1,4 @@
-# 17-scheduled-changes — Java console
+# 107-scheduled-changes — Java console
 
 Java 21 console for LaunchDarkly **scheduled flag changes**.
 
@@ -23,7 +23,7 @@ export LD_API_ACCESS_TOKEN="api-..."
 export LD_PROJECT_KEY="lunch-marcoly"
 export LD_ENVIRONMENT_KEY="production"
 
-cd 10-code-control/17-scheduled-changes/java-console
+cd 10-code-control/107-scheduled-changes/java-console
 ./mvnw -q -DskipTests package
 java -jar target/17-scheduled-changes.jar
 ```

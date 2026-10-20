@@ -1,4 +1,4 @@
-# 16-percentage-rollout — Java console
+# 106-percentage-rollout — Java console
 
 Java 21 console for a static LaunchDarkly **percentage rollout**.
 
@@ -16,7 +16,7 @@ Docs: [Percentage rollouts](https://launchdarkly.com/docs/home/flags/rollouts)
 
 ```bash
 export LD_SDK_KEY="sdk-..."
-cd 10-code-control/16-percentage-rollout/java-console
+cd 10-code-control/106-percentage-rollout/java-console
 ./mvnw -q -DskipTests package
 java -jar target/16-percentage-rollout.jar
 ```

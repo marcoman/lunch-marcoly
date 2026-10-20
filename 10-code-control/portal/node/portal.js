@@ -25,15 +25,15 @@ const CHILDREN = [
   {
     id: "11",
     label: "Flag enablement",
-    script: path.join(SERIES_ROOT, "11-flag-enablement", "node", "11-flag-enablement.js"),
-    cwd: path.join(SERIES_ROOT, "11-flag-enablement", "node"),
+    script: path.join(SERIES_ROOT, "101-flag-enablement", "node", "11-flag-enablement.js"),
+    cwd: path.join(SERIES_ROOT, "101-flag-enablement", "node"),
     port: 8111,
   },
   {
     id: "12",
     label: "Flag variations",
-    script: path.join(SERIES_ROOT, "12-flag-variations", "node", "12-flag-variations.js"),
-    cwd: path.join(SERIES_ROOT, "12-flag-variations", "node"),
+    script: path.join(SERIES_ROOT, "102-flag-variations", "node", "12-flag-variations.js"),
+    cwd: path.join(SERIES_ROOT, "102-flag-variations", "node"),
     port: 8121,
   },
   {
@@ -41,11 +41,11 @@ const CHILDREN = [
     label: "Flag targeting rules",
     script: path.join(
       SERIES_ROOT,
-      "13-flag-targeting-rules",
+      "103-flag-targeting-rules",
       "node",
       "13-flag-targeting-rules.js"
     ),
-    cwd: path.join(SERIES_ROOT, "13-flag-targeting-rules", "node"),
+    cwd: path.join(SERIES_ROOT, "103-flag-targeting-rules", "node"),
     port: 8131,
   },
   {
@@ -53,11 +53,11 @@ const CHILDREN = [
     label: "Multi-context targeting",
     script: path.join(
       SERIES_ROOT,
-      "14-multi-context-targeting",
+      "104-multi-context-targeting",
       "node",
       "14-multi-context-targeting.js"
     ),
-    cwd: path.join(SERIES_ROOT, "14-multi-context-targeting", "node"),
+    cwd: path.join(SERIES_ROOT, "104-multi-context-targeting", "node"),
     port: 8141,
   },
   {
@@ -65,11 +65,11 @@ const CHILDREN = [
     label: "Prerequisite flags",
     script: path.join(
       SERIES_ROOT,
-      "15-prerequisite-flags",
+      "105-prerequisite-flags",
       "node",
       "15-prerequisite-flags.js"
     ),
-    cwd: path.join(SERIES_ROOT, "15-prerequisite-flags", "node"),
+    cwd: path.join(SERIES_ROOT, "105-prerequisite-flags", "node"),
     port: 8151,
   },
   {
@@ -77,11 +77,11 @@ const CHILDREN = [
     label: "Percentage rollout",
     script: path.join(
       SERIES_ROOT,
-      "16-percentage-rollout",
+      "106-percentage-rollout",
       "node",
       "16-percentage-rollout.js"
     ),
-    cwd: path.join(SERIES_ROOT, "16-percentage-rollout", "node"),
+    cwd: path.join(SERIES_ROOT, "106-percentage-rollout", "node"),
     port: 8161,
   },
   {
@@ -89,11 +89,11 @@ const CHILDREN = [
     label: "Scheduled changes",
     script: path.join(
       SERIES_ROOT,
-      "17-scheduled-changes",
+      "107-scheduled-changes",
       "node",
       "17-scheduled-changes.js"
     ),
-    cwd: path.join(SERIES_ROOT, "17-scheduled-changes", "node"),
+    cwd: path.join(SERIES_ROOT, "107-scheduled-changes", "node"),
     port: 8171,
   },
 ];

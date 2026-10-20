@@ -18,7 +18,7 @@ Docs: [Sentinel testing](https://developer.hashicorp.com/sentinel/docs/writing/t
 | [policies/temporary.sentinel](policies/temporary.sentinel) | Boolean flag with `temporary = true` | Boolean flag with `temporary = false` |
 | [policies/sunset.sentinel](policies/sunset.sentinel) | Boolean flag with custom property `sunset = ["2026-12-31"]` | Boolean flag with no `sunset` property |
 
-String flags are ignored. `sunset` is a convention this policy enforces. LaunchDarkly stores the property and does not archive the flag on that date. A change that turns a flag off at a clock time is [17-scheduled-changes](../../10-code-control/17-scheduled-changes/).
+String flags are ignored. `sunset` is a convention this policy enforces. LaunchDarkly stores the property and does not archive the flag on that date. A change that turns a flag off at a clock time is [107-scheduled-changes](../../10-code-control/107-scheduled-changes/).
 
 The mocks match the **provider ~> 2.0** plan shape (`custom_properties` blocks). That is the provider pin used in the rest of this repo.
 

@@ -1,4 +1,4 @@
-# 15-prerequisite-flags
+# 105-prerequisite-flags
 
 LaunchDarkly **flag prerequisites** for the lunch-marcoly grid navigator.
 
@@ -8,9 +8,9 @@ serving **`green`**. Otherwise, the child serves its off variation and reports
 `PREREQUISITE_FAILED`.
 
 The four-reason tour (`PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`,
-`ERROR`) is the stub [19-evaluation-reasons](../19-evaluation-reasons/).
+`ERROR`) is the stub [109-evaluation-reasons](../109-evaluation-reasons/).
 
-These keys cite [11-flag-enablement](../11-flag-enablement/) but are **not**
+These keys cite [101-flag-enablement](../101-flag-enablement/) but are **not**
 11's flags, so 11's independent count toggle is unchanged.
 
 See [application.md](application.md) for the full specification.
@@ -19,6 +19,8 @@ Keywords: **prerequisites** · **dependent flag** · **off variation** ·
 **evaluation reasons**
 
 Docs: [Flag prerequisites](https://launchdarkly.com/docs/home/flags/prereqs)
+
+The Python web app explains this on the **About** tab in the right drawer. The **Prerequisite** tab shows both variations, the context, and the controls.
 
 ## The dependency
 
@@ -80,7 +82,7 @@ export LD_ENVIRONMENT_KEY="production"
 
 ```bash
 (cd rest && chmod +x *.sh && ./create-flags.sh)
-cd python && python 15-prerequisite-flags.py
+cd python && python 105-prerequisite-flags.py
 # or: cd node && npm start
 # or: cd java && ./mvnw -q -DskipTests package && java -jar target/15-prerequisite-flags.jar
 # or: cd dotnet && dotnet run --project 15-prerequisite-flags.csproj
@@ -100,7 +102,7 @@ Open http://127.0.0.1:8080/. Set `PORT` to override.
 
 ## Dedicated keys
 
-| Role | 15 key | Cites 11 key |
+| Role | 105 key | Cites 101 key |
 |------|--------|----------------|
 | Parent | `enable-grid-selection-highlight-prereq` | `enable-grid-selection-highlight` |
 | Child | `show-navigation-move-count-prereq` | `show-navigation-move-count` |

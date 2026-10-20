@@ -4,13 +4,13 @@
 
 A **percentage rollout** on one AgentControl config. The rollout buckets by
 the public **`team`** attribute, the same attribute
-[13-flag-targeting-rules](../../10-code-control/13-flag-targeting-rules/) uses
+[103-flag-targeting-rules](../../10-code-control/103-flag-targeting-rules/) uses
 (`red`, `blue`, `yellow`). Everyone on one team shares one assignment.
 
 Switching the person does not change the variation. Switching the team does.
 
 This is the agent-config version of the sticky split in
-[16-percentage-rollout](../../10-code-control/16-percentage-rollout/), which
+[106-percentage-rollout](../../10-code-control/106-percentage-rollout/), which
 buckets by username. It is not
 [14-progressive-rollout](../../99-use-cases/14-progressive-rollout/), which
 moves 10% to 100% on a schedule.

@@ -88,20 +88,20 @@ lunch-marcoly/
 ├── 10-code-control/             # Feature-flag series (shared portal)
 │   ├── README.md
 │   ├── portal/                  # Series shell: Python :8100 · Node :8101 · Java :8102 · .NET :8103
-│   ├── 11-flag-enablement/      # Boolean flags, contexts, private hostOs
+│   ├── 101-flag-enablement/      # Boolean flags, contexts, private hostOs
 │   │   ├── README.md · application.md · rest/ · terraform/
 │   │   └── <language[-console]>/
-│   ├── 12-flag-variations/      # String, number, JSON, anonymous context
+│   ├── 102-flag-variations/      # String, number, JSON, anonymous context
 │   │   ├── README.md · application.md · rest/ · terraform/
 │   │   └── <language[-console]>/
-│   ├── 13-flag-targeting-rules/ # Rules on public team context
-│   ├── 14-multi-context-targeting/ # User + organization multi-context
-│   ├── 15-prerequisite-flags/   # Flag prerequisites
-│   ├── 16-percentage-rollout/   # Web :8160–:8163 + consoles; static %, sticky key
-│   ├── 17-scheduled-changes/    # Web :8170–:8173 + consoles; scheduled turn-on
-│   ├── 18-flag-approvals/       # Stub: approval to enable move count
-│   ├── 19-evaluation-reasons/   # Stub: four evaluation reason kinds
-│   └── segment-targeting/       # Stub: included targets; unnumbered (18–19 fill the decade)
+│   ├── 103-flag-targeting-rules/ # Rules on public team context
+│   ├── 104-multi-context-targeting/ # User + organization multi-context
+│   ├── 105-prerequisite-flags/   # Flag prerequisites
+│   ├── 106-percentage-rollout/   # Web :8160–:8163 + consoles; static %, sticky key
+│   ├── 107-scheduled-changes/    # Web :8170–:8173 + consoles; scheduled turn-on
+│   ├── 108-flag-approvals/       # Stub: approval to enable move count
+│   ├── 109-evaluation-reasons/   # Stub: four evaluation reason kinds
+│   └── segment-targeting/       # Stub: included targets; still unnumbered
 ├── 20-agent-config/             # AgentControl series (shared setup README)
 │   ├── README.md                # Ollama, AWS SSO, LD env — landing page
 │   ├── portal/                  # Series shell: Python :8200 · Node :8201 · Java :8202 · .NET :8203
@@ -204,8 +204,7 @@ lunch-marcoly/
 - Prefix with a **two-digit number**: `00-reference-code`, `01-hello-world`, `02-binary-search`
 - Follow the number with a **kebab-case** name describing the concept
 - Use the next available number when adding a new example (`03`, `04`, …)
-- Decade series keep that two-digit folder (`10`, `20`, `30`, …). Children use the rest of the decade (`11`–`19`, `21`–`29`, `31`–`39`). Letter suffixes (`1a`, `1b`) stay unused.
-- If a series outgrows those nine children, refactor to **three digits** instead of adding letters. The series folder stays put. Its children become `101`–`199` under `10-code-control`, `201`–`299` under `20-agent-config`, `301`–`399` under `30-client-sdk`, and the same hundreds digit for `40`, `50`, and `60`. Do that rename together, not one folder at a time. A fourth digit is not part of the scheme.
+- Decade series keep that two-digit folder (`10`, `20`, `30`, …). **10-code-control** children are three digits: **101–109** today, range `101`–`199`. Other series still use two-digit children (`21`–`29`, `31`–`39`, …) until that series is renumbered the same way (`201`–`299`, `301`–`399`, and the same hundreds digit for `40`, `50`, and `60`). Letter suffixes (`1a`, `1b`) stay unused. A fourth digit is not part of the scheme. Inside a renumbered series, Python web uses the new number. Other language entrypoints keep their previous filenames until that platform is updated. Listen ports for 101–107 stay **8110–8170**.
 - `70-model-demos` and `99-use-cases` already count children inside the folder (`01`, `02`, …). They do not consume `71`–`79` or the next decade. Leave that inner count as it is until the three-digit refactor, if it ever includes them.
 - `00-reference-code` is reserved for the reference grid navigator app and repository conventions. It does **not** include LaunchDarkly integration.
 - `02-reference-client-code` is the same navigator **in the browser** (client JavaScript). It does **not** include LaunchDarkly. Later client-SDK examples (series **30**) build on this shape.
@@ -223,15 +222,15 @@ lunch-marcoly/
 - `29-team-rollout` is a stub. A fixed percentage rollout buckets by the public `team` attribute, so everyone on that team shares one variation. Not `16`'s username bucket and not `14-progressive-rollout`. Do not use ports **:8290–:8293**.
 - AgentControl **web** ports: Python / Node / Java / .NET. **Go** is console-only under this series (raw-terminal TUI).
 - `10-code-control` groups grid-navigator **feature flag** examples; shared portal lives in its `portal/`.
-- `11-flag-enablement` (under `10-code-control/`) demonstrates feature flag naming, provisioning, and boolean enablement.
-- `12-flag-variations` (under `10-code-control/`) demonstrates string, number, JSON, and anonymous-context flag variation types.
-- `13-flag-targeting-rules` demonstrates targeting rules on a public `team` context attribute.
-- `14-multi-context-targeting` demonstrates one evaluation containing separate `user` and `organization` contexts.
-- `15-prerequisite-flags` demonstrates a child flag that evaluates only when the parent serves `green`.
-- `16-percentage-rollout` (under `10-code-control/`) demonstrates a **static** percentage rollout with sticky context-key assignment (not progressive); Python / Node / Java / .NET web, consoles (Python / Node / Java / Go / Rust / C++), plus REST/Terraform.
-- `17-scheduled-changes` (under `10-code-control/`) demonstrates a replaceable scheduled `turnFlagOn` change with an elapsed timer (Python / Node / Java / .NET web **:8170–:8173**, consoles Python / Node / Java / Go / Rust / C++, REST/Terraform).
-- `18-flag-approvals` (under `10-code-control/`) is a stub. An approval request turns the move-count flag on. Intended ports **:8180–:8183**.
-- `19-evaluation-reasons` (under `10-code-control/`) is a stub. The screen shows `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, and `ERROR`. Intended ports **:8190–:8193**.
+- `101-flag-enablement` (under `10-code-control/`) demonstrates feature flag naming, provisioning, and boolean enablement.
+- `102-flag-variations` (under `10-code-control/`) demonstrates string, number, JSON, and anonymous-context flag variation types.
+- `103-flag-targeting-rules` demonstrates targeting rules on a public `team` context attribute.
+- `104-multi-context-targeting` demonstrates one evaluation containing separate `user` and `organization` contexts.
+- `105-prerequisite-flags` demonstrates a child flag that evaluates only when the parent serves `green`.
+- `106-percentage-rollout` (under `10-code-control/`) demonstrates a **static** percentage rollout with sticky context-key assignment (not progressive); Python / Node / Java / .NET web, consoles (Python / Node / Java / Go / Rust / C++), plus REST/Terraform.
+- `107-scheduled-changes` (under `10-code-control/`) demonstrates a replaceable scheduled `turnFlagOn` change with an elapsed timer (Python / Node / Java / .NET web **:8170–:8173**, consoles Python / Node / Java / Go / Rust / C++, REST/Terraform).
+- `108-flag-approvals` (under `10-code-control/`) is a stub. An approval request turns the move-count flag on. Intended ports **:8180–:8183**.
+- `109-evaluation-reasons` (under `10-code-control/`) is a stub. The screen shows `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, and `ERROR`. Intended ports **:8190–:8193**.
 - `segment-targeting` (under `10-code-control/`) is an unnumbered stub. One included-targets segment on the server SDK, read before `33-synced-segments`. **18** and **19** fill the decade, so this folder does not take **20**.
 - `30-client-sdk` groups **browser** client-side SDK examples (client-side ID, not `LD_SDK_KEY`); series portals live in its `portal/` (JavaScript **:8300** · React **:8301** · Vue **:8302**).
 - `31-client-evaluation` (under `30-client-sdk/`) demonstrates initialize, client-side availability, variation, and `change:` (JavaScript **:8310**, React Web **:8311**, Vue **:8312**).
@@ -364,6 +363,18 @@ A fuller example with web, console, and native implementations:
 ```
 
 Larger examples may add tests, config files, or sub-packages as appropriate for the language, but keep the scope small and focused.
+
+### About tab
+
+Every web example includes an **About** tab in the right-hand drawer:
+
+- The header reads **LaunchDarkly · lab**.
+- Underline tabs sit directly under that header. One tab is the working surface. **About** is the other.
+- The grid, or the example's main view, stays visible while the tabs change.
+- About explains the one idea, the steps a person takes, and one official LaunchDarkly docs link.
+- The working tab already shows the context that was sent and the result that came back. About does not add a second context window.
+
+Console examples put that same explanation in the example README.
 
 ### Dependency files
 

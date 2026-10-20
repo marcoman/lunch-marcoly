@@ -1,6 +1,6 @@
 # Go
 
-Console application for [15-prerequisite-flags](../application.md). The Go
+Console application for [105-prerequisite-flags](../application.md). The Go
 server SDK evaluates parent and child flags independently so an unmet
 [prerequisite](https://launchdarkly.com/docs/home/flags/prereqs) shows up as
 `PREREQUISITE_FAILED`.
@@ -14,8 +14,8 @@ server SDK evaluates parent and child flags independently so an unmet
 
 ```bash
 go mod tidy
-go build -o 15-prerequisite-flags .
-./15-prerequisite-flags
+go build -o 105-prerequisite-flags .
+./105-prerequisite-flags
 ```
 
 Login with a username. Flag changes refresh about every 500 ms. Count appears

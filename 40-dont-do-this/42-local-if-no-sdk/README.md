@@ -8,7 +8,7 @@ hardcoded boolean instead of `variation()`. Changing the flag in LaunchDarkly
 does nothing.
 
 Parent series: [40-dont-do-this](../README.md). Correct pattern:
-[11-flag-enablement](../../10-code-control/11-flag-enablement/) (evaluate the
+[101-flag-enablement](../../10-code-control/101-flag-enablement/) (evaluate the
 flag; the variation is the source of truth).
 
 Keywords: **feature flags** · **boolean variation** · **server SDK** ·
@@ -36,7 +36,7 @@ The SDK may still init so the contrast is honest — we are skipping
 
 ## When implementing
 
-1. `application.md` with dedicated keys so 11 stays independent.
+1. `application.md` with dedicated keys so 101 stays independent.
 2. Python web first; rail always shows `variation()` count **0** vs the local
    branch that actually drives highlight/count.
 3. Side-by-side “do this instead”: one `boolVariation` (or equivalent) per

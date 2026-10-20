@@ -1,6 +1,6 @@
 # Multi-context targeting application specification
 
-This document defines **14-multi-context-targeting**.
+This document defines **104-multi-context-targeting**.
 
 Baseline login, grid navigation, header positions, session controls, and
 `X`-only selection come from
@@ -13,7 +13,7 @@ flag evaluated against a **multi-context**.
 This lab teaches **multi-contexts**: one evaluation sends more than one context
 kind so targeting can require **user and organization together**.
 
-It is **not** [13-flag-targeting-rules](../13-flag-targeting-rules/). **13**
+It is **not** [103-flag-targeting-rules](../103-flag-targeting-rules/). **13**
 puts `team` on a single `user` context. **14** uses `kind: "multi"` with
 associated **user** and **organization** contexts. Application code must not
 encode “alice-at-acme” as a username trick; LaunchDarkly rules decide the pair.
@@ -140,7 +140,7 @@ Unmatched pairs still show **Org: Globex** (or Acme); they just omit the badge.
 
 ## LaunchDarkly lab
 
-The permanent shell keeps the teaching evidence visible while the pair changes:
+The right drawer has **Controls** and **About**. Controls keeps the teaching evidence visible while the pair changes:
 
 - **Controls** — on/off for `show-partner-org-badge` (leave **on** for the demo)
 - **Context window (always visible)** — pretty-printed multi-context (user key
@@ -199,5 +199,5 @@ context server-side; otherwise query params on `/api/flags` are enough.
 
 ## Further reading
 
-- [13-flag-targeting-rules/application.md](../13-flag-targeting-rules/application.md)
+- [103-flag-targeting-rules/application.md](../103-flag-targeting-rules/application.md)
 - [00-reference-code/application.md](../../00-reference-code/application.md)

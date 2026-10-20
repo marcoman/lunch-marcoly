@@ -10,7 +10,7 @@
         <directory>src/main/resources</directory>
       </resource>
     </resources>
-    <finalName>16-percentage-rollout</finalName>
+    <finalName>106-percentage-rollout</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>

@@ -188,6 +188,6 @@ Shared modules at this directory root:
 ## Related examples
 
 - [00-reference-code](../../00-reference-code/) — baseline grid navigator without flags
-- [10-code-control/12-flag-variations](../../10-code-control/12-flag-variations/) — same string flag among other variation types
+- [10-code-control/102-flag-variations](../../10-code-control/102-flag-variations/) — same string flag among other variation types
 - [LaunchDarkly: Multivariate flags](https://launchdarkly.com/docs/sdk/features/flag-types)
 - [LaunchDarkly: Percentage rollouts](https://launchdarkly.com/docs/home/flags/rollouts)

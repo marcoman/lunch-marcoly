@@ -1,7 +1,7 @@
-# Python web — 15-prerequisite-flags
+# Python web — 105-prerequisite-flags
 
 Python server-side SDK implementation of
-[15-prerequisite-flags](../application.md).
+[105-prerequisite-flags](../application.md).
 
 Flag keys: `enable-grid-selection-highlight-prereq` (parent) and
 `show-navigation-move-count-prereq` (child). They cite 11's highlight and
@@ -18,7 +18,7 @@ reasons** — [documentation](https://launchdarkly.com/docs/home/flags/prereqs).
 
 ```bash
 export LD_SDK_KEY="sdk-..."
-python 15-prerequisite-flags.py
+python 105-prerequisite-flags.py
 ```
 
 Open http://127.0.0.1:8080/. Use `PORT` to select another port.

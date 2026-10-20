@@ -14,9 +14,9 @@ Work queue for new lunch-marcoly examples. Ship in this order.
 
 New stubs (README only, not built):
 
-- [18-flag-approvals](10-code-control/18-flag-approvals/) — approval to turn the move-count flag on. Ports **:8180–:8183** when built.
-- [19-evaluation-reasons](10-code-control/19-evaluation-reasons/) — `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, `ERROR` on screen. Ports **:8190–:8193** when built.
-- [segment-targeting](10-code-control/segment-targeting/) — included-targets segment, server SDK. Unnumbered: **18** and **19** fill the decade, and **20** is AgentControl. Read this before [33-synced-segments](30-client-sdk/33-synced-segments/).
+- [108-flag-approvals](10-code-control/108-flag-approvals/) — approval to turn the move-count flag on. Ports **:8180–:8183** when built.
+- [109-evaluation-reasons](10-code-control/109-evaluation-reasons/) — `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, `ERROR` on screen. Ports **:8190–:8193** when built.
+- [segment-targeting](10-code-control/segment-targeting/) — included-targets segment, server SDK. Still unnumbered. Read this before [33-synced-segments](30-client-sdk/33-synced-segments/).
 - [27-agent-mode](20-agent-config/27-agent-mode/) — agent mode only, one instructions value. Does not roll into the capstone. Ports **:8270–:8273**.
 - [28-context-attributes](20-agent-config/28-context-attributes/) — region and audience select a variation. Not `{{ }}` prompt variables. Ports **:8280–:8283**.
 - [29-team-rollout](20-agent-config/29-team-rollout/) — sticky percentage rollout bucketed by `team`. Not [14-progressive-rollout](99-use-cases/14-progressive-rollout/). Do not use ports **:8290–:8293** (capstone).
@@ -41,7 +41,7 @@ Do not create a folder for offline evaluation, client offline mode, or an online
 
 ## Notes
 
-- 10-series **16** is percentage rollout, not migration flags. Migration remains [99-use-cases/17-migration-flags](99-use-cases/17-migration-flags/). **18** is approvals. **19** is evaluation reasons. Included-targets segments are the unnumbered [segment-targeting](10-code-control/segment-targeting/) folder. Letter suffixes (`1a`, `1b`) stay unused. If a decade has to grow, the refactor is three digits (`101`–`199`, `201`–`299`, `301`–`399`, …), done together. A fourth digit is not part of the scheme.
+- 10-series children are **101–109**. **106** is percentage rollout, not migration flags. Migration remains [99-use-cases/17-migration-flags](99-use-cases/17-migration-flags/). **108** is approvals. **109** is evaluation reasons. Included-targets segments are the unnumbered [segment-targeting](10-code-control/segment-targeting/) folder. Python web and the Python portal use 101–107. Other language entrypoints still use the old filenames. Ports for 101–107 stay **8110–8170**. Letter suffixes stay unused. The other series are still two-digit until their own renumber (`201`–`299`, `301`–`399`, …). A fourth digit is not part of the scheme.
 - 20-series **26** is [26-flags-vs-agent-control](20-agent-config/26-flags-vs-agent-control/). **27** is agent mode, **28** is context attributes, **29** is the team percentage rollout. [20-capstone](20-agent-config/20-capstone/) does not consume **27** and does not use the **29** lesson's ports. Capstone ports stay **:8290–:8293**. The image / essay / animal apps stay **70-model-demos**.
 - **70-model-demos** children are `01`, `02`, `03`, `04` inside that folder. `04-terraform-codegen` is Python **:8740**. **80** stays the next free decade.
 - Client bootstrap folder is `35-client-bootstrap`, not `bootstrapRender`.

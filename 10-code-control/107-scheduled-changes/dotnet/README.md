@@ -1,4 +1,4 @@
-# 17-scheduled-changes — .NET web
+# 107-scheduled-changes — .NET web
 
 Schedule a LaunchDarkly flag to turn the grid highlight on after a short delay.
 
@@ -19,7 +19,7 @@ export LD_API_ACCESS_TOKEN="api-..."
 export LD_PROJECT_KEY="lunch-marcoly"
 export LD_ENVIRONMENT_KEY="production"
 
-cd 10-code-control/17-scheduled-changes/dotnet
+cd 10-code-control/107-scheduled-changes/dotnet
 dotnet run
 ```
 

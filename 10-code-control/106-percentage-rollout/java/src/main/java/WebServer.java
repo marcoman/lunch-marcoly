@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -50,6 +51,7 @@ public class WebServer {
             bootstrap.put("appBanner", "16-percentage-rollout[java]");
             bootstrap.put("flagKey", Rollout.FLAG_KEY);
             bootstrap.put("rollout", "30% green / 70% none");
+            bootstrap.put("targetingUrl", targetingUrl());
             bootstrap.put("port", PORT);
             sendJson(exchange, 200, bootstrap);
             return;
@@ -105,6 +107,24 @@ public class WebServer {
                     URLDecoder.decode(pair.substring(idx + 1), StandardCharsets.UTF_8));
         }
         return params;
+    }
+
+    /** Deep link to the flag targeting page, where the percentage rollout is edited.
+     *  LaunchDarkly: percentage rollouts
+     *  https://launchdarkly.com/docs/home/flags/rollouts
+     */
+    private static String targetingUrl() {
+        String project = System.getenv("LD_PROJECT_KEY");
+        String environment = System.getenv("LD_ENVIRONMENT_KEY");
+        if (project == null || project.isBlank() || environment == null || environment.isBlank()) {
+            return null;
+        }
+        String flagKey = "enable-grid-selection-highlight-pct";
+        return "https://app.launchdarkly.com/projects/"
+                + URLEncoder.encode(project.trim(), StandardCharsets.UTF_8)
+                + "/flags/" + flagKey
+                + "/targeting?env=" + URLEncoder.encode(environment.trim(), StandardCharsets.UTF_8)
+                + "&selected-env=" + URLEncoder.encode(environment.trim(), StandardCharsets.UTF_8);
     }
 
     private static byte[] readBytes(InputStream stream) throws IOException {

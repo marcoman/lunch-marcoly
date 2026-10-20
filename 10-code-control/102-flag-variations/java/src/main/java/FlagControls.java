@@ -155,7 +155,7 @@ final class FlagControls {
         String action = actions.isEmpty() ? "noop" : String.join("+", actions);
         Map<String, Object> patch = new LinkedHashMap<>();
         patch.put("environmentKey", environment);
-        patch.put("comment", "12-flag-variations UI: " + action);
+        patch.put("comment", "102-flag-variations UI: " + action);
         patch.put("instructions", instructions);
         request("PATCH", flagPath, patch);
 

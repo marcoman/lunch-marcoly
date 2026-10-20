@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Retrieve a 15-prerequisite-flags flag, including environment targeting.
+# Retrieve a 105-prerequisite-flags flag, including environment targeting.
 # Default: both parent and child.
 # https://launchdarkly.com/docs/api/feature-flags/get-feature-flag
 set -euo pipefail

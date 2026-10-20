@@ -3,7 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyName>11-flag-enablement</AssemblyName>
+    <AssemblyName>101-flag-enablement</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="LaunchDarkly.ServerSdk" Version="8.16.0" />

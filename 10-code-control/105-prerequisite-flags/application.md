@@ -1,12 +1,12 @@
 # Prerequisite flags application specification
 
-This document defines **15-prerequisite-flags**.
+This document defines **105-prerequisite-flags**.
 
 Baseline login, grid navigation, header positions, session controls, and
 `X`-only selection come from
 [00-reference-code/application.md](../../00-reference-code/application.md).
 This example uses **dedicated** flags that **cite**
-[11-flag-enablement](../11-flag-enablement/) (same highlight + count idea)
+[101-flag-enablement](../101-flag-enablement/) (same highlight + count idea)
 but do **not** share 11's keys. A LaunchDarkly **prerequisite** requires the
 parent to be on **and** serving `green` before the child may evaluate.
 
@@ -16,7 +16,7 @@ This lab teaches **flag prerequisites**. The dependent flag is not a second
 `if` in application code. LaunchDarkly decides whether the child is eligible
 to evaluate at all.
 
-It is **not** [11-flag-enablement](../11-flag-enablement/). **11** evaluates
+It is **not** [101-flag-enablement](../101-flag-enablement/). **11** evaluates
 highlight and count independently. **15** makes count depend on highlight.
 Do not re-teach cohort words, color override, or host-OS emoji.
 
@@ -61,7 +61,7 @@ stays greppable.
 | **Variation type** | string |
 | **Temporary** | No |
 | **Tags** | `grid-navigator`, `enable`, `ui`, `string`, `prereq` |
-| **Description** | `15-prerequisite-flags parent. Cites 11-flag-enablement flag enable-grid-selection-highlight (same string highlight: none or a color). Dedicated key so 11 stays independent. Child show-navigation-move-count-prereq requires this flag on and serving green.` |
+| **Description** | `105-prerequisite-flags parent. Cites 101-flag-enablement flag enable-grid-selection-highlight (same string highlight: none or a color). Dedicated key so 101 stays independent. Child show-navigation-move-count-prereq requires this flag on and serving green.` |
 | **Off variation** | `none` |
 | **Fallthrough (lab default)** | `green` |
 | **SDK default when offline** | `none` |
@@ -80,7 +80,7 @@ No cohort override in this example.
 | **Variation type** | boolean |
 | **Temporary** | Yes |
 | **Tags** | `grid-navigator`, `show`, `header`, `prerequisite`, `prereq` |
-| **Description** | `15-prerequisite-flags dependent. Cites 11-flag-enablement flag show-navigation-move-count (same Count: N visibility). Dedicated key. Prerequisite: enable-grid-selection-highlight-prereq on and serving green.` |
+| **Description** | `105-prerequisite-flags dependent. Cites 101-flag-enablement flag show-navigation-move-count (same Count: N visibility). Dedicated key. Prerequisite: enable-grid-selection-highlight-prereq on and serving green.` |
 | **Off variation** | `false` |
 | **Fallthrough** | `true` |
 | **Environment default** | On |
@@ -145,7 +145,7 @@ Previous. Highlight follows the parent string, independently of the child.
 
 ## LaunchDarkly lab
 
-The permanent shell keeps the dependency visible while Controls change:
+The right drawer has **Prerequisite** and **About**. Prerequisite keeps the dependency visible while Controls change:
 
 - **Controls** — parent on/off and parent fallthrough color; child on/off
   (leave the **child on** for the demo). Do **not** edit the prerequisite
@@ -214,6 +214,6 @@ prerequisite.
 
 ## Further reading
 
-- [11-flag-enablement/application.md](../11-flag-enablement/application.md)
+- [101-flag-enablement/application.md](../101-flag-enablement/application.md)
 - [00-reference-code/application.md](../../00-reference-code/application.md)
-- [14-multi-context-targeting/application.md](../14-multi-context-targeting/application.md)
+- [104-multi-context-targeting/application.md](../104-multi-context-targeting/application.md)

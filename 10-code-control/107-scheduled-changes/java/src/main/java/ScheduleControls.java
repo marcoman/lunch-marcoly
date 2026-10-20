@@ -59,7 +59,7 @@ final class ScheduleControls {
             throw new IllegalArgumentException("minutes must be between 1 and 60");
         }
         int deleted = deletePendingChanges();
-        turnFlagOff("17-scheduled-changes: reset off before starting demo");
+        turnFlagOff("107-scheduled-changes: reset off before starting demo");
 
         long now = System.currentTimeMillis();
         long executionDate = now + minutes * 60_000L;
@@ -68,7 +68,7 @@ final class ScheduleControls {
         body.put("instructions", List.of(Map.of("kind", "turnFlagOn")));
         body.put(
                 "comment",
-                "17-scheduled-changes: turn highlight on after " + minutes + " minute(s)");
+                "107-scheduled-changes: turn highlight on after " + minutes + " minute(s)");
         Map<String, Object> created = request("POST", basePath(), body, false);
 
         Map<String, Object> scheduled = summarize(created);
@@ -91,7 +91,7 @@ final class ScheduleControls {
      */
     static Map<String, Object> stop() {
         int cancelled = deletePendingChanges();
-        turnFlagOff("17-scheduled-changes: stop demo and turn highlight off");
+        turnFlagOff("107-scheduled-changes: stop demo and turn highlight off");
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("ok", true);
         result.put("cancelledCount", cancelled);

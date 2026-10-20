@@ -7,7 +7,7 @@
 **singleton** / process-wide client LaunchDarkly documents.
 
 Parent series: [40-dont-do-this](../README.md). Correct pattern:
-[11-flag-enablement](../../10-code-control/11-flag-enablement/) (one client,
+[101-flag-enablement](../../10-code-control/101-flag-enablement/) (one client,
 init at startup, `variation()` many times, close on shutdown).
 
 Keywords: **singleton** · **LDClient** · **server SDK** · **initialization**
@@ -33,7 +33,7 @@ SDK key) is not.
 
 ## When implementing
 
-1. `application.md` with dedicated keys so 11 stays independent.
+1. `application.md` with dedicated keys so 101 stays independent.
 2. Python web first; rail always shows construct count vs 1.
 3. Side-by-side “do this instead”: init once, reuse, close once.
 

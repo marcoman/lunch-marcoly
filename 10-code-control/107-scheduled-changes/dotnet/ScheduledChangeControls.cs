@@ -39,7 +39,7 @@ sealed class ScheduledChangeControls
         if (minutes is < 1 or > 60)
             throw new ArgumentException("minutes must be between 1 and 60");
         var deleted = await DeletePendingAsync();
-        await TurnOffAsync("17-scheduled-changes: reset off before starting demo");
+        await TurnOffAsync("107-scheduled-changes: reset off before starting demo");
 
         var startedAt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         var executionDate = startedAt + minutes * 60_000L;
@@ -47,7 +47,7 @@ sealed class ScheduledChangeControls
         {
             ["executionDate"] = executionDate,
             ["instructions"] = new JsonArray(new JsonObject { ["kind"] = "turnFlagOn" }),
-            ["comment"] = $"17-scheduled-changes: turn highlight on after {minutes} minute(s)",
+            ["comment"] = $"107-scheduled-changes: turn highlight on after {minutes} minute(s)",
         });
         return new
         {
@@ -63,7 +63,7 @@ sealed class ScheduledChangeControls
     public async Task<object> StopAsync()
     {
         var cancelled = await DeletePendingAsync();
-        await TurnOffAsync("17-scheduled-changes: stop demo and turn highlight off");
+        await TurnOffAsync("107-scheduled-changes: stop demo and turn highlight off");
         return new
         {
             ok = true,

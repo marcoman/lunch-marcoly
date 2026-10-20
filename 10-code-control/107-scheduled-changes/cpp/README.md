@@ -1,4 +1,4 @@
-# 17-scheduled-changes — C++ console
+# 107-scheduled-changes — C++ console
 
 C++ console for LaunchDarkly **scheduled flag changes**. A small Python bridge
 imports `../scheduled_change.py` for SDK evaluation and REST schedule controls.
@@ -24,9 +24,9 @@ export LD_API_ACCESS_TOKEN="api-..."
 export LD_PROJECT_KEY="lunch-marcoly"
 export LD_ENVIRONMENT_KEY="production"
 
-cd 10-code-control/17-scheduled-changes/cpp
+cd 10-code-control/107-scheduled-changes/cpp
 make
-./17-scheduled-changes
+./107-scheduled-changes
 ```
 
 **G** replaces the pending schedule, turns the flag off, and schedules it on.

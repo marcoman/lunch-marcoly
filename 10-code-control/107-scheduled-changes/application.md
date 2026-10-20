@@ -1,4 +1,4 @@
-# 17-scheduled-changes application specification
+# 107-scheduled-changes application specification
 
 Baseline login, grid, positions, and keyboard controls come from
 [00-reference-code/application.md](../../00-reference-code/application.md).
@@ -17,6 +17,10 @@ Docs: [Scheduled flag changes](https://launchdarkly.com/docs/home/flags/schedule
 [Scheduled changes API](https://launchdarkly.com/docs/api/scheduled-changes)
 
 Scheduled flag changes are a LaunchDarkly **Enterprise** feature.
+
+## Web drawer
+
+The right drawer has **Schedule** and **About**. Schedule holds the delay, the elapsed clock, and the variation that came back. About explains the one scheduled change and links the docs. The grid stays visible.
 
 ## The aha
 

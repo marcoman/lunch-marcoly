@@ -172,7 +172,7 @@ def apply_flag_control(
         })
     _request("PATCH", f"/flags/{project}/{flag_key}", {
         "environmentKey": environment,
-        "comment": "14-multi-context-targeting UI: on/off or fallthrough",
+        "comment": "104-multi-context-targeting UI: on/off or fallthrough",
         "instructions": instructions,
     })
     updated = _request("GET", f"/flags/{project}/{flag_key}?{query}")

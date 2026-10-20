@@ -5,7 +5,7 @@
   <artifactId>prerequisite-flags-console</artifactId>
   <version>1.0.0</version>
   <build>
-    <finalName>15-prerequisite-flags</finalName>
+    <finalName>105-prerequisite-flags</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>

@@ -3,7 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyName>14-multi-context-targeting</AssemblyName>
+    <AssemblyName>104-multi-context-targeting</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="LaunchDarkly.ServerSdk" Version="8.16.0" />

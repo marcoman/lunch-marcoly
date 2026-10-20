@@ -1,6 +1,6 @@
 # Go
 
-Console application version of the [12-flag-variations grid navigator](../application.md).
+Console application version of the [102-flag-variations grid navigator](../application.md).
 
 ## Prerequisites
 
@@ -26,13 +26,13 @@ This is a console app; it evaluates flags but does not include the web lab or RE
 
 ```bash
 go mod tidy
-go build -o 12-flag-variations .
+go build -o 102-flag-variations .
 ```
 
 ## Run
 
 ```bash
-./12-flag-variations
+./102-flag-variations
 ```
 
 ## What to expect

@@ -4,7 +4,7 @@ version = "1.0.0"
 edition = "2021"
 
 [[bin]]
-name = "12-flag-variations"
+name = "102-flag-variations"
 path = "src/main.rs"
 
 [dependencies]

@@ -12,12 +12,10 @@ This is the small server-side lesson to read before
 Big and synced segments are the same idea with membership that lives outside
 the flag UI.
 
-It has no number of its own. **18** and **19** are the last numbers in this
-decade, and **20** is the AgentControl series. The folder stays under
-`10-code-control/` so it does not become a 99 use case and does not take 20.
-Letter suffixes (`1a`, `1b`) stay unused. If this decade has to grow, the
-refactor is three digits (`101`–`199` under this series), done with the other
-series, not a rename of this folder by itself.
+It has no number of its own. The numbered children in this series are
+**101–109**. This folder stays under `10-code-control/` so it does not become
+a 99 use case. Letter suffixes stay unused. A later number, if this lesson
+gets one, comes from the `101`–`199` range.
 
 [99-use-cases/02-segments-by-name](../../99-use-cases/02-segments-by-name/)
 already matches **rule-based** segments from username attributes. This lesson

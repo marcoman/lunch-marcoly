@@ -1,6 +1,6 @@
 # Python (console)
 
-Console application for [12-flag-variations](../application.md) — string, number, JSON, and anonymous-context flags.
+Console application for [102-flag-variations](../application.md) — string, number, JSON, and anonymous-context flags.
 
 ## Prerequisites
 

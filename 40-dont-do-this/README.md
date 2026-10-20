@@ -4,7 +4,7 @@
 
 Examples of **misusing** LaunchDarkly. Each child is one anti-pattern, with a
 loud **do not ship** banner and a short pointer at the correct pattern (usually
-[11-flag-enablement](../10-code-control/11-flag-enablement/)).
+[101-flag-enablement](../10-code-control/101-flag-enablement/)).
 
 This is **not** [99-use-cases](../99-use-cases/) (good product patterns) and
 **not** [10-code-control](../10-code-control/) (healthy SDK evaluation).

@@ -1,6 +1,6 @@
 # Rust
 
-Console application version of the [11-flag-enablement grid navigator](../application.md).
+Console application version of the [101-flag-enablement grid navigator](../application.md).
 
 ## Prerequisites
 
@@ -22,7 +22,7 @@ cargo build --release
 ## Run
 
 ```bash
-./target/release/11-flag-enablement
+./target/release/101-flag-enablement
 ```
 
 ## What to expect

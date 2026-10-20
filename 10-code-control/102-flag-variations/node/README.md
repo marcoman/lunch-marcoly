@@ -1,6 +1,6 @@
 # Node.js (web)
 
-Web application for [12-flag-variations](../application.md) with an in-app **LaunchDarkly lab** (Controls / Context / About) and bottom **Trace** dock — same permanent layout as [11-flag-enablement/node](../../11-flag-enablement/node/).
+Web application for [102-flag-variations](../application.md) with an in-app **LaunchDarkly lab** (Controls / Context / About) and bottom **Trace** dock — same permanent layout as [101-flag-enablement/node](../../101-flag-enablement/node/).
 
 ## Prerequisites
 

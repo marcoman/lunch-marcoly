@@ -1,4 +1,4 @@
-# 17-scheduled-changes — Python web
+# 107-scheduled-changes — Python web
 
 Schedule a LaunchDarkly flag to turn the grid highlight on after a short delay.
 
@@ -20,8 +20,8 @@ export LD_API_ACCESS_TOKEN="api-..."
 export LD_PROJECT_KEY="lunch-marcoly"
 export LD_ENVIRONMENT_KEY="production"
 
-cd 10-code-control/17-scheduled-changes/python
-python 17-scheduled-changes.py
+cd 10-code-control/107-scheduled-changes/python
+python 107-scheduled-changes.py
 ```
 
 Open [http://127.0.0.1:8170/](http://127.0.0.1:8170/). `PORT` overrides the

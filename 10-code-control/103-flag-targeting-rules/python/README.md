@@ -1,6 +1,6 @@
 # Python (web)
 
-Python web implementation of [13-flag-targeting-rules](../application.md), with the example 12 LaunchDarkly lab shell (Controls / Context / About) and Trace dock.
+Python web implementation of [103-flag-targeting-rules](../application.md), with the example 12 LaunchDarkly lab shell (Controls / Context / About) and Trace dock.
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@ Python web implementation of [13-flag-targeting-rules](../application.md), with 
 ## Run
 
 ```bash
-python 13-flag-targeting-rules.py
+python 103-flag-targeting-rules.py
 ```
 
 Open http://127.0.0.1:8080/. Set `PORT` to override the port.

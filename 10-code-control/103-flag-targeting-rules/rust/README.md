@@ -1,6 +1,6 @@
 # Rust
 
-Console application version of the [13-flag-targeting-rules grid navigator](../application.md).
+Console application version of the [103-flag-targeting-rules grid navigator](../application.md).
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ Console application version of the [13-flag-targeting-rules grid navigator](../a
 
 ```bash
 cargo build --release
-./target/release/13-flag-targeting-rules
+./target/release/103-flag-targeting-rules
 ```
 
 The flag is re-evaluated about every 500 ms. Press `L` to log out or `Q` to quit.

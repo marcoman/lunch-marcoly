@@ -4,7 +4,7 @@ version = "1.0.0"
 edition = "2021"
 
 [[bin]]
-name = "11-flag-enablement"
+name = "101-flag-enablement"
 path = "src/main.rs"
 
 [dependencies]

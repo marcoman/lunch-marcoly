@@ -1,4 +1,4 @@
-# 13-flag-targeting-rules
+# 103-flag-targeting-rules
 
 LaunchDarkly **targeting rules** for the lunch-marcoly grid navigator.
 
@@ -66,7 +66,7 @@ Run (each listens on http://127.0.0.1:8080/ by default):
 
 ```bash
 # Python
-cd python && python 13-flag-targeting-rules.py
+cd python && python 103-flag-targeting-rules.py
 
 # Node
 cd node && npm install && npm start
@@ -87,13 +87,13 @@ cd node-console && npm install && npm start
 cd java-console && ./mvnw -q -DskipTests package && java -jar target/13-flag-targeting-rules.jar
 
 # C++ console
-cd cpp && make && ./13-flag-targeting-rules
+cd cpp && make && ./103-flag-targeting-rules
 
 # Go console
-cd go && go build -o 13-flag-targeting-rules . && ./13-flag-targeting-rules
+cd go && go build -o 103-flag-targeting-rules . && ./103-flag-targeting-rules
 
 # Rust console
-cd rust && cargo build --release && ./target/release/13-flag-targeting-rules
+cd rust && cargo build --release && ./target/release/103-flag-targeting-rules
 ```
 
 See each language folder’s README for toolchain notes.

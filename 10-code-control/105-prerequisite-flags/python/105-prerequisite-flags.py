@@ -97,7 +97,7 @@ class Handler(SimpleHTTPRequestHandler):
                 self,
                 200,
                 {
-                    "appBanner": "15-prerequisite-flags[python]",
+                    "appBanner": "105-prerequisite-flags[python]",
                     "controls": api_config(),
                 },
             )
@@ -142,7 +142,7 @@ def main() -> None:
     init_launchdarkly()
     port = int(os.environ.get("PORT") or "8080")
     server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
-    print("15-prerequisite-flags[python]")
+    print("105-prerequisite-flags[python]")
     print(f"Open http://127.0.0.1:{port}/")
     try:
         server.serve_forever()

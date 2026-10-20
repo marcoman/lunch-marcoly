@@ -5,7 +5,7 @@
   <artifactId>percentage-rollout-console</artifactId>
   <version>1.0.0</version>
   <build>
-    <finalName>16-percentage-rollout</finalName>
+    <finalName>106-percentage-rollout</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>

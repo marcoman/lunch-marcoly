@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 
 /// <summary>
-/// REST controls for the two 15-prerequisite-flags keys.
+/// REST controls for the two 105-prerequisite-flags keys.
 /// Never edits the prerequisite relationship.
 /// https://launchdarkly.com/docs/api/feature-flags/patch-feature-flag
 /// </summary>
@@ -14,12 +14,12 @@ sealed class FlagControls
         (
             Prerequisite.FlagHighlight,
             "Parent · grid selection highlight",
-            "15-prerequisite-flags parent (cites 11's enable-grid-selection-highlight). Must be on and serving green to satisfy the prerequisite."
+            "105-prerequisite-flags parent (cites 101's enable-grid-selection-highlight). Must be on and serving green to satisfy the prerequisite."
         ),
         (
             Prerequisite.FlagCount,
             "Child · navigation move count",
-            "15-prerequisite-flags child (cites 11's show-navigation-move-count). Unmet prerequisite serves its off variation."
+            "105-prerequisite-flags child (cites 101's show-navigation-move-count). Unmet prerequisite serves its off variation."
         ),
     ];
     private readonly HttpClient _http = new() { Timeout = TimeSpan.FromSeconds(30) };
@@ -108,7 +108,7 @@ sealed class FlagControls
         await RequestAsync(HttpMethod.Patch, path, new JsonObject
         {
             ["environmentKey"] = EnvironmentKey,
-            ["comment"] = "15-prerequisite-flags UI control",
+            ["comment"] = "105-prerequisite-flags UI control",
             ["instructions"] = instructions,
         });
         flag = await RequestAsync(HttpMethod.Get, path + query);

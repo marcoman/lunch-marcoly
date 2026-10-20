@@ -33,7 +33,7 @@ api PATCH "/flags/${LD_PROJECT_KEY}/${FLAG_KEY}" \
     --arg pct "$PCT" \
     '{
       environmentKey: $env,
-      comment: ("16-percentage-rollout: static " + $pct + "% green"),
+      comment: ("106-percentage-rollout: static " + $pct + "% green"),
       instructions: [
         {kind: "turnFlagOn"},
         {kind: "updateOffVariation", variationId: $none},

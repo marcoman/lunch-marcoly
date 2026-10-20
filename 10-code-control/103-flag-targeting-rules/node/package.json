@@ -2,7 +2,7 @@
   "name": "targeting-rules",
   "version": "1.0.0",
   "private": true,
-  "description": "13-flag-targeting-rules grid navigator web UI",
+  "description": "103-flag-targeting-rules grid navigator web UI",
   "main": "13-flag-targeting-rules.js",
   "scripts": {
     "start": "node 13-flag-targeting-rules.js"

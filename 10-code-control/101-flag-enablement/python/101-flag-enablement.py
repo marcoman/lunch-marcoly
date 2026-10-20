@@ -167,7 +167,7 @@ class Handler(SimpleHTTPRequestHandler):
                 self,
                 200,
                 {
-                    "appBanner": "11-flag-enablement[python]",
+                    "appBanner": "101-flag-enablement[python]",
                     "hostOs": _host_os,
                     "controls": api_config(),
                 },

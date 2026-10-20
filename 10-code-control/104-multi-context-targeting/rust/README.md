@@ -1,7 +1,7 @@
 # Rust
 
 Console application version of the
-[14-multi-context-targeting grid navigator](../application.md).
+[104-multi-context-targeting grid navigator](../application.md).
 
 ## Prerequisites
 
@@ -18,7 +18,7 @@ evaluated against a [multi-context](https://launchdarkly.com/docs/home/flags/mul
 
 ```bash
 cargo build --release
-./target/release/14-multi-context-targeting
+./target/release/104-multi-context-targeting
 ```
 
 On the grid, `1`/`2` switch user and `3`/`4` switch org without logging out. The

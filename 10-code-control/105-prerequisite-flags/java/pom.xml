@@ -18,7 +18,7 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>15-prerequisite-flags</finalName>
+        <finalName>105-prerequisite-flags</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -1,6 +1,6 @@
 # Java (web)
 
-Web application version of the [11-flag-enablement grid navigator](../application.md).
+Web application version of the [101-flag-enablement grid navigator](../application.md).
 
 ## Prerequisites
 

@@ -1,6 +1,6 @@
 # Python (console)
 
-Console application version of the [11-flag-enablement grid navigator](../application.md) with server-side LaunchDarkly flag evaluation.
+Console application version of the [101-flag-enablement grid navigator](../application.md) with server-side LaunchDarkly flag evaluation.
 
 ## Prerequisites
 

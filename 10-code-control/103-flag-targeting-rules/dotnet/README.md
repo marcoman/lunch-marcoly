@@ -1,7 +1,7 @@
 # .NET (web)
 
 .NET 10 Minimal API implementation of
-[13-flag-targeting-rules](../application.md). The SDK evaluates a public `team`
+[103-flag-targeting-rules](../application.md). The SDK evaluates a public `team`
 context attribute, omitted entirely for No team. After login, the header
 switches among No team, Red, Blue, and Yellow without another login.
 `configure-team-display-labels` can rename those words to Small, Medium, and Large.

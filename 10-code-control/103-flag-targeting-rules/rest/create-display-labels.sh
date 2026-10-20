@@ -48,7 +48,7 @@ if [[ -n "${LD_ENVIRONMENT_KEY:-}" ]]; then
   echo "Turning ${FLAG_KEY} on with fallthrough Team names in ${LD_ENVIRONMENT_KEY}..."
   patch="$(jq -n --arg env "$LD_ENVIRONMENT_KEY" --arg names "$names_id" '{
     environmentKey: $env,
-    comment: "13-flag-targeting-rules: display labels, no targeting rules",
+    comment: "103-flag-targeting-rules: display labels, no targeting rules",
     instructions: [
       {kind: "turnFlagOn"},
       {kind: "updateOffVariation", variationId: $names},

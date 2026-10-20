@@ -1,10 +1,10 @@
-# 11-flag-enablement
+# 101-flag-enablement
 
 Feature flag naming, provisioning, and enablement for the **lunch-marcoly** grid navigator.
 
 ## What this demonstrates
 
-This example teaches LaunchDarkly **feature flags** on the grid navigator. The [00-reference-code](../../00-reference-code/) app is reference-only — it has no LaunchDarkly integration and serves as the baseline behavior described in [application.md](../../00-reference-code/application.md) (`X` only, no colors). For other variation types (number / JSON), see sibling [12-flag-variations](../12-flag-variations/).
+This example teaches LaunchDarkly **feature flags** on the grid navigator. The [00-reference-code](../../00-reference-code/) app is reference-only — it has no LaunchDarkly integration and serves as the baseline behavior described in [application.md](../../00-reference-code/application.md) (`X` only, no colors). For other variation types (number / JSON), see sibling [102-flag-variations](../102-flag-variations/).
 
 Here you define flags that extend the grid navigator — including a **string** highlight color flag and **boolean** enable/show flags. See [application.md](application.md) for the full flag specification and desired effects. Provision flags with:
 

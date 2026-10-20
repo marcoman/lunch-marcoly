@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Create the 15-prerequisite-flags parent and child, then attach the prerequisite.
+# Create the 105-prerequisite-flags parent and child, then attach the prerequisite.
 # https://launchdarkly.com/docs/api/feature-flags/post-feature-flag
 # https://launchdarkly.com/docs/home/flags/prereqs
 # Keywords: prerequisites, dependent flag, semantic patch, addPrerequisite
@@ -26,7 +26,7 @@ ensure_flag() {
 ensure_flag "$PARENT_KEY" '{
   "key": "enable-grid-selection-highlight-prereq",
   "name": "Enable: grid selection highlight (prereq)",
-  "description": "15-prerequisite-flags parent. Cites 11-flag-enablement flag enable-grid-selection-highlight (same string highlight: none or a color). Dedicated key so 11 stays independent. Child show-navigation-move-count-prereq requires this flag on and serving green.",
+  "description": "105-prerequisite-flags parent. Cites 101-flag-enablement flag enable-grid-selection-highlight (same string highlight: none or a color). Dedicated key so 101 stays independent. Child show-navigation-move-count-prereq requires this flag on and serving green.",
   "temporary": false,
   "tags": ["grid-navigator", "enable", "ui", "string", "prereq"],
   "variations": [
@@ -43,7 +43,7 @@ ensure_flag "$PARENT_KEY" '{
 ensure_flag "$CHILD_KEY" '{
   "key": "show-navigation-move-count-prereq",
   "name": "Show: navigation move count (prereq)",
-  "description": "15-prerequisite-flags dependent. Cites 11-flag-enablement flag show-navigation-move-count (same Count: N visibility). Dedicated key. Prerequisite: enable-grid-selection-highlight-prereq on and serving green.",
+  "description": "105-prerequisite-flags dependent. Cites 101-flag-enablement flag show-navigation-move-count (same Count: N visibility). Dedicated key. Prerequisite: enable-grid-selection-highlight-prereq on and serving green.",
   "temporary": true,
   "tags": ["grid-navigator", "show", "header", "prerequisite", "prereq"],
   "variations": [
@@ -72,7 +72,7 @@ api PATCH "/flags/${LD_PROJECT_KEY}/${PARENT_KEY}" \
   -H "Content-Type: application/json; domain-model=launchdarkly.semanticpatch" \
   -d "$(jq -n --arg env "$LD_ENVIRONMENT_KEY" --arg none "$none_id" --arg green "$green_id" '{
     environmentKey: $env,
-    comment: "15-prerequisite-flags: parent on, fallthrough green",
+    comment: "105-prerequisite-flags: parent on, fallthrough green",
     instructions: [
       {kind: "turnFlagOn"},
       {kind: "updateOffVariation", variationId: $none},
@@ -106,7 +106,7 @@ api PATCH "/flags/${LD_PROJECT_KEY}/${CHILD_KEY}" \
     --arg prereq "$prereq_kind" \
     '{
       environmentKey: $env,
-      comment: "15-prerequisite-flags: child on; prerequisite parent/green",
+      comment: "105-prerequisite-flags: child on; prerequisite parent/green",
       instructions: [
         {kind: "turnFlagOn"},
         {kind: "updateOffVariation", variationId: $hid},

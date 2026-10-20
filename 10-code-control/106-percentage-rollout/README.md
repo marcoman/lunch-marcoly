@@ -1,4 +1,4 @@
-# 16-percentage-rollout
+# 106-percentage-rollout
 
 LaunchDarkly **percentage rollout** for the grid navigator: gradually expose
 a highlighted cell to a **fixed** share of users. Assignment is sticky on the
@@ -26,7 +26,7 @@ percentage on the default rule (lab default **30%** `green` / **70%** `none`).
 
 | Language | Directory | Status |
 |----------|-----------|--------|
-| Python web | [python/](python/) | Done — standalone **:8160**, Python portal tab 16 |
+| Python web | [python/](python/) | Done — standalone **:8160**, Python portal tab 106 |
 | Node web | [node/](node/) | Done — standalone **:8080**, Node portal tab 16 **:8161** |
 | Java web | [java/](java/) | Done — standalone **:8080**, Java portal tab 16 **:8162** |
 | .NET web | [dotnet/](dotnet/) | Done — standalone **:8080**, .NET portal tab 16 **:8163** |
@@ -40,6 +40,49 @@ percentage on the default rule (lab default **30%** `green` / **70%** `none`).
 Provision with [REST](rest/) or [Terraform](terraform/). See
 [application.md](application.md) for the full contract.
 
+## Start a percentage rollout
+
+The **About** tab in the right drawer links to this flag's targeting page. For this
+lab that page is:
+
+[enable-grid-selection-highlight-pct targeting](https://app.launchdarkly.com/projects/lunch-marcoly/flags/enable-grid-selection-highlight-pct/targeting?env=production&selected-env=production)
+
+The app builds the same URL from `LD_PROJECT_KEY` and `LD_ENVIRONMENT_KEY`.
+Restart the server after you export them. The Grid tab already shows the
+context that was sent and the variation that came back.
+
+On the targeting page:
+
+1. Turn the flag **on**.
+2. Edit the **default rule** and choose a percentage rollout.
+3. Give `green` a share and `none` the rest. The two shares add up to 100.
+   This lab starts at **30% green / 70% none**.
+4. Bucket by the **user** context key. That key is the username.
+5. Save the targeting.
+6. Return to the grid. Evaluate a few usernames. Open an older name to see
+   that its variation stayed put.
+
+Docs: [Percentage rollouts](https://launchdarkly.com/docs/home/flags/rollouts)
+
+## REST scripts
+
+`rest/create-flag.sh` creates the flag, then calls `set-rollout-percent.sh 30`.
+
+`rest/set-rollout-percent.sh <green-percent>` turns the flag on and replaces
+the default-rule weights immediately. The argument is the `green` share, from
+0 to 100. The remainder is `none`. Bucketing uses the `user` context key.
+LaunchDarkly stores each share in thousandths, so 30% is weight `30000`. The
+script does not create a schedule and does not move the weights later.
+
+`rest/get-rollout.sh` is read-only. It prints whether the flag is on in
+`LD_ENVIRONMENT_KEY`, which context kind the default rule buckets by, and each
+variation's percent.
+
+```bash
+./set-rollout-percent.sh 30
+./get-rollout.sh
+```
+
 ## Quick start
 
 ```bash
@@ -50,11 +93,11 @@ export LD_ENVIRONMENT_KEY="production"
 
 export LD_SDK_KEY="sdk-..."
 cd python
-python 16-percentage-rollout.py
+python 106-percentage-rollout.py
 ```
 
-Open [http://127.0.0.1:8160/](http://127.0.0.1:8160/), or run a
-[portal](../portal/) and select tab 16.
+Open [http://127.0.0.1:8160/](http://127.0.0.1:8160/), or run the Python
+[portal](../portal/) and select tab 106. Open **About** in the right drawer for the targeting link and the steps above.
 
 Consoles: Python / Node / Java / Go / Rust / C++. Press **N** / **P** to walk
 generated usernames.

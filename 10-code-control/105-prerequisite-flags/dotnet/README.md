@@ -1,7 +1,7 @@
 # .NET (web)
 
 .NET 10 Minimal API implementation of
-[15-prerequisite-flags](../application.md). The LaunchDarkly .NET server SDK
+[105-prerequisite-flags](../application.md). The LaunchDarkly .NET server SDK
 evaluates parent and child flags independently so an unmet
 [prerequisite](https://launchdarkly.com/docs/home/flags/prereqs) shows up as
 `PREREQUISITE_FAILED`.

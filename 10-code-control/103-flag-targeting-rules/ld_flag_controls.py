@@ -209,7 +209,7 @@ def apply_flag_control(
         })
     _request("PATCH", f"/flags/{project}/{flag_key}", {
         "environmentKey": environment,
-        "comment": "13-flag-targeting-rules UI: on/off or fallthrough",
+        "comment": "103-flag-targeting-rules UI: on/off or fallthrough",
         "instructions": instructions,
     })
     updated = _request("GET", f"/flags/{project}/{flag_key}?{query}")

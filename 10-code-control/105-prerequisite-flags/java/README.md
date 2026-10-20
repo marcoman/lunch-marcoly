@@ -1,6 +1,6 @@
 # Java (web)
 
-Java 21 web implementation of [15-prerequisite-flags](../application.md).
+Java 21 web implementation of [105-prerequisite-flags](../application.md).
 The LaunchDarkly Java server SDK evaluates parent and child flags independently
 so an unmet [prerequisite](https://launchdarkly.com/docs/home/flags/prereqs)
 shows up as `PREREQUISITE_FAILED`.

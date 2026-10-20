@@ -115,6 +115,6 @@ flag data arrived moments ago or came from the SDK's in-memory store.
 - [Java implementation](java/)
 - [.NET implementation](dotnet/)
 - [00-reference-code](../../00-reference-code/)
-- [11-flag-enablement](../../10-code-control/11-flag-enablement/)
+- [101-flag-enablement](../../10-code-control/101-flag-enablement/)
 - [42-local-if-no-sdk](../../40-dont-do-this/42-local-if-no-sdk/) — the
   opposite anti-pattern: skipping SDK evaluation entirely

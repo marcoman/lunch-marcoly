@@ -206,7 +206,7 @@ def start_scheduled_change(minutes: int) -> dict[str, Any]:
         raise ValueError("minutes must be between 1 and 60")
 
     deleted = _delete_pending_changes()
-    _turn_flag_off("17-scheduled-changes: reset off before starting demo")
+    _turn_flag_off("107-scheduled-changes: reset off before starting demo")
 
     now_ms = int(time.time() * 1000)
     execution_date = now_ms + minutes * 60_000
@@ -217,7 +217,7 @@ def start_scheduled_change(minutes: int) -> dict[str, Any]:
             "executionDate": execution_date,
             "instructions": [{"kind": "turnFlagOn"}],
             "comment": (
-                f"17-scheduled-changes: turn highlight on after {minutes} minute(s)"
+                f"107-scheduled-changes: turn highlight on after {minutes} minute(s)"
             ),
         },
     )
@@ -243,7 +243,7 @@ def stop_scheduled_change() -> dict[str, Any]:
     off alone would let a still-pending change flip it back on later.
     """
     cancelled = _delete_pending_changes()
-    _turn_flag_off("17-scheduled-changes: stop demo and turn highlight off")
+    _turn_flag_off("107-scheduled-changes: stop demo and turn highlight off")
     return {
         "ok": True,
         "cancelledCount": cancelled,

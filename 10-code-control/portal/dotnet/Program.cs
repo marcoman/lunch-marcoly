@@ -23,25 +23,25 @@ var seriesRoot = Path.GetFullPath(Path.Combine(here, "..", ".."));
 var children = new[]
 {
     new Child("11", "Flag enablement",
-        Path.Combine(seriesRoot, "11-flag-enablement", "dotnet"),
+        Path.Combine(seriesRoot, "101-flag-enablement", "dotnet"),
         "11-flag-enablement.csproj", 8113),
     new Child("12", "Flag variations",
-        Path.Combine(seriesRoot, "12-flag-variations", "dotnet"),
+        Path.Combine(seriesRoot, "102-flag-variations", "dotnet"),
         "12-flag-variations.csproj", 8123),
     new Child("13", "Flag targeting rules",
-        Path.Combine(seriesRoot, "13-flag-targeting-rules", "dotnet"),
+        Path.Combine(seriesRoot, "103-flag-targeting-rules", "dotnet"),
         "13-flag-targeting-rules.csproj", 8133),
     new Child("14", "Multi-context targeting",
-        Path.Combine(seriesRoot, "14-multi-context-targeting", "dotnet"),
+        Path.Combine(seriesRoot, "104-multi-context-targeting", "dotnet"),
         "14-multi-context-targeting.csproj", 8143),
     new Child("15", "Prerequisite flags",
-        Path.Combine(seriesRoot, "15-prerequisite-flags", "dotnet"),
+        Path.Combine(seriesRoot, "105-prerequisite-flags", "dotnet"),
         "15-prerequisite-flags.csproj", 8153),
     new Child("16", "Percentage rollout",
-        Path.Combine(seriesRoot, "16-percentage-rollout", "dotnet"),
+        Path.Combine(seriesRoot, "106-percentage-rollout", "dotnet"),
         "16-percentage-rollout.csproj", 8163),
     new Child("17", "Scheduled changes",
-        Path.Combine(seriesRoot, "17-scheduled-changes", "dotnet"),
+        Path.Combine(seriesRoot, "107-scheduled-changes", "dotnet"),
         "17-scheduled-changes.csproj", 8173)
 };
 

@@ -1,4 +1,4 @@
-# Terraform provisioning — 16-percentage-rollout
+# Terraform provisioning — 106-percentage-rollout
 
 Provision the dedicated string flag and a static percentage rollout on its
 default rule.

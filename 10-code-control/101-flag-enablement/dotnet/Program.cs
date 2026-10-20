@@ -299,7 +299,7 @@ sealed class EnablementControls
         await RequestAsync(HttpMethod.Patch, $"/flags/{Escape(Project)}/{Escape(key)}", new JsonObject
         {
             ["environmentKey"] = EnvironmentKey,
-            ["comment"] = $"11-flag-enablement UI: {action}",
+            ["comment"] = $"101-flag-enablement UI: {action}",
             ["instructions"] = instructions,
         });
         flag = await GetFlagAsync(key);

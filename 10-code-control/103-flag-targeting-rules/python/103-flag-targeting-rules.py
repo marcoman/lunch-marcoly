@@ -96,7 +96,7 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if parsed.path == "/api/bootstrap":
             _json_response(self, 200, {
-                "appBanner": "13-flag-targeting-rules[python]",
+                "appBanner": "103-flag-targeting-rules[python]",
                 "controls": api_config(),
             })
             return

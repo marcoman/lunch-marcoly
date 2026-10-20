@@ -44,25 +44,25 @@ public final class Portal {
 
     private static final List<Child> CHILDREN = List.of(
             new Child("11", "Flag enablement",
-                    SERIES_ROOT.resolve("11-flag-enablement/java"),
+                    SERIES_ROOT.resolve("101-flag-enablement/java"),
                     "11-flag-enablement.jar", 8112),
             new Child("12", "Flag variations",
-                    SERIES_ROOT.resolve("12-flag-variations/java"),
+                    SERIES_ROOT.resolve("102-flag-variations/java"),
                     "12-flag-variations.jar", 8122),
             new Child("13", "Flag targeting rules",
-                    SERIES_ROOT.resolve("13-flag-targeting-rules/java"),
+                    SERIES_ROOT.resolve("103-flag-targeting-rules/java"),
                     "13-flag-targeting-rules.jar", 8132),
             new Child("14", "Multi-context targeting",
-                    SERIES_ROOT.resolve("14-multi-context-targeting/java"),
+                    SERIES_ROOT.resolve("104-multi-context-targeting/java"),
                     "14-multi-context-targeting.jar", 8142),
             new Child("15", "Prerequisite flags",
-                    SERIES_ROOT.resolve("15-prerequisite-flags/java"),
+                    SERIES_ROOT.resolve("105-prerequisite-flags/java"),
                     "15-prerequisite-flags.jar", 8152),
             new Child("16", "Percentage rollout",
-                    SERIES_ROOT.resolve("16-percentage-rollout/java"),
+                    SERIES_ROOT.resolve("106-percentage-rollout/java"),
                     "16-percentage-rollout.jar", 8162),
             new Child("17", "Scheduled changes",
-                    SERIES_ROOT.resolve("17-scheduled-changes/java"),
+                    SERIES_ROOT.resolve("107-scheduled-changes/java"),
                     "17-scheduled-changes.jar", 8172)
     );
 

@@ -156,14 +156,14 @@ async function startScheduledChange(minutes) {
     throw new Error("minutes must be between 1 and 60");
   }
   const deleted = await deletePendingChanges();
-  await turnFlagOff("17-scheduled-changes: reset off before starting demo");
+  await turnFlagOff("107-scheduled-changes: reset off before starting demo");
 
   const now = Date.now();
   const executionDate = now + minutes * 60_000;
   const created = await request("POST", basePath(), {
     executionDate,
     instructions: [{ kind: "turnFlagOn" }],
-    comment: `17-scheduled-changes: turn highlight on after ${minutes} minute(s)`,
+    comment: `107-scheduled-changes: turn highlight on after ${minutes} minute(s)`,
   });
   return {
     ok: true,
@@ -181,7 +181,7 @@ async function startScheduledChange(minutes) {
 
 async function stopScheduledChange() {
   const cancelled = await deletePendingChanges();
-  await turnFlagOff("17-scheduled-changes: stop demo and turn highlight off");
+  await turnFlagOff("107-scheduled-changes: stop demo and turn highlight off");
   return { ok: true, cancelledCount: cancelled, stoppedAt: Date.now() };
 }
 

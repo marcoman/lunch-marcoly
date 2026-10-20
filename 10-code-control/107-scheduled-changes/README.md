@@ -1,4 +1,4 @@
-# 17-scheduled-changes
+# 107-scheduled-changes
 
 LaunchDarkly **scheduled flag changes**: the grid highlight (or theme) flips at
 a selected time in the future. One visible change only.
@@ -6,6 +6,8 @@ a selected time in the future. One visible change only.
 Keywords: **scheduled changes** · **feature flags** · **targeting**
 
 Docs: [Scheduled flag changes](https://launchdarkly.com/docs/home/flags/scheduled-changes)
+
+The Python web app explains this on the **About** tab in the right drawer. The **Schedule** tab is where you start the change and watch elapsed time.
 
 Scheduled flag changes require a LaunchDarkly **Enterprise** plan.
 

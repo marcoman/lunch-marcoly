@@ -18,7 +18,7 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>13-flag-targeting-rules</finalName>
+        <finalName>103-flag-targeting-rules</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

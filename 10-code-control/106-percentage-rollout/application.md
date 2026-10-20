@@ -1,6 +1,6 @@
-# 16-percentage-rollout application specification
+# 106-percentage-rollout application specification
 
-This document defines **16-percentage-rollout**.
+This document defines **106-percentage-rollout**.
 
 Baseline login, grid, header positions, session controls, and `X`-only
 selection come from
@@ -19,7 +19,7 @@ This is **not**:
 |---------|------------|
 | [14-progressive-rollout](../../99-use-cases/14-progressive-rollout/) | Time-staged 10→100% |
 | [01-abcd-test](../../99-use-cases/01-abcd-test/) | Four experiment labels |
-| [11-flag-enablement](../11-flag-enablement/) | Independent on/off, no rollout |
+| [101-flag-enablement](../101-flag-enablement/) | Independent on/off, no rollout |
 
 Keywords: **percentage rollout** · **context key** · **sticky bucketing** ·
 **feature flags**
@@ -49,7 +49,7 @@ Do **not** reuse 11's key. Suffix **`pct`**.
 | **Environment default** | **On** (so the rollout is live after provision) |
 | **SDK default when offline** | `none` |
 | **Tags** | `grid-navigator`, `enable`, `ui`, `string`, `percentage-rollout` |
-| **Description** | `16-percentage-rollout. Static 30/70 green/none rollout on username context key. Dedicated key so 11 stays independent. Not a progressive rollout.` |
+| **Description** | `106-percentage-rollout. Static 30/70 green/none rollout on username context key. Dedicated key so 101 stays independent. Not a progressive rollout.` |
 
 When the served variation is `green`, the selected cell and username use green.
 When `none`, match 00 (`X` only).

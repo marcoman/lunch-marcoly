@@ -1,5 +1,5 @@
-# Build the 16-percentage-rollout console binary locally in this directory.
-TARGET := 16-percentage-rollout
+# Build the 106-percentage-rollout console binary locally in this directory.
+TARGET := 106-percentage-rollout
 CXX ?= c++
 CXXFLAGS := -std=c++20 -Wall -Wextra
 

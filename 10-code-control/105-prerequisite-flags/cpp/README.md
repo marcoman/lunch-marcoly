@@ -1,6 +1,6 @@
 # C++ (console)
 
-Console application for [15-prerequisite-flags](../application.md). Flag
+Console application for [105-prerequisite-flags](../application.md). Flag
 evaluation uses the Python server SDK helper (`evaluate_flags.py`) so the
 unmet [prerequisite](https://launchdarkly.com/docs/home/flags/prereqs) still
 surfaces as `PREREQUISITE_FAILED`.
@@ -15,7 +15,7 @@ surfaces as `PREREQUISITE_FAILED`.
 
 ```bash
 make
-./15-prerequisite-flags
+./105-prerequisite-flags
 ```
 
 Login with a username. Flag changes refresh about every 500 ms. Count appears

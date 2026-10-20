@@ -1,5 +1,5 @@
-# Build the 13-flag-targeting-rules console binary locally in this directory.
-TARGET := 13-flag-targeting-rules
+# Build the 103-flag-targeting-rules console binary locally in this directory.
+TARGET := 103-flag-targeting-rules
 CXX ?= c++
 CXXFLAGS := -std=c++20 -Wall -Wextra
 

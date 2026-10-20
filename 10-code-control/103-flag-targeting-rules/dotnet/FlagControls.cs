@@ -88,7 +88,7 @@ sealed class FlagControls
             new JsonObject
             {
                 ["environmentKey"] = EnvironmentKey,
-                ["comment"] = "13-flag-targeting-rules UI: on/off or fallthrough",
+                ["comment"] = "103-flag-targeting-rules UI: on/off or fallthrough",
                 ["instructions"] = instructions,
             });
         flag = await GetFlagAsync(key);

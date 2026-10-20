@@ -17,7 +17,7 @@ else
     -d '{
       "key": "enable-grid-selection-highlight-sched",
       "name": "Enable: grid selection highlight (scheduled)",
-      "description": "17-scheduled-changes. Starts off; the lab schedules a turnFlagOn change after a selected delay.",
+      "description": "107-scheduled-changes. Starts off; the lab schedules a turnFlagOn change after a selected delay.",
       "temporary": false,
       "tags": ["grid-navigator", "enable", "ui", "string", "scheduled-changes"],
       "variations": [
@@ -35,7 +35,7 @@ if [[ -n "${LD_ENVIRONMENT_KEY:-}" ]]; then
     -H "Content-Type: application/json; domain-model=launchdarkly.semanticpatch" \
     -d "$(jq -nc --arg env "$LD_ENVIRONMENT_KEY" --arg variation "$green_id" '{
       environmentKey: $env,
-      comment: "17-scheduled-changes initial state",
+      comment: "107-scheduled-changes initial state",
       instructions: [
         {kind: "updateFallthroughVariationOrRollout", variationId: $variation},
         {kind: "turnFlagOff"}

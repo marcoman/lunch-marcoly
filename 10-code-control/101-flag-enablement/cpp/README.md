@@ -1,6 +1,6 @@
 # C++
 
-Console application version of the [11-flag-enablement grid navigator](../application.md).
+Console application version of the [101-flag-enablement grid navigator](../application.md).
 
 ## Prerequisites
 
@@ -35,7 +35,7 @@ From this directory (the Python helper path is baked in at build time):
 ```bash
 source ../../.venv/bin/activate   # or export LD_SDK_KEY and rely on repo .venv auto-detection
 export LD_SDK_KEY="sdk-..."
-./11-flag-enablement
+./101-flag-enablement
 ```
 
 The build embeds the path to `.venv/bin/python3` when present. You can also set `PYTHON` explicitly or activate `.venv` (`VIRTUAL_ENV`).

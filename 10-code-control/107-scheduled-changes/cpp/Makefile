@@ -1,5 +1,5 @@
-# Build the 17-scheduled-changes console binary locally in this directory.
-TARGET := 17-scheduled-changes
+# Build the 107-scheduled-changes console binary locally in this directory.
+TARGET := 107-scheduled-changes
 CXX ?= c++
 CXXFLAGS := -std=c++20 -Wall -Wextra
 

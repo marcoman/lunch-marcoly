@@ -5,7 +5,7 @@
   <artifactId>targeting-rules-console</artifactId>
   <version>1.0.0</version>
   <build>
-    <finalName>13-flag-targeting-rules</finalName>
+    <finalName>103-flag-targeting-rules</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>

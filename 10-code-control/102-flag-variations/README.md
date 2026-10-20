@@ -1,4 +1,4 @@
-# 12-flag-variations
+# 102-flag-variations
 
 LaunchDarkly **flag variation types** for the **lunch-marcoly** grid navigator.
 
@@ -13,7 +13,7 @@ This example extends the [00-reference-code](../../00-reference-code/) grid navi
 | `configure-lucky-number` | Number | Header line `Lucky Number is: N` (0–5) |
 | `configure-max-navigation-moves` | JSON | Session move limit (`maxMoves`, default 100) |
 
-Unlike [11-flag-enablement](../11-flag-enablement/), this example does **not** include highlight or cohort flags — it focuses on variation types and their runtime effects.
+Unlike [101-flag-enablement](../101-flag-enablement/), this example does **not** include highlight or cohort flags — it focuses on variation types and their runtime effects.
 
 See [application.md](application.md) for the full specification and acceptance criteria.
 
@@ -85,5 +85,5 @@ See [../portal/README.md](../portal/README.md).
 
 - [application.md](application.md) — flag specification and acceptance criteria
 - [00-reference-code/application.md](../../00-reference-code/application.md) — baseline grid navigator
-- [11-flag-enablement/application.md](../11-flag-enablement/application.md) — boolean flags and host OS reference
+- [101-flag-enablement/application.md](../101-flag-enablement/application.md) — boolean flags and host OS reference
 - [Multivariate flags](https://launchdarkly.com/docs/sdk/features/flag-types)

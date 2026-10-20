@@ -21,6 +21,6 @@ api PATCH "/flags/${LD_PROJECT_KEY}/show-partner-org-badge" \
   -H "Content-Type: application/json; domain-model=launchdarkly.semanticpatch" \
   -d "{
     \"environmentKey\":\"${LD_ENVIRONMENT_KEY}\",
-    \"comment\":\"14-multi-context-targeting REST example: ${ACTION}\",
+    \"comment\":\"104-multi-context-targeting REST example: ${ACTION}\",
     \"instructions\":[{\"kind\":\"${kind}\"}]
   }" | jq ".environments.\"${LD_ENVIRONMENT_KEY}\" | {on,offVariation,fallthrough,rules:[.rules[]?|{description}]}"

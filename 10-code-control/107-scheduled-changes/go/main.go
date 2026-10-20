@@ -159,14 +159,14 @@ func (r *restClient) start(minutes int) (scheduledChange, int64, error) {
 	if err := r.deletePending(); err != nil {
 		return scheduledChange{}, 0, err
 	}
-	if err := r.turnOff("17-scheduled-changes: reset off before starting demo"); err != nil {
+	if err := r.turnOff("107-scheduled-changes: reset off before starting demo"); err != nil {
 		return scheduledChange{}, 0, err
 	}
 	started := time.Now().UnixMilli()
 	change := scheduledChange{ExecutionDate: started + int64(minutes)*60_000}
 	body := map[string]any{"executionDate": change.ExecutionDate,
 		"instructions": []map[string]string{{"kind": "turnFlagOn"}},
-		"comment":      fmt.Sprintf("17-scheduled-changes: turn highlight on after %d minute(s)", minutes)}
+		"comment":      fmt.Sprintf("107-scheduled-changes: turn highlight on after %d minute(s)", minutes)}
 	if err := r.request(http.MethodPost, r.basePath(), body, false, &change); err != nil {
 		return scheduledChange{}, 0, err
 	}
@@ -176,7 +176,7 @@ func (r *restClient) stop() (int64, error) {
 	if err := r.deletePending(); err != nil {
 		return 0, err
 	}
-	if err := r.turnOff("17-scheduled-changes: stop demo and turn highlight off"); err != nil {
+	if err := r.turnOff("107-scheduled-changes: stop demo and turn highlight off"); err != nil {
 		return 0, err
 	}
 	return time.Now().UnixMilli(), nil

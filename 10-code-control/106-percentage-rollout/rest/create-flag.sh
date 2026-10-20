@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Create the dedicated 16-percentage-rollout flag, then configure 30/70.
+# Create the dedicated 106-percentage-rollout flag, then configure 30/70.
 # Feature flags — percentage rollout on the default rule.
 # https://launchdarkly.com/docs/home/flags/rollouts
 # https://launchdarkly.com/docs/api/feature-flags/post-feature-flag
@@ -19,7 +19,7 @@ else
     -d '{
       "key": "enable-grid-selection-highlight-pct",
       "name": "Enable: grid selection highlight (pct)",
-      "description": "16-percentage-rollout. Static 30/70 green/none rollout on username context key. Dedicated key so 11 stays independent. Not a progressive rollout.",
+      "description": "106-percentage-rollout. Static 30/70 green/none rollout on username context key. Dedicated key so 101 stays independent. Not a progressive rollout.",
       "temporary": false,
       "tags": ["grid-navigator", "enable", "ui", "string", "percentage-rollout"],
       "variations": [

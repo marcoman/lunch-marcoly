@@ -1,6 +1,6 @@
 # Python (web)
 
-Python web implementation of [14-multi-context-targeting](../application.md).
+Python web implementation of [104-multi-context-targeting](../application.md).
 Login and the lab rail use Alice/Bob and Acme/Globex radio cards. The rail keeps
 the live multi-context JSON, current result, and event history visible while you
 walk the 2×2. Tabs are Controls and About.
@@ -15,7 +15,7 @@ walk the 2×2. Tabs are Controls and About.
 ## Run
 
 ```bash
-python 14-multi-context-targeting.py
+python 104-multi-context-targeting.py
 ```
 
 Open http://127.0.0.1:8080/. Set `PORT` to override the port.

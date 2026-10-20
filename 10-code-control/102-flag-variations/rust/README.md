@@ -1,6 +1,6 @@
 # Rust
 
-Console application version of the [12-flag-variations grid navigator](../application.md).
+Console application version of the [102-flag-variations grid navigator](../application.md).
 
 ## Prerequisites
 
@@ -31,7 +31,7 @@ cargo build --release
 ## Run
 
 ```bash
-./target/release/12-flag-variations
+./target/release/102-flag-variations
 ```
 
 ## What to expect

@@ -1,6 +1,6 @@
 # Node.js (web)
 
-Web implementation of [15-prerequisite-flags](../application.md). The Node
+Web implementation of [105-prerequisite-flags](../application.md). The Node
 server SDK evaluates parent and child flags independently so an unmet
 [prerequisite](https://launchdarkly.com/docs/home/flags/prereqs) shows up as
 `PREREQUISITE_FAILED`.

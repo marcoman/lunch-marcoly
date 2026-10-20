@@ -4,7 +4,7 @@ version = "1.0.0"
 edition = "2021"
 
 [[bin]]
-name = "13-flag-targeting-rules"
+name = "103-flag-targeting-rules"
 path = "src/main.rs"
 
 [dependencies]

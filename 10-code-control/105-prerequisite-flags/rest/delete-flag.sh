@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Permanently delete a 15-prerequisite-flags flag.
+# Permanently delete a 105-prerequisite-flags flag.
 # Default: child first, then parent (parent cannot be deleted while it is a prerequisite).
 # https://launchdarkly.com/docs/api/feature-flags/delete-feature-flag
 set -euo pipefail

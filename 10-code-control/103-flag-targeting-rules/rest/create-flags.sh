@@ -41,7 +41,7 @@ if [[ -n "${LD_ENVIRONMENT_KEY:-}" ]]; then
     --arg plain "$plain_id" --arg red "$red_id" --arg blue "$blue_id" --arg yellow "$yellow_id" \
     '{
       environmentKey: $env,
-      comment: "13-flag-targeting-rules: provision team rules",
+      comment: "103-flag-targeting-rules: provision team rules",
       instructions: [
         {kind: "turnFlagOn"},
         {kind: "updateOffVariation", variationId: $plain},

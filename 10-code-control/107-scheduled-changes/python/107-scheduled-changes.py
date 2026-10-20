@@ -99,7 +99,7 @@ class Handler(SimpleHTTPRequestHandler):
                 self,
                 200,
                 {
-                    "appBanner": "17-scheduled-changes[python]",
+                    "appBanner": "107-scheduled-changes[python]",
                     "flagKey": "enable-grid-selection-highlight-sched",
                     "controls": api_config(),
                     "port": int(os.environ.get("PORT") or "8170"),
@@ -137,7 +137,7 @@ def main() -> None:
     init_launchdarkly()
     port = int(os.environ.get("PORT") or "8170")
     server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
-    print("17-scheduled-changes[python]")
+    print("107-scheduled-changes[python]")
     print(f"Open http://127.0.0.1:{port}/")
     try:
         server.serve_forever()

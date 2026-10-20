@@ -1,5 +1,5 @@
-# Build the 15-prerequisite-flags console binary locally in this directory.
-TARGET := 15-prerequisite-flags
+# Build the 105-prerequisite-flags console binary locally in this directory.
+TARGET := 105-prerequisite-flags
 CXX ?= c++
 CXXFLAGS := -std=c++20 -Wall -Wextra
 

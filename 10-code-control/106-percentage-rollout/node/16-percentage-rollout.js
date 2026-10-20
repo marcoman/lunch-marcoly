@@ -27,6 +27,24 @@ async function initLaunchDarkly() {
   }
 }
 
+function targetingUrl() {
+  // Percentage rollouts — https://launchdarkly.com/docs/home/flags/rollouts
+  const project = (process.env.LD_PROJECT_KEY || "").trim();
+  const environment = (process.env.LD_ENVIRONMENT_KEY || "").trim();
+  if (!project || !environment) return null;
+  const flagKey = "enable-grid-selection-highlight-pct";
+  return (
+    "https://app.launchdarkly.com/projects/" +
+    encodeURIComponent(project) +
+    "/flags/" +
+    flagKey +
+    "/targeting?env=" +
+    encodeURIComponent(environment) +
+    "&selected-env=" +
+    encodeURIComponent(environment)
+  );
+}
+
 function sendJson(res, status, body) {
   const payload = JSON.stringify(body);
   res.writeHead(status, {
@@ -52,6 +70,7 @@ const server = http.createServer(async (req, res) => {
       appBanner: "16-percentage-rollout[node]",
       flagKey: "enable-grid-selection-highlight-pct",
       rollout: "30% green / 70% none",
+      targetingUrl: targetingUrl(),
       port: PORT,
     });
   }

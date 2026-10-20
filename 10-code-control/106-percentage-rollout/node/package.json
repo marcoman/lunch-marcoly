@@ -2,7 +2,7 @@
   "name": "percentage-rollout",
   "version": "1.0.0",
   "private": true,
-  "description": "16-percentage-rollout grid navigator web UI",
+  "description": "106-percentage-rollout grid navigator web UI",
   "main": "16-percentage-rollout.js",
   "scripts": {
     "start": "node 16-percentage-rollout.js"

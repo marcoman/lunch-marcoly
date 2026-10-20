@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-portal.py — series shell for 10-code-control (Python web examples 11–17).
+portal.py — series shell for 10-code-control (Python web examples 101–107).
 
 One process for the user:
   - Serves this folder's index.html on :8100 (PORTAL_PORT)
@@ -37,73 +37,73 @@ APP_BANNER = "10-code-control[portal-python]"
 # PORT is passed so every child can run alongside the portal.
 CHILDREN: list[dict[str, Any]] = [
     {
-        "id": "11",
+        "id": "101",
         "label": "Flag enablement",
         "script": SERIES_ROOT
-        / "11-flag-enablement"
+        / "101-flag-enablement"
         / "python"
-        / "11-flag-enablement.py",
-        "cwd": SERIES_ROOT / "11-flag-enablement" / "python",
+        / "101-flag-enablement.py",
+        "cwd": SERIES_ROOT / "101-flag-enablement" / "python",
         "port": 8110,
     },
     {
-        "id": "12",
+        "id": "102",
         "label": "Flag variations",
         "script": SERIES_ROOT
-        / "12-flag-variations"
+        / "102-flag-variations"
         / "python"
-        / "12-flag-variations.py",
-        "cwd": SERIES_ROOT / "12-flag-variations" / "python",
+        / "102-flag-variations.py",
+        "cwd": SERIES_ROOT / "102-flag-variations" / "python",
         "port": 8120,
     },
     {
-        "id": "13",
+        "id": "103",
         "label": "Flag targeting rules",
         "script": SERIES_ROOT
-        / "13-flag-targeting-rules"
+        / "103-flag-targeting-rules"
         / "python"
-        / "13-flag-targeting-rules.py",
-        "cwd": SERIES_ROOT / "13-flag-targeting-rules" / "python",
+        / "103-flag-targeting-rules.py",
+        "cwd": SERIES_ROOT / "103-flag-targeting-rules" / "python",
         "port": 8130,
     },
     {
-        "id": "14",
+        "id": "104",
         "label": "Multi-context targeting",
         "script": SERIES_ROOT
-        / "14-multi-context-targeting"
+        / "104-multi-context-targeting"
         / "python"
-        / "14-multi-context-targeting.py",
-        "cwd": SERIES_ROOT / "14-multi-context-targeting" / "python",
+        / "104-multi-context-targeting.py",
+        "cwd": SERIES_ROOT / "104-multi-context-targeting" / "python",
         "port": 8140,
     },
     {
-        "id": "15",
+        "id": "105",
         "label": "Prerequisite flags",
         "script": SERIES_ROOT
-        / "15-prerequisite-flags"
+        / "105-prerequisite-flags"
         / "python"
-        / "15-prerequisite-flags.py",
-        "cwd": SERIES_ROOT / "15-prerequisite-flags" / "python",
+        / "105-prerequisite-flags.py",
+        "cwd": SERIES_ROOT / "105-prerequisite-flags" / "python",
         "port": 8150,
     },
     {
-        "id": "16",
+        "id": "106",
         "label": "Percentage rollout",
         "script": SERIES_ROOT
-        / "16-percentage-rollout"
+        / "106-percentage-rollout"
         / "python"
-        / "16-percentage-rollout.py",
-        "cwd": SERIES_ROOT / "16-percentage-rollout" / "python",
+        / "106-percentage-rollout.py",
+        "cwd": SERIES_ROOT / "106-percentage-rollout" / "python",
         "port": 8160,
     },
     {
-        "id": "17",
+        "id": "107",
         "label": "Scheduled changes",
         "script": SERIES_ROOT
-        / "17-scheduled-changes"
+        / "107-scheduled-changes"
         / "python"
-        / "17-scheduled-changes.py",
-        "cwd": SERIES_ROOT / "17-scheduled-changes" / "python",
+        / "107-scheduled-changes.py",
+        "cwd": SERIES_ROOT / "107-scheduled-changes" / "python",
         "port": 8170,
     },
 ]

@@ -1,6 +1,6 @@
 # Python (console)
 
-Console application for [14-multi-context-targeting](../application.md). It
+Console application for [104-multi-context-targeting](../application.md). It
 evaluates `show-partner-org-badge` against a
 [multi-context](https://launchdarkly.com/docs/home/flags/multi-contexts)
 (`user` + `organization`).

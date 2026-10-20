@@ -43,7 +43,7 @@ resource "launchdarkly_feature_flag" "highlight_scheduled" {
   project_key = var.project_key
   key         = "enable-grid-selection-highlight-sched"
   name        = "Enable: grid selection highlight (scheduled)"
-  description = "17-scheduled-changes. Starts off; the lab schedules a turnFlagOn change after a selected delay."
+  description = "107-scheduled-changes. Starts off; the lab schedules a turnFlagOn change after a selected delay."
   temporary   = false
 
   variation_type = "string"

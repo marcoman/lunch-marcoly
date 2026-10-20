@@ -1,4 +1,4 @@
-# 16-percentage-rollout — Rust console
+# 106-percentage-rollout — Rust console
 
 Rust console for a static LaunchDarkly **percentage rollout**.
 
@@ -15,7 +15,7 @@ Docs: [Percentage rollouts](https://launchdarkly.com/docs/home/flags/rollouts)
 
 ```bash
 export LD_SDK_KEY="sdk-..."
-cd 10-code-control/16-percentage-rollout/rust
+cd 10-code-control/106-percentage-rollout/rust
 cargo run --release
 ```
 

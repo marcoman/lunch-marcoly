@@ -197,12 +197,12 @@ impl RestClient {
     }
     fn start(&self, minutes: i64) -> Result<(ScheduledChange, i64), String> {
         self.delete_pending()?;
-        self.turn_off("17-scheduled-changes: reset off before starting demo")?;
+        self.turn_off("107-scheduled-changes: reset off before starting demo")?;
         let started = now_ms();
         let execution = started + minutes * 60_000;
         let value = self.request("POST", &self.base_path(), Some(json!({
             "executionDate": execution, "instructions": [{"kind": "turnFlagOn"}],
-            "comment": format!("17-scheduled-changes: turn highlight on after {minutes} minute(s)")
+            "comment": format!("107-scheduled-changes: turn highlight on after {minutes} minute(s)")
         })), false)?;
         let mut change =
             serde_json::from_value::<ScheduledChange>(value).map_err(|e| e.to_string())?;
@@ -213,7 +213,7 @@ impl RestClient {
     }
     fn stop(&self) -> Result<i64, String> {
         self.delete_pending()?;
-        self.turn_off("17-scheduled-changes: stop demo and turn highlight off")?;
+        self.turn_off("107-scheduled-changes: stop demo and turn highlight off")?;
         Ok(now_ms())
     }
 }

@@ -1,4 +1,4 @@
-"""LaunchDarkly REST helpers for in-app flag controls (12-flag-variations).
+"""LaunchDarkly REST helpers for in-app flag controls (102-flag-variations).
 
 Uses semantic patch turnFlagOn / turnFlagOff / updateFallthroughVariationOrRollout.
 Does not invent variation definitions — only environment targeting + fallthrough.
@@ -406,7 +406,7 @@ def apply_flag_control(
         f"/flags/{project}/{flag_key}",
         {
             "environmentKey": environment,
-            "comment": f"12-flag-variations UI: {action}",
+            "comment": f"102-flag-variations UI: {action}",
             "instructions": instructions,
         },
     )

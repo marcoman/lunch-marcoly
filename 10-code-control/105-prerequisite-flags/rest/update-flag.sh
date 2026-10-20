@@ -33,7 +33,7 @@ for key in "${keys[@]}"; do
     -H "Content-Type: application/json; domain-model=launchdarkly.semanticpatch" \
     -d "{
       \"environmentKey\":\"${LD_ENVIRONMENT_KEY}\",
-      \"comment\":\"15-prerequisite-flags REST: ${ACTION} ${key}\",
+      \"comment\":\"105-prerequisite-flags REST: ${ACTION} ${key}\",
       \"instructions\":[{\"kind\":\"${kind}\"}]
     }" | jq --arg key "$key" --arg env "$LD_ENVIRONMENT_KEY" \
       '{key:$key} + (.environments[$env] | {on,offVariation,fallthrough,prerequisites})'

@@ -1,6 +1,6 @@
 # Python (web)
 
-Web application for [12-flag-variations](../application.md) with an in-app **LaunchDarkly lab** (Controls / Context / About) and bottom **Trace** dock — same permanent layout as [11-flag-enablement/python](../../11-flag-enablement/python/).
+Web application for [102-flag-variations](../application.md) with an in-app **LaunchDarkly lab** (Controls / Context / About) and bottom **Trace** dock — same permanent layout as [101-flag-enablement/python](../../101-flag-enablement/python/).
 
 ## Prerequisites
 
@@ -25,7 +25,7 @@ No compile step.
 ## Run
 
 ```bash
-python 12-flag-variations.py
+python 102-flag-variations.py
 ```
 
 Open http://127.0.0.1:8080/

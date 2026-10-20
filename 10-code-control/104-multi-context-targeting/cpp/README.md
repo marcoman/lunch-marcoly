@@ -1,7 +1,7 @@
 # C++
 
 Console application version of the
-[14-multi-context-targeting grid navigator](../application.md).
+[104-multi-context-targeting grid navigator](../application.md).
 
 ## Prerequisites
 
@@ -23,7 +23,7 @@ evaluated against a [multi-context](https://launchdarkly.com/docs/home/flags/mul
 
 ```bash
 make
-./14-multi-context-targeting
+./104-multi-context-targeting
 ```
 
 The build embeds the helper path and detects the repository `.venv`; `PYTHON` or

@@ -1,4 +1,4 @@
-# 16-percentage-rollout — C++ console
+# 106-percentage-rollout — C++ console
 
 C++ console for a static LaunchDarkly **percentage rollout**. Flag evaluation
 uses the Python server SDK helper (`evaluate_flags.py`).
@@ -17,9 +17,9 @@ Docs: [Percentage rollouts](https://launchdarkly.com/docs/home/flags/rollouts)
 
 ```bash
 export LD_SDK_KEY="sdk-..."
-cd 10-code-control/16-percentage-rollout/cpp
+cd 10-code-control/106-percentage-rollout/cpp
 make
-./16-percentage-rollout
+./106-percentage-rollout
 ```
 
 **N** / **P** walk generated usernames. **L** logs out. **Q** quits.

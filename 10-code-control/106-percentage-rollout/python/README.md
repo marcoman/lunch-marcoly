@@ -1,4 +1,4 @@
-# 16-percentage-rollout — Python web
+# 106-percentage-rollout — Python web
 
 Static LaunchDarkly percentage rollout on the grid highlight.
 
@@ -13,12 +13,16 @@ Static LaunchDarkly percentage rollout on the grid highlight.
 ```bash
 source .venv/bin/activate
 export LD_SDK_KEY="sdk-..."
-cd 10-code-control/16-percentage-rollout/python
-python 16-percentage-rollout.py
+export LD_PROJECT_KEY="lunch-marcoly"
+export LD_ENVIRONMENT_KEY="production"
+cd 10-code-control/106-percentage-rollout/python
+python 106-percentage-rollout.py
 ```
 
 Open [http://127.0.0.1:8160/](http://127.0.0.1:8160/). `PORT` overrides the
-default.
+default. `LD_PROJECT_KEY` and `LD_ENVIRONMENT_KEY` light up the targeting link
+on the **About** tab in the right drawer. The Rollout tab already shows the
+context and the variation.
 
 ## What to expect
 

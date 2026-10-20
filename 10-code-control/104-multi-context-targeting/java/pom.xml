@@ -18,7 +18,7 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>14-multi-context-targeting</finalName>
+        <finalName>104-multi-context-targeting</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

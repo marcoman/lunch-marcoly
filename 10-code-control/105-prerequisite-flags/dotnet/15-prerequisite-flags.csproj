@@ -3,7 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyName>15-prerequisite-flags</AssemblyName>
+    <AssemblyName>105-prerequisite-flags</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="LaunchDarkly.ServerSdk" Version="8.16.0" />

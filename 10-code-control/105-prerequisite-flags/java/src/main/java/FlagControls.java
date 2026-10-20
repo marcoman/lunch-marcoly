@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * REST controls for the two 15-prerequisite-flags keys.
+ * REST controls for the two 105-prerequisite-flags keys.
  * Never edits the prerequisite relationship.
  * https://launchdarkly.com/docs/api/feature-flags/patch-feature-flag
  */
@@ -26,11 +26,11 @@ final class FlagControls {
             metadata(
                     Prerequisite.FLAG_HIGHLIGHT,
                     "Parent · grid selection highlight",
-                    "15-prerequisite-flags parent (cites 11's enable-grid-selection-highlight). Must be on and serving green."),
+                    "105-prerequisite-flags parent (cites 101's enable-grid-selection-highlight). Must be on and serving green."),
             metadata(
                     Prerequisite.FLAG_COUNT,
                     "Child · navigation move count",
-                    "15-prerequisite-flags child (cites 11's show-navigation-move-count). Unmet prerequisite serves its off variation."));
+                    "105-prerequisite-flags child (cites 101's show-navigation-move-count). Unmet prerequisite serves its off variation."));
     private static final Set<String> ALLOWED = Set.of(
             Prerequisite.FLAG_HIGHLIGHT, Prerequisite.FLAG_COUNT);
 
@@ -128,7 +128,7 @@ final class FlagControls {
         }
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("environmentKey", environment);
-        body.put("comment", "15-prerequisite-flags UI control");
+        body.put("comment", "105-prerequisite-flags UI control");
         body.put("instructions", instructions);
         request("PATCH", flagPath, body);
         flag = request("GET", flagPath + query, null);

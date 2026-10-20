@@ -4,7 +4,7 @@ Create dedicated **15** flags and attach a [flag prerequisite](https://launchdar
 child `show-navigation-move-count-prereq` requires parent
 `enable-grid-selection-highlight-prereq` **on** and serving **`green`**.
 
-These keys **cite** [11-flag-enablement](../../11-flag-enablement/) and do **not**
+These keys **cite** [101-flag-enablement](../../101-flag-enablement/) and do **not**
 patch 11's inventory.
 
 Keywords: **prerequisites** · **dependent flag** · **semantic patch** ·

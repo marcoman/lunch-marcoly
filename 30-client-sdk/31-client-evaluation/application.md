@@ -18,7 +18,7 @@ Otherwise `variation` in the browser always returns the code default.
 
 Flags are provisioned in [terraform/](terraform/) and [rest/](rest/).
 
-This is the client analog of [11-flag-enablement](../../10-code-control/11-flag-enablement/application.md)
+This is the client analog of [101-flag-enablement](../../10-code-control/101-flag-enablement/application.md)
 **without** username cohort override and **without** host OS / `/proc` attributes.
 
 ## Relationship to 02

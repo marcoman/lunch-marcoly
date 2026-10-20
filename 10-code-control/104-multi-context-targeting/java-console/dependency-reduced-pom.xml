@@ -5,7 +5,7 @@
   <artifactId>multi-context-targeting-console</artifactId>
   <version>1.0.0</version>
   <build>
-    <finalName>14-multi-context-targeting</finalName>
+    <finalName>104-multi-context-targeting</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>

@@ -38,6 +38,24 @@ def init_launchdarkly() -> None:
         print("Warning: LaunchDarkly SDK did not initialize.", flush=True)
 
 
+def targeting_url() -> str | None:
+    """Deep link to the flag targeting page, where the percentage rollout is edited.
+
+    LaunchDarkly: percentage rollouts
+    https://launchdarkly.com/docs/home/flags/rollouts
+    """
+    project = (os.environ.get("LD_PROJECT_KEY") or "").strip()
+    environment = (os.environ.get("LD_ENVIRONMENT_KEY") or "").strip()
+    if not project or not environment:
+        return None
+    flag_key = "enable-grid-selection-highlight-pct"
+    return (
+        "https://app.launchdarkly.com/projects/"
+        f"{project}/flags/{flag_key}/targeting"
+        f"?env={environment}&selected-env={environment}"
+    )
+
+
 def json_response(
     handler: SimpleHTTPRequestHandler, status: int, payload: object
 ) -> None:
@@ -73,9 +91,10 @@ class Handler(SimpleHTTPRequestHandler):
                 self,
                 200,
                 {
-                    "appBanner": "16-percentage-rollout[python]",
+                    "appBanner": "106-percentage-rollout[python]",
                     "flagKey": "enable-grid-selection-highlight-pct",
                     "rollout": "30% green / 70% none",
+                    "targetingUrl": targeting_url(),
                     "port": int(os.environ.get("PORT") or "8160"),
                 },
             )
@@ -88,7 +107,7 @@ def main() -> None:
     init_launchdarkly()
     port = int(os.environ.get("PORT") or "8160")
     server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
-    print("16-percentage-rollout[python]")
+    print("106-percentage-rollout[python]")
     print(f"Open http://127.0.0.1:{port}/")
     try:
         server.serve_forever()

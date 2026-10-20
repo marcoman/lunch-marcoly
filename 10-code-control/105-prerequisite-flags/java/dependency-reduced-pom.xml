@@ -10,7 +10,7 @@
         <directory>src/main/resources</directory>
       </resource>
     </resources>
-    <finalName>15-prerequisite-flags</finalName>
+    <finalName>105-prerequisite-flags</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>

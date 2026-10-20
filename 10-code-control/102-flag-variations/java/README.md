@@ -1,6 +1,6 @@
 # Java (web)
 
-Web application for [12-flag-variations](../application.md) with an in-app **LaunchDarkly lab** (Controls / Context / About) and bottom **Trace** dock — same permanent layout as [11-flag-enablement/java](../../11-flag-enablement/java/).
+Web application for [102-flag-variations](../application.md) with an in-app **LaunchDarkly lab** (Controls / Context / About) and bottom **Trace** dock — same permanent layout as [101-flag-enablement/java](../../101-flag-enablement/java/).
 
 ## Prerequisites
 

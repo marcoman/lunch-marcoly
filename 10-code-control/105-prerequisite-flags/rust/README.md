@@ -1,6 +1,6 @@
 # Rust
 
-Console application for [15-prerequisite-flags](../application.md). The Rust
+Console application for [105-prerequisite-flags](../application.md). The Rust
 server SDK evaluates parent and child flags independently so an unmet
 [prerequisite](https://launchdarkly.com/docs/home/flags/prereqs) shows up as
 `PREREQUISITE_FAILED`.

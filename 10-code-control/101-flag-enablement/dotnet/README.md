@@ -1,6 +1,6 @@
 # .NET (web)
 
-ASP.NET Minimal API version of the [11-flag-enablement grid navigator](../application.md), with server-side LaunchDarkly evaluation and an in-app Controls / Context / Trace lab.
+ASP.NET Minimal API version of the [101-flag-enablement grid navigator](../application.md), with server-side LaunchDarkly evaluation and an in-app Controls / Context / Trace lab.
 
 ## Prerequisites
 

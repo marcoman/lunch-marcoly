@@ -1,5 +1,5 @@
 /**
- * LaunchDarkly REST controls for the four 12-flag-variations flags.
+ * LaunchDarkly REST controls for the four 102-flag-variations flags.
  *
  * Feature flags — semantic patch (on/off and fallthrough)
  * https://launchdarkly.com/docs/api/feature-flags/patch-feature-flag
@@ -328,7 +328,7 @@ async function applyFlagControl(flagKey, { on, fallthrough } = {}) {
   const action = actions.join("+") || "noop";
   await request("PATCH", flagPath, {
     environmentKey: config.environmentKey,
-    comment: `12-flag-variations UI: ${action}`,
+    comment: `102-flag-variations UI: ${action}`,
     instructions,
   });
   flag = await request("GET", `${flagPath}${query}`);

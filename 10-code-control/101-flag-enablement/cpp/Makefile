@@ -1,5 +1,5 @@
-# Build the 11-flag-enablement console binary locally in this directory.
-TARGET := 11-flag-enablement
+# Build the 101-flag-enablement console binary locally in this directory.
+TARGET := 101-flag-enablement
 CXX ?= c++
 CXXFLAGS := -std=c++20 -Wall -Wextra
 

@@ -1,6 +1,6 @@
 # Go
 
-Console application version of the [13-flag-targeting-rules grid navigator](../application.md).
+Console application version of the [103-flag-targeting-rules grid navigator](../application.md).
 
 ## Prerequisites
 
@@ -15,8 +15,8 @@ Console application version of the [13-flag-targeting-rules grid navigator](../a
 
 ```bash
 go mod tidy
-go build -o 13-flag-targeting-rules .
-./13-flag-targeting-rules
+go build -o 103-flag-targeting-rules .
+./103-flag-targeting-rules
 ```
 
 The flag is re-evaluated about every 500 ms. Press `L` to log out or `Q` to quit.

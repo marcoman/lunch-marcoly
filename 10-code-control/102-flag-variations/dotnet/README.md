@@ -1,6 +1,6 @@
 # .NET (web)
 
-ASP.NET Minimal API version of [12-flag-variations](../application.md), with an in-app LaunchDarkly Controls / Context / Trace lab.
+ASP.NET Minimal API version of [102-flag-variations](../application.md), with an in-app LaunchDarkly Controls / Context / Trace lab.
 
 ## Prerequisites
 

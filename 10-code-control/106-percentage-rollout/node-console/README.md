@@ -1,4 +1,4 @@
-# 16-percentage-rollout — Node console
+# 106-percentage-rollout — Node console
 
 Console grid navigator for a static LaunchDarkly **percentage rollout**.
 
@@ -16,7 +16,7 @@ Docs: [Percentage rollouts](https://launchdarkly.com/docs/home/flags/rollouts)
 
 ```bash
 export LD_SDK_KEY="sdk-..."
-cd 10-code-control/16-percentage-rollout/node-console
+cd 10-code-control/106-percentage-rollout/node-console
 npm install
 npm start
 ```

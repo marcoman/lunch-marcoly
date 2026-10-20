@@ -2,7 +2,7 @@
   "name": "flag-enablement-grid-navigator",
   "version": "1.0.0",
   "private": true,
-  "description": "11-flag-enablement grid navigator web UI",
+  "description": "101-flag-enablement grid navigator web UI",
   "main": "11-flag-enablement.js",
   "scripts": {
     "start": "node 11-flag-enablement.js"

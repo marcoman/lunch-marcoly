@@ -1,6 +1,6 @@
-# 17-scheduled-changes — Java web
+# 107-scheduled-changes — Java web
 
-Java 21 web implementation of [17-scheduled-changes](../application.md).
+Java 21 web implementation of [107-scheduled-changes](../application.md).
 
 Keywords: **scheduled changes** · **feature flags** · **semantic patch** ·
 **contexts**
@@ -25,7 +25,7 @@ export LD_API_ACCESS_TOKEN="api-..."
 export LD_PROJECT_KEY="lunch-marcoly"
 export LD_ENVIRONMENT_KEY="production"
 
-cd 10-code-control/17-scheduled-changes/java
+cd 10-code-control/107-scheduled-changes/java
 ./mvnw -q -DskipTests package
 java -jar target/17-scheduled-changes.jar
 ```

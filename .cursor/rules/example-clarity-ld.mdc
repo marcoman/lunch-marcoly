@@ -36,6 +36,14 @@ Example shape (adapt URL to the current LD docs page for the topic):
 # https://docs.launchdarkly.com/home/flags/boolean
 ```
 
+## About tab
+
+Every web example includes an **About** tab in the right-hand drawer. The header reads **LaunchDarkly · lab**. Underline tabs sit directly under that header. The grid, or the example's main view, stays visible while the tabs change.
+
+About explains the one idea, the steps a person takes, and one official docs link. The working tab already shows the context that was sent and the variation that came back, so About does not add a second context window.
+
+Console examples put that same explanation in the example README.
+
 ## Scope vs noise
 
 - Document the LD-relevant path thoroughly; leave trivial getters/formatters lightly commented.

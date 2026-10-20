@@ -15,6 +15,7 @@ app.MapGet("/api/bootstrap", () => Results.Json(new
     appBanner = AppBanner,
     flagKey = Rollout.FlagKey,
     rollout = "30% green / 70% none",
+    targetingUrl = TargetingUrl(),
     port,
 }));
 app.MapGet("/api/flags", (string? username) =>
@@ -33,6 +34,23 @@ app.Lifetime.ApplicationStopping.Register(flags.Dispose);
 Console.WriteLine(AppBanner);
 Console.WriteLine($"Open http://127.0.0.1:{port}/");
 app.Run();
+
+static string? TargetingUrl()
+{
+    // Percentage rollouts — https://launchdarkly.com/docs/home/flags/rollouts
+    var project = (Environment.GetEnvironmentVariable("LD_PROJECT_KEY") ?? "").Trim();
+    var environment = (Environment.GetEnvironmentVariable("LD_ENVIRONMENT_KEY") ?? "").Trim();
+    if (project.Length == 0 || environment.Length == 0)
+    {
+        return null;
+    }
+    const string flagKey = "enable-grid-selection-highlight-pct";
+    return "https://app.launchdarkly.com/projects/"
+        + Uri.EscapeDataString(project)
+        + "/flags/" + flagKey
+        + "/targeting?env=" + Uri.EscapeDataString(environment)
+        + "&selected-env=" + Uri.EscapeDataString(environment);
+}
 
 static async Task ServeIndexAsync(HttpContext context)
 {

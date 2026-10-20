@@ -1,6 +1,6 @@
 # C++
 
-Console application version of the [13-flag-targeting-rules grid navigator](../application.md).
+Console application version of the [103-flag-targeting-rules grid navigator](../application.md).
 
 ## Prerequisites
 
@@ -18,7 +18,7 @@ Flag evaluation delegates to [evaluate_flags.py](evaluate_flags.py), which uses 
 
 ```bash
 make
-./13-flag-targeting-rules
+./103-flag-targeting-rules
 ```
 
 The build embeds the helper path and detects the repository `.venv`; `PYTHON` or `VIRTUAL_ENV` can override it. The flag is re-evaluated about every 500 ms. Press `L` to log out or `Q` to quit.

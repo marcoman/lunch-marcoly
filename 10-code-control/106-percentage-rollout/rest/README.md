@@ -1,4 +1,4 @@
-# REST provisioning — 16-percentage-rollout
+# REST provisioning — 106-percentage-rollout
 
 Create `enable-grid-selection-highlight-pct` and configure its default rule as
 a **static 30% green / 70% none** rollout, bucketed by the `user` context key.
@@ -40,8 +40,16 @@ Change the static share for a demo:
 ./set-rollout-percent.sh 100
 ```
 
-`set-rollout-percent.sh` does not schedule stages. It replaces the default
-rule's weights immediately.
+`set-rollout-percent.sh <green-percent>` turns the flag on and replaces the
+default-rule weights immediately. The argument is the `green` share, from 0
+to 100. The remainder is `none`. Bucketing uses the `user` context key.
+LaunchDarkly stores each share in thousandths, so 30% is weight `30000`. The
+script does not create a schedule and does not move the weights later.
+
+`get-rollout.sh` is read-only. It prints whether the flag is on in
+`LD_ENVIRONMENT_KEY`, which context kind the default rule buckets by, and each
+variation's percent. Run it before and after `set-rollout-percent.sh` to
+confirm the saved weights.
 
 Cleanup:
 

@@ -124,7 +124,7 @@ async function applyFlagControl(flagKey, options = {}) {
   }
   await request("PATCH", path, {
     environmentKey: config.environmentKey,
-    comment: "14-multi-context-targeting UI: on/off or fallthrough",
+    comment: "104-multi-context-targeting UI: on/off or fallthrough",
     instructions,
   });
   const updated = await request("GET", path + query);

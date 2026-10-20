@@ -142,7 +142,7 @@ async function applyFlagControl(flagKey, options = {}) {
   }
   await request("PATCH", path, {
     environmentKey: config.environmentKey,
-    comment: "13-flag-targeting-rules UI: on/off or fallthrough",
+    comment: "103-flag-targeting-rules UI: on/off or fallthrough",
     instructions,
   });
   const updated = await request("GET", path + query);

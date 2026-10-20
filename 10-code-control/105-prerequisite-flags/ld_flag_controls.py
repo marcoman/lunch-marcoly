@@ -21,7 +21,7 @@ CONTROLLED_FLAGS = (
         "key": FLAG_HIGHLIGHT,
         "label": "Parent · grid selection highlight",
         "summary": (
-            "15-prerequisite-flags parent (cites 11's enable-grid-selection-highlight). "
+            "105-prerequisite-flags parent (cites 101's enable-grid-selection-highlight). "
             "Must be on and serving green to satisfy the prerequisite."
         ),
     },
@@ -29,7 +29,7 @@ CONTROLLED_FLAGS = (
         "key": FLAG_COUNT,
         "label": "Child · navigation move count",
         "summary": (
-            "15-prerequisite-flags child (cites 11's show-navigation-move-count). "
+            "105-prerequisite-flags child (cites 101's show-navigation-move-count). "
             "Unmet prerequisite serves its off variation."
         ),
     },
@@ -248,7 +248,7 @@ def apply_flag_control(
         f"/flags/{project}/{flag_key}",
         {
             "environmentKey": environment,
-            "comment": "15-prerequisite-flags UI control",
+            "comment": "105-prerequisite-flags UI control",
             "instructions": instructions,
         },
     )

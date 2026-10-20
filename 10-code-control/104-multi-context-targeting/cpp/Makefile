@@ -1,5 +1,5 @@
-# Build the 14-multi-context-targeting console binary locally in this directory.
-TARGET := 14-multi-context-targeting
+# Build the 104-multi-context-targeting console binary locally in this directory.
+TARGET := 104-multi-context-targeting
 CXX ?= c++
 CXXFLAGS := -std=c++20 -Wall -Wextra
 

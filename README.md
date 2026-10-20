@@ -33,16 +33,16 @@ lunch-marcoly/
 ├── 10-code-control/             # Feature-flag series
 │   ├── README.md
 │   ├── portal/                   # Python :8100 · Node :8101 · Java :8102 · .NET :8103
-│   ├── 11-flag-enablement/
-│   ├── 12-flag-variations/
-│   ├── 13-flag-targeting-rules/
-│   ├── 14-multi-context-targeting/
-│   ├── 15-prerequisite-flags/
-│   ├── 16-percentage-rollout/    # Web :8160–:8163 + consoles; static 30/70
-│   ├── 17-scheduled-changes/     # Web :8170–:8173 + consoles; scheduled turn-on
-│   ├── 18-flag-approvals/        # Stub: approval to enable move count
-│   ├── 19-evaluation-reasons/    # Stub: four evaluation reason kinds
-│   └── segment-targeting/        # Stub: included targets; unnumbered (18–19 fill the decade)
+│   ├── 101-flag-enablement/
+│   ├── 102-flag-variations/
+│   ├── 103-flag-targeting-rules/
+│   ├── 104-multi-context-targeting/
+│   ├── 105-prerequisite-flags/
+│   ├── 106-percentage-rollout/    # Web :8160–:8163 + consoles; static 30/70
+│   ├── 107-scheduled-changes/     # Web :8170–:8173 + consoles; scheduled turn-on
+│   ├── 108-flag-approvals/        # Stub: approval to enable move count
+│   ├── 109-evaluation-reasons/    # Stub: four evaluation reason kinds
+│   └── segment-targeting/        # Stub: included targets; still unnumbered
 ├── 20-agent-config/             # AgentControl series (shared setup)
 │   ├── README.md
 │   ├── portal/                   # Python :8200 · Node :8201 · Java :8202 · .NET :8203
@@ -110,7 +110,7 @@ lunch-marcoly/
 └── ...
 ```
 
-Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control sort order. Decade series children use the rest of that decade (`11`–`19`, `21`–`29`, …). Letter suffixes stay unused. A later refactor, if a series outgrows nine children, is three digits (`101`–`199` inside `10-code-control`, `201`–`299` inside `20-agent-config`, and so on). A fourth digit is not part of the scheme.
+Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control sort order. **10-code-control** children are three digits, **101–109** so far (`101`–`199` is the range). Other decade series still use two-digit children (`21`–`29`, `31`–`39`, …) until that series is renumbered. Letter suffixes stay unused. A fourth digit is not part of the scheme.
 
 ## Languages
 
@@ -142,16 +142,16 @@ Each example may include implementations in any of these languages. Python, Node
 | 00 | [00-reference-code](00-reference-code/) | Grid navigator reference app (all languages, no LaunchDarkly) |
 | 01 | [01-reference-agent](01-reference-agent/) | News headlines → AI equity briefing (Python / Node / Java / .NET web + consoles; LaunchDarkly comes in later examples) |
 | 02 | [02-reference-client-code](02-reference-client-code/) | Browser grid navigator (JavaScript in the page, no LaunchDarkly) |
-| 10 | [10-code-control](10-code-control/) | Feature-flag series (11–17 built; 18, 19, and segment-targeting are stubs) |
-| 11 | [11-flag-enablement](10-code-control/11-flag-enablement/) | Grid navigator with LaunchDarkly boolean flags (all languages, Terraform + REST) |
-| 12 | [12-flag-variations](10-code-control/12-flag-variations/) | Grid navigator with string, number, JSON, and anonymous flags (all languages) |
-| 13 | [13-flag-targeting-rules](10-code-control/13-flag-targeting-rules/) | Targeting rules on a public `team` context attribute |
-| 14 | [14-multi-context-targeting](10-code-control/14-multi-context-targeting/) | User + organization multi-context targeting |
-| 15 | [15-prerequisite-flags](10-code-control/15-prerequisite-flags/) | Flag prerequisites: highlight must serve `green` before move count can evaluate |
-| 16 | [16-percentage-rollout](10-code-control/16-percentage-rollout/) | Static 30/70 percentage rollout, sticky context key (web **:8160–:8163** + Python / Node / Java / Go / Rust / C++ consoles) |
-| 17 | [17-scheduled-changes](10-code-control/17-scheduled-changes/) | Replaceable scheduled flag turn-on with elapsed timer (web **:8170–:8173** + Python / Node / Java / Go / Rust / C++ consoles + REST/Terraform) |
-| 18 | [18-flag-approvals](10-code-control/18-flag-approvals/) | **Stub:** approval to turn the move-count flag on |
-| 19 | [19-evaluation-reasons](10-code-control/19-evaluation-reasons/) | **Stub:** on-screen `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, `ERROR` |
+| 10 | [10-code-control](10-code-control/) | Feature-flag series (101–107 built; 108, 109, and segment-targeting are stubs) |
+| 101 | [101-flag-enablement](10-code-control/101-flag-enablement/) | Grid navigator with LaunchDarkly boolean flags (all languages, Terraform + REST) |
+| 102 | [102-flag-variations](10-code-control/102-flag-variations/) | Grid navigator with string, number, JSON, and anonymous flags (all languages) |
+| 103 | [103-flag-targeting-rules](10-code-control/103-flag-targeting-rules/) | Targeting rules on a public `team` context attribute |
+| 104 | [104-multi-context-targeting](10-code-control/104-multi-context-targeting/) | User + organization multi-context targeting |
+| 105 | [105-prerequisite-flags](10-code-control/105-prerequisite-flags/) | Flag prerequisites: highlight must serve `green` before move count can evaluate |
+| 106 | [106-percentage-rollout](10-code-control/106-percentage-rollout/) | Static 30/70 percentage rollout, sticky context key (web **:8160–:8163** + Python / Node / Java / Go / Rust / C++ consoles) |
+| 107 | [107-scheduled-changes](10-code-control/107-scheduled-changes/) | Replaceable scheduled flag turn-on with elapsed timer (web **:8170–:8173** + Python / Node / Java / Go / Rust / C++ consoles + REST/Terraform) |
+| 108 | [108-flag-approvals](10-code-control/108-flag-approvals/) | **Stub:** approval to turn the move-count flag on |
+| 109 | [109-evaluation-reasons](10-code-control/109-evaluation-reasons/) | **Stub:** on-screen `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, `ERROR` |
 | — | [segment-targeting](10-code-control/segment-targeting/) | **Stub:** included-targets segment. Unnumbered so it does not take 20. Read before 33 |
 | 20 | [20-agent-config](20-agent-config/) | AgentControl series (shared LLM / AWS / LD setup); [portal](20-agent-config/portal/) Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
 | — | [20-capstone](20-agent-config/20-capstone/) | **Python :8290 · Node :8291 · Java :8292 · .NET :8293, not in the portal.** Composes `21`–`25`. Checked tools run before finalize. Judges and feedback stay on the draft. English and Spanish live here |

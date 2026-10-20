@@ -1,5 +1,5 @@
-# Build the 12-flag-variations console binary locally in this directory.
-TARGET := 12-flag-variations
+# Build the 102-flag-variations console binary locally in this directory.
+TARGET := 102-flag-variations
 CXX ?= c++
 CXXFLAGS := -std=c++20 -Wall -Wextra
 

@@ -58,7 +58,7 @@ if [[ "$has_alice" == "true" ]]; then
   echo "Turning flag ON (rules already present) in ${LD_ENVIRONMENT_KEY}..."
   patch="$(jq -n --arg env "$LD_ENVIRONMENT_KEY" --arg hid "$false_id" '{
     environmentKey: $env,
-    comment: "14-multi-context-targeting: flag on (rules already present)",
+    comment: "104-multi-context-targeting: flag on (rules already present)",
     instructions: [
       {kind: "turnFlagOn"},
       {kind: "updateOffVariation", variationId: $hid},
@@ -72,7 +72,7 @@ else
     --arg vis "$true_id" --arg hid "$false_id" \
     '{
       environmentKey: $env,
-      comment: "14-multi-context-targeting: user+organization AND rules",
+      comment: "104-multi-context-targeting: user+organization AND rules",
       instructions: [
         {kind: "turnFlagOn"},
         {kind: "updateOffVariation", variationId: $hid},

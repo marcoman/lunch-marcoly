@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared LaunchDarkly REST helpers for 17-scheduled-changes.
+# Shared LaunchDarkly REST helpers for 107-scheduled-changes.
 # https://launchdarkly.com/docs/api/scheduled-changes
 set -euo pipefail
 

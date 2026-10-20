@@ -7,7 +7,7 @@ flags:
   name: 'Enable: grid selection highlight'
   kind: string
   examples:
-  - path: 10-code-control/11-flag-enablement
+  - path: 10-code-control/101-flag-enablement
     kind: string
   - path: 99-use-cases/11-create-eval-flag
     kind: string
@@ -19,105 +19,105 @@ flags:
     kind: string
   - path: 10-code-control
   notes: 'Shared string multivariate flag (none | green | yellow | red | blue | purple) across
-    11-flag-enablement and 99-use-cases.
+    101-flag-enablement and 99-use-cases.
 
     '
   sources:
-  - path: 10-code-control/11-flag-enablement/highlight-style.js
+  - path: 10-code-control/101-flag-enablement/highlight-style.js
     role: evaluation
-  - path: 10-code-control/11-flag-enablement/highlight_style.py
+  - path: 10-code-control/101-flag-enablement/highlight_style.py
     role: evaluation
-  - path: 10-code-control/11-flag-enablement/java/src/main/java/HighlightStyle.java
+  - path: 10-code-control/101-flag-enablement/java/src/main/java/HighlightStyle.java
     role: evaluation
-  - path: 10-code-control/11-flag-enablement/java-console/src/main/java/HighlightStyle.java
+  - path: 10-code-control/101-flag-enablement/java-console/src/main/java/HighlightStyle.java
     role: evaluation
   - path: 99-use-cases/02-segments-by-name/java/src/main/java/SegmentStyle.java
     role: evaluation
-  - path: 10-code-control/11-flag-enablement/rest/create-flags.sh
+  - path: 10-code-control/101-flag-enablement/rest/create-flags.sh
     role: provisioning
 - key: enable-grid-highlight-color-override
   name: 'Enable: grid highlight color override'
   kind: boolean
   examples:
-  - path: 10-code-control/11-flag-enablement
+  - path: 10-code-control/101-flag-enablement
   - path: 10-code-control
   sources:
-  - path: 10-code-control/11-flag-enablement/highlight-style.js
+  - path: 10-code-control/101-flag-enablement/highlight-style.js
     role: evaluation
-  - path: 10-code-control/11-flag-enablement/highlight_style.py
+  - path: 10-code-control/101-flag-enablement/highlight_style.py
     role: evaluation
-  - path: 10-code-control/11-flag-enablement/java/src/main/java/HighlightStyle.java
+  - path: 10-code-control/101-flag-enablement/java/src/main/java/HighlightStyle.java
     role: evaluation
-  - path: 10-code-control/11-flag-enablement/java-console/src/main/java/HighlightStyle.java
+  - path: 10-code-control/101-flag-enablement/java-console/src/main/java/HighlightStyle.java
     role: evaluation
-  - path: 10-code-control/11-flag-enablement/rest/create-flags.sh
+  - path: 10-code-control/101-flag-enablement/rest/create-flags.sh
     role: provisioning
 - key: show-navigation-move-count
   name: 'Show: navigation move count'
   kind: boolean
   examples:
-  - path: 10-code-control/11-flag-enablement
+  - path: 10-code-control/101-flag-enablement
   - path: 10-code-control
   sources:
-  - path: 10-code-control/11-flag-enablement/highlight-style.js
+  - path: 10-code-control/101-flag-enablement/highlight-style.js
     role: evaluation
-  - path: 10-code-control/11-flag-enablement/highlight_style.py
+  - path: 10-code-control/101-flag-enablement/highlight_style.py
     role: evaluation
-  - path: 10-code-control/11-flag-enablement/java/src/main/java/HighlightStyle.java
+  - path: 10-code-control/101-flag-enablement/java/src/main/java/HighlightStyle.java
     role: evaluation
-  - path: 10-code-control/11-flag-enablement/java-console/src/main/java/HighlightStyle.java
+  - path: 10-code-control/101-flag-enablement/java-console/src/main/java/HighlightStyle.java
     role: evaluation
-  - path: 10-code-control/11-flag-enablement/rest/create-flags.sh
+  - path: 10-code-control/101-flag-enablement/rest/create-flags.sh
     role: provisioning
 - key: show-host-os-emoji
   name: 'Show: host OS emoji'
   kind: boolean
   examples:
-  - path: 10-code-control/11-flag-enablement
+  - path: 10-code-control/101-flag-enablement
   - path: 10-code-control
   sources:
-  - path: 10-code-control/11-flag-enablement/host-os.js
+  - path: 10-code-control/101-flag-enablement/host-os.js
     role: evaluation
-  - path: 10-code-control/11-flag-enablement/host_os.py
+  - path: 10-code-control/101-flag-enablement/host_os.py
     role: evaluation
-  - path: 10-code-control/11-flag-enablement/java/src/main/java/HostOs.java
+  - path: 10-code-control/101-flag-enablement/java/src/main/java/HostOs.java
     role: evaluation
-  - path: 10-code-control/11-flag-enablement/java-console/src/main/java/HostOs.java
+  - path: 10-code-control/101-flag-enablement/java-console/src/main/java/HostOs.java
     role: evaluation
-  - path: 10-code-control/11-flag-enablement/rest/create-flags.sh
+  - path: 10-code-control/101-flag-enablement/rest/create-flags.sh
     role: provisioning
 - key: show-anonymous-host-os-emoji
   name: 'Show: anonymous host OS emoji'
   kind: boolean
   examples:
-  - path: 10-code-control/12-flag-variations
+  - path: 10-code-control/102-flag-variations
   - path: 10-code-control
   sources:
-  - path: 10-code-control/12-flag-variations/host-os.js
+  - path: 10-code-control/102-flag-variations/host-os.js
     role: evaluation
-  - path: 10-code-control/12-flag-variations/host_os.py
+  - path: 10-code-control/102-flag-variations/host_os.py
     role: evaluation
-  - path: 10-code-control/12-flag-variations/java/src/main/java/HostOs.java
+  - path: 10-code-control/102-flag-variations/java/src/main/java/HostOs.java
     role: evaluation
-  - path: 10-code-control/12-flag-variations/java-console/src/main/java/HostOs.java
+  - path: 10-code-control/102-flag-variations/java-console/src/main/java/HostOs.java
     role: evaluation
-  - path: 10-code-control/12-flag-variations/rest/create-flags.sh
+  - path: 10-code-control/102-flag-variations/rest/create-flags.sh
     role: provisioning
 - key: configure-navigation-count-label
   name: 'Configure: navigation count label'
   kind: string
   examples:
-  - path: 10-code-control/12-flag-variations
+  - path: 10-code-control/102-flag-variations
   - path: 99-use-cases/01-abcd-test
   - path: 10-code-control
   sources:
-  - path: 10-code-control/12-flag-variations/flag-variations.js
+  - path: 10-code-control/102-flag-variations/flag-variations.js
     role: evaluation
-  - path: 10-code-control/12-flag-variations/flag_variations.py
+  - path: 10-code-control/102-flag-variations/flag_variations.py
     role: evaluation
-  - path: 10-code-control/12-flag-variations/java/src/main/java/FlagEvaluator.java
+  - path: 10-code-control/102-flag-variations/java/src/main/java/FlagEvaluator.java
     role: evaluation
-  - path: 10-code-control/12-flag-variations/java-console/src/main/java/FlagEvaluator.java
+  - path: 10-code-control/102-flag-variations/java-console/src/main/java/FlagEvaluator.java
     role: evaluation
   - path: 99-use-cases/01-abcd-test/abcd-eval.js
     role: evaluation
@@ -125,31 +125,31 @@ flags:
   name: 'Configure: lucky number'
   kind: number
   examples:
-  - path: 10-code-control/12-flag-variations
+  - path: 10-code-control/102-flag-variations
   - path: 10-code-control
   sources:
-  - path: 10-code-control/12-flag-variations/flag-variations.js
+  - path: 10-code-control/102-flag-variations/flag-variations.js
     role: evaluation
-  - path: 10-code-control/12-flag-variations/flag_variations.py
+  - path: 10-code-control/102-flag-variations/flag_variations.py
     role: evaluation
-  - path: 10-code-control/12-flag-variations/java/src/main/java/FlagEvaluator.java
+  - path: 10-code-control/102-flag-variations/java/src/main/java/FlagEvaluator.java
     role: evaluation
-  - path: 10-code-control/12-flag-variations/java-console/src/main/java/FlagEvaluator.java
+  - path: 10-code-control/102-flag-variations/java-console/src/main/java/FlagEvaluator.java
     role: evaluation
 - key: configure-max-navigation-moves
   name: 'Configure: max navigation moves'
   kind: json
   examples:
-  - path: 10-code-control/12-flag-variations
+  - path: 10-code-control/102-flag-variations
   - path: 10-code-control
   sources:
-  - path: 10-code-control/12-flag-variations/flag-variations.js
+  - path: 10-code-control/102-flag-variations/flag-variations.js
     role: evaluation
-  - path: 10-code-control/12-flag-variations/flag_variations.py
+  - path: 10-code-control/102-flag-variations/flag_variations.py
     role: evaluation
-  - path: 10-code-control/12-flag-variations/java/src/main/java/FlagEvaluator.java
+  - path: 10-code-control/102-flag-variations/java/src/main/java/FlagEvaluator.java
     role: evaluation
-  - path: 10-code-control/12-flag-variations/java-console/src/main/java/FlagEvaluator.java
+  - path: 10-code-control/102-flag-variations/java-console/src/main/java/FlagEvaluator.java
     role: evaluation
 - key: VIP
   name: VIP
@@ -179,13 +179,13 @@ flags:
   examples:
   - path: 10-code-control
   sources:
-  - path: 10-code-control/13-flag-targeting-rules/java/src/main/java/TeamStyle.java
+  - path: 10-code-control/103-flag-targeting-rules/java/src/main/java/TeamStyle.java
     role: evaluation
-  - path: 10-code-control/13-flag-targeting-rules/java-console/src/main/java/FlagEvaluator.java
+  - path: 10-code-control/103-flag-targeting-rules/java-console/src/main/java/FlagEvaluator.java
     role: evaluation
-  - path: 10-code-control/13-flag-targeting-rules/team-style.js
+  - path: 10-code-control/103-flag-targeting-rules/team-style.js
     role: evaluation
-  - path: 10-code-control/13-flag-targeting-rules/team_style.py
+  - path: 10-code-control/103-flag-targeting-rules/team_style.py
     role: evaluation
 - key: enable-adaptive-grid-highlight
   name: ''
@@ -267,17 +267,17 @@ flags:
   examples:
   - path: 10-code-control
   sources:
-  - path: 10-code-control/16-percentage-rollout/java/src/main/java/Rollout.java
+  - path: 10-code-control/106-percentage-rollout/java/src/main/java/Rollout.java
     role: evaluation
-  - path: 10-code-control/16-percentage-rollout/java-console/src/main/java/FlagEvaluator.java
+  - path: 10-code-control/106-percentage-rollout/java-console/src/main/java/FlagEvaluator.java
     role: evaluation
-  - path: 10-code-control/16-percentage-rollout/rollout.js
+  - path: 10-code-control/106-percentage-rollout/rollout.js
     role: evaluation
-  - path: 10-code-control/16-percentage-rollout/rollout.py
+  - path: 10-code-control/106-percentage-rollout/rollout.py
     role: evaluation
-  - path: 10-code-control/16-percentage-rollout/rest/common.sh
+  - path: 10-code-control/106-percentage-rollout/rest/common.sh
     role: provisioning
-  - path: 10-code-control/16-percentage-rollout/rest/create-flag.sh
+  - path: 10-code-control/106-percentage-rollout/rest/create-flag.sh
     role: provisioning
 - key: enable-grid-selection-highlight-prereq
   name: ''
@@ -285,15 +285,15 @@ flags:
   examples:
   - path: 10-code-control
   sources:
-  - path: 10-code-control/15-prerequisite-flags/java/src/main/java/Prerequisite.java
+  - path: 10-code-control/105-prerequisite-flags/java/src/main/java/Prerequisite.java
     role: evaluation
-  - path: 10-code-control/15-prerequisite-flags/java-console/src/main/java/FlagEvaluator.java
+  - path: 10-code-control/105-prerequisite-flags/java-console/src/main/java/FlagEvaluator.java
     role: evaluation
-  - path: 10-code-control/15-prerequisite-flags/prerequisite.js
+  - path: 10-code-control/105-prerequisite-flags/prerequisite.js
     role: evaluation
-  - path: 10-code-control/15-prerequisite-flags/prerequisite.py
+  - path: 10-code-control/105-prerequisite-flags/prerequisite.py
     role: evaluation
-  - path: 10-code-control/15-prerequisite-flags/rest/create-flags.sh
+  - path: 10-code-control/105-prerequisite-flags/rest/create-flags.sh
     role: provisioning
 - key: enable-grid-selection-highlight-sched
   name: ''
@@ -301,17 +301,17 @@ flags:
   examples:
   - path: 10-code-control
   sources:
-  - path: 10-code-control/17-scheduled-changes/java/src/main/java/ScheduledChange.java
+  - path: 10-code-control/107-scheduled-changes/java/src/main/java/ScheduledChange.java
     role: evaluation
-  - path: 10-code-control/17-scheduled-changes/java-console/src/main/java/ScheduledChange.java
+  - path: 10-code-control/107-scheduled-changes/java-console/src/main/java/ScheduledChange.java
     role: evaluation
-  - path: 10-code-control/17-scheduled-changes/scheduled-change.js
+  - path: 10-code-control/107-scheduled-changes/scheduled-change.js
     role: evaluation
-  - path: 10-code-control/17-scheduled-changes/scheduled_change.py
+  - path: 10-code-control/107-scheduled-changes/scheduled_change.py
     role: evaluation
-  - path: 10-code-control/17-scheduled-changes/rest/common.sh
+  - path: 10-code-control/107-scheduled-changes/rest/common.sh
     role: provisioning
-  - path: 10-code-control/17-scheduled-changes/rest/create-flag.sh
+  - path: 10-code-control/107-scheduled-changes/rest/create-flag.sh
     role: provisioning
 - key: enable-identify-grid-highlight
   name: ''
@@ -469,15 +469,15 @@ flags:
   examples:
   - path: 10-code-control
   sources:
-  - path: 10-code-control/15-prerequisite-flags/java/src/main/java/Prerequisite.java
+  - path: 10-code-control/105-prerequisite-flags/java/src/main/java/Prerequisite.java
     role: evaluation
-  - path: 10-code-control/15-prerequisite-flags/java-console/src/main/java/FlagEvaluator.java
+  - path: 10-code-control/105-prerequisite-flags/java-console/src/main/java/FlagEvaluator.java
     role: evaluation
-  - path: 10-code-control/15-prerequisite-flags/prerequisite.js
+  - path: 10-code-control/105-prerequisite-flags/prerequisite.js
     role: evaluation
-  - path: 10-code-control/15-prerequisite-flags/prerequisite.py
+  - path: 10-code-control/105-prerequisite-flags/prerequisite.py
     role: evaluation
-  - path: 10-code-control/15-prerequisite-flags/rest/create-flags.sh
+  - path: 10-code-control/105-prerequisite-flags/rest/create-flags.sh
     role: provisioning
 - key: show-partner-org-badge
   name: ''
@@ -485,15 +485,15 @@ flags:
   examples:
   - path: 10-code-control
   sources:
-  - path: 10-code-control/14-multi-context-targeting/java/src/main/java/Partner.java
+  - path: 10-code-control/104-multi-context-targeting/java/src/main/java/Partner.java
     role: evaluation
-  - path: 10-code-control/14-multi-context-targeting/java-console/src/main/java/FlagEvaluator.java
+  - path: 10-code-control/104-multi-context-targeting/java-console/src/main/java/FlagEvaluator.java
     role: evaluation
-  - path: 10-code-control/14-multi-context-targeting/partner.js
+  - path: 10-code-control/104-multi-context-targeting/partner.js
     role: evaluation
-  - path: 10-code-control/14-multi-context-targeting/partner.py
+  - path: 10-code-control/104-multi-context-targeting/partner.py
     role: evaluation
-  - path: 10-code-control/14-multi-context-targeting/rest/create-flags.sh
+  - path: 10-code-control/104-multi-context-targeting/rest/create-flags.sh
     role: provisioning
 - key: show-twilio-inner-circle-badge
   name: ''
@@ -565,9 +565,9 @@ flags:
   examples:
   - path: 10-code-control
   sources:
-  - path: 10-code-control/13-flag-targeting-rules/team-style.js
+  - path: 10-code-control/103-flag-targeting-rules/team-style.js
     role: evaluation
-  - path: 10-code-control/13-flag-targeting-rules/team_style.py
+  - path: 10-code-control/103-flag-targeting-rules/team_style.py
     role: evaluation
 - key: enable-briefing-judge
   name: ''

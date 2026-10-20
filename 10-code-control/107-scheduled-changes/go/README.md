@@ -1,4 +1,4 @@
-# 17-scheduled-changes — Go console
+# 107-scheduled-changes — Go console
 
 Go console for LaunchDarkly **scheduled flag changes**.
 
@@ -22,7 +22,7 @@ export LD_API_ACCESS_TOKEN="api-..."
 export LD_PROJECT_KEY="lunch-marcoly"
 export LD_ENVIRONMENT_KEY="production"
 
-cd 10-code-control/17-scheduled-changes/go
+cd 10-code-control/107-scheduled-changes/go
 go run .
 ```
 

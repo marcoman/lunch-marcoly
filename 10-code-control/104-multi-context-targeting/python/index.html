@@ -40,13 +40,13 @@
     .cell { width:80px; height:80px; border:1px solid #555; background:var(--panel); display:flex; align-items:center; justify-content:center; font-size:1.5rem; }
     .cell.selected { font-weight:700; }
     .hint { color:var(--muted); font-size:.875rem; }
-    .ld-rail { grid-column:2; grid-row:1; min-height:0; overflow:auto; display:flex; flex-direction:column; background:var(--panel); border-left:1px solid var(--line); }
+    .ld-rail { grid-column:2; grid-row:1; min-height:0; overflow:hidden; display:flex; flex-direction:column; background:var(--panel); border-left:1px solid var(--line); }
     .ld-rail-header { padding:.85rem 1.1rem; border-bottom:1px solid var(--line); }
     .ld-rail-header h2 { margin:0; font-size:1.05rem; }
     .ld-tabs { display:flex; gap:.35rem; padding:.65rem 1.1rem 0; border-bottom:1px solid var(--line); }
     .ld-tab { border:0; border-bottom:2px solid transparent; background:transparent; color:var(--muted); }
     .ld-tab.active { color:var(--ink); border-bottom-color:var(--accent); font-weight:700; }
-    .ld-rail-body { overflow:auto; padding:1rem 1.1rem; }
+    .ld-rail-body { flex:1; min-height:0; overflow:auto; padding:1rem 1.1rem; }
     .ld-section { display:none; }
     .ld-section.active { display:block; }
     .ld-block-title { margin:1rem 0 .35rem; color:var(--muted); font-size:.8rem; font-weight:700; text-transform:uppercase; }
@@ -62,7 +62,7 @@
     .fall-row { display:flex; align-items:center; gap:.5rem; margin-top:.65rem; }
     .fall-row label { margin:0; }
     .fall-row select { flex:1; }
-    .rail-fixed { padding:0 1.1rem 1rem; border-bottom:1px solid var(--line); }
+    .rail-fixed { padding:0 0 1rem; border-bottom:1px solid var(--line); margin-bottom:.4rem; }
     .rail-fixed .choice { padding:.45rem .6rem; font-size:.85rem; }
     .context-window,.status-window {
       margin-top:.55rem; padding:.65rem; border:1px solid var(--line); border-radius:7px;
@@ -84,7 +84,7 @@
 </head>
 <body>
   <section id="login-screen">
-    <div class="app-banner">14-multi-context-targeting[python]</div>
+    <div class="app-banner">104-multi-context-targeting[python]</div>
     <h1>Login</h1>
     <p class="muted">Choose both context kinds. The selected pair is sent to LaunchDarkly as one multi-context.</p>
     <fieldset>
@@ -107,7 +107,7 @@
   <div id="app-shell" class="hidden">
     <main id="grid-screen" tabindex="0">
       <div class="header">
-        <div class="app-banner">14-multi-context-targeting[python]</div>
+        <div class="app-banner">104-multi-context-targeting[python]</div>
         <div class="name-row">Name: <span id="hdr-name"></span>
           <span id="partner-badge" class="partner-badge hidden">partner</span>
         </div>
@@ -121,6 +121,12 @@
 
     <aside class="ld-rail" aria-label="LaunchDarkly lab">
       <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+      <div class="ld-tabs" role="tablist">
+        <button type="button" class="ld-tab active" data-tab="controls" role="tab" aria-selected="true">Controls</button>
+        <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
+      </div>
+      <div class="ld-rail-body">
+        <section id="ld-section-controls" class="ld-section active">
       <div class="rail-fixed">
         <div class="ld-block-title">Select evaluation context</div>
         <fieldset>
@@ -150,12 +156,6 @@
           <div id="trace-lines"></div>
         </div>
       </div>
-      <div class="ld-tabs" role="tablist">
-        <button class="ld-tab active" data-tab="controls">Controls</button>
-        <button class="ld-tab" data-tab="about">About</button>
-      </div>
-      <div class="ld-rail-body">
-        <section id="ld-section-controls" class="ld-section active">
           <p id="controls-meta" class="muted">Loading flag status…</p>
           <div id="controls-warn" class="controls-warn hidden"></div>
           <button id="controls-refresh">Refresh status</button>
@@ -164,7 +164,8 @@
         </section>
         <section id="ld-section-about" class="ld-section">
           <div class="ld-block-title">What this teaches</div>
-          <p class="ld-about-p">LaunchDarkly <strong>multi-contexts</strong>: one evaluation with <code>user</code> and <code>organization</code>. Targeting requires <strong>both</strong> keys. Unlike example 13, org is not a user attribute.</p>
+          <p class="ld-about-p">One evaluation carries a <code>user</code> context and an <code>organization</code> context. The partner badge is served only when both keys match a provisioned rule. Organization is its own context kind.</p>
+          <p class="ld-about-p">The Controls tab shows the pair you selected, the multi-context that was sent, and whether the badge matched.</p>
           <div class="ld-block-title">2×2</div>
           <table class="matrix">
             <tr><th>User</th><th>Org</th><th>Badge</th></tr>

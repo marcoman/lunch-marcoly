@@ -4,7 +4,7 @@ version = "1.0.0"
 edition = "2021"
 
 [[bin]]
-name = "15-prerequisite-flags"
+name = "105-prerequisite-flags"
 path = "src/main.rs"
 
 [dependencies]

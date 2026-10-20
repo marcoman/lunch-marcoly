@@ -1,4 +1,4 @@
-# 19-evaluation-reasons
+# 109-evaluation-reasons
 
 **Status: stub — not implemented yet.**
 
@@ -6,7 +6,7 @@ Show **why** a flag evaluated. One screen can reach four reason kinds:
 `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, and `ERROR`. The value and
 the reason sit next to each other.
 
-[15-prerequisite-flags](../15-prerequisite-flags/) already prints
+[105-prerequisite-flags](../105-prerequisite-flags/) already prints
 `PREREQUISITE_FAILED` for one parent/child pair. This lesson walks the four
 kinds on purpose.
 
@@ -30,7 +30,7 @@ a flag that fails evaluation). Keep that case visible and separate.
 - Read `variationDetail`, not only `variation`.
 - One control per reason, or one flag whose targeting the lab can switch, so
   the runner sees each kind without leaving the page.
-- Do not fold this into [18-flag-approvals](../18-flag-approvals/). Approvals
+- Do not fold this into [108-flag-approvals](../108-flag-approvals/). Approvals
   are a workflow. Reasons are an evaluation result.
 - Not in the series portal until the app exists. Intended ports **:8190–:8193**.
 

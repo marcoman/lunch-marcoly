@@ -1,4 +1,4 @@
-"""LaunchDarkly REST helpers for in-app flag on/off controls (11-flag-enablement).
+"""LaunchDarkly REST helpers for in-app flag on/off controls (101-flag-enablement).
 
 Uses the Feature flags PATCH API with semantic patch turnFlagOn / turnFlagOff.
 Does not edit variation definitions — only environment targeting on/off + status.
@@ -412,7 +412,7 @@ def apply_flag_control(
         f"/flags/{project}/{flag_key}",
         {
             "environmentKey": environment,
-            "comment": f"11-flag-enablement UI: {action}",
+            "comment": f"101-flag-enablement UI: {action}",
             "instructions": patch_instructions,
         },
     )

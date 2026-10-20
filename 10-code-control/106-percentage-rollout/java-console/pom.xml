@@ -18,7 +18,7 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>16-percentage-rollout</finalName>
+        <finalName>106-percentage-rollout</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

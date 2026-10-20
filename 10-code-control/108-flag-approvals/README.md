@@ -1,4 +1,4 @@
-# 18-flag-approvals
+# 108-flag-approvals
 
 **Status: stub — not implemented yet.**
 
@@ -6,7 +6,7 @@ Request **approval** to turn a flag on from the grid UI. Start with the
 **move-count** flag. The lab environment already requires approvals; this
 lesson sends a request and shows whether it is still pending.
 
-This is not [16-percentage-rollout](../16-percentage-rollout/).
+This is not [106-percentage-rollout](../106-percentage-rollout/).
 
 Keywords: **approvals** · **feature flags** · **required approval** ·
 **move count**
@@ -19,7 +19,7 @@ The dashboard toggle is not the only way a flag changes. The page asks for
 approval to enable move count. Until that request is approved, the grid keeps
 the current variation. After approval, the next evaluation shows the count.
 
-Use a dedicated flag key so [11-flag-enablement](../11-flag-enablement/) keeps
+Use a dedicated flag key so [101-flag-enablement](../101-flag-enablement/) keeps
 its own count toggle.
 
 ## Direction

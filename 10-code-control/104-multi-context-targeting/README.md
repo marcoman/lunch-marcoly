@@ -1,4 +1,4 @@
-# 14-multi-context-targeting
+# 104-multi-context-targeting
 
 LaunchDarkly **multi-context** targeting for the lunch-marcoly grid navigator.
 
@@ -21,10 +21,10 @@ Keywords: **multi-context** · **context kinds** · **targeting rules** · **fea
 | `bob` | `globex` | yes |
 
 Same person, other company → no. Same company, other person → no. Org is **not**
-a `user` attribute (that was [13](../13-flag-targeting-rules/)).
+a `user` attribute (that was [13](../103-flag-targeting-rules/)).
 
 The labs use explicit **Alice / Bob** and **Acme / Globex** radio cards.
-Its right rail keeps three things visible together as you walk the 2×2:
+The right drawer’s **Controls** tab keeps three things visible together as you walk the 2×2. **About** explains the 2×2 and links the docs:
 
 - the selected user and organization
 - the exact JSON multi-context sent to LaunchDarkly
@@ -73,7 +73,7 @@ export LD_API_ACCESS_TOKEN="api-..."
 
 ```bash
 (cd rest && chmod +x *.sh && ./create-flags.sh)
-cd python && python 14-multi-context-targeting.py
+cd python && python 104-multi-context-targeting.py
 # or: (cd node && npm start)
 # or: (cd java && ./mvnw -q -DskipTests package && java -jar target/14-multi-context-targeting.jar)
 # or: (cd dotnet && dotnet run --project 14-multi-context-targeting.csproj)
@@ -93,13 +93,13 @@ cd node-console && npm install && npm start
 cd java-console && ./mvnw -q -DskipTests package && java -jar target/14-multi-context-targeting.jar
 
 # C++ console
-cd cpp && make && ./14-multi-context-targeting
+cd cpp && make && ./104-multi-context-targeting
 
 # Go console
-cd go && go build -o 14-multi-context-targeting . && ./14-multi-context-targeting
+cd go && go build -o 104-multi-context-targeting . && ./104-multi-context-targeting
 
 # Rust console
-cd rust && cargo build --release && ./target/release/14-multi-context-targeting
+cd rust && cargo build --release && ./target/release/104-multi-context-targeting
 ```
 
 ## Collect results

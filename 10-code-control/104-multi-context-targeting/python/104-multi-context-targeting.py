@@ -85,7 +85,7 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if parsed.path == "/api/bootstrap":
             _json_response(self, 200, {
-                "appBanner": "14-multi-context-targeting[python]",
+                "appBanner": "104-multi-context-targeting[python]",
                 "controls": api_config(),
             })
             return
@@ -123,7 +123,7 @@ def main() -> None:
     init_launchdarkly()
     port = int(os.environ.get("PORT") or "8080")
     server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
-    print("14-multi-context-targeting[python]")
+    print("104-multi-context-targeting[python]")
     print(f"Open http://127.0.0.1:{port}/")
     try:
         server.serve_forever()

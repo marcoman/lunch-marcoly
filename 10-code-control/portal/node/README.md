@@ -24,7 +24,7 @@ Keywords: **feature flags** · **targeting rules** · **contexts** · **series p
 - Dependencies installed in all child examples:
 
 ```bash
-for d in ../../11-flag-enablement/node ../../12-flag-variations/node ../../13-flag-targeting-rules/node ../../14-multi-context-targeting/node ../../15-prerequisite-flags/node ../../16-percentage-rollout/node ../../17-scheduled-changes/node; do
+for d in ../../101-flag-enablement/node ../../102-flag-variations/node ../../103-flag-targeting-rules/node ../../104-multi-context-targeting/node ../../105-prerequisite-flags/node ../../106-percentage-rollout/node ../../107-scheduled-changes/node; do
   (cd "$d" && npm install)
 done
 export LD_SDK_KEY="sdk-..."

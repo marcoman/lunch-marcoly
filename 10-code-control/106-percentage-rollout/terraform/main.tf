@@ -55,7 +55,7 @@ resource "launchdarkly_feature_flag" "highlight_pct" {
   project_key = var.project_key
   key         = "enable-grid-selection-highlight-pct"
   name        = "Enable: grid selection highlight (pct)"
-  description = "16-percentage-rollout. Static green/none rollout on username context key. Dedicated key so 11 stays independent. Not a progressive rollout."
+  description = "106-percentage-rollout. Static green/none rollout on username context key. Dedicated key so 101 stays independent. Not a progressive rollout."
   temporary   = false
 
   variation_type = "string"

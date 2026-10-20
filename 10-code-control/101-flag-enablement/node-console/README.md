@@ -1,6 +1,6 @@
 # Node.js (console)
 
-Console application version of the [11-flag-enablement grid navigator](../application.md).
+Console application version of the [101-flag-enablement grid navigator](../application.md).
 
 ## Prerequisites
 

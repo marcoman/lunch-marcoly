@@ -1,4 +1,4 @@
-# 16-percentage-rollout — Python console
+# 106-percentage-rollout — Python console
 
 Curses grid navigator for a static LaunchDarkly **percentage rollout**.
 
@@ -18,7 +18,7 @@ Docs: [Percentage rollouts](https://launchdarkly.com/docs/home/flags/rollouts)
 ```bash
 source .venv/bin/activate
 export LD_SDK_KEY="sdk-..."
-cd 10-code-control/16-percentage-rollout/python-console
+cd 10-code-control/106-percentage-rollout/python-console
 python 16-percentage-rollout.py
 ```
 

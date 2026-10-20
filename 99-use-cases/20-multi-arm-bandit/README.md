@@ -26,7 +26,7 @@ more of the usernames. The grid chrome stays the same.
 
 - Build this under `50-mobile/` or reuse `acme-mobile-onboarding-v2`
 - Treat it as a fixed percentage rollout — that is `01` and
-  [16-percentage-rollout](../../10-code-control/16-percentage-rollout/)
+  [106-percentage-rollout](../../10-code-control/106-percentage-rollout/)
 - Teach a guarded rollout here — that is [15-guarded-rollout](../15-guarded-rollout/)
 
 ## When implementing

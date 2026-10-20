@@ -1,6 +1,6 @@
 # Java (console)
 
-Console application version of the [12-flag-variations grid navigator](../application.md).
+Console application version of the [102-flag-variations grid navigator](../application.md).
 
 ## Prerequisites
 

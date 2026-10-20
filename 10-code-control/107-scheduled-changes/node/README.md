@@ -1,4 +1,4 @@
-# 17-scheduled-changes — Node web
+# 107-scheduled-changes — Node web
 
 Schedule a LaunchDarkly flag to turn the grid highlight on after a short delay.
 
@@ -23,7 +23,7 @@ export LD_API_ACCESS_TOKEN="api-..."
 export LD_PROJECT_KEY="lunch-marcoly"
 export LD_ENVIRONMENT_KEY="production"
 
-cd 10-code-control/17-scheduled-changes/node
+cd 10-code-control/107-scheduled-changes/node
 npm install
 npm start
 ```

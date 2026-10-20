@@ -1,6 +1,6 @@
 # Python (web)
 
-Web application version of the [11-flag-enablement grid navigator](../application.md) with server-side LaunchDarkly flag evaluation.
+Web application version of the [101-flag-enablement grid navigator](../application.md) with server-side LaunchDarkly flag evaluation.
 
 ## Prerequisites
 
@@ -40,7 +40,7 @@ No compile step. Install dependencies from the repository root `requirements.txt
 From this directory, with pyenv and `.venv` active:
 
 ```bash
-python 11-flag-enablement.py
+python 101-flag-enablement.py
 ```
 
 Open [http://127.0.0.1:8080/](http://127.0.0.1:8080/) in a browser. Press Ctrl+C to stop the server.

@@ -1,12 +1,12 @@
 # Flag Targeting Rules Application Specification
 
-This document defines the flag and desired effects for **13-flag-targeting-rules**.
+This document defines the flag and desired effects for **103-flag-targeting-rules**.
 
 Baseline login, grid navigation, header positions, and session controls come from [00-reference-code/application.md](../../00-reference-code/application.md). This example adds a team picker and one LaunchDarkly string flag.
 
 ## Overview
 
-This lab teaches **targeting rules** on a public **context attribute**. It contrasts with [11-flag-enablement](../11-flag-enablement/), where application code parses a username into a cohort. Here the application supplies `team`; LaunchDarkly rules decide which style to serve.
+This lab teaches **targeting rules** on a public **context attribute**. It contrasts with [101-flag-enablement](../101-flag-enablement/), where application code parses a username into a cohort. Here the application supplies `team`; LaunchDarkly rules decide which style to serve.
 
 - [Targeting rules](https://launchdarkly.com/docs/home/flags/target-rules)
 - [Context attributes](https://launchdarkly.com/docs/home/flags/context-attributes)

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared LaunchDarkly REST helpers for 16-percentage-rollout.
+# Shared LaunchDarkly REST helpers for 106-percentage-rollout.
 # https://launchdarkly.com/docs/guides/api/rest-api
 set -euo pipefail
 

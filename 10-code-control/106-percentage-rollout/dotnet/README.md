@@ -1,7 +1,7 @@
-# 16-percentage-rollout — .NET web
+# 106-percentage-rollout — .NET web
 
 .NET 10 Minimal API implementation of
-[16-percentage-rollout](../application.md).
+[106-percentage-rollout](../application.md).
 
 Keywords: **percentage rollout** · **context key** · **sticky bucketing**
 
@@ -11,7 +11,7 @@ Docs: [Percentage rollouts](https://launchdarkly.com/docs/home/flags/rollouts)
 
 ```bash
 export LD_SDK_KEY="sdk-..."
-cd 10-code-control/16-percentage-rollout/dotnet
+cd 10-code-control/106-percentage-rollout/dotnet
 dotnet run --project 16-percentage-rollout.csproj
 ```
 

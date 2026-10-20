@@ -10,7 +10,7 @@
         <directory>src/main/resources</directory>
       </resource>
     </resources>
-    <finalName>14-multi-context-targeting</finalName>
+    <finalName>104-multi-context-targeting</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
