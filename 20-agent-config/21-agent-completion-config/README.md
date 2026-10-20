@@ -2,6 +2,8 @@
 
 LaunchDarkly **AgentControl** for the equity briefing agent: serve **model**, **system prompt**, and **user prompt** from an AgentControl **completion config** at runtime—without redeploying.
 
+Agent mode, one instructions value, is the stub [27-agent-mode](../27-agent-mode/). This example stays completion mode.
+
 Series landing page (Ollama, AWS SSO, shared env): [../README.md](../README.md).
 
 ## What this demonstrates

@@ -7,6 +7,9 @@ when its parent `enable-grid-selection-highlight-prereq` flag is **on** and
 serving **`green`**. Otherwise, the child serves its off variation and reports
 `PREREQUISITE_FAILED`.
 
+The four-reason tour (`PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`,
+`ERROR`) is the stub [19-evaluation-reasons](../19-evaluation-reasons/).
+
 These keys cite [11-flag-enablement](../11-flag-enablement/) but are **not**
 11's flags, so 11's independent count toggle is unchanged.
 

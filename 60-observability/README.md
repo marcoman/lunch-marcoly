@@ -14,6 +14,8 @@ OpenTelemetry span for login (with username) and for each successful grid move.
 |---------|---------|-------------|
 | [61-reference](61-reference/) | Server-owned navigator baseline; no LaunchDarkly | [http://127.0.0.1:8610](http://127.0.0.1:8610) |
 | [62-server-traces](62-server-traces/) | Add the Python SDK observability plugin; login and successful-move spans | [http://127.0.0.1:8620](http://127.0.0.1:8620) |
+| [63-server-errors](63-server-errors/) | **Stub.** One deliberate error, visible as an error and a log line. **64** stays free | :8630 when built |
+| [65-server-metrics](65-server-metrics/) | **Stub.** One custom metric. Not the spans in 62 | :8650 when built |
 
 Read them in order. Comparing the Python files shows exactly where
 observability enters the application.

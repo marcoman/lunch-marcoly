@@ -7,6 +7,8 @@ username **context key**.
 This is **not** [14-progressive-rollout](../../99-use-cases/14-progressive-rollout/)
 (time-staged 10→100%). This is **not**
 [01-abcd-test](../../99-use-cases/01-abcd-test/) (four experiment labels).
+The AgentControl sticky split that buckets by `team` is the stub
+[29-team-rollout](../../20-agent-config/29-team-rollout/).
 
 Keywords: **percentage rollout** · **context key** · **sticky bucketing** ·
 **feature flags**

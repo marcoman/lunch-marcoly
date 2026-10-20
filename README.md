@@ -39,7 +39,10 @@ lunch-marcoly/
 │   ├── 14-multi-context-targeting/
 │   ├── 15-prerequisite-flags/
 │   ├── 16-percentage-rollout/    # Web :8160–:8163 + consoles; static 30/70
-│   └── 17-scheduled-changes/     # Web :8170–:8173 + consoles; scheduled turn-on
+│   ├── 17-scheduled-changes/     # Web :8170–:8173 + consoles; scheduled turn-on
+│   ├── 18-flag-approvals/        # Stub: approval to enable move count
+│   ├── 19-evaluation-reasons/    # Stub: four evaluation reason kinds
+│   └── segment-targeting/        # Stub: included targets; unnumbered (18–19 fill the decade)
 ├── 20-agent-config/             # AgentControl series (shared setup)
 │   ├── README.md
 │   ├── portal/                   # Python :8200 · Node :8201 · Java :8202 · .NET :8203
@@ -50,7 +53,10 @@ lunch-marcoly/
 │   ├── 23-agent-tools/
 │   ├── 24-agent-judges/
 │   ├── 25-agent-graph/           # assess → specialist → finalize
-│   └── 26-flags-vs-agent-control/ # Python :8260 · Node :8261 · Java :8262 · .NET :8263
+│   ├── 26-flags-vs-agent-control/ # Python :8260 · Node :8261 · Java :8262 · .NET :8263
+│   ├── 27-agent-mode/            # Stub: agent mode only; not the capstone
+│   ├── 28-context-attributes/    # Stub: region + audience select a variation
+│   └── 29-team-rollout/          # Stub: sticky % rollout bucketed by team
 ├── 30-client-sdk/               # Browser JavaScript SDK
 │   ├── README.md
 │   ├── portal/                  # JS :8300 · React :8301 · Vue :8302 (31–36)
@@ -59,7 +65,10 @@ lunch-marcoly/
 │   ├── 33-synced-segments/
 │   ├── 34-synced-segments-twilio/
 │   ├── 35-client-bootstrap/     # Bootstrap first paint :8350–:8352
-│   └── 36-client-track-events/  # track() login_completed + grid_move :8360–:8362
+│   ├── 36-client-track-events/  # track() login_completed + grid_move :8360–:8362
+│   ├── 37-client-evaluation-details/  # Stub: variationDetail vs variation
+│   ├── 38-client-secure-mode/   # Stub: secure-mode hash
+│   └── 39-client-context-cache/ # Stub: local storage cache, not bootstrap
 ├── 40-dont-do-this/             # Anti-patterns (do not ship)
 │   ├── README.md
 │   ├── 41-no-sdk-singleton/     # Stub: new LDClient per evaluation
@@ -69,12 +78,19 @@ lunch-marcoly/
 │   ├── 51-reference/            # android/ · ios/ (no LaunchDarkly)
 │   ├── 52-mobile-evaluation/    # android/ · ios/ (mobile key)
 │   ├── 53-mobile-experiment/    # one experiment; platform is analysis dimension
-│   └── 54-platform-rollout/     # Android first, then iOS, one targeting rule
+│   ├── 54-platform-rollout/     # Android first, then iOS, one targeting rule
+│   ├── 55-automatic-environment-attributes/  # Stub: SDK-supplied attributes
+│   └── 56-mobile-multi-environment/          # Stub: two mobile keys
 ├── 60-observability/            # Server-side observability series
 │   ├── 61-reference/            # Python-owned navigator API; no LaunchDarkly
-│   └── 62-server-traces/        # Python ObservabilityPlugin + manual move spans
+│   ├── 62-server-traces/        # Python ObservabilityPlugin + manual move spans
+│   ├── 63-server-errors/        # Stub: one error, also a log line; 64 stays free
+│   └── 65-server-metrics/       # Stub: one custom metric
 ├── 70-model-demos/              # Model apps; children 01–04 inside the folder
 │   ├── README.md                # 80 remains the next free decade
+│   ├── 01-image-processing/     # Stub: four cat photos
+│   ├── 02-text-origin/          # Stub: human vs AI essay
+│   ├── 03-guess-the-animal/     # Stub: yes/no until the model names it
 │   └── 04-terraform-codegen/    # Two models, one Terraform file; Python :8740
 ├── 99-use-cases/                # Product patterns on the grid navigator
 │   ├── 01-abcd-test/
@@ -94,7 +110,7 @@ lunch-marcoly/
 └── ...
 ```
 
-Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control sort order.
+Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control sort order. Decade series children use the rest of that decade (`11`–`19`, `21`–`29`, …). Letter suffixes stay unused. A later refactor, if a series outgrows nine children, is three digits (`101`–`199` inside `10-code-control`, `201`–`299` inside `20-agent-config`, and so on). A fourth digit is not part of the scheme.
 
 ## Languages
 
@@ -126,7 +142,7 @@ Each example may include implementations in any of these languages. Python, Node
 | 00 | [00-reference-code](00-reference-code/) | Grid navigator reference app (all languages, no LaunchDarkly) |
 | 01 | [01-reference-agent](01-reference-agent/) | News headlines → AI equity briefing (Python / Node / Java / .NET web + consoles; LaunchDarkly comes in later examples) |
 | 02 | [02-reference-client-code](02-reference-client-code/) | Browser grid navigator (JavaScript in the page, no LaunchDarkly) |
-| 10 | [10-code-control](10-code-control/) | Feature-flag series (11–17 complete) |
+| 10 | [10-code-control](10-code-control/) | Feature-flag series (11–17 built; 18, 19, and segment-targeting are stubs) |
 | 11 | [11-flag-enablement](10-code-control/11-flag-enablement/) | Grid navigator with LaunchDarkly boolean flags (all languages, Terraform + REST) |
 | 12 | [12-flag-variations](10-code-control/12-flag-variations/) | Grid navigator with string, number, JSON, and anonymous flags (all languages) |
 | 13 | [13-flag-targeting-rules](10-code-control/13-flag-targeting-rules/) | Targeting rules on a public `team` context attribute |
@@ -134,6 +150,9 @@ Each example may include implementations in any of these languages. Python, Node
 | 15 | [15-prerequisite-flags](10-code-control/15-prerequisite-flags/) | Flag prerequisites: highlight must serve `green` before move count can evaluate |
 | 16 | [16-percentage-rollout](10-code-control/16-percentage-rollout/) | Static 30/70 percentage rollout, sticky context key (web **:8160–:8163** + Python / Node / Java / Go / Rust / C++ consoles) |
 | 17 | [17-scheduled-changes](10-code-control/17-scheduled-changes/) | Replaceable scheduled flag turn-on with elapsed timer (web **:8170–:8173** + Python / Node / Java / Go / Rust / C++ consoles + REST/Terraform) |
+| 18 | [18-flag-approvals](10-code-control/18-flag-approvals/) | **Stub:** approval to turn the move-count flag on |
+| 19 | [19-evaluation-reasons](10-code-control/19-evaluation-reasons/) | **Stub:** on-screen `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, `ERROR` |
+| — | [segment-targeting](10-code-control/segment-targeting/) | **Stub:** included-targets segment. Unnumbered so it does not take 20. Read before 33 |
 | 20 | [20-agent-config](20-agent-config/) | AgentControl series (shared LLM / AWS / LD setup); [portal](20-agent-config/portal/) Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
 | — | [20-capstone](20-agent-config/20-capstone/) | **Python :8290 · Node :8291 · Java :8292 · .NET :8293, not in the portal.** Composes `21`–`25`. Checked tools run before finalize. Judges and feedback stay on the draft. English and Spanish live here |
 | 21 | [21-agent-completion-config](20-agent-config/21-agent-completion-config/) | Completion config: model + system/user prompts (web + Go console) |
@@ -142,6 +161,9 @@ Each example may include implementations in any of these languages. Python, Node
 | 24 | [24-agent-judges](20-agent-config/24-agent-judges/) | Judges runtime gate + rewrite (Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console) |
 | 25 | [25-agent-graph](20-agent-config/25-agent-graph/) | Agent graph: assess → specialist → finalize (Python **8250** · Node **8251** · Java **8252** · .NET **8253**) |
 | 26 | [26-flags-vs-agent-control](20-agent-config/26-flags-vs-agent-control/) | Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**. AgentControl, four flags, or one JSON flag. Guardrail scores pass/fail |
+| 27 | [27-agent-mode](20-agent-config/27-agent-mode/) | **Stub:** agent mode only, one instructions value. Does not roll into the capstone |
+| 28 | [28-context-attributes](20-agent-config/28-context-attributes/) | **Stub:** North America / South America and an audience select the variation |
+| 29 | [29-team-rollout](20-agent-config/29-team-rollout/) | **Stub:** sticky percentage rollout bucketed by `team`. Not ports :8290–:8293 |
 | 30 | [30-client-sdk](30-client-sdk/) | Browser client-side SDK series (client-side ID); [portal](30-client-sdk/portal/) JS **:8300** · React **:8301** · Vue **:8302** (31–36) |
 | 31 | [31-client-evaluation](30-client-sdk/31-client-evaluation/) | Initialize, client-side availability, `variation`, `change:` (**JS :8310** · **React :8311** · **Vue :8312**) |
 | 32 | [32-client-identify](30-client-sdk/32-client-identify/) | `identify()` context switch without reload (**JS :8320** · **React :8321** · **Vue :8322**) |
@@ -149,6 +171,9 @@ Each example may include implementations in any of these languages. Python, Node
 | 34 | [34-synced-segments-twilio](30-client-sdk/34-synced-segments-twilio/) | Twilio Segment Audiences sync (**JS :8340** · **React :8341** · **Vue :8342**) |
 | 35 | [35-client-bootstrap](30-client-sdk/35-client-bootstrap/) | Bootstrap first paint (`green` / count on) before the client is ready |
 | 36 | [36-client-track-events](30-client-sdk/36-client-track-events/) | Client `track()` — `login_completed`, `grid_move` (**JS :8360** · **React :8361** · **Vue :8362**) |
+| 37 | [37-client-evaluation-details](30-client-sdk/37-client-evaluation-details/) | **Stub:** `variationDetail()` next to `variation()` |
+| 38 | [38-client-secure-mode](30-client-sdk/38-client-secure-mode/) | **Stub:** secure-mode hash for the browser context |
+| 39 | [39-client-context-cache](30-client-sdk/39-client-context-cache/) | **Stub:** local storage cache, called out in the UI. Not 35 |
 | 40 | [40-dont-do-this](40-dont-do-this/) | Anti-pattern series (do not ship) |
 | 41 | [41-no-sdk-singleton](40-dont-do-this/41-no-sdk-singleton/) | **Stub:** new server SDK client per evaluation |
 | 42 | [42-local-if-no-sdk](40-dont-do-this/42-local-if-no-sdk/) | **Stub:** local `if` / hardcoded boolean, never `variation()` |
@@ -157,10 +182,14 @@ Each example may include implementations in any of these languages. Python, Node
 | 52 | [52-mobile-evaluation](50-mobile/52-mobile-evaluation/) | Mobile SDK: init, variation, listeners (`LD_MOBILE_KEY`; dedicated flag keys) |
 | 53 | [53-mobile-experiment](50-mobile/53-mobile-experiment/) | Android+iOS Experimentation: one flag, exposure→conversion, results by platform, synthetic traffic |
 | 54 | [54-platform-rollout](50-mobile/54-platform-rollout/) | Staggered release by platform: Android first, then add iOS to the same rule |
+| 55 | [55-automatic-environment-attributes](50-mobile/55-automatic-environment-attributes/) | **Stub:** automatic environment attributes on Android and iOS |
+| 56 | [56-mobile-multi-environment](50-mobile/56-mobile-multi-environment/) | **Stub:** two environments, two mobile keys |
 | 60 | [60-observability](60-observability/) | Observability series: Python server-side telemetry on the grid navigator |
 | 61 | [61-reference](60-observability/61-reference/) | Server-owned Python navigator baseline (**:8610**; no LaunchDarkly) |
 | 62 | [62-server-traces](60-observability/62-server-traces/) | Python `ObservabilityPlugin` + `grid.login` / `grid.move` spans (**:8620**) |
-| 70 | [70-model-demos](70-model-demos/) | Model apps. Children `01`–`04` inside the folder. `04-terraform-codegen` is Python **:8740**. **80** stays free |
+| 63 | [63-server-errors](60-observability/63-server-errors/) | **Stub:** one deliberate error, visible as an error and a log line. **64** stays free |
+| 65 | [65-server-metrics](60-observability/65-server-metrics/) | **Stub:** one custom metric. 62 stays spans |
+| 70 | [70-model-demos](70-model-demos/) | Model apps. Children `01`–`04` inside the folder. `01`–`03` are stubs. `04-terraform-codegen` is Python **:8740**. **80** stays free |
 | 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (experiments, segments, rollouts, adaptive triggers, SDK fallbacks, …) |
 | — | [01-abcd-test](99-use-cases/01-abcd-test/) | A-B-C-D experiment on the navigation count label |
 | — | [02-segments-by-name](99-use-cases/02-segments-by-name/) | Segment targeting from username-derived context |

@@ -8,9 +8,9 @@ The series owns global number **70**. Children are `01`, `02`, `03`, … inside 
 
 | Directory | App | Status |
 |-----------|-----|--------|
-| `01-image-processing/` | Four cat photos. Per image: animal, source (`real` / `ai` / `unknown`), confidence, one-sentence reason. First model `moondream`. | Specified, not built |
-| `02-text-origin/` | Two reports or essays on one public-domain book. Human versus AI. | Named only |
-| `03-guess-the-animal/` | Yes/no questions until the model names the animal. | Named only |
-| `04-terraform-codegen/` | Two local models write one LaunchDarkly Terraform file. Python **:8740**. Validate, no apply. | Python web |
+| [01-image-processing/](01-image-processing/) | Four cat photos. Per image: animal, source (`real` / `ai` / `unknown`), confidence, one-sentence reason. First model `moondream`. | Stub README. Intended port **:8710** |
+| [02-text-origin/](02-text-origin/) | Two reports or essays on one public-domain book. Human versus AI. | Stub README. Intended port **:8720** |
+| [03-guess-the-animal/](03-guess-the-animal/) | Yes/no questions until the model names the animal. | Stub README. Intended port **:8730** |
+| [04-terraform-codegen/](04-terraform-codegen/) | Two local models write one LaunchDarkly Terraform file. Python **:8740**. Validate, no apply. | Python web |
 
-`01`–`03` have no language folders yet. `04` is Python only.
+`01`–`03` have READMEs and no language folders yet. `04` is Python only.

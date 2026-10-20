@@ -17,8 +17,11 @@ Server-side flags live in [10-code-control](../10-code-control/).
 | **34** | [34-synced-segments-twilio/](34-synced-segments-twilio/) | **Twilio Segment Audiences** — same badge; `identify`/`track` then sync |
 | **35** | [35-client-bootstrap/](35-client-bootstrap/) | **Bootstrap** initial flag values so the first paint is not the SDK default |
 | **36** | [36-client-track-events/](36-client-track-events/) | Client SDK **`track()`** — `login_completed`, `grid_move` |
+| **37** | [37-client-evaluation-details/](37-client-evaluation-details/) | **Stub.** `variationDetail()` next to `variation()`. Not client offline mode |
+| **38** | [38-client-secure-mode/](38-client-secure-mode/) | **Stub.** Secure-mode hash for the browser context |
+| **39** | [39-client-context-cache/](39-client-context-cache/) | **Stub.** Local storage cache, called out in the UI. Not bootstrap |
 
-Work order: [TODO.md](../TODO.md). Portal covers **31–36**.
+Work order: [TODO.md](../TODO.md). Portal covers **31–36**. **37–39** are stubs and are not portal tabs yet.
 
 ## Credentials
 

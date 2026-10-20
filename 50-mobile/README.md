@@ -20,6 +20,8 @@ this series.
 | **52** | [52-mobile-evaluation/](52-mobile-evaluation/) | `init`, `variation`, listeners — **mobile key** |
 | **53** | [53-mobile-experiment/](53-mobile-experiment/) | One Android+iOS **Experimentation** test; exposure, conversion, platform analysis |
 | **54** | [54-platform-rollout/](54-platform-rollout/) | Staggered release: Android first, then iOS, via one targeting rule |
+| **55** | [55-automatic-environment-attributes/](55-automatic-environment-attributes/) | **Stub.** SDK-supplied environment attributes on the 2×2 navigator |
+| **56** | [56-mobile-multi-environment/](56-mobile-multi-environment/) | **Stub.** Two mobile keys, two environments, one app |
 
 There is no series HTTP portal. Run each app in an emulator or simulator.
 

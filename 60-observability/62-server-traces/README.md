@@ -30,7 +30,9 @@ blocks is the baseline application.
   configures OpenTelemetry and exports telemetry to LaunchDarkly.
 
 This example evaluates no feature flags, but the plugin still belongs on the
-server SDK configuration.
+server SDK configuration. A deliberate error plus a log line is
+[63-server-errors](../63-server-errors/). A custom metric is
+[65-server-metrics](../65-server-metrics/). This lesson stays spans.
 
 ### 2. Get the correct credential
 

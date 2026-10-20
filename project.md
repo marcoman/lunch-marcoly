@@ -98,7 +98,10 @@ lunch-marcoly/
 │   ├── 14-multi-context-targeting/ # User + organization multi-context
 │   ├── 15-prerequisite-flags/   # Flag prerequisites
 │   ├── 16-percentage-rollout/   # Web :8160–:8163 + consoles; static %, sticky key
-│   └── 17-scheduled-changes/    # Web :8170–:8173 + consoles; scheduled turn-on
+│   ├── 17-scheduled-changes/    # Web :8170–:8173 + consoles; scheduled turn-on
+│   ├── 18-flag-approvals/       # Stub: approval to enable move count
+│   ├── 19-evaluation-reasons/   # Stub: four evaluation reason kinds
+│   └── segment-targeting/       # Stub: included targets; unnumbered (18–19 fill the decade)
 ├── 20-agent-config/             # AgentControl series (shared setup README)
 │   ├── README.md                # Ollama, AWS SSO, LD env — landing page
 │   ├── portal/                  # Series shell: Python :8200 · Node :8201 · Java :8202 · .NET :8203
@@ -120,8 +123,11 @@ lunch-marcoly/
 │   ├── 25-agent-graph/              # Agent graph: assess → specialist → finalize
 │   │   ├── README.md · application.md · rest/
 │   │   └── python/ · node/ · java/ · dotnet/  # Web :8250–:8253
-│   └── 26-flags-vs-agent-control/   # Python :8260 · Node :8261 · Java :8262 · .NET :8263
-│       └── README.md · application.md   # Web only, not built
+│   ├── 26-flags-vs-agent-control/   # Python :8260 · Node :8261 · Java :8262 · .NET :8263
+│   │   └── README.md · application.md   # Web only
+│   ├── 27-agent-mode/           # Stub: agent mode only; not the capstone
+│   ├── 28-context-attributes/   # Stub: region + audience select a variation
+│   └── 29-team-rollout/         # Stub: sticky % rollout bucketed by team
 ├── 30-client-sdk/               # Browser client-side SDK (client-side ID)
 │   ├── README.md
 │   ├── portal/                  # Series shell: JS :8300 · React :8301 · Vue :8302
@@ -138,7 +144,10 @@ lunch-marcoly/
 │   │   ├── README.md · application.md · rest/ · terraform/
 │   │   └── javascript/ · react/ · vue/
 │   ├── 35-client-bootstrap/     # bootstrap first paint  :8350 JS · :8351 React · :8352 Vue
-│   └── 36-client-track-events/  # track() login_completed + grid_move  :8360 JS · :8361 React · :8362 Vue
+│   ├── 36-client-track-events/  # track() login_completed + grid_move  :8360 JS · :8361 React · :8362 Vue
+│   ├── 37-client-evaluation-details/  # Stub: variationDetail vs variation
+│   ├── 38-client-secure-mode/   # Stub: secure-mode hash
+│   └── 39-client-context-cache/ # Stub: local storage cache, not bootstrap
 ├── 40-dont-do-this/             # Anti-patterns (do not ship)
 │   ├── README.md
 │   ├── 41-no-sdk-singleton/     # Stub: new LDClient per evaluation
@@ -148,12 +157,19 @@ lunch-marcoly/
 │   ├── 51-reference/            # No LaunchDarkly — android/ · ios/
 │   ├── 52-mobile-evaluation/    # Mobile SDK init / variation / listeners
 │   ├── 53-mobile-experiment/    # One Android+iOS experiment; platform analysis
-│   └── 54-platform-rollout/     # Android first, then iOS; one targeting rule
+│   ├── 54-platform-rollout/     # Android first, then iOS; one targeting rule
+│   ├── 55-automatic-environment-attributes/  # Stub: SDK-supplied attributes
+│   └── 56-mobile-multi-environment/          # Stub: two mobile keys
 ├── 60-observability/            # Server-side observability series
 │   ├── 61-reference/            # Python-owned navigator API; no LaunchDarkly :8610
-│   └── 62-server-traces/        # ObservabilityPlugin + move spans :8620
+│   ├── 62-server-traces/        # ObservabilityPlugin + move spans :8620
+│   ├── 63-server-errors/        # Stub: one error, also a log line; 64 stays free
+│   └── 65-server-metrics/       # Stub: one custom metric
 ├── 70-model-demos/              # Model apps; children 01–04 inside the folder
 │   ├── README.md                # 80 remains the next free decade
+│   ├── 01-image-processing/     # Stub: four cat photos
+│   ├── 02-text-origin/          # Stub: human vs AI essay
+│   ├── 03-guess-the-animal/     # Stub: yes/no until the model names it
 │   └── 04-terraform-codegen/    # Two models, one Terraform file; Python :8740
 ├── 99-use-cases/              # Focused LaunchDarkly use-case examples
 │   ├── README.md
@@ -188,17 +204,23 @@ lunch-marcoly/
 - Prefix with a **two-digit number**: `00-reference-code`, `01-hello-world`, `02-binary-search`
 - Follow the number with a **kebab-case** name describing the concept
 - Use the next available number when adding a new example (`03`, `04`, …)
+- Decade series keep that two-digit folder (`10`, `20`, `30`, …). Children use the rest of the decade (`11`–`19`, `21`–`29`, `31`–`39`). Letter suffixes (`1a`, `1b`) stay unused.
+- If a series outgrows those nine children, refactor to **three digits** instead of adding letters. The series folder stays put. Its children become `101`–`199` under `10-code-control`, `201`–`299` under `20-agent-config`, `301`–`399` under `30-client-sdk`, and the same hundreds digit for `40`, `50`, and `60`. Do that rename together, not one folder at a time. A fourth digit is not part of the scheme.
+- `70-model-demos` and `99-use-cases` already count children inside the folder (`01`, `02`, …). They do not consume `71`–`79` or the next decade. Leave that inner count as it is until the three-digit refactor, if it ever includes them.
 - `00-reference-code` is reserved for the reference grid navigator app and repository conventions. It does **not** include LaunchDarkly integration.
 - `02-reference-client-code` is the same navigator **in the browser** (client JavaScript). It does **not** include LaunchDarkly. Later client-SDK examples (series **30**) build on this shape.
 - `01-reference-agent` is the baseline news → prompt → LLM agent UI (config/env and a prompt file only).
 - `20-agent-config` groups LaunchDarkly **AgentControl** examples; shared LLM/AWS/LD setup lives in its README.
-- `20-capstone` (under `20-agent-config/`) is an unnumbered capstone. Python **8290**, Node **8291**, Java **8292**, and .NET **8293** are built and are not portal tabs. It composes `21`–`25`: assess → specialist → finalize, with Pig Latin, ROT13, and a joke tagline forced after the draft and before finalize. Judges and feedback stay on the draft. Those lessons stay as they are. Later `27`, `28`, … keep their own numbers and roll into this app. English and Spanish belong here. Java uses `jsonValueVariationDetail` because there is no Java AI SDK.
+- `20-capstone` (under `20-agent-config/`) is an unnumbered capstone. Python **8290**, Node **8291**, Java **8292**, and .NET **8293** are built and are not portal tabs. It composes `21`–`25`: assess → specialist → finalize, with Pig Latin, ROT13, and a joke tagline forced after the draft and before finalize. Judges and feedback stay on the draft. Those lessons stay as they are. Later `27`, `28`, … keep their own numbers and do not roll into this app. English and Spanish belong here. Java uses `jsonValueVariationDetail` because there is no Java AI SDK.
 - `21-agent-completion-config` (under `20-agent-config/`) adds a **completion config**: runtime **model**, **system prompt**, and **user prompt** on the agent shape from `01`.
 - `22-config-outside-code` adds **tracked completion** (`TrackMetricsOf` / feedback) on that same config shape.
 - `23-agent-tools` adds **Library tools**, a tool loop, and `TrackToolCall`.
 - `24-agent-judges` adds **custom Judges** as a runtime quality gate (draft → scores → one Charlie rewrite).
 - `25-agent-graph` (under `20-agent-config/`) adds an **agent graph** (assess → specialist → finalize; Python **8250** · Node **8251** · Java **8252** · .NET **8253**).
 - `26-flags-vs-agent-control` (under `20-agent-config/`) compares an AgentControl completion config, four feature flags, and one JSON flag. Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**. Series portal tab **Flag compare**. The screen shows Toby. A failed guardrail on AgentControl can run `reduce-briefing-uncertainty`. `21` keeps `equity-briefing-completion`.
+- `27-agent-mode` is a stub. Agent mode only, one instructions value, no graph, tools, or judges. It does not roll into `20-capstone`. Intended ports **:8270–:8273**.
+- `28-context-attributes` is a stub. North America or South America, plus an audience, select an AgentControl variation. The page shows the context it built. This is not `{{ }}` prompt substitution. Intended ports **:8280–:8283**.
+- `29-team-rollout` is a stub. A fixed percentage rollout buckets by the public `team` attribute, so everyone on that team shares one variation. Not `16`'s username bucket and not `14-progressive-rollout`. Do not use ports **:8290–:8293**.
 - AgentControl **web** ports: Python / Node / Java / .NET. **Go** is console-only under this series (raw-terminal TUI).
 - `10-code-control` groups grid-navigator **feature flag** examples; shared portal lives in its `portal/`.
 - `11-flag-enablement` (under `10-code-control/`) demonstrates feature flag naming, provisioning, and boolean enablement.
@@ -208,6 +230,9 @@ lunch-marcoly/
 - `15-prerequisite-flags` demonstrates a child flag that evaluates only when the parent serves `green`.
 - `16-percentage-rollout` (under `10-code-control/`) demonstrates a **static** percentage rollout with sticky context-key assignment (not progressive); Python / Node / Java / .NET web, consoles (Python / Node / Java / Go / Rust / C++), plus REST/Terraform.
 - `17-scheduled-changes` (under `10-code-control/`) demonstrates a replaceable scheduled `turnFlagOn` change with an elapsed timer (Python / Node / Java / .NET web **:8170–:8173**, consoles Python / Node / Java / Go / Rust / C++, REST/Terraform).
+- `18-flag-approvals` (under `10-code-control/`) is a stub. An approval request turns the move-count flag on. Intended ports **:8180–:8183**.
+- `19-evaluation-reasons` (under `10-code-control/`) is a stub. The screen shows `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, and `ERROR`. Intended ports **:8190–:8193**.
+- `segment-targeting` (under `10-code-control/`) is an unnumbered stub. One included-targets segment on the server SDK, read before `33-synced-segments`. **18** and **19** fill the decade, so this folder does not take **20**.
 - `30-client-sdk` groups **browser** client-side SDK examples (client-side ID, not `LD_SDK_KEY`); series portals live in its `portal/` (JavaScript **:8300** · React **:8301** · Vue **:8302**).
 - `31-client-evaluation` (under `30-client-sdk/`) demonstrates initialize, client-side availability, variation, and `change:` (JavaScript **:8310**, React Web **:8311**, Vue **:8312**).
 - `32-client-identify` (under `30-client-sdk/`) demonstrates `identify()` (switch user without reload; JavaScript **:8320**, React Web **:8321**, Vue **:8322**).
@@ -215,6 +240,9 @@ lunch-marcoly/
 - `34-synced-segments-twilio` (under `30-client-sdk/`) demonstrates the same badge with membership from **Twilio Segment** Analytics.js + LaunchDarkly Audiences sync (JavaScript **:8340**, React Web **:8341**, Vue **:8342**).
 - `35-client-bootstrap` (under `30-client-sdk/`) demonstrates bootstrapping client-side flag values so the grid paints before `ready` (JavaScript **:8350**, React Web **:8351**, Vue **:8352**).
 - `36-client-track-events` (under `30-client-sdk/`) demonstrates client SDK `track()` for `login_completed` and `grid_move` (JavaScript **:8360**, React Web **:8361**, Vue **:8362**).
+- `37-client-evaluation-details` is a stub. The browser shows `variationDetail()` next to `variation()`. Client offline mode does not own this number.
+- `38-client-secure-mode` is a stub. The server signs the context hash used by the browser SDK.
+- `39-client-context-cache` is a stub. The UI calls out the SDK local-storage cache. It is not `35-client-bootstrap`.
 - `40-dont-do-this` groups **anti-pattern** examples (loud do-not-ship). Children start at **41**.
 - `41-no-sdk-singleton` (under `40-dont-do-this/`) will demonstrate a new server SDK client per evaluation instead of one process-wide client.
 - `42-local-if-no-sdk` (under `40-dont-do-this/`) will demonstrate a local `if` / hardcoded boolean instead of `variation()` — flipping the dashboard flag does nothing.
@@ -223,10 +251,14 @@ lunch-marcoly/
 - `52-mobile-evaluation` (under `50-mobile/`) adds the Android / iOS mobile SDKs (`LD_MOBILE_KEY`), dedicated flag keys, variation, and flag listeners. Do not reuse 31’s browser flag keys.
 - `53-mobile-experiment` (under `50-mobile/`) runs one boolean control/treatment experiment across Android and iOS. `platform` and `app-version` are context attributes for result analysis, never application-side assignment logic. The optional synthetic simulator uses a server SDK key only on the host.
 - `54-platform-rollout` (under `50-mobile/`) turns one boolean release on for `platform=android`, then a REST script adds `ios` to that clause. Counts come from `mobile_platform_rollout_move`, not from an experiment.
+- `55-automatic-environment-attributes` is a stub. The 2×2 navigator lists environment attributes the mobile SDK attached.
+- `56-mobile-multi-environment` is a stub. Two mobile keys, two environments, and the screen names which one served the flag.
 - `60-observability` groups **server-side observability** examples. Children start at **61**; Python ships first.
 - `61-reference` (under `60-observability/`) moves the 00 web navigator state into Python APIs without LaunchDarkly (**:8610**).
-- `62-server-traces` adds the Python `ObservabilityPlugin` and manual spans for successful login (`grid.login` with username) and successful moves (`grid.move`) (**:8620**). It evaluates no flags.
-- `70-model-demos` groups model apps (image check, text origin, guess the animal, and a Terraform code-generator comparison). The series owns global **70**. Children are `01`, `02`, `03`, … inside the folder and may pass ten. **80** stays the next free decade. `04-terraform-codegen` is the Python web app on **:8740**: two local models, one Terraform file, `terraform validate`, no apply. These apps may use an AI Config, a judge, or a tool. They are not the equity briefing and not the grid.
+- `62-server-traces` adds the Python `ObservabilityPlugin` and manual spans for successful login (`grid.login` with username) and successful moves (`grid.move`) (**:8620**). It evaluates no flags. It does not send errors, logs, or custom metrics.
+- `63-server-errors` is a stub. One deliberate error shows up as an Observability error and a log line. **64** stays free.
+- `65-server-metrics` is a stub. One custom metric. It does not replace the spans in `62`.
+- `70-model-demos` groups model apps (image check, text origin, guess the animal, and a Terraform code-generator comparison). The series owns global **70**. Children are `01`, `02`, `03`, … inside the folder and may pass ten. **80** stays the next free decade. `01-image-processing`, `02-text-origin`, and `03-guess-the-animal` are stub READMEs. `04-terraform-codegen` is the Python web app on **:8740**: two local models, one Terraform file, `terraform validate`, no apply. These apps may use an AI Config, a judge, or a tool. They are not the equity briefing and not the grid.
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive/guarded rollouts, adaptive triggers, SDK fallbacks, and a migration-flags stub).
 - `19-terraform-sentinel` (under `99-use-cases/`) is Sentinel policy for Terraform-managed flags (`temporary`, `sunset` custom property). Pass and fail fixtures only — no grid app and no SDK.
 - `20-multi-arm-bandit` (under `99-use-cases/`) is a stub. A multi-armed bandit on the grid navigator: a metric shifts traffic toward the winning variation. `01-abcd-test` keeps a fixed split. `53-mobile-experiment` stays in `50-mobile`.

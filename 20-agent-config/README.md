@@ -33,8 +33,11 @@ Shared headline cache: [stories/](stories/) (`20-agent-config/stories/stories_ca
 | 24 | [24-agent-judges](24-agent-judges/) | **Judges** runtime gate: Source Fidelity + Recommendation Discipline → show draft + scores → rewrite once as Charlie — Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console; `get-judges-status.sh`. Base: 21 surface (stories-only), not 23 tools |
 | 25 | [25-agent-graph](25-agent-graph/) | **Agent graph**: assess → specialist → finalize — Report / Questions / Good / Joke; Trace; Python **8250** · Node **8251** · Java **8252** · .NET **8253**. Spec: [application.md](25-agent-graph/application.md) |
 | 26 | [26-flags-vs-agent-control](26-flags-vs-agent-control/) | **Python :8260**, **Node :8261**, **Java :8262**, **.NET :8263**. AgentControl, four flags, or one JSON flag. Guardrail scores only |
+| 27 | [27-agent-mode](27-agent-mode/) | **Stub.** Agent mode only, one instructions value. Not the capstone. Intended ports **:8270–:8273** |
+| 28 | [28-context-attributes](28-context-attributes/) | **Stub.** Region and audience attributes select a variation. Intended ports **:8280–:8283** |
+| 29 | [29-team-rollout](29-team-rollout/) | **Stub.** Sticky percentage rollout bucketed by `team`. Do not use **:8290–:8293** (capstone) |
 
-More AgentControl patterns can land as further `NN-…` siblings under this folder. [20-capstone](20-capstone/) is unnumbered on purpose: a later `27` or `28` keeps its own folder, and the behavior rolls into the capstone.
+More AgentControl patterns can land as further `NN-…` siblings under this folder. [20-capstone](20-capstone/) is unnumbered so it does not take **27**. It composes `21`–`25`. **27**, **28**, and **29** keep their own folders and do not roll into the capstone.
 
 ## Common setup
 
@@ -218,7 +221,10 @@ Per-example quirks live in each child `dotnet/README.md` and `go/README.md`.
 - [01-reference-agent](../01-reference-agent/) — baseline agent (file prompt + env model; no LaunchDarkly)
 - [project.md](../project.md) — repository conventions
 - [portal](portal/) — series shell (Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203**)
-- [20-capstone](20-capstone/) — Python **:8290** · Node **:8291** · Java **:8292** · .NET **:8293**, built, not in the portal. Unnumbered so later lessons roll in
+- [20-capstone](20-capstone/) — Python **:8290** · Node **:8291** · Java **:8292** · .NET **:8293**, built, not in the portal. Unnumbered so it does not take **27**. Later lessons keep their own folders.
+- [27-agent-mode](27-agent-mode/) — stub. Agent mode only. Does not roll into the capstone
+- [28-context-attributes](28-context-attributes/) — stub. Context attributes select the variation
+- [29-team-rollout](29-team-rollout/) — stub. Percentage rollout bucketed by `team`
 - [21-agent-completion-config](21-agent-completion-config/) — completion config
 - [22-config-outside-code](22-config-outside-code/) — tracked metrics + feedback
 - [23-agent-tools](23-agent-tools/) — Library tools + tool loop
