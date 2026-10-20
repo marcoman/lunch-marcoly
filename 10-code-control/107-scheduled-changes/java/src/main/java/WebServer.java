@@ -21,7 +21,7 @@ public class WebServer {
         HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", PORT), 0);
         server.createContext("/", WebServer::handle);
         server.start();
-        System.out.println("17-scheduled-changes[java]");
+        System.out.println("107-scheduled-changes[java]");
         System.out.println("Open http://127.0.0.1:" + PORT + "/");
         System.out.println("Press Ctrl+C to stop.");
     }
@@ -42,7 +42,7 @@ public class WebServer {
                 return;
             }
             Map<String, Object> bootstrap = new LinkedHashMap<>();
-            bootstrap.put("appBanner", "17-scheduled-changes[java]");
+            bootstrap.put("appBanner", "107-scheduled-changes[java]");
             bootstrap.put("flagKey", ScheduledChange.FLAG_KEY);
             bootstrap.put("controls", ScheduleControls.apiConfig());
             bootstrap.put("port", PORT);

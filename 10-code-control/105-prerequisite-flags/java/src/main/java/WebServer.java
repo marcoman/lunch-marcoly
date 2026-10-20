@@ -20,7 +20,7 @@ public class WebServer {
         HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", PORT), 0);
         server.createContext("/", WebServer::handle);
         server.start();
-        System.out.println("15-prerequisite-flags[java]");
+        System.out.println("105-prerequisite-flags[java]");
         System.out.println("Open http://127.0.0.1:" + PORT + "/");
         System.out.println("Press Ctrl+C to stop.");
     }
@@ -50,7 +50,7 @@ public class WebServer {
                 return;
             }
             Map<String, Object> bootstrap = new java.util.LinkedHashMap<>();
-            bootstrap.put("appBanner", "15-prerequisite-flags[java]");
+            bootstrap.put("appBanner", "105-prerequisite-flags[java]");
             bootstrap.put("controls", FlagControls.apiConfig());
             sendJson(exchange, 200, bootstrap);
             return;

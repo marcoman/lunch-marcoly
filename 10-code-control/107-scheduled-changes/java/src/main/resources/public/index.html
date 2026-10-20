@@ -20,8 +20,19 @@
     .cell{width:80px;height:80px;border:1px solid #555;background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:1.5rem}
     .cell.selected{font-weight:700}.cell.selected.green{background:#43a047;border-color:#2e7d32;color:white}
     #hdr-name.green{color:var(--accent)}.hint{color:var(--muted);font-size:.875rem}
-    aside{overflow:auto;background:var(--panel);border-left:1px solid var(--line);padding:1.1rem}
-    aside h2{margin:.1rem 0 .35rem;font-size:1.08rem}.block-title{margin:1.1rem 0 .4rem;color:#90caf9;font-size:.78rem;font-weight:700;text-transform:uppercase}
+    .ld-rail{min-height:0;overflow:hidden;display:flex;flex-direction:column;background:var(--panel);border-left:1px solid var(--line)}
+    .ld-rail-header{padding:.85rem 1.1rem;border-bottom:1px solid var(--line)}
+    .ld-rail-header h2{margin:0;font-size:1.05rem}
+    .ld-tabs{display:flex;gap:.35rem;padding:.65rem 1.1rem 0;border-bottom:1px solid var(--line)}
+    .ld-tab{border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;color:var(--muted);padding:.55rem .7rem}
+    .ld-tab.active{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+    .ld-rail-body{flex:1;min-height:0;overflow:auto;padding:1rem 1.1rem}
+    .ld-section{display:none}.ld-section.active{display:block}
+    .ld-about-p{font-size:.86rem;line-height:1.45}
+    .ld-about-p ol{padding-left:1.15rem}
+    .ld-about-p li{margin:.35rem 0}
+    .block-title{margin:1.1rem 0 .4rem;color:#90caf9;font-size:.78rem;font-weight:700;text-transform:uppercase}
+    .ld-section .block-title:first-child{margin-top:.2rem}
     .card{border:1px solid var(--line);border-radius:8px;background:#222232;padding:.8rem;line-height:1.5}
     .controls{display:flex;gap:.55rem;align-items:end;flex-wrap:wrap}.controls label{display:grid;gap:.25rem}
     .clock{font:700 1.65rem ui-monospace,SFMono-Regular,Menlo,monospace;margin:.35rem 0}
@@ -33,7 +44,7 @@
 </head>
 <body>
   <section id="login">
-    <div class="app-banner">17-scheduled-changes[java]</div>
+    <div class="app-banner">107-scheduled-changes[java]</div>
     <h1>Login</h1>
     <p class="muted">Your username becomes the LaunchDarkly user context key.</p>
     <label for="username">Username</label>
@@ -45,7 +56,7 @@
   <div id="shell" class="hidden">
     <main id="grid-screen" tabindex="0">
       <div class="header">
-        <div class="app-banner">17-scheduled-changes[java]</div>
+        <div class="app-banner">107-scheduled-changes[java]</div>
         <div>Name: <span id="hdr-name"></span></div>
         <div>Current position: <span id="hdr-current"></span></div>
         <div>Previous position: <span id="hdr-previous"></span></div>
@@ -55,8 +66,14 @@
       <p class="hint">Arrows or WASD move. L logs out; Q quits.</p>
     </main>
 
-    <aside>
-      <h2>LaunchDarkly · scheduled change</h2>
+    <aside class="ld-rail" aria-label="LaunchDarkly lab">
+      <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+      <div class="ld-tabs" role="tablist">
+        <button type="button" class="ld-tab active" data-tab="schedule" role="tab" aria-selected="true">Schedule</button>
+        <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
+      </div>
+      <div class="ld-rail-body">
+      <section id="ld-section-schedule" class="ld-section active">
       <p class="muted">The button resets the flag off, replaces any pending schedule, then asks LaunchDarkly to turn it on later.</p>
 
       <div class="block-title">Schedule the highlight</div>
@@ -100,9 +117,22 @@
         <div id="trace-lines"></div>
       </div>
 
-      <div class="block-title">About</div>
-      <p class="muted">Scheduled flag changes are a LaunchDarkly Enterprise feature.</p>
-      <p><a href="https://launchdarkly.com/docs/home/flags/scheduled-changes" target="_blank">Scheduled changes documentation</a></p>
+      </section>
+      <section id="ld-section-about" class="ld-section">
+        <div class="block-title">What this teaches</div>
+        <p class="ld-about-p">A scheduled change asks LaunchDarkly to turn the highlight on at a future time. The app resets the flag off, replaces any pending schedule, then waits. The browser re-evaluates the SDK value. It does not flip the highlight with its own timer.</p>
+        <p class="ld-about-p">The Schedule tab shows the delay, the elapsed clock, and the variation that came back.</p>
+        <div class="block-title">How to run it</div>
+        <ol class="ld-about-p">
+          <li>Choose a delay. One minute is the short demo.</li>
+          <li>Start the scheduled change. The highlight returns to <code>none</code> immediately.</li>
+          <li>Watch elapsed time. Green usually arrives a little after the selected delay, because LaunchDarkly executes close to that time, the change has to reach the SDK, and this page re-evaluates every two seconds.</li>
+          <li>Stop cancels the pending change, turns the flag off, and holds the clock.</li>
+        </ol>
+        <p class="ld-about-p">Scheduled flag changes are a LaunchDarkly Enterprise feature.</p>
+        <p class="ld-about-p"><a href="https://launchdarkly.com/docs/home/flags/scheduled-changes" target="_blank" rel="noopener">Scheduled changes</a></p>
+      </section>
+      </div>
     </aside>
   </div>
 
@@ -294,6 +324,17 @@
       el.textContent=cfg.configured?`REST target: ${cfg.projectKey} / ${cfg.environmentKey}`:`Controls disabled; missing ${cfg.missing.join(", ")}`;
       controlsReady=Boolean(cfg.configured);renderControls();
     }).catch(()=>{});
+    function selectTab(tab){
+      document.querySelectorAll(".ld-tab").forEach(btn=>{
+        const on=btn.dataset.tab===tab;
+        btn.classList.toggle("active", on);
+        btn.setAttribute("aria-selected", on?"true":"false");
+      });
+      document.querySelectorAll(".ld-section").forEach(section=>{
+        section.classList.toggle("active", section.id===`ld-section-${tab}`);
+      });
+    }
+    document.querySelectorAll(".ld-tab").forEach(btn=>btn.onclick=()=>selectTab(btn.dataset.tab));
     document.getElementById("login-btn").onclick=()=>{
       const name=document.getElementById("username").value.trim();
       document.getElementById("login-error").classList.toggle("hidden",!!name);

@@ -7,7 +7,7 @@ Keywords: **scheduled changes** · **feature flags** · **targeting**
 
 Docs: [Scheduled flag changes](https://launchdarkly.com/docs/home/flags/scheduled-changes)
 
-The Python web app explains this on the **About** tab in the right drawer. The **Schedule** tab is where you start the change and watch elapsed time.
+The web apps explain this on the **About** tab in the right drawer. The **Schedule** tab is where you start the change and watch elapsed time.
 
 Scheduled flag changes require a LaunchDarkly **Enterprise** plan.
 

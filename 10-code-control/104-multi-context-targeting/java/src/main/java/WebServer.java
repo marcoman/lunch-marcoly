@@ -22,7 +22,7 @@ public class WebServer {
         HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", PORT), 0);
         server.createContext("/", WebServer::handle);
         server.start();
-        System.out.println("14-multi-context-targeting[java]");
+        System.out.println("104-multi-context-targeting[java]");
         System.out.println("Open http://127.0.0.1:" + PORT + "/");
         System.out.println("Press Ctrl+C to stop.");
     }
@@ -47,7 +47,7 @@ public class WebServer {
                 return;
             }
             Map<String, Object> bootstrap = new java.util.LinkedHashMap<>();
-            bootstrap.put("appBanner", "14-multi-context-targeting[java]");
+            bootstrap.put("appBanner", "104-multi-context-targeting[java]");
             bootstrap.put("controls", FlagControls.apiConfig());
             sendJson(exchange, 200, bootstrap);
             return;

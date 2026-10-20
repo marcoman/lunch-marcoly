@@ -1,4 +1,4 @@
-const string AppBanner = "16-percentage-rollout[dotnet]";
+const string AppBanner = "106-percentage-rollout[dotnet]";
 var port = int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var configuredPort)
     ? configuredPort
     : 8080;

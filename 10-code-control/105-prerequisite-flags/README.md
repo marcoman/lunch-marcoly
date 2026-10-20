@@ -20,7 +20,7 @@ Keywords: **prerequisites** · **dependent flag** · **off variation** ·
 
 Docs: [Flag prerequisites](https://launchdarkly.com/docs/home/flags/prereqs)
 
-The Python web app explains this on the **About** tab in the right drawer. The **Prerequisite** tab shows both variations, the context, and the controls.
+The web apps explain this on the **About** tab in the right drawer. The **Prerequisite** tab shows both variations, the context, and the controls.
 
 ## The dependency
 

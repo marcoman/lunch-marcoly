@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
 
-const string AppBanner = "17-scheduled-changes[dotnet]";
+const string AppBanner = "107-scheduled-changes[dotnet]";
 var port = int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var configuredPort)
     ? configuredPort
     : 8173;

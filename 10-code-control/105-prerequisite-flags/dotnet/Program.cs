@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
 
-const string AppBanner = "15-prerequisite-flags[dotnet]";
+const string AppBanner = "105-prerequisite-flags[dotnet]";
 var port = int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var configuredPort)
     ? configuredPort
     : 8080;

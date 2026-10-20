@@ -22,7 +22,7 @@ public class WebServer {
         HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", PORT), 0);
         server.createContext("/", WebServer::handle);
         server.start();
-        System.out.println("16-percentage-rollout[java]");
+        System.out.println("106-percentage-rollout[java]");
         System.out.println("Open http://127.0.0.1:" + PORT + "/");
         System.out.println("Press Ctrl+C to stop.");
     }
@@ -48,7 +48,7 @@ public class WebServer {
                 return;
             }
             Map<String, Object> bootstrap = new LinkedHashMap<>();
-            bootstrap.put("appBanner", "16-percentage-rollout[java]");
+            bootstrap.put("appBanner", "106-percentage-rollout[java]");
             bootstrap.put("flagKey", Rollout.FLAG_KEY);
             bootstrap.put("rollout", "30% green / 70% none");
             bootstrap.put("targetingUrl", targetingUrl());

@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
 
-const string AppBanner = "14-multi-context-targeting[dotnet]";
+const string AppBanner = "104-multi-context-targeting[dotnet]";
 var port = int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var configuredPort)
     ? configuredPort
     : 8080;

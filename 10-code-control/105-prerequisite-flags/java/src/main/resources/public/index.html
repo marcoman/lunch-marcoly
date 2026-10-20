@@ -26,8 +26,19 @@
     .cell.selected.highlight-blue{background:#1e88e5}.cell.selected.highlight-purple{background:#8e24aa}
     .cell.selected.highlight-pink{background:#e91e63}
     .hint{color:var(--muted);font-size:.875rem}
-    aside{min-height:0;overflow:auto;background:var(--panel);border-left:1px solid var(--line);padding:1rem 1.1rem}
-    aside h2{margin:0 0 .3rem;font-size:1.05rem}.block-title{margin:1rem 0 .4rem;color:var(--accent);font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+    .ld-rail{min-height:0;overflow:hidden;display:flex;flex-direction:column;background:var(--panel);border-left:1px solid var(--line)}
+    .ld-rail-header{padding:.85rem 1.1rem;border-bottom:1px solid var(--line)}
+    .ld-rail-header h2{margin:0;font-size:1.05rem}
+    .ld-tabs{display:flex;gap:.35rem;padding:.65rem 1.1rem 0;border-bottom:1px solid var(--line)}
+    .ld-tab{border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;color:var(--muted);padding:.55rem .7rem}
+    .ld-tab.active{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+    .ld-rail-body{flex:1;min-height:0;overflow:auto;padding:1rem 1.1rem}
+    .ld-section{display:none}.ld-section.active{display:block}
+    .ld-about-p{font-size:.86rem;line-height:1.45}
+    table.matrix{width:100%;border-collapse:collapse;font-size:.8rem;margin:.4rem 0 1rem}
+    table.matrix th,table.matrix td{border:1px solid var(--line);padding:.3rem .4rem;text-align:left}
+    .block-title{margin:1rem 0 .4rem;color:var(--accent);font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+    .ld-section .block-title:first-child{margin-top:.2rem}
     .dependency{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.5rem}
     .node,.status,.context,.trace{border:1px solid var(--line);border-radius:8px;background:#1f1f2d;padding:.7rem}
     .node strong{display:block}.node code{font-size:.7rem;color:var(--muted);word-break:break-all}.arrow{font-size:1.4rem;color:var(--accent)}
@@ -44,7 +55,7 @@
 </head>
 <body>
   <section id="login">
-    <div class="app-banner">15-prerequisite-flags[java]</div>
+    <div class="app-banner">105-prerequisite-flags[java]</div>
     <h1>Login</h1>
     <p class="muted">One user context. The dependency lives in LaunchDarkly, not in application code.</p>
     <label for="username">Username</label>
@@ -56,7 +67,7 @@
   <div id="shell" class="hidden">
     <main id="grid-screen" tabindex="0">
       <div class="header">
-        <div class="app-banner">15-prerequisite-flags[java]</div>
+        <div class="app-banner">105-prerequisite-flags[java]</div>
         <div>Name: <span id="hdr-name"></span></div>
         <div>Current position: <span id="hdr-current"></span></div>
         <div>Previous position: <span id="hdr-previous"></span></div>
@@ -66,8 +77,14 @@
       <p class="hint">Arrows or WASD move. L logs out; Q quits.</p>
     </main>
 
-    <aside aria-label="LaunchDarkly prerequisite lab">
-      <h2>LaunchDarkly · prerequisite lab</h2>
+    <aside class="ld-rail" aria-label="LaunchDarkly lab">
+      <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+      <div class="ld-tabs" role="tablist">
+        <button type="button" class="ld-tab active" data-tab="prerequisite" role="tab" aria-selected="true">Prerequisite</button>
+        <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
+      </div>
+      <div class="ld-rail-body">
+      <section id="ld-section-prerequisite" class="ld-section active">
       <p class="muted">Parent must be <strong>ON</strong> and serve <strong>green</strong> before the child evaluates normally.</p>
 
       <div class="block-title">Live dependency</div>
@@ -93,9 +110,27 @@
       <div class="block-title">Events / evaluation reasons</div>
       <div id="trace" class="trace"><span class="muted">Evaluations and controls appear here.</span></div>
 
-      <div class="block-title">About</div>
-      <p class="flag-summary">Unlike example 11, these flags are not independent. An unmet prerequisite makes the child serve its off variation and report <code>PREREQUISITE_FAILED</code>.</p>
-      <p class="flag-summary"><a href="https://launchdarkly.com/docs/home/flags/prereqs" target="_blank">Flag prerequisites documentation</a></p>
+      </section>
+      <section id="ld-section-about" class="ld-section">
+        <div class="block-title">What this teaches</div>
+        <p class="ld-about-p">The child flag <code>show-navigation-move-count-prereq</code> evaluates normally only when the parent <code>enable-grid-selection-highlight-prereq</code> is on and serving <code>green</code>. Otherwise the child serves its off variation and the reason is <code>PREREQUISITE_FAILED</code>. The app asks the SDK for both variations. The dependency lives in LaunchDarkly.</p>
+        <p class="ld-about-p">The Prerequisite tab shows both values, the context that was sent, and the controls.</p>
+        <div class="block-title">How to see it</div>
+        <ol class="ld-about-p">
+          <li>Leave the child <strong>on</strong>.</li>
+          <li>Turn the parent <strong>on</strong> and set fallthrough to <code>green</code>. Count appears.</li>
+          <li>Turn the parent <strong>off</strong>. Count disappears. The child reason is <code>PREREQUISITE_FAILED</code>.</li>
+          <li>Turn the parent on and set fallthrough to <code>yellow</code>. The highlight changes. Count stays hidden.</li>
+        </ol>
+        <table class="matrix">
+          <tr><th>Parent</th><th>Child</th><th>Result</th></tr>
+          <tr><td>On → green</td><td>On</td><td>Green highlight and Count</td></tr>
+          <tr><td>Off</td><td>On</td><td>No highlight, no Count</td></tr>
+          <tr><td>On → yellow</td><td>On</td><td>Yellow highlight, no Count</td></tr>
+        </table>
+        <p class="ld-about-p"><a href="https://launchdarkly.com/docs/home/flags/prereqs" target="_blank" rel="noopener">Flag prerequisites</a></p>
+      </section>
+      </div>
     </aside>
   </div>
 
@@ -168,6 +203,17 @@
       document.getElementById("shell").classList.add("hidden");document.getElementById("login").classList.remove("hidden");
       document.getElementById("username").value="";document.getElementById("username").focus();
     }
+    function selectTab(tab){
+      document.querySelectorAll(".ld-tab").forEach(btn=>{
+        const on=btn.dataset.tab===tab;
+        btn.classList.toggle("active", on);
+        btn.setAttribute("aria-selected", on?"true":"false");
+      });
+      document.querySelectorAll(".ld-section").forEach(section=>{
+        section.classList.toggle("active", section.id===`ld-section-${tab}`);
+      });
+    }
+    document.querySelectorAll(".ld-tab").forEach(btn=>btn.onclick=()=>selectTab(btn.dataset.tab));
     document.getElementById("login-btn").onclick=()=>{
       const name=document.getElementById("username").value.trim();
       document.getElementById("login-error").classList.toggle("hidden",!!name);if(name)start(name);

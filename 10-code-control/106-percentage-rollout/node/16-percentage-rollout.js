@@ -67,7 +67,7 @@ const server = http.createServer(async (req, res) => {
   }
   if (req.method === "GET" && url.pathname === "/api/bootstrap") {
     return sendJson(res, 200, {
-      appBanner: "16-percentage-rollout[node]",
+      appBanner: "106-percentage-rollout[node]",
       flagKey: "enable-grid-selection-highlight-pct",
       rollout: "30% green / 70% none",
       targetingUrl: targetingUrl(),
@@ -95,7 +95,7 @@ const server = http.createServer(async (req, res) => {
 
 initLaunchDarkly().then(() => {
   server.listen(PORT, "127.0.0.1", () => {
-    console.log("16-percentage-rollout[node]");
+    console.log("106-percentage-rollout[node]");
     console.log(`Open http://127.0.0.1:${PORT}/`);
   });
 });

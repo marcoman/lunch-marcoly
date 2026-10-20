@@ -90,7 +90,7 @@ const server = http.createServer(async (req, res) => {
   }
   if (req.method === "GET" && url.pathname === "/api/bootstrap") {
     return sendJson(res, 200, {
-      appBanner: "17-scheduled-changes[node]",
+      appBanner: "107-scheduled-changes[node]",
       flagKey: FLAG_KEY,
       controls: apiConfig(),
       port: PORT,
@@ -133,7 +133,7 @@ const server = http.createServer(async (req, res) => {
 
 initLaunchDarkly().then(() => {
   server.listen(PORT, "127.0.0.1", () => {
-    console.log("17-scheduled-changes[node]");
+    console.log("107-scheduled-changes[node]");
     console.log(`Open http://127.0.0.1:${PORT}/`);
   });
 });

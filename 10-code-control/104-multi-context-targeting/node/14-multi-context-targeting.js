@@ -79,7 +79,7 @@ const server = http.createServer(async (req, res) => {
   }
   if (req.method === "GET" && url.pathname === "/api/bootstrap") {
     return sendJson(res, 200, {
-      appBanner: "14-multi-context-targeting[node]",
+      appBanner: "104-multi-context-targeting[node]",
       controls: api_config(),
     });
   }
@@ -128,7 +128,7 @@ const server = http.createServer(async (req, res) => {
 
 initLaunchDarkly().then(() => {
   server.listen(PORT, "127.0.0.1", () => {
-    console.log("14-multi-context-targeting[node]");
+    console.log("104-multi-context-targeting[node]");
     console.log(`Open http://127.0.0.1:${PORT}/`);
   });
 });
