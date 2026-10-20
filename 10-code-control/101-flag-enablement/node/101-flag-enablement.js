@@ -11,8 +11,10 @@ const {
   FLAG_COUNT,
   buildFlagResponse,
   interpretHighlightVariation,
+  parseCohorts,
 } = require("../highlight-style");
 const { detectHostOs, HOST_OS_ATTR, FLAG_OS_EMOJI } = require("../host-os");
+const { api_config, listFlagControls, applyFlagControl } = require("../ld-flag-controls");
 
 // LaunchDarkly capability: Boolean flag evaluation + private context attributes
 // See: https://launchdarkly.com/docs/sdk/features/private-attributes
@@ -47,9 +49,34 @@ function buildContext(username) {
   };
 }
 
+function withLdContext(response, username) {
+  // LaunchDarkly: contexts — key + private hostOs, shown in the lab drawer.
+  // https://launchdarkly.com/docs/home/flags/contexts
+  const { isHuman, isRobot, isBeta } = parseCohorts(username);
+  response.ldContext = {
+    kind: "user",
+    key: username,
+    attributes: { [HOST_OS_ATTR]: HOST_OS },
+    privateAttributes: [HOST_OS_ATTR],
+    appDerived: {
+      cohortWords: { human: isHuman, robot: isRobot, beta: isBeta },
+      note:
+        "Cohort words are parsed in app code from the username for the " +
+        "context-highlight flag — they are not separate LD context attributes.",
+    },
+    note:
+      `${HOST_OS_ATTR} is a private attribute: used for targeting, ` +
+      "redacted from analytics events sent to LaunchDarkly.",
+  };
+  return response;
+}
+
 async function evaluateFlags(username) {
   if (!ldClient) {
-    return buildFlagResponse(username, false, false, false, false, HOST_OS);
+    return withLdContext(
+      buildFlagResponse(username, false, false, false, false, HOST_OS),
+      username
+    );
   }
   const context = buildContext(username);
   const highlightRaw = await ldClient.variation(FLAG_HIGHLIGHT, context, "none");
@@ -58,15 +85,46 @@ async function evaluateFlags(username) {
   const contextHighlight = await ldClient.variation(FLAG_CONTEXT, context, false);
   const showMoveCount = await ldClient.variation(FLAG_COUNT, context, false);
   const showOsEmoji = await ldClient.variation(FLAG_OS_EMOJI, context, false);
-  return buildFlagResponse(
-    username,
-    highlightEnabled,
-    Boolean(contextHighlight),
-    Boolean(showMoveCount),
-    Boolean(showOsEmoji),
-    HOST_OS,
-    servedColor
+  return withLdContext(
+    buildFlagResponse(
+      username,
+      highlightEnabled,
+      Boolean(contextHighlight),
+      Boolean(showMoveCount),
+      Boolean(showOsEmoji),
+      HOST_OS,
+      servedColor
+    ),
+    username
   );
+}
+
+function readJson(req) {
+  return new Promise((resolve, reject) => {
+    let raw = "";
+    req.setEncoding("utf8");
+    req.on("data", (chunk) => {
+      raw += chunk;
+      if (raw.length > 1024 * 1024) {
+        reject(new Error("Request body is too large"));
+        req.destroy();
+      }
+    });
+    req.on("end", () => {
+      try {
+        const parsed = JSON.parse(raw || "{}");
+        if (!parsed || Array.isArray(parsed) || typeof parsed !== "object") {
+          throw new Error("Request body must be a JSON object");
+        }
+        resolve(parsed);
+      } catch (error) {
+        reject(
+          error instanceof SyntaxError ? new Error("Request body must be JSON") : error
+        );
+      }
+    });
+    req.on("error", reject);
+  });
 }
 
 function sendJson(res, status, body) {
@@ -81,13 +139,56 @@ function sendJson(res, status, body) {
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://127.0.0.1:${PORT}`);
 
-  if (url.pathname === "/api/flags") {
+  if (req.method === "GET" && url.pathname === "/api/flags") {
     const username = (url.searchParams.get("username") || "").trim();
     if (!username) {
       sendJson(res, 400, { error: "username query parameter is required" });
       return;
     }
     sendJson(res, 200, await evaluateFlags(username));
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/bootstrap") {
+    sendJson(res, 200, {
+      appBanner: "101-flag-enablement[node]",
+      hostOs: HOST_OS,
+      controls: api_config(),
+    });
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/flag-controls") {
+    try {
+      sendJson(res, 200, await listFlagControls());
+    } catch (error) {
+      sendJson(res, 502, { configured: true, flags: [], error: error.message });
+    }
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/flag-controls") {
+    try {
+      const body = await readJson(req);
+      const key = String(body.key || "").trim();
+      if (!key) throw new Error('"key" is required');
+      const options = {};
+      if (Object.prototype.hasOwnProperty.call(body, "on")) {
+        if (typeof body.on !== "boolean") throw new Error('"on" must be a boolean');
+        options.on = body.on;
+      }
+      if (Object.prototype.hasOwnProperty.call(body, "fallthrough")) {
+        options.fallthrough = body.fallthrough;
+      }
+      sendJson(res, 200, await applyFlagControl(key, options));
+    } catch (error) {
+      const status = /required|must be|not allowed|Provide|No variation|JSON/.test(
+        error.message
+      )
+        ? 400
+        : 502;
+      sendJson(res, status, { ok: false, error: error.message || String(error) });
+    }
     return;
   }
 

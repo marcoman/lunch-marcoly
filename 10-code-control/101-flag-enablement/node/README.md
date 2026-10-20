@@ -12,6 +12,9 @@ Web application version of the [101-flag-enablement grid navigator](../applicati
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `LD_SDK_KEY` | Yes | Server-side SDK key for flag evaluation |
+| `LD_API_ACCESS_TOKEN` | For **LD lab → Controls** | REST API token (`turnFlagOn` / `turnFlagOff` / fallthrough color) |
+| `LD_PROJECT_KEY` | For Controls | Project key (e.g. `lunch-marcoly`) |
+| `LD_ENVIRONMENT_KEY` | For Controls | Environment key (e.g. `production`) |
 | `PORT` | No | Listen port (default `8080`; Node portal uses `8111`) |
 
 ## Build

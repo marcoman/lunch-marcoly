@@ -151,6 +151,8 @@ module.exports = {
   FLAG_CONTEXT,
   FLAG_COUNT,
   DEFAULT_STRING_ON_COLOR,
+  isHighlightOffValue,
+  parseCohorts,
   interpretHighlightVariation,
   resolveHighlightColor,
   formatCohortLabel,
