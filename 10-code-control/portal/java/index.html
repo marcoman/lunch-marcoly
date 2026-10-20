@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>10-code-control portal (Java)</title>
   <!--
-    Series shell for code-control examples 11–17.
+    Series shell for code-control examples 101–107.
     Tabs switch iframes to each example's own Java server (spawned by Portal).
   -->
   <style>
@@ -141,13 +141,13 @@
   </div>
   <script>
     const CHILDREN = [
-      { id: "11", label: "Flag enablement", port: 8112 },
-      { id: "12", label: "Flag variations", port: 8122 },
-      { id: "13", label: "Flag targeting rules", port: 8132 },
-      { id: "14", label: "Multi-context targeting", port: 8142 },
-      { id: "15", label: "Prerequisite flags", port: 8152 },
-      { id: "16", label: "Percentage rollout", port: 8162 },
-      { id: "17", label: "Scheduled changes", port: 8172 },
+      { id: "101", label: "Flag enablement", port: 8112 },
+      { id: "102", label: "Flag variations", port: 8122 },
+      { id: "103", label: "Flag targeting rules", port: 8132 },
+      { id: "104", label: "Multi-context targeting", port: 8142 },
+      { id: "105", label: "Prerequisite flags", port: 8152 },
+      { id: "106", label: "Percentage rollout", port: 8162 },
+      { id: "107", label: "Scheduled changes", port: 8172 },
     ];
 
     const tabsEl = document.getElementById("tabs");
@@ -156,8 +156,8 @@
     const buttons = new Map();
     const frames = new Map();
 
-    let activeId = (new URLSearchParams(location.search).get("tab") || "11").replace(/\D/g, "") || "11";
-    if (!CHILDREN.some((c) => c.id === activeId)) activeId = "11";
+    let activeId = (new URLSearchParams(location.search).get("tab") || "101").replace(/\D/g, "") || "101";
+    if (!CHILDREN.some((c) => c.id === activeId)) activeId = "101";
 
     function selectTab(id) {
       activeId = id;

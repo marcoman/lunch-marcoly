@@ -23,7 +23,7 @@ Web application version of the [101-flag-enablement grid navigator](../applicati
 ## Run
 
 ```bash
-java -jar target/11-flag-enablement.jar
+java -jar target/101-flag-enablement.jar
 ```
 
 Open [http://127.0.0.1:8080/](http://127.0.0.1:8080/).

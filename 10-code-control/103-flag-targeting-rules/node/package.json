@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "103-flag-targeting-rules grid navigator web UI",
-  "main": "13-flag-targeting-rules.js",
+  "main": "103-flag-targeting-rules.js",
   "scripts": {
-    "start": "node 13-flag-targeting-rules.js"
+    "start": "node 103-flag-targeting-rules.js"
   },
   "dependencies": {
     "@launchdarkly/node-server-sdk": "^9.0.0"

@@ -10,7 +10,7 @@ packaged.
 
 ```bash
 ./mvnw -q -DskipTests package
-java -jar target/13-flag-targeting-rules.jar
+java -jar target/103-flag-targeting-rules.jar
 ```
 
 Set `LD_SDK_KEY` for evaluation. Controls also require

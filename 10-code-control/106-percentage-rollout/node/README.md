@@ -22,7 +22,7 @@ npm start
 ```
 
 Open [http://127.0.0.1:8080/](http://127.0.0.1:8080/). `PORT` overrides the
-default. The Node portal tab 16 uses **:8161**.
+default. The Node portal tab 106 uses **:8161**.
 
 ## What to expect
 

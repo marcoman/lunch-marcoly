@@ -75,8 +75,8 @@ export LD_API_ACCESS_TOKEN="api-..."
 (cd rest && chmod +x *.sh && ./create-flags.sh)
 cd python && python 104-multi-context-targeting.py
 # or: (cd node && npm start)
-# or: (cd java && ./mvnw -q -DskipTests package && java -jar target/14-multi-context-targeting.jar)
-# or: (cd dotnet && dotnet run --project 14-multi-context-targeting.csproj)
+# or: (cd java && ./mvnw -q -DskipTests package && java -jar target/104-multi-context-targeting.jar)
+# or: (cd dotnet && dotnet run --project 104-multi-context-targeting.csproj)
 ```
 
 Open http://127.0.0.1:8080/. Set `PORT` to override. Run one language at a time

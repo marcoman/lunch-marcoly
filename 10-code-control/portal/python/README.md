@@ -19,7 +19,7 @@ Keywords: **feature flags** · **targeting rules** · **contexts** · **series p
 
 - Repository `.venv` activated
 - `LD_SDK_KEY` (flags provisioned under each example)
-- For tab 17 controls: `LD_API_ACCESS_TOKEN`, `LD_PROJECT_KEY`, and
+- For tab 107 controls: `LD_API_ACCESS_TOKEN`, `LD_PROJECT_KEY`, and
   `LD_ENVIRONMENT_KEY`
 
 ```bash

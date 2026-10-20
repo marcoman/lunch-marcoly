@@ -48,7 +48,7 @@ public class WebServer {
                 return;
             }
             Map<String, Object> bootstrap = new java.util.LinkedHashMap<>();
-            bootstrap.put("appBanner", "12-flag-variations[java]");
+            bootstrap.put("appBanner", "102-flag-variations[java]");
             bootstrap.put("hostOs", HOST_OS);
             bootstrap.put("controls", FlagControls.apiConfig());
             sendJson(exchange, 200, bootstrap);

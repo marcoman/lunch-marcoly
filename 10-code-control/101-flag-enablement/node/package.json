@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "101-flag-enablement grid navigator web UI",
-  "main": "11-flag-enablement.js",
+  "main": "101-flag-enablement.js",
   "scripts": {
-    "start": "node 11-flag-enablement.js"
+    "start": "node 101-flag-enablement.js"
   },
   "dependencies": {
     "@launchdarkly/node-server-sdk": "^9.0.0"

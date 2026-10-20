@@ -1,6 +1,6 @@
 # Portal (Node)
 
-Series shell for **10-code-control**: tabbed UI that embeds **11–17** side by side.
+Series shell for **10-code-control**: tabbed UI that embeds **101–107** side by side.
 
 | | Port |
 |--|------|
@@ -19,7 +19,7 @@ Keywords: **feature flags** · **targeting rules** · **contexts** · **series p
 
 - Node.js 20+
 - `LD_SDK_KEY` (flags provisioned under each example)
-- For tab 17 controls: `LD_API_ACCESS_TOKEN`, `LD_PROJECT_KEY`, and
+- For tab 107 controls: `LD_API_ACCESS_TOKEN`, `LD_PROJECT_KEY`, and
   `LD_ENVIRONMENT_KEY`
 - Dependencies installed in all child examples:
 

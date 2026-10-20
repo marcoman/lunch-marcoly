@@ -80,7 +80,7 @@ const server = http.createServer(async (req, res) => {
   }
   if (req.method === "GET" && url.pathname === "/api/bootstrap") {
     return sendJson(res, 200, {
-      appBanner: "13-flag-targeting-rules[node]",
+      appBanner: "103-flag-targeting-rules[node]",
       controls: api_config(),
     });
   }

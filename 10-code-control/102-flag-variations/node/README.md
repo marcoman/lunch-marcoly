@@ -28,7 +28,7 @@ npm install
 ## Run
 
 ```bash
-node 12-flag-variations.js
+node 102-flag-variations.js
 # or
 npm start
 ```

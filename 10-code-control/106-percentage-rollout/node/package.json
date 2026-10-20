@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "106-percentage-rollout grid navigator web UI",
-  "main": "16-percentage-rollout.js",
+  "main": "106-percentage-rollout.js",
   "scripts": {
-    "start": "node 16-percentage-rollout.js"
+    "start": "node 106-percentage-rollout.js"
   },
   "dependencies": {
     "@launchdarkly/node-server-sdk": "^9.0.0"

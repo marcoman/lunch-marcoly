@@ -99,7 +99,7 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === "GET" && url.pathname === "/api/bootstrap") {
     sendJson(res, 200, {
-      appBanner: "12-flag-variations[node]",
+      appBanner: "102-flag-variations[node]",
       hostOs: HOST_OS,
       controls: api_config(),
     });

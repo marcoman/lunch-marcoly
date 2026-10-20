@@ -46,7 +46,7 @@ public class WebServer {
                 return;
             }
             Map<String, Object> bootstrap = new java.util.LinkedHashMap<>();
-            bootstrap.put("appBanner", "13-flag-targeting-rules[java]");
+            bootstrap.put("appBanner", "103-flag-targeting-rules[java]");
             bootstrap.put("controls", FlagControls.apiConfig());
             sendJson(exchange, 200, bootstrap);
             return;

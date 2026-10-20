@@ -12,10 +12,10 @@ Docs: [Percentage rollouts](https://launchdarkly.com/docs/home/flags/rollouts)
 ```bash
 export LD_SDK_KEY="sdk-..."
 cd 10-code-control/106-percentage-rollout/dotnet
-dotnet run --project 16-percentage-rollout.csproj
+dotnet run --project 106-percentage-rollout.csproj
 ```
 
 Open [http://127.0.0.1:8080/](http://127.0.0.1:8080/). `PORT` overrides the
-default. The .NET portal tab 16 uses **:8163**.
+default. The .NET portal tab 106 uses **:8163**.
 
 Provision the dedicated `pct` flag with the sibling [REST](../rest/) example.

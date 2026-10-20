@@ -28,7 +28,7 @@ Web application for [102-flag-variations](../application.md) with an in-app **La
 ## Run
 
 ```bash
-java -jar target/12-flag-variations.jar
+java -jar target/102-flag-variations.jar
 ```
 
 Open [http://127.0.0.1:8080/](http://127.0.0.1:8080/).

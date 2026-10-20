@@ -84,8 +84,8 @@ export LD_ENVIRONMENT_KEY="production"
 (cd rest && chmod +x *.sh && ./create-flags.sh)
 cd python && python 105-prerequisite-flags.py
 # or: cd node && npm start
-# or: cd java && ./mvnw -q -DskipTests package && java -jar target/15-prerequisite-flags.jar
-# or: cd dotnet && dotnet run --project 15-prerequisite-flags.csproj
+# or: cd java && ./mvnw -q -DskipTests package && java -jar target/105-prerequisite-flags.jar
+# or: cd dotnet && dotnet run --project 105-prerequisite-flags.csproj
 ```
 
 Provisioning: [REST](rest/) creates the two `-prereq` flags and attaches

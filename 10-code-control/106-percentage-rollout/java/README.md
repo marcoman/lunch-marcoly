@@ -12,10 +12,10 @@ Docs: [Percentage rollouts](https://launchdarkly.com/docs/home/flags/rollouts)
 export LD_SDK_KEY="sdk-..."
 cd 10-code-control/106-percentage-rollout/java
 ./mvnw -q -DskipTests package
-java -jar target/16-percentage-rollout.jar
+java -jar target/106-percentage-rollout.jar
 ```
 
 Open [http://127.0.0.1:8080/](http://127.0.0.1:8080/). `PORT` overrides the
-default. The Java portal tab 16 uses **:8162**.
+default. The Java portal tab 106 uses **:8162**.
 
 Provision the dedicated `pct` flag with the sibling [REST](../rest/) example.

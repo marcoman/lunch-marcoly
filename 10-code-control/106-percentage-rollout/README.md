@@ -27,9 +27,9 @@ percentage on the default rule (lab default **30%** `green` / **70%** `none`).
 | Language | Directory | Status |
 |----------|-----------|--------|
 | Python web | [python/](python/) | Done — standalone **:8160**, Python portal tab 106 |
-| Node web | [node/](node/) | Done — standalone **:8080**, Node portal tab 16 **:8161** |
-| Java web | [java/](java/) | Done — standalone **:8080**, Java portal tab 16 **:8162** |
-| .NET web | [dotnet/](dotnet/) | Done — standalone **:8080**, .NET portal tab 16 **:8163** |
+| Node web | [node/](node/) | Done — standalone **:8080**, Node portal tab 106 **:8161** |
+| Java web | [java/](java/) | Done — standalone **:8080**, Java portal tab 106 **:8162** |
+| .NET web | [dotnet/](dotnet/) | Done — standalone **:8080**, .NET portal tab 106 **:8163** |
 | Python console | [python-console/](python-console/) | Done — **N** / **P** walk `<login>`, `<login>1`, `<login>2`, … |
 | Node console | [node-console/](node-console/) | Done |
 | Java console | [java-console/](java-console/) | Done |

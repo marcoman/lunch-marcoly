@@ -72,7 +72,7 @@ cd python && python 103-flag-targeting-rules.py
 cd node && npm install && npm start
 
 # Java
-cd java && ./mvnw -q -DskipTests package && java -jar target/13-flag-targeting-rules.jar
+cd java && ./mvnw -q -DskipTests package && java -jar target/103-flag-targeting-rules.jar
 
 # .NET
 cd dotnet && dotnet run

@@ -1,4 +1,4 @@
-/** REST controls for the two flags in 15-prerequisite-flags.
+/** REST controls for the two flags in 105-prerequisite-flags.
  *
  * Controls may change on/off and the parent's fallthrough color. They never
  * edit the prerequisite relationship.

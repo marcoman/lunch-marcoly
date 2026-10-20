@@ -9,8 +9,8 @@ evaluates parent and child flags independently so an unmet
 ## Run
 
 ```bash
-dotnet build 15-prerequisite-flags.csproj
-dotnet run --project 15-prerequisite-flags.csproj
+dotnet build 105-prerequisite-flags.csproj
+dotnet run --project 105-prerequisite-flags.csproj
 ```
 
 Set `LD_SDK_KEY` for evaluation. Controls also require

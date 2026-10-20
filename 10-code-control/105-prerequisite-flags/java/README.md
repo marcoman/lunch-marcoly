@@ -9,7 +9,7 @@ shows up as `PREREQUISITE_FAILED`.
 
 ```bash
 ./mvnw -q -DskipTests package
-java -jar target/15-prerequisite-flags.jar
+java -jar target/105-prerequisite-flags.jar
 ```
 
 Set `LD_SDK_KEY` for evaluation. Controls also require

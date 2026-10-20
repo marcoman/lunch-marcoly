@@ -27,7 +27,7 @@ export LD_ENVIRONMENT_KEY="production"
 
 cd 10-code-control/107-scheduled-changes/java
 ./mvnw -q -DskipTests package
-java -jar target/17-scheduled-changes.jar
+java -jar target/107-scheduled-changes.jar
 ```
 
 Open [http://127.0.0.1:8172/](http://127.0.0.1:8172/). `PORT` overrides the

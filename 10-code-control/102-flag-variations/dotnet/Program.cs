@@ -5,7 +5,7 @@ using System.Text.Json.Nodes;
 using LaunchDarkly.Sdk;
 using LaunchDarkly.Sdk.Server;
 
-const string AppBanner = "12-flag-variations[dotnet]";
+const string AppBanner = "102-flag-variations[dotnet]";
 var port = int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var configuredPort)
     ? configuredPort
     : 8080;

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * portal.js — series shell for 10-code-control (Node web examples 11–17).
+ * portal.js — series shell for 10-code-control (Node web examples 101–107).
  *
  * Serves this folder's index.html on :8101 (PORTAL_PORT), spawns each example's
  * existing Node server with its assigned PORT, and stops all children on exit.
@@ -23,75 +23,75 @@ const APP_BANNER = "10-code-control[portal-node]";
 /** cwd is each example's node/ so assets and dependencies resolve like a solo run. */
 const CHILDREN = [
   {
-    id: "11",
+    id: "101",
     label: "Flag enablement",
-    script: path.join(SERIES_ROOT, "101-flag-enablement", "node", "11-flag-enablement.js"),
+    script: path.join(SERIES_ROOT, "101-flag-enablement", "node", "101-flag-enablement.js"),
     cwd: path.join(SERIES_ROOT, "101-flag-enablement", "node"),
     port: 8111,
   },
   {
-    id: "12",
+    id: "102",
     label: "Flag variations",
-    script: path.join(SERIES_ROOT, "102-flag-variations", "node", "12-flag-variations.js"),
+    script: path.join(SERIES_ROOT, "102-flag-variations", "node", "102-flag-variations.js"),
     cwd: path.join(SERIES_ROOT, "102-flag-variations", "node"),
     port: 8121,
   },
   {
-    id: "13",
+    id: "103",
     label: "Flag targeting rules",
     script: path.join(
       SERIES_ROOT,
       "103-flag-targeting-rules",
       "node",
-      "13-flag-targeting-rules.js"
+      "103-flag-targeting-rules.js"
     ),
     cwd: path.join(SERIES_ROOT, "103-flag-targeting-rules", "node"),
     port: 8131,
   },
   {
-    id: "14",
+    id: "104",
     label: "Multi-context targeting",
     script: path.join(
       SERIES_ROOT,
       "104-multi-context-targeting",
       "node",
-      "14-multi-context-targeting.js"
+      "104-multi-context-targeting.js"
     ),
     cwd: path.join(SERIES_ROOT, "104-multi-context-targeting", "node"),
     port: 8141,
   },
   {
-    id: "15",
+    id: "105",
     label: "Prerequisite flags",
     script: path.join(
       SERIES_ROOT,
       "105-prerequisite-flags",
       "node",
-      "15-prerequisite-flags.js"
+      "105-prerequisite-flags.js"
     ),
     cwd: path.join(SERIES_ROOT, "105-prerequisite-flags", "node"),
     port: 8151,
   },
   {
-    id: "16",
+    id: "106",
     label: "Percentage rollout",
     script: path.join(
       SERIES_ROOT,
       "106-percentage-rollout",
       "node",
-      "16-percentage-rollout.js"
+      "106-percentage-rollout.js"
     ),
     cwd: path.join(SERIES_ROOT, "106-percentage-rollout", "node"),
     port: 8161,
   },
   {
-    id: "17",
+    id: "107",
     label: "Scheduled changes",
     script: path.join(
       SERIES_ROOT,
       "107-scheduled-changes",
       "node",
-      "17-scheduled-changes.js"
+      "107-scheduled-changes.js"
     ),
     cwd: path.join(SERIES_ROOT, "107-scheduled-changes", "node"),
     port: 8171,

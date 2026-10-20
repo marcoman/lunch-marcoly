@@ -9,7 +9,7 @@ The LaunchDarkly Java server SDK evaluates `show-partner-org-badge` against a
 
 ```bash
 ./mvnw -q -DskipTests package
-java -jar target/14-multi-context-targeting.jar
+java -jar target/104-multi-context-targeting.jar
 ```
 
 Set `LD_SDK_KEY` for evaluation. Controls also require

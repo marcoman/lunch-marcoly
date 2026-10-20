@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
 
-const string AppBanner = "13-flag-targeting-rules[dotnet]";
+const string AppBanner = "103-flag-targeting-rules[dotnet]";
 var port = int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var configuredPort)
     ? configuredPort
     : 8080;

@@ -23,7 +23,7 @@ npm install
 ## Run
 
 ```bash
-node 11-flag-enablement.js
+node 101-flag-enablement.js
 # or
 npm start
 ```

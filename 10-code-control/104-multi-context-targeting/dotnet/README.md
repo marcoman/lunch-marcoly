@@ -9,8 +9,8 @@
 ## Run
 
 ```bash
-dotnet build 14-multi-context-targeting.csproj
-dotnet run --project 14-multi-context-targeting.csproj
+dotnet build 104-multi-context-targeting.csproj
+dotnet run --project 104-multi-context-targeting.csproj
 ```
 
 Set `LD_SDK_KEY` for evaluation. Controls also require

@@ -1,5 +1,5 @@
 /**
- * Portal — series shell for 10-code-control (Java web examples 11–17).
+ * Portal — series shell for 10-code-control (Java web examples 101–107).
  *
  * One process for the user:
  *   - Serves this folder's index.html on :8102 (PORTAL_PORT)
@@ -43,27 +43,27 @@ public final class Portal {
     }
 
     private static final List<Child> CHILDREN = List.of(
-            new Child("11", "Flag enablement",
+            new Child("101", "Flag enablement",
                     SERIES_ROOT.resolve("101-flag-enablement/java"),
-                    "11-flag-enablement.jar", 8112),
-            new Child("12", "Flag variations",
+                    "101-flag-enablement.jar", 8112),
+            new Child("102", "Flag variations",
                     SERIES_ROOT.resolve("102-flag-variations/java"),
-                    "12-flag-variations.jar", 8122),
-            new Child("13", "Flag targeting rules",
+                    "102-flag-variations.jar", 8122),
+            new Child("103", "Flag targeting rules",
                     SERIES_ROOT.resolve("103-flag-targeting-rules/java"),
-                    "13-flag-targeting-rules.jar", 8132),
-            new Child("14", "Multi-context targeting",
+                    "103-flag-targeting-rules.jar", 8132),
+            new Child("104", "Multi-context targeting",
                     SERIES_ROOT.resolve("104-multi-context-targeting/java"),
-                    "14-multi-context-targeting.jar", 8142),
-            new Child("15", "Prerequisite flags",
+                    "104-multi-context-targeting.jar", 8142),
+            new Child("105", "Prerequisite flags",
                     SERIES_ROOT.resolve("105-prerequisite-flags/java"),
-                    "15-prerequisite-flags.jar", 8152),
-            new Child("16", "Percentage rollout",
+                    "105-prerequisite-flags.jar", 8152),
+            new Child("106", "Percentage rollout",
                     SERIES_ROOT.resolve("106-percentage-rollout/java"),
-                    "16-percentage-rollout.jar", 8162),
-            new Child("17", "Scheduled changes",
+                    "106-percentage-rollout.jar", 8162),
+            new Child("107", "Scheduled changes",
                     SERIES_ROOT.resolve("107-scheduled-changes/java"),
-                    "17-scheduled-changes.jar", 8172)
+                    "107-scheduled-changes.jar", 8172)
     );
 
     private static final Map<String, Process> PROCS = new ConcurrentHashMap<>();

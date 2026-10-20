@@ -1,4 +1,4 @@
-/** Flag variation keys, defaults, and response building for 12-flag-variations. */
+/** Flag variation keys, defaults, and response building for 102-flag-variations. */
 
 const {
   HOST_OS_ATTR,

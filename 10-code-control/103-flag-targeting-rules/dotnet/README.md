@@ -9,8 +9,8 @@ switches among No team, Red, Blue, and Yellow without another login.
 ## Run
 
 ```bash
-dotnet build 13-flag-targeting-rules.csproj
-dotnet run --project 13-flag-targeting-rules.csproj
+dotnet build 103-flag-targeting-rules.csproj
+dotnet run --project 103-flag-targeting-rules.csproj
 ```
 
 Set `LD_SDK_KEY` for evaluation. Controls also require
