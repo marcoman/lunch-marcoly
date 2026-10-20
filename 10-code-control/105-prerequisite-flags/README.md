@@ -95,7 +95,7 @@ the child prerequisite. In-app Controls still cannot edit that relationship.
 
 ```bash
 cd python
-python 15-prerequisite-flags.py
+python 105-prerequisite-flags.py
 ```
 
 Open http://127.0.0.1:8080/. Set `PORT` to override.

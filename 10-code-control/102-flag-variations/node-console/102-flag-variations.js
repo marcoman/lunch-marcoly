@@ -1,44 +1,41 @@
 #!/usr/bin/env node
-/** Console grid navigator demonstrating LaunchDarkly flag prerequisites. */
+/** Console grid navigator with LaunchDarkly flag variation evaluation. */
 
 const readline = require("readline");
 const LaunchDarkly = require("@launchdarkly/node-server-sdk");
-const { evaluatePrerequisiteFlags } = require("../prerequisite");
+const { evaluateFlags, buildFlagResponse } = require("../flag-variations");
+const { detectHostOs, HOST_OS_ATTR } = require("../host-os");
 
-// LaunchDarkly: evaluate the dependent flag even when its prerequisite fails.
-// https://launchdarkly.com/docs/home/flags/prereqs
+// LaunchDarkly capability: Multivariate flag evaluation + anonymous contexts
+// See: https://launchdarkly.com/docs/sdk/features/flag-types
+// See: https://launchdarkly.com/docs/sdk/features/anonymous
 
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
-const APP_BANNER = "15-prerequisite-flags[node-console]";
-const ANSI = {
-  pink: "\x1b[95m",
-  yellow: "\x1b[93m",
-  red: "\x1b[91m",
-  blue: "\x1b[94m",
-  green: "\x1b[92m",
-  purple: "\x1b[35m",
-};
+const APP_BANNER = "102-flag-variations[node-console]";
+const HOST_OS = detectHostOs();
 const BG = "\x1b[48;5;236m";
-const RESET = "\x1b[0m";
 
 let ldClient = null;
 
 async function initLaunchDarkly() {
   const sdkKey = process.env.LD_SDK_KEY;
-  if (!sdkKey) return;
-  ldClient = LaunchDarkly.init(sdkKey);
+  if (!sdkKey) {
+    console.error("Warning: LD_SDK_KEY not set — flags default to off.");
+    return;
+  }
+  ldClient = LaunchDarkly.init(sdkKey, { privateAttributes: [HOST_OS_ATTR] });
   try {
     await ldClient.waitForInitialization({ timeout: 5 });
   } catch (_) {
+    console.error("Warning: LaunchDarkly SDK did not initialize — flags default to off.");
     ldClient = null;
   }
 }
 
-function formatReason(detail) {
-  const reason = (detail && detail.reason) || {};
-  const kind = reason.kind || "UNKNOWN";
-  return reason.prerequisiteKey ? `${kind} (${reason.prerequisiteKey})` : kind;
+function displayName(username, flags) {
+  const emoji = flags.osEmoji || "";
+  return emoji ? `${emoji} ${username}` : username;
 }
 
 function formatPos(row, col) {
@@ -52,15 +49,9 @@ function tryMove(row, col, dr, dc) {
   return { row: nr, col: nc, moved: true };
 }
 
-function colorize(text, color) {
-  if (!color || color === "none" || !ANSI[color]) return text;
-  return `${ANSI[color]}${text}${RESET}${BG}`;
-}
-
-function drawCell(selected, color) {
+function drawCell(selected) {
   if (selected) {
-    const lines = ["┏━━━┓", "┃ X ┃", "┗━━━┛"];
-    return color && color !== "none" ? lines.map((line) => colorize(line, color)) : lines;
+    return ["┏━━━┓", "┃ X ┃", "┗━━━┛"];
   }
   return ["┌───┐", "│   │", "└───┘"];
 }
@@ -69,13 +60,11 @@ function render(username, row, col, previous, moveCount, flags) {
   process.stdout.write(`${BG}\x1b[2J\x1b[H`);
   console.log(APP_BANNER);
   const prevText = previous ? formatPos(previous.row, previous.col) : "—";
-  console.log(`Name: ${colorize(username, flags.highlightColor)}${RESET}${BG}`);
+  console.log(`Name: ${displayName(username, flags)}`);
   console.log(`Current position: ${formatPos(row, col)}`);
   console.log(`Previous position: ${prevText}`);
-  if (flags.showMoveCount) console.log(`Count: ${moveCount}`);
-  console.log("");
-  console.log(`Parent: ${flags.parent.value}  ${formatReason(flags.parent)}`);
-  console.log(`Child:  ${flags.child.value}  ${formatReason(flags.child)}`);
+  console.log(`${flags.countLabel}: ${moveCount}`);
+  console.log(`Lucky Number is: ${flags.luckyNumber}`);
   console.log("\nUse arrow keys or WASD to move (L to logout, Q to quit).\n");
 
   for (let r = 0; r < 3; r++) {
@@ -83,7 +72,7 @@ function render(username, row, col, previous, moveCount, flags) {
     const midLine = [];
     const botLine = [];
     for (let c = 0; c < 3; c++) {
-      const lines = drawCell(r === row && c === col, flags.highlightColor);
+      const lines = drawCell(r === row && c === col);
       topLine.push(lines[0]);
       midLine.push(lines[1]);
       botLine.push(lines[2]);
@@ -120,6 +109,7 @@ function runGrid(username) {
   let col = 1;
   let previous = null;
   let moveCount = 0;
+  let flags = buildFlagResponse("Count", 0, 100, "");
 
   return new Promise((resolve) => {
     let active = true;
@@ -152,6 +142,8 @@ function runGrid(username) {
       else if (dir === "left") dc = -1;
       else if (dir === "right") dc = 1;
 
+      if (moveCount >= flags.maxMoves) return;
+
       const result = tryMove(row, col, dr, dc);
       if (result.moved) {
         previous = { row, col };
@@ -159,9 +151,9 @@ function runGrid(username) {
         col = result.col;
         moveCount += 1;
       }
-      const flags = await evaluatePrerequisiteFlags(ldClient, username);
+      flags = await evaluateFlags(ldClient, username, HOST_OS);
       if (!active) return;
-      render(flags.username, row, col, previous, moveCount, flags);
+      render(username, row, col, previous, moveCount, flags);
     };
 
     let pollTimer = null;
@@ -177,15 +169,16 @@ function runGrid(username) {
 
     const refreshFlags = async () => {
       if (!active) return;
-      const flags = await evaluatePrerequisiteFlags(ldClient, username);
+      flags = await evaluateFlags(ldClient, username, HOST_OS);
       if (!active) return;
-      render(flags.username, row, col, previous, moveCount, flags);
+      render(username, row, col, previous, moveCount, flags);
     };
 
     readline.emitKeypressEvents(process.stdin);
     if (process.stdin.isTTY) process.stdin.setRawMode(true);
     process.stdin.resume();
     process.stdin.on("keypress", onKeypress);
+
     refreshFlags().then(() => {
       pollTimer = setInterval(refreshFlags, 500);
     });

@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "107-scheduled-changes grid navigator console app",
-  "main": "17-scheduled-changes.js",
+  "main": "107-scheduled-changes.js",
   "scripts": {
-    "start": "node 17-scheduled-changes.js"
+    "start": "node 107-scheduled-changes.js"
   },
   "dependencies": {
     "@launchdarkly/node-server-sdk": "^9.0.0"

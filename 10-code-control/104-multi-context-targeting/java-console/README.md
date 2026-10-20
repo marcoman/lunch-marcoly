@@ -17,7 +17,7 @@ This console app evaluates the flag but has no web lab or REST Controls UI.
 
 ```bash
 ./mvnw -q -DskipTests package
-java -jar target/14-multi-context-targeting.jar
+java -jar target/104-multi-context-targeting.jar
 ```
 
 Choose Alice/Bob and Acme/Globex at login. On the grid, `1`/`2` switch user and

@@ -78,13 +78,13 @@ cd java && ./mvnw -q -DskipTests package && java -jar target/103-flag-targeting-
 cd dotnet && dotnet run
 
 # Python console
-cd python-console && python 13-flag-targeting-rules.py
+cd python-console && python 103-flag-targeting-rules.py
 
 # Node console
 cd node-console && npm install && npm start
 
 # Java console
-cd java-console && ./mvnw -q -DskipTests package && java -jar target/13-flag-targeting-rules.jar
+cd java-console && ./mvnw -q -DskipTests package && java -jar target/103-flag-targeting-rules.jar
 
 # C++ console
 cd cpp && make && ./103-flag-targeting-rules

@@ -30,7 +30,7 @@ from scheduled_change import (  # noqa: E402
 ROWS = ("t", "m", "b")
 COLS = ("l", "m", "r")
 DELAYS = (1, 2, 5, 10)
-APP_BANNER = "17-scheduled-changes[python-console]"
+APP_BANNER = "107-scheduled-changes[python-console]"
 GREEN_PAIR = 5
 INK_PAIR = 7
 

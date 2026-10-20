@@ -18,7 +18,7 @@ import (
 const (
 	flagKey              = "enable-grid-selection-highlight-pct"
 	defaultValue         = "none"
-	appBanner            = "16-percentage-rollout[go]"
+	appBanner            = "106-percentage-rollout[go]"
 	configuredGreenPct   = 30
 	historyLimit         = 8
 	bgANSI               = "\033[48;5;236m"

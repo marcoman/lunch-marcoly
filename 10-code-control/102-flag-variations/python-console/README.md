@@ -30,7 +30,7 @@ No compile step. Dependencies from repository root `requirements.txt`.
 ## Run
 
 ```bash
-python 12-flag-variations.py
+python 102-flag-variations.py
 ```
 
 Press `L` to log out or `Q` to quit.

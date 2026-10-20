@@ -19,7 +19,7 @@ import (
 const (
 	flagHighlight = "enable-grid-selection-highlight-prereq"
 	flagCount     = "show-navigation-move-count-prereq"
-	appBanner     = "15-prerequisite-flags[go]"
+	appBanner     = "105-prerequisite-flags[go]"
 	bgANSI        = "\033[48;5;236m"
 	resetANSI     = "\033[0m"
 )

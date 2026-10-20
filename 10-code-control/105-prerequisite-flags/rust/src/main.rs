@@ -16,7 +16,7 @@ use std::time::Duration;
 // https://launchdarkly.com/docs/home/flags/prereqs
 const FLAG_HIGHLIGHT: &str = "enable-grid-selection-highlight-prereq";
 const FLAG_COUNT: &str = "show-navigation-move-count-prereq";
-const APP_BANNER: &str = "15-prerequisite-flags[rust]";
+const APP_BANNER: &str = "105-prerequisite-flags[rust]";
 const BG: &str = "\x1b[48;5;236m";
 const RESET: &str = "\x1b[0m";
 const ROWS: [&str; 3] = ["t", "m", "b"];

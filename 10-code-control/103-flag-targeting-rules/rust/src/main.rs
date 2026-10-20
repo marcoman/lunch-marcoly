@@ -16,7 +16,7 @@ use std::time::Duration;
 // No team omits it so evaluation reaches the plain fallthrough.
 // https://launchdarkly.com/docs/home/flags/target-rules
 const FLAG_TEAM_STYLE: &str = "configure-team-label-style";
-const APP_BANNER: &str = "13-flag-targeting-rules[rust]";
+const APP_BANNER: &str = "103-flag-targeting-rules[rust]";
 const BG: &str = "\x1b[48;5;236m";
 const RESET: &str = "\x1b[0m";
 const ROWS: [&str; 3] = ["t", "m", "b"];

@@ -25,7 +25,7 @@ No compile step. Install dependencies from the repository root `requirements.txt
 ## Run
 
 ```bash
-python 11-flag-enablement.py
+python 101-flag-enablement.py
 ```
 
 ## What to expect

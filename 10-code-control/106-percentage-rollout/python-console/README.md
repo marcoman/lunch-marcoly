@@ -19,7 +19,7 @@ Docs: [Percentage rollouts](https://launchdarkly.com/docs/home/flags/rollouts)
 source .venv/bin/activate
 export LD_SDK_KEY="sdk-..."
 cd 10-code-control/106-percentage-rollout/python-console
-python 16-percentage-rollout.py
+python 106-percentage-rollout.py
 ```
 
 ## What to expect

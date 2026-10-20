@@ -16,7 +16,7 @@ This console app evaluates the flags but has no web lab or REST Controls UI.
 ## Run
 
 ```bash
-python 15-prerequisite-flags.py
+python 105-prerequisite-flags.py
 ```
 
 Login with a username. Flag changes refresh about every 500 ms. The header

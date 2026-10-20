@@ -1,24 +1,16 @@
 #!/usr/bin/env node
-/** Console grid navigator with LaunchDarkly flag evaluation. */
+/** Console grid navigator demonstrating LaunchDarkly flag prerequisites. */
 
 const readline = require("readline");
 const LaunchDarkly = require("@launchdarkly/node-server-sdk");
-const {
-  FLAG_HIGHLIGHT,
-  FLAG_CONTEXT,
-  FLAG_COUNT,
-  buildFlagResponse,
-  interpretHighlightVariation,
-} = require("../highlight-style");
-const { detectHostOs, HOST_OS_ATTR, FLAG_OS_EMOJI } = require("../host-os");
+const { evaluatePrerequisiteFlags } = require("../prerequisite");
 
-// LaunchDarkly capability: Boolean flag evaluation + private context attributes
-// See: https://launchdarkly.com/docs/sdk/features/private-attributes
+// LaunchDarkly: evaluate the dependent flag even when its prerequisite fails.
+// https://launchdarkly.com/docs/home/flags/prereqs
 
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
-const APP_BANNER = "11-flag-enablement[node-console]";
-const HOST_OS = detectHostOs();
+const APP_BANNER = "105-prerequisite-flags[node-console]";
 const ANSI = {
   pink: "\x1b[95m",
   yellow: "\x1b[93m",
@@ -35,7 +27,7 @@ let ldClient = null;
 async function initLaunchDarkly() {
   const sdkKey = process.env.LD_SDK_KEY;
   if (!sdkKey) return;
-  ldClient = LaunchDarkly.init(sdkKey, { privateAttributes: [HOST_OS_ATTR] });
+  ldClient = LaunchDarkly.init(sdkKey);
   try {
     await ldClient.waitForInitialization({ timeout: 5 });
   } catch (_) {
@@ -43,33 +35,10 @@ async function initLaunchDarkly() {
   }
 }
 
-async function evaluateFlags(username) {
-  if (!ldClient) return buildFlagResponse(username, false, false, false, false, HOST_OS);
-  const context = {
-    kind: "user",
-    key: username,
-    hostOs: HOST_OS,
-    privateAttributes: [HOST_OS_ATTR],
-  };
-  const highlightRaw = await ldClient.variation(FLAG_HIGHLIGHT, context, "none");
-  const { enabled: highlightEnabled, servedColor } =
-    interpretHighlightVariation(highlightRaw);
-  const contextHighlight = await ldClient.variation(FLAG_CONTEXT, context, false);
-  const showMoveCount = await ldClient.variation(FLAG_COUNT, context, false);
-  const showOsEmoji = await ldClient.variation(FLAG_OS_EMOJI, context, false);
-  return buildFlagResponse(
-    username,
-    highlightEnabled,
-    Boolean(contextHighlight),
-    Boolean(showMoveCount),
-    Boolean(showOsEmoji),
-    HOST_OS,
-    servedColor
-  );
-}
-
-function displayName(username, osEmoji) {
-  return osEmoji ? `${osEmoji} ${username}` : username;
+function formatReason(detail) {
+  const reason = (detail && detail.reason) || {};
+  const kind = reason.kind || "UNKNOWN";
+  return reason.prerequisiteKey ? `${kind} (${reason.prerequisiteKey})` : kind;
 }
 
 function formatPos(row, col) {
@@ -91,40 +60,30 @@ function colorize(text, color) {
 function drawCell(selected, color) {
   if (selected) {
     const lines = ["┏━━━┓", "┃ X ┃", "┗━━━┛"];
-    if (color && color !== "none") {
-      return lines.map((line) => colorize(line, color));
-    }
-    return lines;
+    return color && color !== "none" ? lines.map((line) => colorize(line, color)) : lines;
   }
   return ["┌───┐", "│   │", "└───┘"];
-}
-
-function formatNameLine(username, flags) {
-  const color = flags.highlightColor;
-  const namePart = colorize(displayName(username, flags.osEmoji), color);
-  const cohort = colorize(` ${flags.cohortLabel}`, color);
-  return `Name: ${namePart}${cohort}${RESET}${BG}`;
 }
 
 function render(username, row, col, previous, moveCount, flags) {
   process.stdout.write(`${BG}\x1b[2J\x1b[H`);
   console.log(APP_BANNER);
   const prevText = previous ? formatPos(previous.row, previous.col) : "—";
-  console.log(formatNameLine(username, flags));
+  console.log(`Name: ${colorize(username, flags.highlightColor)}${RESET}${BG}`);
   console.log(`Current position: ${formatPos(row, col)}`);
   console.log(`Previous position: ${prevText}`);
-  if (flags.showMoveCount) {
-    console.log(`Count: ${moveCount}`);
-  }
+  if (flags.showMoveCount) console.log(`Count: ${moveCount}`);
+  console.log("");
+  console.log(`Parent: ${flags.parent.value}  ${formatReason(flags.parent)}`);
+  console.log(`Child:  ${flags.child.value}  ${formatReason(flags.child)}`);
   console.log("\nUse arrow keys or WASD to move (L to logout, Q to quit).\n");
 
-  const cellColor = flags.highlightColor;
   for (let r = 0; r < 3; r++) {
     const topLine = [];
     const midLine = [];
     const botLine = [];
     for (let c = 0; c < 3; c++) {
-      const lines = drawCell(r === row && c === col, cellColor);
+      const lines = drawCell(r === row && c === col, flags.highlightColor);
       topLine.push(lines[0]);
       midLine.push(lines[1]);
       botLine.push(lines[2]);
@@ -161,7 +120,6 @@ function runGrid(username) {
   let col = 1;
   let previous = null;
   let moveCount = 0;
-  let flags = buildFlagResponse(username, false, false, false, false, HOST_OS);
 
   return new Promise((resolve) => {
     let active = true;
@@ -201,9 +159,9 @@ function runGrid(username) {
         col = result.col;
         moveCount += 1;
       }
-      flags = await evaluateFlags(username);
+      const flags = await evaluatePrerequisiteFlags(ldClient, username);
       if (!active) return;
-      render(username, row, col, previous, moveCount, flags);
+      render(flags.username, row, col, previous, moveCount, flags);
     };
 
     let pollTimer = null;
@@ -219,16 +177,15 @@ function runGrid(username) {
 
     const refreshFlags = async () => {
       if (!active) return;
-      flags = await evaluateFlags(username);
+      const flags = await evaluatePrerequisiteFlags(ldClient, username);
       if (!active) return;
-      render(username, row, col, previous, moveCount, flags);
+      render(flags.username, row, col, previous, moveCount, flags);
     };
 
     readline.emitKeypressEvents(process.stdin);
     if (process.stdin.isTTY) process.stdin.setRawMode(true);
     process.stdin.resume();
     process.stdin.on("keypress", onKeypress);
-
     refreshFlags().then(() => {
       pollTimer = setInterval(refreshFlags, 500);
     });

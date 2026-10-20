@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "102-flag-variations grid navigator console app",
-  "main": "12-flag-variations.js",
+  "main": "102-flag-variations.js",
   "dependencies": {
     "@launchdarkly/node-server-sdk": "^9.0.0"
   }

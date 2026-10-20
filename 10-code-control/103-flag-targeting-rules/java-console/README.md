@@ -18,7 +18,7 @@ This console app evaluates the flag but has no web lab or REST Controls UI.
 
 ```bash
 ./mvnw -q -DskipTests package
-java -jar target/13-flag-targeting-rules.jar
+java -jar target/103-flag-targeting-rules.jar
 ```
 
 Enter a username and choose a team. The team label refreshes about every 500 ms, so dashboard targeting changes appear without logging in again. Press `L` to log out or `Q` to quit.

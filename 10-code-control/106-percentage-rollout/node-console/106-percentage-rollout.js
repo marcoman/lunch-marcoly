@@ -10,7 +10,7 @@ const { evaluateRollout } = require("../rollout");
 
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
-const APP_BANNER = "16-percentage-rollout[node-console]";
+const APP_BANNER = "106-percentage-rollout[node-console]";
 const CONFIGURED_GREEN_PCT = 30;
 const HISTORY_LIMIT = 8;
 const GREEN = "\x1b[92m";

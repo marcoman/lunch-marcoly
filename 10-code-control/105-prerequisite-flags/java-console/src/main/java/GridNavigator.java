@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class GridNavigator {
     private static final String[] ROWS = {"t", "m", "b"};
     private static final String[] COLS = {"l", "m", "r"};
-    private static final String APP_BANNER = "15-prerequisite-flags[java-console]";
+    private static final String APP_BANNER = "105-prerequisite-flags[java-console]";
     private static final String BG = "\u001B[48;5;236m";
     private static final String RESET = "\u001B[0m";
 

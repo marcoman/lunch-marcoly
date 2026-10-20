@@ -8,7 +8,7 @@ public class GridNavigator {
     private static final String[] COLS = {"l", "m", "r"};
     private static final Map<String, String> USERS = Map.of("1", "alice", "2", "bob");
     private static final Map<String, String> ORGS = Map.of("1", "acme", "2", "globex");
-    private static final String APP_BANNER = "14-multi-context-targeting[java-console]";
+    private static final String APP_BANNER = "104-multi-context-targeting[java-console]";
     private static final String BG = "\u001B[48;5;236m";
     private static final String RESET = "\u001B[0m";
     private static final String GREEN = "\u001B[32m";

@@ -17,7 +17,7 @@ const {
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
 const DELAYS = [1, 2, 5, 10];
-const APP_BANNER = "17-scheduled-changes[node-console]";
+const APP_BANNER = "107-scheduled-changes[node-console]";
 const GREEN = "\x1b[92m";
 const DIM = "\x1b[2m";
 const BOLD = "\x1b[1m";

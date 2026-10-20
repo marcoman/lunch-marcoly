@@ -36,4 +36,4 @@ cargo build --release
 
 ## What to expect
 
-Same flag behavior as [python-console/12-flag-variations.py](../python-console/12-flag-variations.py). Press `L` to log out or `Q` to quit.
+Same flag behavior as [python-console/102-flag-variations.py](../python-console/102-flag-variations.py). Press `L` to log out or `Q` to quit.

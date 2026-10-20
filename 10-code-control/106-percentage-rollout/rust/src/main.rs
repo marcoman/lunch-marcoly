@@ -17,7 +17,7 @@ use std::time::Duration;
 // https://launchdarkly.com/docs/home/flags/rollouts
 const FLAG_KEY: &str = "enable-grid-selection-highlight-pct";
 const DEFAULT_VALUE: &str = "none";
-const APP_BANNER: &str = "16-percentage-rollout[rust]";
+const APP_BANNER: &str = "106-percentage-rollout[rust]";
 const CONFIGURED_GREEN_PCT: i32 = 30;
 const HISTORY_LIMIT: usize = 8;
 const BG: &str = "\x1b[48;5;236m";

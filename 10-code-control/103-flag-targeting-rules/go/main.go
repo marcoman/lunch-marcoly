@@ -18,7 +18,7 @@ import (
 // https://launchdarkly.com/docs/home/flags/target-rules
 const (
 	flagTeamStyle = "configure-team-label-style"
-	appBanner     = "13-flag-targeting-rules[go]"
+	appBanner     = "103-flag-targeting-rules[go]"
 	bgANSI        = "\033[48;5;236m"
 	resetANSI     = "\033[0m"
 )

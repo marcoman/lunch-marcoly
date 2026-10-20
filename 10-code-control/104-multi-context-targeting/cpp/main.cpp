@@ -14,7 +14,7 @@ namespace {
 
 constexpr std::array<const char*, 3> kRows = {"t", "m", "b"};
 constexpr std::array<const char*, 3> kCols = {"l", "m", "r"};
-constexpr const char* kAppBanner = "14-multi-context-targeting[cpp]";
+constexpr const char* kAppBanner = "104-multi-context-targeting[cpp]";
 constexpr const char* kBg = "\033[48;5;236m";
 constexpr const char* kReset = "\033[0m";
 constexpr const char* kGreen = "\033[32m";

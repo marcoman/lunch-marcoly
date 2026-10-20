@@ -20,7 +20,7 @@ namespace {
 constexpr std::array<const char*, 3> kRows = {"t", "m", "b"};
 constexpr std::array<const char*, 3> kCols = {"l", "m", "r"};
 constexpr std::array<int, 4> kDelays = {1, 2, 5, 10};
-constexpr const char* kBanner = "17-scheduled-changes[cpp]";
+constexpr const char* kBanner = "107-scheduled-changes[cpp]";
 constexpr const char* kBg = "\033[48;5;236m";
 constexpr const char* kReset = "\033[0m";
 constexpr const char* kGreen = "\033[92m";

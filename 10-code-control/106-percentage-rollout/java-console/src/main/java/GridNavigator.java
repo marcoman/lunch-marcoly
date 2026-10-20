@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class GridNavigator {
     private static final String[] ROWS = {"t", "m", "b"};
     private static final String[] COLS = {"l", "m", "r"};
-    private static final String APP_BANNER = "16-percentage-rollout[java-console]";
+    private static final String APP_BANNER = "106-percentage-rollout[java-console]";
     private static final String BG = "\u001B[48;5;236m";
     private static final String RESET = "\u001B[0m";
     private static final String GREEN = "\u001B[92m";

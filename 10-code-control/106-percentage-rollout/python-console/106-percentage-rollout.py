@@ -21,7 +21,7 @@ from rollout import evaluate_rollout  # noqa: E402
 
 ROWS = ("t", "m", "b")
 COLS = ("l", "m", "r")
-APP_BANNER = "16-percentage-rollout[python-console]"
+APP_BANNER = "106-percentage-rollout[python-console]"
 CONFIGURED_GREEN_PCT = 30
 HISTORY_LIMIT = 8
 GREEN_PAIR = 5

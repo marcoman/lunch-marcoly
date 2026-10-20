@@ -84,13 +84,13 @@ on that port.
 
 ```bash
 # Python console
-cd python-console && python 14-multi-context-targeting.py
+cd python-console && python 104-multi-context-targeting.py
 
 # Node console
 cd node-console && npm install && npm start
 
 # Java console
-cd java-console && ./mvnw -q -DskipTests package && java -jar target/14-multi-context-targeting.jar
+cd java-console && ./mvnw -q -DskipTests package && java -jar target/104-multi-context-targeting.jar
 
 # C++ console
 cd cpp && make && ./104-multi-context-targeting

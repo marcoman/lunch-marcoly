@@ -17,7 +17,7 @@ This console app evaluates the flags but has no web lab or REST Controls UI.
 
 ```bash
 ./mvnw -q -DskipTests package
-java -jar target/15-prerequisite-flags.jar
+java -jar target/105-prerequisite-flags.jar
 ```
 
 Login with a username. Flag changes refresh about every 500 ms. Count appears

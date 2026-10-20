@@ -14,7 +14,7 @@ evaluates parent and child flags independently so an unmet
 
 ```bash
 npm install
-node 15-prerequisite-flags.js
+node 105-prerequisite-flags.js
 ```
 
 Login with a username. Flag changes refresh about every 500 ms. Count appears

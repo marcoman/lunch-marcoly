@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Console grid navigator with LaunchDarkly flag evaluation."""
+"""Console grid navigator demonstrating LaunchDarkly flag prerequisites."""
 
 import curses
 import os
@@ -11,29 +11,14 @@ from ldclient import Config
 from ldclient.client import LDClient
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from highlight_style import (  # noqa: E402
-    FLAG_CONTEXT,
-    FLAG_COUNT,
-    FLAG_HIGHLIGHT,
-    build_flag_response,
-    interpret_highlight_variation,
-)
-from host_os import (  # noqa: E402
-    FLAG_OS_EMOJI,
-    HOST_OS_ATTR,
-    build_evaluation_context,
-    detect_host_os,
-)
+from prerequisite import evaluate_prerequisite_flags  # noqa: E402
 
-# LaunchDarkly capability: Boolean flag evaluation (server-side SDK)
-# Private attribute hostOs is set on the evaluation context for targeting.
-# See: https://launchdarkly.com/docs/sdk/features/private-attributes
+# LaunchDarkly: evaluate the dependent flag even when its prerequisite fails.
+# https://launchdarkly.com/docs/home/flags/prereqs
 
 ROWS = ("t", "m", "b")
 COLS = ("l", "m", "r")
-
-APP_BANNER = "11-flag-enablement[python-console]"
-
+APP_BANNER = "105-prerequisite-flags[python-console]"
 COLOR_PAIRS = {
     "pink": 1,
     "yellow": 2,
@@ -44,54 +29,27 @@ COLOR_PAIRS = {
 }
 
 _ld_client: LDClient | None = None
-_host_os = detect_host_os()
 
 
 def init_launchdarkly() -> None:
-    """Start the server SDK and mark hostOs private.
+    """Start the server SDK. Both flags are evaluated in this process.
 
-    LaunchDarkly: server-side Python SDK · private attributes
+    LaunchDarkly: server-side Python SDK · flag prerequisites
     https://launchdarkly.com/docs/sdk/server-side/python
     """
     global _ld_client
     sdk_key = os.environ.get("LD_SDK_KEY")
     if not sdk_key:
         return
-    ldclient.set_config(Config(sdk_key, private_attributes=[HOST_OS_ATTR]))
+    ldclient.set_config(Config(sdk_key))
     _ld_client = ldclient.get()
 
 
-def evaluate_flags(username: str) -> dict[str, object]:
-    """Read the four flags for this user. Look at the variation calls below.
-
-    LaunchDarkly: boolean variations
-    https://launchdarkly.com/docs/home/flags/boolean
-    """
-    if _ld_client is None or not _ld_client.is_initialized():
-        return build_flag_response(username, False, False, False, False, _host_os)
-    context, host_os = build_evaluation_context(username)
-    highlight, served_color = interpret_highlight_variation(
-        _ld_client.variation(FLAG_HIGHLIGHT, context, "none")
-    )
-    context_highlight = bool(_ld_client.variation(FLAG_CONTEXT, context, False))
-    show_count = bool(_ld_client.variation(FLAG_COUNT, context, False))
-    show_os_emoji = bool(_ld_client.variation(FLAG_OS_EMOJI, context, False))
-    return build_flag_response(
-        username,
-        highlight,
-        context_highlight,
-        show_count,
-        show_os_emoji,
-        host_os,
-        served_color,
-    )
-
-
-def display_name(username: str, flags: dict[str, object]) -> str:
-    emoji = str(flags.get("osEmoji", ""))
-    if emoji:
-        return f"{emoji} {username}"
-    return username
+def format_reason(detail: dict) -> str:
+    reason = detail.get("reason") or {}
+    kind = str(reason.get("kind") or "UNKNOWN")
+    key = reason.get("prerequisiteKey")
+    return f"{kind} ({key})" if key else kind
 
 
 def format_pos(row: int, col: int) -> str:
@@ -101,9 +59,7 @@ def format_pos(row: int, col: int) -> str:
 def try_move(row: int, col: int, dr: int, dc: int) -> tuple[int, int, bool]:
     new_row = max(0, min(2, row + dr))
     new_col = max(0, min(2, col + dc))
-    if new_row == row and new_col == col:
-        return row, col, False
-    return new_row, new_col, True
+    return new_row, new_col, (new_row, new_col) != (row, col)
 
 
 def read_username(stdscr: curses.window) -> str:
@@ -125,7 +81,7 @@ def read_username(stdscr: curses.window) -> str:
 
 
 def cell_attr(color: str) -> int:
-    if color == "none":
+    if color == "none" or color not in COLOR_PAIRS:
         return curses.A_NORMAL
     return curses.color_pair(COLOR_PAIRS[color])
 
@@ -142,16 +98,6 @@ def draw_cell(
     stdscr.addstr(y + 2, x, bot, attr)
 
 
-def draw_name_line(stdscr: curses.window, y: int, username: str, flags: dict) -> None:
-    stdscr.addstr(y, 0, "Name: ")
-    color = str(flags["highlightColor"])
-    label = str(flags["cohortLabel"])
-    name = display_name(username, flags)
-    attr = cell_attr(color) if color != "none" else curses.A_NORMAL
-    stdscr.addstr(y, 6, name, attr)
-    stdscr.addstr(f" {label}", attr)
-
-
 def draw_screen(
     stdscr: curses.window,
     username: str,
@@ -159,15 +105,17 @@ def draw_screen(
     col: int,
     previous: tuple[int, int] | None,
     move_count: int,
-    flags: dict[str, object],
+    flags: dict,
 ) -> None:
     stdscr.clear()
     stdscr.bkgd(" ", curses.color_pair(7))
     prev_text = format_pos(*previous) if previous else "—"
+    color = str(flags["highlightColor"])
     line = 0
     stdscr.addstr(line, 0, APP_BANNER)
     line += 1
-    draw_name_line(stdscr, line, username, flags)
+    stdscr.addstr(line, 0, "Name: ")
+    stdscr.addstr(username, cell_attr(color) if color != "none" else curses.A_NORMAL)
     line += 1
     stdscr.addstr(line, 0, f"Current position: {format_pos(row, col)}")
     line += 1
@@ -176,40 +124,41 @@ def draw_screen(
         line += 1
         stdscr.addstr(line, 0, f"Count: {move_count}")
     line += 2
+    parent = flags["parent"]
+    child = flags["child"]
+    stdscr.addstr(line, 0, f"Parent: {parent['value']}  {format_reason(parent)}")
+    line += 1
+    stdscr.addstr(line, 0, f"Child:  {child['value']}  {format_reason(child)}")
+    line += 2
     stdscr.addstr(line, 0, "Use arrow keys or WASD to move (L to logout, Q to quit).")
 
-    highlight_color = str(flags["highlightColor"])
-    cell_color = highlight_color if highlight_color != "none" else "none"
-
     base_y, base_x = line + 2, 2
-    cell_w = 6
     for r in range(3):
         for c in range(3):
             draw_cell(
                 stdscr,
                 base_y + r * 4,
-                base_x + c * cell_w,
+                base_x + c * 6,
                 r == row and c == col,
-                cell_color if r == row and c == col else "none",
+                color if r == row and c == col else "none",
             )
     stdscr.refresh()
 
 
 def run_grid(stdscr: curses.window, username: str) -> str:
+    """Re-evaluate parent and child every 500 ms; LaunchDarkly enforces the prerequisite."""
     row, col = 1, 1
     previous: tuple[int, int] | None = None
     move_count = 0
     stdscr.timeout(500)
-
     try:
         while True:
-            # LaunchDarkly: boolean variations — https://launchdarkly.com/docs/home/flags/boolean
-            flags = evaluate_flags(username)
-            draw_screen(stdscr, username, row, col, previous, move_count, flags)
+            # LaunchDarkly: flag prerequisites — https://launchdarkly.com/docs/home/flags/prereqs
+            flags = evaluate_prerequisite_flags(_ld_client, username)
+            draw_screen(stdscr, flags["username"], row, col, previous, move_count, flags)
             key = stdscr.getch()
             if key == -1:
                 continue
-
             if key in (ord("q"), ord("Q")):
                 return "quit"
             if key in (ord("l"), ord("L")):
@@ -252,7 +201,6 @@ def main(stdscr: curses.window) -> None:
     curses.curs_set(0)
     init_colors()
     stdscr.keypad(True)
-
     init_launchdarkly()
     try:
         while True:

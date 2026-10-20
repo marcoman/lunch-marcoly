@@ -17,7 +17,7 @@
 namespace {
 
 constexpr std::array<const char*, 3> kRows = {"t", "m", "b"};
-constexpr const char* kAppBanner = "16-percentage-rollout[cpp]";
+constexpr const char* kAppBanner = "106-percentage-rollout[cpp]";
 constexpr std::array<const char*, 3> kCols = {"l", "m", "r"};
 constexpr const char* kBg = "\033[48;5;236m";
 constexpr const char* kReset = "\033[0m";

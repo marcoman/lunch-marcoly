@@ -18,7 +18,7 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 // LaunchDarkly: scheduled changes use REST for control and SDK evaluation for observation.
 // https://launchdarkly.com/docs/home/flags/scheduled-changes
 const FLAG_KEY: &str = "enable-grid-selection-highlight-sched";
-const APP_BANNER: &str = "17-scheduled-changes[rust]";
+const APP_BANNER: &str = "107-scheduled-changes[rust]";
 const BG: &str = "\x1b[48;5;236m";
 const RESET: &str = "\x1b[0m";
 const GREEN: &str = "\x1b[92m";

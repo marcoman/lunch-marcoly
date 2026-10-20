@@ -17,7 +17,7 @@ import (
 // https://launchdarkly.com/docs/home/flags/multi-contexts
 const (
 	flagPartnerBadge = "show-partner-org-badge"
-	appBanner        = "14-multi-context-targeting[go]"
+	appBanner        = "104-multi-context-targeting[go]"
 	bgANSI           = "\033[48;5;236m"
 	resetANSI        = "\033[0m"
 	greenANSI        = "\033[32m"

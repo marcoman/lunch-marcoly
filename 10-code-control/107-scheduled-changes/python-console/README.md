@@ -25,7 +25,7 @@ export LD_PROJECT_KEY="lunch-marcoly"
 export LD_ENVIRONMENT_KEY="production"
 
 cd 10-code-control/107-scheduled-changes/python-console
-python 17-scheduled-changes.py
+python 107-scheduled-changes.py
 ```
 
 ## Keys

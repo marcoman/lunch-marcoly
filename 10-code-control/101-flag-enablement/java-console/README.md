@@ -23,7 +23,7 @@ Console application version of the [101-flag-enablement grid navigator](../appli
 ## Run
 
 ```bash
-java -jar target/11-flag-enablement.jar
+java -jar target/101-flag-enablement.jar
 ```
 
 ## What to expect

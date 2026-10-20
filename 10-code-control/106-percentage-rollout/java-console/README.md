@@ -18,7 +18,7 @@ Docs: [Percentage rollouts](https://launchdarkly.com/docs/home/flags/rollouts)
 export LD_SDK_KEY="sdk-..."
 cd 10-code-control/106-percentage-rollout/java-console
 ./mvnw -q -DskipTests package
-java -jar target/16-percentage-rollout.jar
+java -jar target/106-percentage-rollout.jar
 ```
 
 **N** / **P** walk generated usernames. **L** logs out. **Q** quits.

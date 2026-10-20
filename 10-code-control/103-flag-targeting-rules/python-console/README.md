@@ -27,7 +27,7 @@ Keywords: feature flags · targeting rules · context attributes · evaluation r
 ## Run
 
 ```bash
-python 13-flag-targeting-rules.py
+python 103-flag-targeting-rules.py
 ```
 
 Enter a username and choose a team. The team label refreshes about every 500 ms, so dashboard targeting changes appear without logging in again. Press `L` to log out or `Q` to quit.

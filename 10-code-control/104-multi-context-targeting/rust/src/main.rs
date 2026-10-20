@@ -17,7 +17,7 @@ use std::time::Duration;
 // LaunchDarkly: one variation call with kind multi (user + organization).
 // https://launchdarkly.com/docs/home/flags/multi-contexts
 const FLAG_PARTNER_BADGE: &str = "show-partner-org-badge";
-const APP_BANNER: &str = "14-multi-context-targeting[rust]";
+const APP_BANNER: &str = "104-multi-context-targeting[rust]";
 const BG: &str = "\x1b[48;5;236m";
 const RESET: &str = "\x1b[0m";
 const GREEN: &str = "\x1b[32m";

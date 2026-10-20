@@ -25,7 +25,7 @@ export LD_ENVIRONMENT_KEY="production"
 
 cd 10-code-control/107-scheduled-changes/java-console
 ./mvnw -q -DskipTests package
-java -jar target/17-scheduled-changes.jar
+java -jar target/107-scheduled-changes.jar
 ```
 
 ## Keys

@@ -22,7 +22,7 @@ import (
 // https://launchdarkly.com/docs/home/flags/scheduled-changes
 const (
 	flagKey   = "enable-grid-selection-highlight-sched"
-	appBanner = "17-scheduled-changes[go]"
+	appBanner = "107-scheduled-changes[go]"
 	bg        = "\033[48;5;236m"
 	reset     = "\033[0m"
 	green     = "\033[92m"

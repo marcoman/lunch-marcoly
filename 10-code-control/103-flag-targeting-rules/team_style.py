@@ -1,4 +1,4 @@
-"""Team-label targeting helpers for 13-flag-targeting-rules.
+"""Team-label targeting helpers for 103-flag-targeting-rules.
 
 LaunchDarkly: targeting rules evaluate the public ``team`` context attribute.
 https://launchdarkly.com/docs/home/flags/target-rules

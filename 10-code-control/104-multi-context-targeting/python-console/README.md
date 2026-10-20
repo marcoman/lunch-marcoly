@@ -16,7 +16,7 @@ This console app evaluates the flag but has no web lab or REST Controls UI.
 ## Run
 
 ```bash
-python 14-multi-context-targeting.py
+python 104-multi-context-targeting.py
 ```
 
 Choose Alice/Bob and Acme/Globex at login. On the grid, `1`/`2` switch user and

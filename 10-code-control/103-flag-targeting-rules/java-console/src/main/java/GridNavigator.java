@@ -8,7 +8,7 @@ public class GridNavigator {
     private static final String[] COLS = {"l", "m", "r"};
     private static final Map<String, String> TEAMS = Map.of(
             "1", "", "2", "red", "3", "blue", "4", "yellow");
-    private static final String APP_BANNER = "13-flag-targeting-rules[java-console]";
+    private static final String APP_BANNER = "103-flag-targeting-rules[java-console]";
     private static final String BG = "\u001B[48;5;236m";
     private static final String RESET = "\u001B[0m";
     private static final Map<String, String> STYLE_COLORS = Map.of(

@@ -32,9 +32,9 @@ This is a console app; it evaluates flags but does not include the web lab or RE
 ## Run
 
 ```bash
-java -jar target/12-flag-variations.jar
+java -jar target/102-flag-variations.jar
 ```
 
 ## What to expect
 
-Same flag behavior as [python-console/12-flag-variations.py](../python-console/12-flag-variations.py). Press `L` to log out or `Q` to quit.
+Same flag behavior as [python-console/102-flag-variations.py](../python-console/102-flag-variations.py). Press `L` to log out or `Q` to quit.
