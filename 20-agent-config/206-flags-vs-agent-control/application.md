@@ -4,8 +4,8 @@
 
 Human overview: [README.md](README.md).  
 Series setup: [20-agent-config README](../README.md).  
-Briefing shape: [21-agent-completion-config](../21-agent-completion-config/).  
-Rewrite lesson, left alone: [24-agent-judges](../24-agent-judges/).
+Briefing shape: [201-agent-completion-config](../201-agent-completion-config/).  
+Rewrite lesson, left alone: [204-agent-judges](../204-agent-judges/).
 
 ## Goal
 
@@ -110,9 +110,9 @@ When the guardrail is on, the draft panel takes a pass or fail treatment: the wo
 
 ## Leave in place
 
-- [21-agent-completion-config](../21-agent-completion-config/) — completion-config lesson.
-- [24-agent-judges](../24-agent-judges/) — score, then rewrite once.
-- [20-capstone](../20-capstone/) — composed graph. This example is the flag comparison.
+- [201-agent-completion-config](../201-agent-completion-config/) — completion-config lesson.
+- [204-agent-judges](../204-agent-judges/) — score, then rewrite once.
+- [20-capstone-1](../20-capstone-1/) — composed graph. This example is the flag comparison.
 - Series portal tab **Flag compare** (Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**).
 
 ## When implementing

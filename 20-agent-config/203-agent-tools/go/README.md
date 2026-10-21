@@ -1,7 +1,7 @@
 # Go (console)
 
 Terminal UI twin of the web ports (Python/Node/Java/.NET), matching the
-[21-agent-completion-config Go console](../../21-agent-completion-config/go/)
+[201-agent-completion-config Go console](../../201-agent-completion-config/go/)
 chrome and hotkeys. Same completion config as 21, plus **Library tools**:
 the model must call `analyze-ticker-stories` once per ticker, then
 `compare-ticker-analyses`, before writing the briefing — grounded in headline
@@ -42,7 +42,7 @@ From this directory:
 
 ```bash
 go mod tidy
-go build -o 23-agent-tools .
+go build -o 203-agent-tools .
 ```
 
 ## Run
@@ -51,10 +51,10 @@ Run from **this directory** so `../rest/messages/` (baseline fallback prompts)
 and `../stories/` (shared Yahoo cache) resolve:
 
 ```bash
-./23-agent-tools
+./203-agent-tools
 ```
 
-Unlike [21-agent-completion-config/go](../../21-agent-completion-config/go/),
+Unlike [201-agent-completion-config/go](../../201-agent-completion-config/go/),
 there is **no model-only fallback** here: Library tools only exist on a live
 AgentControl config, so a missing `LD_SDK_KEY`, an unreachable LaunchDarkly, or
 a disabled/untooled config is a hard stop (an `error` line telling you to run
@@ -64,7 +64,7 @@ generation.
 ## Screen chrome
 
 ```text
-23-agent-tools[go]                            Tickers: NVDA (2 stories) SPCX (2 stories)
+203-agent-tools[go]                            Tickers: NVDA (2 stories) SPCX (2 stories)
 config:equity-briefing-tools                             Name: Analyst Claude.
 (t)ickers  st(o)ries  (s)tatus  (g)enerate  (q)uit                (n)ext user
 ```
@@ -143,9 +143,9 @@ plain tool_use loop.
 
 | File | Role |
 |------|------|
-| `main.go` | Raw-terminal TUI (chrome, hotkeys, scrollback, **tool trace rendering**) — adapted from [21-agent-completion-config/go/main.go](../../21-agent-completion-config/go/main.go) |
+| `main.go` | Raw-terminal TUI (chrome, hotkeys, scrollback, **tool trace rendering**) — adapted from [201-agent-completion-config/go/main.go](../../201-agent-completion-config/go/main.go) |
 | `agent.go` | **LD insertion:** `aiClient.CompletionConfig(...)` → `config.Tools()` → tool loop → `tracker.TrackToolCall(name)` / `ldai.TrackMetricsOf(...)`. See the file header for the full read-order. |
-| `yahoo.go` | news waterfall (Finnhub → Massive → Yahoo) + shared `../stories/` cache — unchanged from [21-agent-completion-config/go/yahoo.go](../../21-agent-completion-config/go/yahoo.go) |
+| `yahoo.go` | news waterfall (Finnhub → Massive → Yahoo) + shared `../stories/` cache — unchanged from [201-agent-completion-config/go/yahoo.go](../../201-agent-completion-config/go/yahoo.go) |
 
 ## `TrackToolCall` API (Go)
 
@@ -167,7 +167,7 @@ prefers it over the deprecated `TrackRequest` API.
 
 ## Go AI SDK note (API quirks vs Python / Node / .NET)
 
-Same caveat as [21-agent-completion-config/go](../../21-agent-completion-config/go/#go-ai-sdk-note-api-quirks-vs-python--node--net):
+Same caveat as [201-agent-completion-config/go](../../201-agent-completion-config/go/#go-ai-sdk-note-api-quirks-vs-python--node--net):
 this example imports `github.com/launchdarkly/go-server-sdk-ai` (aliased `ld`
 in `agent.go`) for `CompletionConfig`, `ToolConfig`, `Tracker.TrackToolCall`,
 and `ldai.TrackMetricsOf` — the bundled `go-server-sdk/ldai` package has none
@@ -205,5 +205,5 @@ of these.
 
 - [../README.md](../README.md) — example landing (tool architecture diagram, LD keys, all-language quick start)
 - [../application.md](../application.md) — behavior spec
-- [21-agent-completion-config/go](../../21-agent-completion-config/go/) — completion-only console this builds on
+- [201-agent-completion-config/go](../../201-agent-completion-config/go/) — completion-only console this builds on
 - [../python/agent_core.py](../python/agent_core.py) · [../node/agentCore.js](../node/agentCore.js) — source-of-truth tool loop this port mirrors

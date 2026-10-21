@@ -1,4 +1,4 @@
-# 24-agent-judges — Python web
+# 204-agent-judges — Python web
 
 Port **8240**. Requires **Python 3.12+**, root `.venv`, `LD_SDK_KEY`, provisioned
 completion + judge configs, and local Ollama.
@@ -34,9 +34,9 @@ cd ../rest
 ## Build & run
 
 ```bash
-cd 20-agent-config/24-agent-judges/python
+cd 20-agent-config/204-agent-judges/python
 source ../../../.venv/bin/activate
-python 24-agent-judges.py
+python 204-agent-judges.py
 ```
 
 Open **http://127.0.0.1:8240/** (Node twin: **8241**; Java twin: **8242**).
@@ -48,7 +48,7 @@ Open **http://127.0.0.1:8240/** (Node twin: **8241**; Java twin: **8242**).
 3. Expect decorated Response: **Draft** → **Judge scores (FAIL)** → **Rewrite (Conservative Charlie)** → **Rewrite judge scores**.
 4. Watch **Trace** under Prompt/Response for a one-line-per-step under-the-hood log
    (prompt → model → draft → judges → gate → rewrite → rewrite judges). Collapse or use **Taller** as needed.
-5. **LD details** (right drawer) still has Sent / Received for the last evaluation.
+5. **LD details → Received** shows the served variation, evaluation reason, both judge keys, and the scores once the gate finishes.
 
 ## SDK gotcha (Ollama + create_judge)
 

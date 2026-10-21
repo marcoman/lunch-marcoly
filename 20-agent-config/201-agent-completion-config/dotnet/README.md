@@ -35,7 +35,7 @@ ollama list
 
 ```bash
 export PATH="/usr/local/share/dotnet:$PATH"
-cd 20-agent-config/21-agent-completion-config/dotnet
+cd 20-agent-config/201-agent-completion-config/dotnet
 dotnet restore
 dotnet build
 dotnet run

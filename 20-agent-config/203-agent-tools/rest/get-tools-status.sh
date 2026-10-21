@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# LaunchDarkly: AgentControl tools status snapshot (23-agent-tools)
+# LaunchDarkly: AgentControl tools status snapshot (203-agent-tools)
 # Demo-facing check: Library tools exist, variation has them attached,
 # targeting is on, and generation metrics moved after Generate.
 # https://launchdarkly.com/docs/home/agentcontrol/tools

@@ -1,4 +1,4 @@
-# 24-agent-judges — .NET web
+# 204-agent-judges — .NET web
 
 Port **8243**. Requires .NET **10**, `LD_SDK_KEY`, provisioned completion + judge
 configs, and local Ollama.
@@ -26,7 +26,7 @@ cd ../rest
 ## Build & run
 
 ```bash
-cd 20-agent-config/24-agent-judges/dotnet
+cd 20-agent-config/204-agent-judges/dotnet
 dotnet run
 ```
 

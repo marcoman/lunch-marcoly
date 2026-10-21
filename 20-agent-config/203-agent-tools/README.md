@@ -1,12 +1,12 @@
-# 23-agent-tools
+# 203-agent-tools
 
 AgentControl **Library tools** on a completion config: the model must call
 `analyze-ticker-stories` once per ticker, then `compare-ticker-analyses`, then
 write a briefing grounded in headline evidence. Handlers are deterministic in
 app code; schemas live in LaunchDarkly.
 
-Sibling of [22-config-outside-code](../22-config-outside-code/) (metrics/feedback)
-and [21-agent-completion-config](../21-agent-completion-config/) (completion + targeting).
+Sibling of [202-config-outside-code](../202-config-outside-code/) (metrics/feedback)
+and [201-agent-completion-config](../201-agent-completion-config/) (completion + targeting).
 
 Docs: [Tools](https://launchdarkly.com/docs/home/agentcontrol/tools) ·
 [Python AI SDK](https://launchdarkly.com/docs/sdk/ai/python) ·
@@ -109,7 +109,7 @@ cd rest
 # Python (8230)
 cd ../python
 source ../../../.venv/bin/activate
-python 23-agent-tools.py
+python 203-agent-tools.py
 
 # Node (8231)
 cd ../node && npm install && npm start
@@ -122,7 +122,7 @@ export PATH="/usr/local/share/dotnet:$PATH"
 cd ../dotnet && dotnet restore && dotnet build && dotnet run
 
 # Go console (raw-terminal, no port)
-cd ../go && go mod tidy && go build -o 23-agent-tools . && ./23-agent-tools
+cd ../go && go mod tidy && go build -o 203-agent-tools . && ./203-agent-tools
 ```
 
 Java note: no official **Java AI SDK** yet — server SDK JSON evaluation; tool loop in-app; best-effort tool metrics.

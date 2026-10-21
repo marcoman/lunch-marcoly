@@ -1,4 +1,4 @@
-# 23-agent-tools — Node web
+# 203-agent-tools — Node web
 
 Port **8231**. Requires Node 20+, `LD_SDK_KEY`, and a provisioned AgentControl config
 (`equity-briefing-tools` with Library tools attached).
@@ -8,7 +8,7 @@ Port **8231**. Requires Node 20+, `LD_SDK_KEY`, and a provisioned AgentControl c
 - **Analyst Gwen** → Ollama `llama3.2:1b` (smaller; more skips)
 
 ```bash
-cd 20-agent-config/23-agent-tools/node
+cd 20-agent-config/203-agent-tools/node
 npm install
 export LD_SDK_KEY=sdk-...
 export ANTHROPIC_API_KEY=sk-ant-...   # Claude

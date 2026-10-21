@@ -1,8 +1,8 @@
-# 23-agent-tools — Java web
+# 203-agent-tools — Java web
 
 Port **8232**. Requires Java 21+, `LD_SDK_KEY`, and (for Analyst Claude) `ANTHROPIC_API_KEY`.
 
-**Java has no published AI SDK on Maven yet.** Python/Node use `completionConfig` + `track_tool_call` + `trackMetricsOf`. This twin evaluates the same AgentControl key with the **server SDK** (`jsonValueVariationDetail`), runs the tool loop in-app, and records tool calls with **`LDClient.trackMetric`** on `$ld:ai:tool:call` (best-effort; see parity notes below). Generation success/error uses `$ld:ai:generation:success` / `$ld:ai:generation:error` the same way as [22-config-outside-code Java](../22-config-outside-code/java/).
+**Java has no published AI SDK on Maven yet.** Python/Node use `completionConfig` + `track_tool_call` + `trackMetricsOf`. This twin evaluates the same AgentControl key with the **server SDK** (`jsonValueVariationDetail`), runs the tool loop in-app, and records tool calls with **`LDClient.trackMetric`** on `$ld:ai:tool:call` (best-effort; see parity notes below). Generation success/error uses `$ld:ai:generation:success` / `$ld:ai:generation:error` the same way as [202-config-outside-code Java](../202-config-outside-code/java/).
 
 Keywords: **AgentControl** · **Library tools** · **tool loop** · **track_tool_call** (best-effort)
 
@@ -26,7 +26,7 @@ Provision once: `cd ../rest && ./create-config.sh`
 ## Build & run
 
 ```bash
-cd 20-agent-config/23-agent-tools/java
+cd 20-agent-config/203-agent-tools/java
 ./mvnw -q -DskipTests package
 java -jar target/23-agent-tools.jar
 ```

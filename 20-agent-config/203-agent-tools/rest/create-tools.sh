@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# LaunchDarkly: create Library tools for 23-agent-tools
+# LaunchDarkly: create Library tools for 203-agent-tools
 # https://launchdarkly.com/docs/api/agent-control/post-ai-tool
 # https://launchdarkly.com/docs/home/agentcontrol/tools
 

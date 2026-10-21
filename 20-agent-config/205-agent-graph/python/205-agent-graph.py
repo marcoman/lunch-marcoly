@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-25-agent-graph.py — thin HTTP adapter for the Agent Graphs demo.
+205-agent-graph.py — thin HTTP adapter for the Agent Graphs demo.
 
   GET /                 → index.html
   GET /api/bootstrap    → personas, tickers, graph/node keys
@@ -37,7 +37,7 @@ from yahoo_news import (  # noqa: E402
     get_last_pair_cached,
 )
 
-APP_BANNER = "25-agent-graph[python]"
+APP_BANNER = "205-agent-graph[python]"
 PORT = 8250
 
 

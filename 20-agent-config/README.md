@@ -6,7 +6,7 @@ Examples here keep the same news → generate product shape. What changes is **w
 
 ## Series portal
 
-Prefer a **portal** when you want to flip between **21–26** in one browser window:
+Prefer a **portal** when you want to flip between **201–206** in one browser window. The portal process still uses tab ids **21–26** until the portal pass.
 
 | Language | Command | URL |
 |----------|---------|-----|
@@ -25,19 +25,19 @@ Shared headline cache: [stories/](stories/) (`20-agent-config/stories/stories_ca
 
 | # | Directory | What it adds |
 |---|-----------|--------------|
-| — | [portal](portal/) | **Series shell**: tabs for **21–26** — Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
-| — | [20-capstone](20-capstone/) | **Python :8290 · Node :8291 · Java :8292 · .NET :8293, not in the portal.** Composes `21`–`25`. Checked tools run after the specialist and before finalize. Judges and feedback stay on the draft. English and Spanish live here. Spec: [application.md](20-capstone/application.md) |
-| 21 | [21-agent-completion-config](21-agent-completion-config/) | **Completion config**: runtime **model**, **system prompt**, and **user prompt** — provision with [rest/](21-agent-completion-config/rest/); `get-targeting-status.sh`. Web: Python/Node/Java/.NET. Console: Python (curses), **Go** (raw-terminal) |
-| 22 | [22-config-outside-code](22-config-outside-code/) | **Tracked completion**: **`track_metrics_of`**, thumbs feedback, Ollama / Anthropic (Best Betty) — Python **8220** · Node **8221** · Java **8222** · .NET **8223**; `get-feedback-status.sh`. Console: **Go** (raw-terminal, `+`/`-` feedback hotkeys) |
-| 23 | [23-agent-tools](23-agent-tools/) | **Library tools**: analyze-ticker-stories ×2 → compare-ticker-analyses; tool loop + `track_tool_call` — Python **8230** · Node **8231** · Java **8232** · .NET **8233**; `get-tools-status.sh`. Console: **Go** (raw-terminal, tool trace) |
-| 24 | [24-agent-judges](24-agent-judges/) | **Judges** runtime gate: Source Fidelity + Recommendation Discipline → show draft + scores → rewrite once as Charlie — Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console; `get-judges-status.sh`. Base: 21 surface (stories-only), not 23 tools |
-| 25 | [25-agent-graph](25-agent-graph/) | **Agent graph**: assess → specialist → finalize — Report / Questions / Good / Joke; Trace; Python **8250** · Node **8251** · Java **8252** · .NET **8253**. Spec: [application.md](25-agent-graph/application.md) |
-| 26 | [26-flags-vs-agent-control](26-flags-vs-agent-control/) | **Python :8260**, **Node :8261**, **Java :8262**, **.NET :8263**. AgentControl, four flags, or one JSON flag. Guardrail scores only |
-| 27 | [27-agent-mode](27-agent-mode/) | **Stub.** Agent mode only, one instructions value. Not the capstone. Intended ports **:8270–:8273** |
-| 28 | [28-context-attributes](28-context-attributes/) | **Stub.** Region and audience attributes select a variation. Intended ports **:8280–:8283** |
-| 29 | [29-team-rollout](29-team-rollout/) | **Stub.** Sticky percentage rollout bucketed by `team`. Do not use **:8290–:8293** (capstone) |
+| — | [portal](portal/) | **Series shell**: tabs still **21–26** until the portal pass — Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
+| — | [20-capstone-1](20-capstone-1/) | **Python :8290 · Node :8291 · Java :8292 · .NET :8293, not in the portal.** Composes `201`–`205`. Checked tools run after the specialist and before finalize. Judges and feedback stay on the draft. English and Spanish live here. Spec: [application.md](20-capstone-1/application.md) |
+| 201 | [201-agent-completion-config](201-agent-completion-config/) | **Completion config**: runtime **model**, **system prompt**, and **user prompt** — provision with [rest/](201-agent-completion-config/rest/); `get-targeting-status.sh`. Web: Python/Node/Java/.NET. Console: Python (curses), **Go** (raw-terminal) |
+| 202 | [202-config-outside-code](202-config-outside-code/) | **Tracked completion**: **`track_metrics_of`**, thumbs feedback, Ollama / Anthropic (Best Betty) — Python **8220** · Node **8221** · Java **8222** · .NET **8223**; `get-feedback-status.sh`. Console: **Go** (raw-terminal, `+`/`-` feedback hotkeys) |
+| 203 | [203-agent-tools](203-agent-tools/) | **Library tools**: analyze-ticker-stories ×2 → compare-ticker-analyses; tool loop + `track_tool_call` — Python **8230** · Node **8231** · Java **8232** · .NET **8233**; `get-tools-status.sh`. Console: **Go** (raw-terminal, tool trace) |
+| 204 | [204-agent-judges](204-agent-judges/) | **Judges** runtime gate: Source Fidelity + Recommendation Discipline → show draft + scores → rewrite once as Charlie — Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console; `get-judges-status.sh`. Base: 21 surface (stories-only), not 23 tools |
+| 205 | [205-agent-graph](205-agent-graph/) | **Agent graph**: assess → specialist → finalize — Report / Questions / Good / Joke; Trace; Python **8250** · Node **8251** · Java **8252** · .NET **8253**. Spec: [application.md](205-agent-graph/application.md) |
+| 206 | [206-flags-vs-agent-control](206-flags-vs-agent-control/) | **Python :8260**, **Node :8261**, **Java :8262**, **.NET :8263**. AgentControl, four flags, or one JSON flag. Guardrail scores only |
+| 207 | [207-agent-mode](207-agent-mode/) | **Stub.** Agent mode only, one instructions value. Not the capstone. Intended ports **:8270–:8273** |
+| 208 | [208-context-attributes](208-context-attributes/) | **Stub.** Region and audience attributes select a variation. Intended ports **:8280–:8283** |
+| 209 | [209-team-rollout](209-team-rollout/) | **Stub.** Sticky percentage rollout bucketed by `team`. Do not use **:8290–:8293** (capstone) |
 
-More AgentControl patterns can land as further `NN-…` siblings under this folder. [20-capstone](20-capstone/) is unnumbered so it does not take **27**. It composes `21`–`25`. **27**, **28**, and **29** keep their own folders and do not roll into the capstone.
+More AgentControl patterns can land as further `2NN-…` siblings under this folder. [20-capstone-1](20-capstone-1/) stays outside **201–209** so it does not take **207**. It composes `201`–`205`. **207**, **208**, and **209** keep their own folders and do not roll into the capstone.
 
 ## Common setup
 
@@ -71,7 +71,7 @@ See [project.md](../project.md) and the root [README.md](../README.md) for OS / 
 | Language | Typical first run |
 |----------|-------------------|
 | .NET web | `cd 01-reference-agent/dotnet && dotnet run` → then `21…/dotnet` on **8213** |
-| Go console | `cd 21-agent-completion-config/go && go mod tidy && go build -o 21-agent-completion-config . && ./21-agent-completion-config` |
+| Go console | `cd 201-agent-completion-config/go && go mod tidy && go build -o 201-agent-completion-config . && ./201-agent-completion-config` |
 
 ### 2. LaunchDarkly
 
@@ -129,7 +129,7 @@ ollama pull llama3.2:3b
 
 Then run with `AGENT_LLM_MODE=ollama`.
 
-**[21-agent-completion-config](21-agent-completion-config/)** — **all three tags are required.** Each demo persona is wired to a different Ollama model so switching users visibly changes provider/model in the UI (not only the system prompt). Missing a tag breaks generate for that persona.
+**[201-agent-completion-config](201-agent-completion-config/)** — **all three tags are required.** Each demo persona is wired to a different Ollama model so switching users visibly changes provider/model in the UI (not only the system prompt). Missing a tag breaks generate for that persona.
 
 | Tier | Ollama tag | Persona / variation | Why this tag |
 |------|------------|---------------------|--------------|
@@ -143,7 +143,7 @@ ollama pull gemma2:2b      # required — Nancy / Amelia (default)
 ollama pull llama3.2:1b    # required — Toby (simple)
 ```
 
-Full narrative and verification: [21-agent-completion-config README](21-agent-completion-config/README.md#required-ollama-models).
+Full narrative and verification: [201-agent-completion-config README](201-agent-completion-config/README.md#required-ollama-models).
 
 #### AWS Bedrock (optional cloud path)
 
@@ -204,7 +204,7 @@ dotnet run
 
 1. Read this page (shared LD + LLM setup).
 2. Open the child example README + `application.md` (config key, variations, acceptance criteria).
-3. Provision the AgentControl config ([rest/](21-agent-completion-config/rest/) preferred; UI checklist in [PROVISIONING.md](21-agent-completion-config/PROVISIONING.md)).
+3. Provision the AgentControl config ([rest/](201-agent-completion-config/rest/) preferred; UI checklist in [PROVISIONING.md](201-agent-completion-config/PROVISIONING.md)).
 4. Run the language implementation under that example.
 
 ## SDK notes (.NET / Go)
@@ -221,13 +221,13 @@ Per-example quirks live in each child `dotnet/README.md` and `go/README.md`.
 - [01-reference-agent](../01-reference-agent/) — baseline agent (file prompt + env model; no LaunchDarkly)
 - [project.md](../project.md) — repository conventions
 - [portal](portal/) — series shell (Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203**)
-- [20-capstone](20-capstone/) — Python **:8290** · Node **:8291** · Java **:8292** · .NET **:8293**, built, not in the portal. Unnumbered so it does not take **27**. Later lessons keep their own folders.
-- [27-agent-mode](27-agent-mode/) — stub. Agent mode only. Does not roll into the capstone
-- [28-context-attributes](28-context-attributes/) — stub. Context attributes select the variation
-- [29-team-rollout](29-team-rollout/) — stub. Percentage rollout bucketed by `team`
-- [21-agent-completion-config](21-agent-completion-config/) — completion config
-- [22-config-outside-code](22-config-outside-code/) — tracked metrics + feedback
-- [23-agent-tools](23-agent-tools/) — Library tools + tool loop
-- [24-agent-judges](24-agent-judges/) — Judges runtime gate + Charlie rewrite
-- [25-agent-graph](25-agent-graph/) — Agent graph (assess → specialist → finalize); Python :8250 · Node :8251 · Java :8252 · .NET :8253
-- [26-flags-vs-agent-control](26-flags-vs-agent-control/) — Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**. AgentControl, four flags, or one JSON flag. Guardrail scores pass/fail. Portal tab **Flag compare**
+- [20-capstone-1](20-capstone-1/) — Python **:8290** · Node **:8291** · Java **:8292** · .NET **:8293**, built, not in the portal. Outside **201–209** so it does not take **207**. Later lessons keep their own folders.
+- [207-agent-mode](207-agent-mode/) — stub. Agent mode only. Does not roll into the capstone
+- [208-context-attributes](208-context-attributes/) — stub. Context attributes select the variation
+- [209-team-rollout](209-team-rollout/) — stub. Percentage rollout bucketed by `team`
+- [201-agent-completion-config](201-agent-completion-config/) — completion config
+- [202-config-outside-code](202-config-outside-code/) — tracked metrics + feedback
+- [203-agent-tools](203-agent-tools/) — Library tools + tool loop
+- [204-agent-judges](204-agent-judges/) — Judges runtime gate + Charlie rewrite
+- [205-agent-graph](205-agent-graph/) — Agent graph (assess → specialist → finalize); Python :8250 · Node :8251 · Java :8252 · .NET :8253
+- [206-flags-vs-agent-control](206-flags-vs-agent-control/) — Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**. AgentControl, four flags, or one JSON flag. Guardrail scores pass/fail. Portal tab **Flag compare**

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-23-agent-tools.py — thin HTTP adapter for the tools demo UI.
+203-agent-tools.py — thin HTTP adapter for the tools demo UI.
 
   1. Serve index.html
   2. JSON bootstrap
@@ -35,7 +35,7 @@ from yahoo_news import (  # noqa: E402
     get_last_pair_cached,
 )
 
-APP_BANNER = "23-agent-tools[python]"
+APP_BANNER = "203-agent-tools[python]"
 PORT = 8230
 
 

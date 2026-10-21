@@ -1,8 +1,8 @@
-# 20-capstone
+# 20-capstone-1
 
 **Status: Python :8290, Node :8291, Java :8292, and .NET :8293 are built. Not in the series portal.**
 
-One equity briefing that composes [21](../21-agent-completion-config/) through [25](../25-agent-graph/). Those folders stay the single-idea lessons. This app is where they meet. [26](../26-flags-vs-agent-control/) stays the flag comparison.
+One equity briefing that composes [21](../201-agent-completion-config/) through [25](../205-agent-graph/). Those folders stay the single-idea lessons. This app is where they meet. [26](../206-flags-vs-agent-control/) stays the flag comparison.
 
 The graph is assess → specialist → finalize. There is no joke specialist. Pig Latin, ROT13, and a joke tagline are checkboxes, none checked by default. The app runs the checked tools after the specialist and before finalize, in that order. The model cannot skip them. Judges score the specialist draft, and thumbs record that same draft. The response panel shows the text after tools and finalize.
 

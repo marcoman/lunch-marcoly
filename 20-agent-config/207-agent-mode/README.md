@@ -1,13 +1,13 @@
-# 27-agent-mode
+# 207-agent-mode
 
 **Status: stub — not implemented yet.**
 
 One **agent mode** config: a single **instructions** value, then a generate.
 No graph, no library tools, no judges.
 
-[21-agent-completion-config](../21-agent-completion-config/) stays **completion
+[201-agent-completion-config](../201-agent-completion-config/) stays **completion
 mode** (system message, user message, model). This lesson does not roll into
-[20-capstone](../20-capstone/).
+[20-capstone-1](../20-capstone-1/).
 
 Keywords: **AgentControl** · **agent mode** · **instructions** · **AI SDK**
 

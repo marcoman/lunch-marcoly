@@ -1,4 +1,4 @@
-# 20-capstone — Java web
+# 20-capstone-1 — Java web
 
 Same capstone as the Node app: assess → specialist → judges → checked tools → finalize.
 
@@ -22,7 +22,7 @@ Keywords: **AgentControl** · **agent graphs** · **Library tools** · **judges*
 export LD_SDK_KEY="sdk-..."
 ollama pull llama3.2:3b
 
-cd 20-agent-config/20-capstone/java
+cd 20-agent-config/20-capstone-1/java
 ./mvnw -q -DskipTests package
 java -jar target/20-capstone.jar
 ```

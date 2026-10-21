@@ -1,4 +1,4 @@
-# 24-agent-judges — Node.js web
+# 204-agent-judges — Node.js web
 
 Port **8241**. Requires Node **20+**, `LD_SDK_KEY`, provisioned completion + judge
 configs, and local Ollama.
@@ -24,7 +24,7 @@ cd ../rest && ./create-judges.sh && ./create-config.sh
 ## Build & run
 
 ```bash
-cd 20-agent-config/24-agent-judges/node
+cd 20-agent-config/204-agent-judges/node
 npm install
 npm start
 ```

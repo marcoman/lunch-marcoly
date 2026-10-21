@@ -1,8 +1,8 @@
-# 24-agent-judges
+# 204-agent-judges
 
 AgentControl **Judges** as a **runtime quality gate**: generate a briefing, score it with two custom judges, and if either fails, show the bad draft + scores, then **rewrite once** in Conservative Charlie’s voice.
 
-Templated from [01-reference-agent](../../01-reference-agent/) / [21-agent-completion-config](../21-agent-completion-config/) (completion + stories — **not** the 23 tool loop). Sibling lesson: 21 teaches config; 22 metrics; 23 tools; **24 judges + visible rescue**.
+Templated from [01-reference-agent](../../01-reference-agent/) / [201-agent-completion-config](../201-agent-completion-config/) (completion + stories — **not** the 23 tool loop). Sibling lesson: 21 teaches config; 22 metrics; 23 tools; **24 judges + visible rescue**.
 
 Keywords: **AgentControl** · **Judges** · **custom judges** · **online evaluations** · **runtime gate** · **create_judge** · **evaluate**
 
@@ -93,7 +93,7 @@ cd rest
 
 cd ../python
 source ../../../.venv/bin/activate
-python 24-agent-judges.py   # → http://127.0.0.1:8240/
+python 204-agent-judges.py   # → http://127.0.0.1:8240/
 
 # Node
 cd ../node && npm install && npm start   # → :8241

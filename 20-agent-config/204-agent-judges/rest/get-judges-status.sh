@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# LaunchDarkly: AgentControl judges status snapshot (24-agent-judges)
+# LaunchDarkly: AgentControl judges status snapshot (204-agent-judges)
 # Demo-facing check: both custom judges exist, completion config + targeting,
 # and generation metrics moved after Generate (gate / rewrite).
 # https://launchdarkly.com/docs/home/agentcontrol/judges

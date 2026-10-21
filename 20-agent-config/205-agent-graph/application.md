@@ -1,6 +1,6 @@
 # Agent graph — application specification
 
-This document defines **25-agent-graph**: the equity briefing UI from [01-reference-agent](../../01-reference-agent/application.md) / [21-agent-completion-config](../21-agent-completion-config/), with LaunchDarkly **AgentControl Agent Graphs** as a **multi-step orchestration** demo. One graph: **assess → specialist → finalize**. Multiple UI actions select the intended specialist; Trace shows the path so learners can correlate the LD graph with what ran.
+This document defines **205-agent-graph**: the equity briefing UI from [01-reference-agent](../../01-reference-agent/application.md) / [201-agent-completion-config](../201-agent-completion-config/), with LaunchDarkly **AgentControl Agent Graphs** as a **multi-step orchestration** demo. One graph: **assess → specialist → finalize**. Multiple UI actions select the intended specialist; Trace shows the path so learners can correlate the LD graph with what ran.
 
 Repository conventions: [project.md](../../project.md).  
 Series setup: [20-agent-config README](../README.md).  
@@ -212,7 +212,7 @@ No Anthropic key required for v1.
 
 ## Related
 
-- [21-agent-completion-config](../21-agent-completion-config/) — personas + completion targeting
-- [23-agent-tools](../23-agent-tools/) — Library tools pattern for report node
-- [24-agent-judges](../24-agent-judges/) — Trace dock UX to reuse
+- [201-agent-completion-config](../201-agent-completion-config/) — personas + completion targeting
+- [203-agent-tools](../203-agent-tools/) — Library tools pattern for report node
+- [204-agent-judges](../204-agent-judges/) — Trace dock UX to reuse
 - [Agent graphs](https://launchdarkly.com/docs/home/agentcontrol/agent-graphs)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-26-flags-vs-agent-control.py — HTTP adapter for the three briefing sources.
+206-flags-vs-agent-control.py — HTTP adapter for the three briefing sources.
 
   GET /                 → index.html
   GET /api/bootstrap    → personas, tickers, cached stories, source list
@@ -39,7 +39,7 @@ from yahoo_news import (  # noqa: E402
     get_last_pair_cached,
 )
 
-APP_BANNER = "26-flags-vs-agent-control[python]"
+APP_BANNER = "206-flags-vs-agent-control[python]"
 # Distinct from 21 (8210) and 24 (8240).
 PORT = 8260
 

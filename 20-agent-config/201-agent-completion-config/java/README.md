@@ -34,7 +34,7 @@ ollama list
 ## Build & run
 
 ```bash
-cd 20-agent-config/21-agent-completion-config/java
+cd 20-agent-config/201-agent-completion-config/java
 ./mvnw -q -DskipTests package
 # or: mvn -q -DskipTests package
 java -jar target/21-agent-completion-config.jar

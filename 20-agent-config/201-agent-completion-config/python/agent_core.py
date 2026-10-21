@@ -1,5 +1,5 @@
 """
-agent_core.py — domain logic for 21-agent-completion-config (no HTTP here).
+agent_core.py — domain logic for 201-agent-completion-config (no HTTP here).
 
 =============================================================================
 HOW TO READ THIS FILE

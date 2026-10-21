@@ -1,4 +1,4 @@
-# 22-config-outside-code — application
+# 202-config-outside-code — application
 
 ## Goal
 

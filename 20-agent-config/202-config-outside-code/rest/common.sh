@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared helpers for 22-config-outside-code AgentControl REST scripts.
+# Shared helpers for 202-config-outside-code AgentControl REST scripts.
 # LaunchDarkly: AgentControl · tracked completion · AI metrics
 # https://launchdarkly.com/docs/api/agent-control
 # https://launchdarkly.com/docs/guides/api/rest-api

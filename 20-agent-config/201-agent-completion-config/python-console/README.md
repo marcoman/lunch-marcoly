@@ -37,14 +37,14 @@ From the **repository root**:
 
 ```bash
 source .venv/bin/activate
-cd 20-agent-config/21-agent-completion-config/python-console
+cd 20-agent-config/201-agent-completion-config/python-console
 python 21-agent-completion-config.py
 ```
 
 ## Screen chrome
 
 ```text
-21-agent-completion-config[python-console]     Tickers: NVDA (2 stories) SPCX (2 stories)
+201-agent-completion-config[python-console]     Tickers: NVDA (2 stories) SPCX (2 stories)
 ollama / llama3.2:3b                           Name: Conservative Charlie.
 (t)ickers  st(o)ries  (s)tatus  (l)d  (c)lear  (g)enerate report  (q)uit     (n)ext user
 ```

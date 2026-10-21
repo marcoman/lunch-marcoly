@@ -19,8 +19,8 @@ export LD_SDK_KEY="sdk-..."
 # optional: export ANTHROPIC_API_KEY="sk-ant-..."  # enables Claude Sonnet in the Model override
 ollama pull llama3.2:3b    # Charlie, and the judge
 ollama pull llama3.2:1b    # Toby
-cd 20-agent-config/26-flags-vs-agent-control/python
-python 26-flags-vs-agent-control.py
+cd 20-agent-config/206-flags-vs-agent-control/python
+python 206-flags-vs-agent-control.py
 ```
 
 Open **http://127.0.0.1:8260/**.
@@ -40,7 +40,7 @@ Provision first: [../rest/create-original.sh](../rest/create-original.sh), [../r
 
 | File | Role |
 |------|------|
-| `26-flags-vs-agent-control.py` | HTTP + SSE on **:8260** |
+| `206-flags-vs-agent-control.py` | HTTP + SSE on **:8260** |
 | `agent_core.py` | `completion_config`, then `create_judge` / `evaluate` |
 | `index.html` | Three response columns and the LD details drawer |
 | `yahoo_news.py` | Headlines. Cache is the shared `20-agent-config/stories/` file |

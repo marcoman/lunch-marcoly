@@ -106,28 +106,28 @@ lunch-marcoly/
 │   ├── README.md                # Ollama, AWS SSO, LD env — landing page
 │   ├── portal/                  # Series shell: Python :8200 · Node :8201 · Java :8202 · .NET :8203
 │   ├── stories/                 # Shared Yahoo headlines cache (all examples)
-│   ├── 20-capstone/             # Python :8290 · Node :8291 · Java :8292 · .NET :8293; not in the portal
+│   ├── 20-capstone-1/             # Python :8290 · Node :8291 · Java :8292 · .NET :8293; not in the portal
 │   │   └── README.md · application.md · node/ · rest/
-│   ├── 21-agent-completion-config/  # Completion config: model + system/user prompts
+│   ├── 201-agent-completion-config/  # Completion config: model + system/user prompts
 │   │   ├── README.md · application.md · rest/
 │   │   └── python/ · node/ · java/ · dotnet/ · python-console/ · go/
-│   ├── 22-config-outside-code/      # Tracked completion + feedback
+│   ├── 202-config-outside-code/      # Tracked completion + feedback
 │   │   ├── README.md · application.md · rest/
 │   │   └── python/ · node/ · java/ · dotnet/ · go/
-│   ├── 23-agent-tools/              # Library tools + tool loop
+│   ├── 203-agent-tools/              # Library tools + tool loop
 │   │   ├── README.md · application.md · rest/
 │   │   └── python/ · node/ · java/ · dotnet/ · go/
-│   ├── 24-agent-judges/             # Judges runtime gate + rewrite
+│   ├── 204-agent-judges/             # Judges runtime gate + rewrite
 │   │   ├── README.md · application.md · rest/
 │   │   └── python/ · node/ · java/ · dotnet/ · go/  # Web :8240–:8243; Go console
-│   ├── 25-agent-graph/              # Agent graph: assess → specialist → finalize
+│   ├── 205-agent-graph/              # Agent graph: assess → specialist → finalize
 │   │   ├── README.md · application.md · rest/
 │   │   └── python/ · node/ · java/ · dotnet/  # Web :8250–:8253
-│   ├── 26-flags-vs-agent-control/   # Python :8260 · Node :8261 · Java :8262 · .NET :8263
+│   ├── 206-flags-vs-agent-control/   # Python :8260 · Node :8261 · Java :8262 · .NET :8263
 │   │   └── README.md · application.md   # Web only
-│   ├── 27-agent-mode/           # Stub: agent mode only; not the capstone
-│   ├── 28-context-attributes/   # Stub: region + audience select a variation
-│   └── 29-team-rollout/         # Stub: sticky % rollout bucketed by team
+│   ├── 207-agent-mode/           # Stub: agent mode only; not the capstone
+│   ├── 208-context-attributes/   # Stub: region + audience select a variation
+│   └── 209-team-rollout/         # Stub: sticky % rollout bucketed by team
 ├── 30-client-sdk/               # Browser client-side SDK (client-side ID)
 │   ├── README.md
 │   ├── portal/                  # Series shell: JS :8300 · React :8301 · Vue :8302
@@ -204,22 +204,22 @@ lunch-marcoly/
 - Prefix with a **two-digit number**: `00-reference-code`, `01-hello-world`, `02-binary-search`
 - Follow the number with a **kebab-case** name describing the concept
 - Use the next available number when adding a new example (`03`, `04`, …)
-- Decade series keep that two-digit folder (`10`, `20`, `30`, …). **10-code-control** children are three digits: **101–109** today, range `101`–`199`. Other series still use two-digit children (`21`–`29`, `31`–`39`, …) until that series is renumbered the same way (`201`–`299`, `301`–`399`, and the same hundreds digit for `40`, `50`, and `60`). Letter suffixes (`1a`, `1b`) stay unused. A fourth digit is not part of the scheme. Inside a renumbered series, Python web uses the new number. Other language entrypoints keep their previous filenames until that platform is updated. Listen ports for 101–107 stay **8110–8170**.
+- Decade series keep that two-digit folder (`10`, `20`, `30`, …). **10-code-control** children are **101–109**. **20-agent-config** children are **201–209**, and the capstone folder is `20-capstone-1`. Other series still use two-digit children (`31`–`39`, …) until that series is renumbered the same way (`301`–`399`, and the same hundreds digit for `40`, `50`, and `60`). Letter suffixes (`1a`, `1b`) stay unused. A fourth digit is not part of the scheme. Inside a renumbered series, Python web uses the new number. Other language entrypoints keep their previous filenames until that platform is updated. Listen ports for 101–107 stay **8110–8170**. AgentControl ports stay **8210–8260**, with the capstone on **8290–8293**.
 - `70-model-demos` and `99-use-cases` already count children inside the folder (`01`, `02`, …). They do not consume `71`–`79` or the next decade. Leave that inner count as it is until the three-digit refactor, if it ever includes them.
 - `00-reference-code` is reserved for the reference grid navigator app and repository conventions. It does **not** include LaunchDarkly integration.
 - `02-reference-client-code` is the same navigator **in the browser** (client JavaScript). It does **not** include LaunchDarkly. Later client-SDK examples (series **30**) build on this shape.
 - `01-reference-agent` is the baseline news → prompt → LLM agent UI (config/env and a prompt file only).
 - `20-agent-config` groups LaunchDarkly **AgentControl** examples; shared LLM/AWS/LD setup lives in its README.
-- `20-capstone` (under `20-agent-config/`) is an unnumbered capstone. Python **8290**, Node **8291**, Java **8292**, and .NET **8293** are built and are not portal tabs. It composes `21`–`25`: assess → specialist → finalize, with Pig Latin, ROT13, and a joke tagline forced after the draft and before finalize. Judges and feedback stay on the draft. Those lessons stay as they are. Later `27`, `28`, … keep their own numbers and do not roll into this app. English and Spanish belong here. Java uses `jsonValueVariationDetail` because there is no Java AI SDK.
-- `21-agent-completion-config` (under `20-agent-config/`) adds a **completion config**: runtime **model**, **system prompt**, and **user prompt** on the agent shape from `01`.
-- `22-config-outside-code` adds **tracked completion** (`TrackMetricsOf` / feedback) on that same config shape.
-- `23-agent-tools` adds **Library tools**, a tool loop, and `TrackToolCall`.
-- `24-agent-judges` adds **custom Judges** as a runtime quality gate (draft → scores → one Charlie rewrite).
-- `25-agent-graph` (under `20-agent-config/`) adds an **agent graph** (assess → specialist → finalize; Python **8250** · Node **8251** · Java **8252** · .NET **8253**).
-- `26-flags-vs-agent-control` (under `20-agent-config/`) compares an AgentControl completion config, four feature flags, and one JSON flag. Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**. Series portal tab **Flag compare**. The screen shows Toby. A failed guardrail on AgentControl can run `reduce-briefing-uncertainty`. `21` keeps `equity-briefing-completion`.
-- `27-agent-mode` is a stub. Agent mode only, one instructions value, no graph, tools, or judges. It does not roll into `20-capstone`. Intended ports **:8270–:8273**.
-- `28-context-attributes` is a stub. North America or South America, plus an audience, select an AgentControl variation. The page shows the context it built. This is not `{{ }}` prompt substitution. Intended ports **:8280–:8283**.
-- `29-team-rollout` is a stub. A fixed percentage rollout buckets by the public `team` attribute, so everyone on that team shares one variation. Not `16`'s username bucket and not `14-progressive-rollout`. Do not use ports **:8290–:8293**.
+- `20-capstone-1` (under `20-agent-config/`) sits outside **201–209**. Python **8290**, Node **8291**, Java **8292**, and .NET **8293** are built and are not portal tabs. It composes `201`–`205`: assess → specialist → finalize, with Pig Latin, ROT13, and a joke tagline forced after the draft and before finalize. Judges and feedback stay on the draft. Those lessons stay as they are. Later `207`, `208`, and `209` keep their own numbers and do not roll into this app. English and Spanish belong here. Java uses `jsonValueVariationDetail` because there is no Java AI SDK.
+- `201-agent-completion-config` (under `20-agent-config/`) adds a **completion config**: runtime **model**, **system prompt**, and **user prompt** on the agent shape from `01`.
+- `202-config-outside-code` adds **tracked completion** (`TrackMetricsOf` / feedback) on that same config shape.
+- `203-agent-tools` adds **Library tools**, a tool loop, and `TrackToolCall`.
+- `204-agent-judges` adds **custom Judges** as a runtime quality gate (draft → scores → one Charlie rewrite).
+- `205-agent-graph` (under `20-agent-config/`) adds an **agent graph** (assess → specialist → finalize; Python **8250** · Node **8251** · Java **8252** · .NET **8253**).
+- `206-flags-vs-agent-control` (under `20-agent-config/`) compares an AgentControl completion config, four feature flags, and one JSON flag. Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**. Series portal tab **Flag compare**. The screen shows Toby. A failed guardrail on AgentControl can run `reduce-briefing-uncertainty`. `201` keeps `equity-briefing-completion`.
+- `207-agent-mode` is a stub. Agent mode only, one instructions value, no graph, tools, or judges. It does not roll into `20-capstone-1`. Intended ports **:8270–:8273**.
+- `208-context-attributes` is a stub. North America or South America, plus an audience, select an AgentControl variation. The page shows the context it built. This is not `{{ }}` prompt substitution. Intended ports **:8280–:8283**.
+- `209-team-rollout` is a stub. A fixed percentage rollout buckets by the public `team` attribute, so everyone on that team shares one variation. Not `16`'s username bucket and not `14-progressive-rollout`. Do not use ports **:8290–:8293**.
 - AgentControl **web** ports: Python / Node / Java / .NET. **Go** is console-only under this series (raw-terminal TUI).
 - `10-code-control` groups grid-navigator **feature flag** examples; shared portal lives in its `portal/`.
 - `101-flag-enablement` (under `10-code-control/`) demonstrates feature flag naming, provisioning, and boolean enablement.

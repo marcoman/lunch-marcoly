@@ -1,6 +1,6 @@
 # Provisioning — AgentControl completion config
 
-Create the LaunchDarkly **AgentControl** resources for [21-agent-completion-config](README.md).
+Create the LaunchDarkly **AgentControl** resources for [201-agent-completion-config](README.md).
 
 **Prefer REST scripts** (no MCP required):
 

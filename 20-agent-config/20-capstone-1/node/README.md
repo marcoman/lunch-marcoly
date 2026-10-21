@@ -1,4 +1,4 @@
-# 20-capstone — Node.js web
+# 20-capstone-1 — Node.js web
 
 One equity briefing that walks an Agent Graph, then forces the checked tools, then finalizes.
 
@@ -31,7 +31,7 @@ cd ../rest && ./create-all.sh
 ## Build and run
 
 ```bash
-cd 20-agent-config/20-capstone/node
+cd 20-agent-config/20-capstone-1/node
 npm install
 npm start
 ```

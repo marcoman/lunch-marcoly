@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Flags vs AgentControl</title>
   <!--
-    UI for 26-flags-vs-agent-control (Python web), Original variation.
+    UI for 206-flags-vs-agent-control (Python web), Original variation.
 
     Generate uses an AgentControl completion config for model + prompts,
     then one judge scores the draft. Pass and fail decorate the response.
@@ -742,7 +742,7 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="app-banner" id="app-banner">26-flags-vs-agent-control[python]</div>
+    <div class="app-banner" id="app-banner">206-flags-vs-agent-control[python]</div>
     <h1>Flags vs AgentControl</h1>
     <p class="sub">Thoughtless Toby or Conservative Charlie, three sources, one Generate. Toby's prompt usually fails the guardrail; Charlie's usually passes. If the guardrail fails the draft, only AgentControl can run the attached repair tool. The flag columns keep the failed draft.</p>
     <p class="subtitle">Pull ticker headlines, then stream three briefings side by side.</p>
@@ -1315,17 +1315,18 @@
       return rows
         .map((row) => {
           const reason = row.reason || {};
+          const rows = [
+            ["Variation index", row.variationIndex],
+            ["Reason", row.reasonKind || reason.kind],
+          ];
+          if (reason.ruleIndex != null && reason.ruleIndex !== "") {
+            rows.push(["Rule index", reason.ruleIndex]);
+          }
+          if (reason.ruleId) rows.push(["Rule id", reason.ruleId]);
+          rows.push(["Value", row.valuePreview]);
           return `
             <div class="ld-block-title">${escapeHtml(row.key || "flag")}</div>
-            ${kvHtml([
-              ["Variation index", row.variationIndex],
-              ["Reason", row.reasonKind || reason.kind],
-              ["Rule index", reason.ruleIndex],
-              ["Rule id", reason.ruleId],
-              ["Value", row.valuePreview],
-            ])}
-            <div class="ld-block-title">Raw reason</div>
-            <pre class="ld-json">${escapeHtml(JSON.stringify(reason, null, 2))}</pre>
+            ${kvHtml(rows)}
           `;
         })
         .join("");
@@ -1424,35 +1425,36 @@
           <pre class="ld-json">${escapeHtml(JSON.stringify(ctx, null, 2))}</pre>
         `;
 
-        const reason = received.reason || {};
+        const reason = received.reason;
+        const reasonKind = reason && typeof reason === "object" ? reason.kind : reason;
+        const evalRows = [
+          ["Fallback", received.fallback],
+          ["Mode", received.mode],
+          ["Enabled", received.enabled],
+          ["Config key", received.configKey],
+          ["Variation", received.variationKey],
+          ["Variation index", received.variationIndex],
+          ["Reason", reasonKind],
+          ["Provider", received.provider],
+          ["Model", received.model],
+        ];
+        if (reason && typeof reason === "object" && reason.ruleIndex != null && reason.ruleIndex !== "") {
+          evalRows.push(["Rule index", reason.ruleIndex]);
+        }
+        if (reason && typeof reason === "object" && reason.ruleId) {
+          evalRows.push(["Rule id", reason.ruleId]);
+        }
+        if (Array.isArray(received.tools) && received.tools.length) {
+          evalRows.push(["Tools", received.tools.join(", ")]);
+        }
         els.ldReceived.innerHTML = `
           <p class="ld-about-p">${escapeHtml(receivedIntro(sent.source || "original"))}</p>
           <div class="ld-block-title">Evaluation</div>
-          ${kvHtml([
-            ["Fallback", received.fallback],
-            ["Mode", received.mode],
-            ["Enabled", received.enabled],
-            ["Config key", received.configKey],
-            ["Variation", received.variationKey],
-            ["Variation index", received.variationIndex],
-            ["Reason", reason.kind || reason],
-            ["Rule index", reason.ruleIndex],
-            ["Rule id", reason.ruleId],
-            ["Version", received.version],
-            ["Version key", received.versionKey],
-            ["LD mode", received.ldMode],
-            ["Model key", received.modelKey],
-            ["Model version", received.modelVersion],
-            ["Provider", received.provider],
-            ["Model", received.model],
-            ["Tools", (received.tools || []).join(", ")],
-          ])}
+          ${kvHtml(evalRows)}
           <div class="ld-block-title">Messages (served)</div>
           ${messageBlocksHtml(received.messages || [], "ld-recv")}
           ${modelCallHtml(received)}
           ${appWorkHtml(received.appWork)}
-          <div class="ld-block-title">Raw reason JSON</div>
-          <pre class="ld-json">${escapeHtml(JSON.stringify(reason, null, 2))}</pre>
         `;
       }
 

@@ -1,5 +1,5 @@
 """
-agent_core.py — domain logic for 26-flags-vs-agent-control (no HTTP here).
+agent_core.py — domain logic for 206-flags-vs-agent-control (no HTTP here).
 
 =============================================================================
 HOW TO READ THIS FILE
@@ -84,7 +84,7 @@ DEFAULT_BEDROCK_REGION = "us-east-1"
 DEFAULT_AWS_PROFILE = "Administrator"
 DEFAULT_OLLAMA_MODEL = "llama3.2:3b"
 # Hosted model for the optional Model override (see MODEL_OVERRIDE_CHOICES
-# below). Matches the constant used in 22-config-outside-code.
+# below). Matches the constant used in 202-config-outside-code.
 DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-5"
 
 # Model override — a demo-only control, not a flag or a completion config.

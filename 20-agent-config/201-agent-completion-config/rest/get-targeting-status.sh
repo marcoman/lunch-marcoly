@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# LaunchDarkly: AgentControl targeting status snapshot (21-agent-completion-config)
+# LaunchDarkly: AgentControl targeting status snapshot (201-agent-completion-config)
 # Demo-facing check: variations + models, name rules, fallthrough, config on.
 # https://launchdarkly.com/docs/home/agentcontrol/target
 # https://launchdarkly.com/docs/api/agent-control/get-ai-config

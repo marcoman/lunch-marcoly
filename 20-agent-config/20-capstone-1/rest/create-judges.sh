@@ -44,7 +44,7 @@ create_judge() {
     '{
       key: $key,
       name: $name,
-      description: ("Custom judge for 20-capstone: " + $name),
+      description: ("Custom judge for 20-capstone-1: " + $name),
       mode: "judge",
       tags: ["lunch-marcoly", "capstone", "equity-briefing"],
       evaluationMetricKey: $metric,

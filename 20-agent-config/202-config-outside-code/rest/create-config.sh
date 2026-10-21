@@ -37,7 +37,7 @@ CREATE_BODY="$(jq -n \
   '{
     key: $key,
     name: $name,
-    description: "Tracked completion config for 22-config-outside-code: Ollama default + Anthropic for Best Betty. Metrics via track_metrics_of + thumbs feedback.",
+    description: "Tracked completion config for 202-config-outside-code: Ollama default + Anthropic for Best Betty. Metrics via track_metrics_of + thumbs feedback.",
     mode: "completion",
     tags: ["lunch-marcoly", "agent-completion", "equity-briefing", "tracked"],
     defaultVariation: {

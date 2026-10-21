@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# LaunchDarkly: AgentControl — Original variation for 26-flags-vs-agent-control
+# LaunchDarkly: AgentControl — Original variation for 206-flags-vs-agent-control
 # Creates:
 #   equity-briefing-flag-compare          completion (Charlie rule, Toby fallthrough)
 #   equity-briefing-flag-compare-judge    one judge, score only
@@ -38,7 +38,7 @@ else
       name: $name,
       description: "26 Original source. Toby fallthrough is reckless-hype. Charlie is a name rule to concise-skeptic.",
       mode: "completion",
-      tags: ["lunch-marcoly", "26-flags-vs-agent-control", "original"],
+      tags: ["lunch-marcoly", "206-flags-vs-agent-control", "original"],
       defaultVariation: {
         key: "reckless-hype",
         name: "reckless-hype",
@@ -99,7 +99,7 @@ else
       name: $name,
       description: "26 Original source. Scores the draft. Does not rewrite it.",
       mode: "judge",
-      tags: ["lunch-marcoly", "26-flags-vs-agent-control", "original"],
+      tags: ["lunch-marcoly", "206-flags-vs-agent-control", "original"],
       evaluationMetricKey: $metric,
       isInverted: false,
       defaultVariation: {

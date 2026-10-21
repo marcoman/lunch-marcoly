@@ -1,4 +1,4 @@
-# 28-context-attributes
+# 208-context-attributes
 
 **Status: stub — not implemented yet.**
 
@@ -32,7 +32,7 @@ variation came back.
 - One idea: attributes select a variation. Do not also teach `{{ }}`
   substitution here.
 - Not in the series portal until the app exists. Intended ports **:8280–:8283**.
-- Does not roll into [20-capstone](../20-capstone/).
+- Does not roll into [20-capstone-1](../20-capstone-1/).
 
 ## When implementing
 

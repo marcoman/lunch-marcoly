@@ -1,5 +1,5 @@
 """
-agent_core.py — domain logic for 25-agent-graph (no HTTP here).
+agent_core.py — domain logic for 205-agent-graph (no HTTP here).
 
 =============================================================================
 HOW TO READ THIS FILE
@@ -445,11 +445,47 @@ def resolve_runtime(config) -> tuple[str, str]:
     return "ollama", model
 
 
+def _reason_dict(reason: Any) -> dict[str, Any] | None:
+    """Normalize an SDK evaluation reason to the dict the Received tab reads."""
+    if reason is None:
+        return None
+    if isinstance(reason, dict):
+        return reason or None
+    kind = getattr(reason, "kind", None)
+    if kind is None:
+        return None
+    kind_text = kind if isinstance(kind, str) else getattr(kind, "value", str(kind))
+    return {"kind": kind_text}
+
+
+def graph_evaluation_meta(persona: Persona, action: str) -> dict[str, Any]:
+    """Metadata for the served graph variation (public SDK: variation_detail).
+
+    agent_graph returns the topology. The variation key and match reason live
+    on variation_detail.
+    LaunchDarkly: evaluation reasons
+    https://launchdarkly.com/docs/sdk/features/evaluation-reasons
+    """
+    client = _ld_client
+    if client is None:
+        init_launchdarkly()
+        client = _ld_client
+    assert client is not None
+
+    detail = client.variation_detail(graph_key(), build_context(persona, action), {})
+    value = detail.value if isinstance(detail.value, dict) else {}
+    meta = value.get("_ldMeta") or {}
+    return {
+        "variationKey": meta.get("variationKey"),
+        "variationIndex": detail.variation_index,
+        "reason": _reason_dict(detail.reason),
+    }
+
+
 def _graph_served_meta(graph_tracker: Any) -> dict[str, Any]:
-    """Best-effort graph eval meta from AIGraphTracker (variation_key / version)."""
+    """Fallback graph meta from AIGraphTracker when variation_detail is unavailable."""
     return {
         "variationKey": getattr(graph_tracker, "_variation_key", None) or None,
-        "version": getattr(graph_tracker, "_version", None),
     }
 
 
@@ -464,6 +500,8 @@ def build_ld_transaction(
     model: str,
     messages: list[dict[str, str]],
     graph_tracker: Any = None,
+    served_meta: dict[str, Any] | None = None,
+    path: list[str] | None = None,
 ) -> dict[str, object]:
     """Payload for the UI 'LD details' overlay (last generate: sent + received).
 
@@ -473,8 +511,14 @@ def build_ld_transaction(
     """
     context = build_context(persona, action)
     gk = graph_key()
-    served = _graph_served_meta(graph_tracker) if graph_tracker is not None else {}
+    tracker_meta = _graph_served_meta(graph_tracker) if graph_tracker is not None else {}
+    served = dict(served_meta or {})
+    if not served.get("variationKey"):
+        served["variationKey"] = tracker_meta.get("variationKey")
     fallback = not graph_enabled
+    reason = served.get("reason")
+    if not graph_enabled:
+        reason = "graph disabled/missing — local node walk"
     return {
         "sent": {
             "configKey": gk,
@@ -509,12 +553,10 @@ def build_ld_transaction(
             "enabled": graph_enabled,
             "configKey": gk,
             "variationKey": served.get("variationKey"),
-            "version": served.get("version"),
-            "reason": (
-                None
-                if graph_enabled
-                else "graph disabled/missing — local node walk"
-            ),
+            "variationIndex": served.get("variationIndex"),
+            "reason": reason,
+            "specialist": specialist,
+            "path": list(path or []),
             "provider": provider,
             "model": model,
             "messages": messages,
@@ -1133,6 +1175,24 @@ def generate_stream(
         drawer_messages = _messages_for_node(fin_cfg.instructions or "", fin_user)
         drawer_model = fin_model
 
+    try:
+        served_meta = graph_evaluation_meta(persona, action)
+    except Exception as meta_exc:  # noqa: BLE001
+        print(
+            f"[generate] {persona.name}: graph variation detail unavailable ({meta_exc})",
+            flush=True,
+        )
+        served_meta = None
+    variation_key = (served_meta or {}).get("variationKey") or getattr(
+        graph_tracker, "_variation_key", None
+    )
+    reason = (served_meta or {}).get("reason") or {}
+    reason_kind = reason.get("kind") if isinstance(reason, dict) else reason
+    print(
+        f"[generate] {persona.name}: graph variation={variation_key!r} reason={reason_kind!r}",
+        flush=True,
+    )
+
     ld_tx = build_ld_transaction(
         persona=persona,
         action=action,
@@ -1143,6 +1203,8 @@ def generate_stream(
         model=drawer_model,
         messages=drawer_messages,
         graph_tracker=graph_tracker,
+        served_meta=served_meta,
+        path=path,
     )
 
     yield {
@@ -1218,6 +1280,8 @@ def generate_stream(
         pass
 
     yield {"type": "metrics", "metrics": metrics.to_dict()}
+    if isinstance(ld_tx.get("received"), dict):
+        ld_tx["received"]["metrics"] = metrics.to_dict()
     yield {
         "type": "done",
         "path": path,

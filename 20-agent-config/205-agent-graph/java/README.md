@@ -1,4 +1,4 @@
-# 25-agent-graph — Java web
+# 205-agent-graph — Java web
 
 Port **8252**. Requires Java **21+**, `LD_SDK_KEY`, a provisioned agent graph +
 six agent-mode node configs (see [../rest/](../rest/)), and local Ollama.
@@ -38,7 +38,7 @@ cd ../rest && ./create-all.sh
 ## Build & run
 
 ```bash
-cd 20-agent-config/25-agent-graph/java
+cd 20-agent-config/205-agent-graph/java
 ./mvnw -q -DskipTests package
 java -jar target/25-agent-graph.jar
 ```

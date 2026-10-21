@@ -1,4 +1,4 @@
-# 25-agent-graph — REST provisioning
+# 205-agent-graph — REST provisioning
 
 LaunchDarkly: **AgentControl** · **Agent graphs** · **Agents** (mode=`agent`)
 
@@ -27,7 +27,7 @@ export LD_API_ACCESS_TOKEN=api-...
 export LD_PROJECT_KEY=lunch-marcoly   # or your project
 export LD_ENVIRONMENT_KEY=test
 
-cd 20-agent-config/25-agent-graph/rest
+cd 20-agent-config/205-agent-graph/rest
 chmod +x *.sh
 ./create-all.sh
 ```

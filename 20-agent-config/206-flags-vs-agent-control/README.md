@@ -1,10 +1,10 @@
-# 26-flags-vs-agent-control
+# 206-flags-vs-agent-control
 
 **Status: Python :8260, Node :8261, Java :8262, .NET :8263.** AgentControl, Separate flags, and JSON flag run side by side. In the series portal as **Flag compare**.
 
-The [21](../21-agent-completion-config/) briefing, with a source control. The same four settings come from an AgentControl completion config, from four feature flags, or from one JSON flag.
+The [21](../201-agent-completion-config/) briefing, with a source control. The same four settings come from an AgentControl completion config, from four feature flags, or from one JSON flag.
 
-Settings: **model**, **system prompt**, **user prompt**, and **whether a judge scores the draft**. The judge reports a pass or fail on the screen. It does not rewrite the draft. That rewrite stays in [24](../24-agent-judges/).
+Settings: **model**, **system prompt**, **user prompt**, and **whether a judge scores the draft**. The judge reports a pass or fail on the screen. It does not rewrite the draft. That rewrite stays in [24](../204-agent-judges/).
 
 Two personas: **Conservative Charlie** and **Thoughtless Toby**, switchable with Previous/Next User. One targeting rule plus a fallthrough. The flag sources repeat that rule. The completion config holds it once.
 
@@ -31,7 +31,7 @@ Charlie’s name rule serves `concise-skeptic` (`llama3.2:3b`). Toby is the fall
 export LD_API_ACCESS_TOKEN="api-..."
 export LD_PROJECT_KEY="lunch-marcoly"
 export LD_ENVIRONMENT_KEY="test"
-cd 20-agent-config/26-flags-vs-agent-control/rest
+cd 20-agent-config/206-flags-vs-agent-control/rest
 ./create-original.sh
 ./attach-repair-tool.sh
 
@@ -49,7 +49,7 @@ Details, including delete: [rest/README.md](rest/README.md).
 export LD_API_ACCESS_TOKEN="api-..."
 export LD_PROJECT_KEY="lunch-marcoly"
 export LD_ENVIRONMENT_KEY="test"
-cd 20-agent-config/26-flags-vs-agent-control/rest
+cd 20-agent-config/206-flags-vs-agent-control/rest
 ./create-flags.sh
 ```
 
@@ -63,8 +63,8 @@ Restart the Python app after either script so it picks up the new code. The serv
 **Run the app** after the script succeeds and `LD_SDK_KEY` is set for that same environment:
 
 ```bash
-cd 20-agent-config/26-flags-vs-agent-control/python
-python 26-flags-vs-agent-control.py
+cd 20-agent-config/206-flags-vs-agent-control/python
+python 206-flags-vs-agent-control.py
 ```
 
 Open **http://127.0.0.1:8260/**. Use the repo virtualenv (`../../.venv/bin/python`) if `python` cannot import `ldai`.

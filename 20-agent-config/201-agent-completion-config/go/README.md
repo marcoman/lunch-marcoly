@@ -34,7 +34,7 @@ From this directory:
 
 ```bash
 go mod tidy
-go build -o 21-agent-completion-config .
+go build -o 201-agent-completion-config .
 ```
 
 ## Run
@@ -42,7 +42,7 @@ go build -o 21-agent-completion-config .
 Run from **this directory** so `../rest/messages/` (baseline fallback prompts) and `../stories/` (shared Yahoo cache) resolve:
 
 ```bash
-./21-agent-completion-config
+./201-agent-completion-config
 ```
 
 Without `LD_SDK_KEY` (or if LaunchDarkly is unreachable, or the config is turned off), generate still works — it falls back to the in-code **baseline-analyst** prompts (`../rest/messages/baseline-*.txt`) against local Ollama. A `status`-kind line in the output pane says so.
@@ -50,7 +50,7 @@ Without `LD_SDK_KEY` (or if LaunchDarkly is unreachable, or the config is turned
 ## Screen chrome
 
 ```text
-21-agent-completion-config[go]                Tickers: NVDA (2 stories) SPCX (2 stories)
+201-agent-completion-config[go]                Tickers: NVDA (2 stories) SPCX (2 stories)
 config:equity-briefing-completion                        Name: Conservative Charlie.
 (t)ickers  st(o)ries  (s)tatus  (g)enerate report  (q)uit                  (n)ext user
 ```

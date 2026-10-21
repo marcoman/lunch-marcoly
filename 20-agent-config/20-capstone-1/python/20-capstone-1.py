@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-20-capstone.py — thin HTTP adapter for the capstone UI.
+20-capstone-1.py — thin HTTP adapter for the capstone UI.
 
   GET  /              → index.html
   GET  /api/bootstrap → personas, tools, graph keys, persisted stories
@@ -41,7 +41,7 @@ from yahoo_news import (  # noqa: E402
     get_last_pair_cached,
 )
 
-APP_BANNER = "20-capstone[python]"
+APP_BANNER = "20-capstone-1[python]"
 PORT = 8290
 ROLES = ("assess", "report", "questions", "good", "finalize")
 

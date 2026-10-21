@@ -107,7 +107,7 @@ MODEL_BODY="$(jq -n \
     name: "Configure: briefing model",
     description: "26 separate flags. Model id for the equity briefing.",
     temporary: false,
-    tags: ["lunch-marcoly", "26-flags-vs-agent-control", "string"],
+    tags: ["lunch-marcoly", "206-flags-vs-agent-control", "string"],
     variations: [
       {value: $simple, name: "reckless-hype", description: "Toby fallthrough"},
       {value: $best, name: "concise-skeptic", description: "Charlie"}
@@ -123,7 +123,7 @@ SYSTEM_BODY="$(jq -n \
     name: "Configure: briefing system prompt",
     description: "26 separate flags. System prompt text.",
     temporary: false,
-    tags: ["lunch-marcoly", "26-flags-vs-agent-control", "string"],
+    tags: ["lunch-marcoly", "206-flags-vs-agent-control", "string"],
     variations: [
       {value: $reckless, name: "reckless-hype", description: "Toby fallthrough"},
       {value: $skeptic, name: "concise-skeptic", description: "Charlie"}
@@ -139,7 +139,7 @@ USER_BODY="$(jq -n \
     name: "Configure: briefing user prompt",
     description: "26 separate flags. User prompt template with {{ stories }}.",
     temporary: false,
-    tags: ["lunch-marcoly", "26-flags-vs-agent-control", "string"],
+    tags: ["lunch-marcoly", "206-flags-vs-agent-control", "string"],
     variations: [
       {value: $reckless, name: "reckless-hype", description: "Toby fallthrough"},
       {value: $skeptic, name: "concise-skeptic", description: "Charlie"}
@@ -152,7 +152,7 @@ JUDGE_BODY="$(jq -n '{
   name: "Enable: briefing judge",
   description: "26 separate flags. True scores the draft. False leaves the output plain.",
   temporary: false,
-  tags: ["lunch-marcoly", "26-flags-vs-agent-control", "boolean"],
+  tags: ["lunch-marcoly", "206-flags-vs-agent-control", "boolean"],
   variations: [
     {value: true, name: "On", description: "Score the draft"},
     {value: false, name: "Off", description: "Skip the judge"}
@@ -178,7 +178,7 @@ JSON_BODY="$(jq -n \
     name: "Configure: briefing JSON",
     description: "26 JSON flag. One body: model, systemPrompt, userPrompt, judge.",
     temporary: false,
-    tags: ["lunch-marcoly", "26-flags-vs-agent-control", "json"],
+    tags: ["lunch-marcoly", "206-flags-vs-agent-control", "json"],
     variations: [
       {value: $toby, name: "reckless-hype", description: "Toby fallthrough"},
       {value: $charlie, name: "concise-skeptic", description: "Charlie"}

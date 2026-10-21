@@ -1,6 +1,6 @@
 # Go (console)
 
-Terminal UI twin of the web ports, matching the [21-agent-completion-config Go console](../../21-agent-completion-config/go/) chrome and hotkeys. Same LaunchDarkly **AgentControl** completion config as 21 (`CompletionConfig` → model + system/user messages), but the teaching focus shifts to **tracked completion**: every generate wraps the LLM call in **`ldai.TrackMetricsOf`** so tokens / success / latency land on the config's **Monitoring** tab, and a **resumption token** lets two new hotkeys send thumbs feedback for that exact run.
+Terminal UI twin of the web ports, matching the [201-agent-completion-config Go console](../../201-agent-completion-config/go/) chrome and hotkeys. Same LaunchDarkly **AgentControl** completion config as 21 (`CompletionConfig` → model + system/user messages), but the teaching focus shifts to **tracked completion**: every generate wraps the LLM call in **`ldai.TrackMetricsOf`** so tokens / success / latency land on the config's **Monitoring** tab, and a **resumption token** lets two new hotkeys send thumbs feedback for that exact run.
 
 Keywords: **AgentControl** · **completion config** · **AI metrics** · **`TrackMetricsOf`** · **resumption token** · **feedback**
 
@@ -33,7 +33,7 @@ From this directory:
 
 ```bash
 go mod tidy
-go build -o 22-config-outside-code .
+go build -o 202-config-outside-code .
 ```
 
 ## Run
@@ -41,7 +41,7 @@ go build -o 22-config-outside-code .
 Run from **this directory** so `../rest/messages/` (baseline fallback prompts) and `../stories/` (shared Yahoo cache) resolve:
 
 ```bash
-./22-config-outside-code
+./202-config-outside-code
 ```
 
 Without `LD_SDK_KEY` (or if LaunchDarkly is unreachable, or the config is turned off), generate still works — it falls back to the in-code **baseline-analyst** prompts (`../rest/messages/baseline-*.txt`) against local Ollama. That path is **untracked**: no Monitoring events, no resumption token, and `+` / `-` report "no tracked report yet" until a real AgentControl-served generate succeeds.
@@ -49,7 +49,7 @@ Without `LD_SDK_KEY` (or if LaunchDarkly is unreachable, or the config is turned
 ## Screen chrome
 
 ```text
-22-config-outside-code[go]                    Tickers: NVDA (2 stories) SPCX (2 stories)
+202-config-outside-code[go]                    Tickers: NVDA (2 stories) SPCX (2 stories)
 config:equity-briefing-tracked-completion                            Name: Best Betty.
 (t)ickers  st(o)ries  (s)tatus  (g)enerate  (+)up  (-)down  (q)uit          (n)ext user
 ```
@@ -83,13 +83,13 @@ Typical session: `o` → `g` → `+` (or `-`) → `s` → `n` → `g` (Anonymous
 
 | File | Role |
 |------|------|
-| `main.go` | Raw-terminal TUI (chrome, hotkeys incl. `+`/`-`, scrollback) — adapted from [21-agent-completion-config/go/main.go](../../21-agent-completion-config/go/main.go) |
+| `main.go` | Raw-terminal TUI (chrome, hotkeys incl. `+`/`-`, scrollback) — adapted from [201-agent-completion-config/go/main.go](../../201-agent-completion-config/go/main.go) |
 | `agent.go` | **LD insertion:** `aiClient.CompletionConfig(...)` → `config.CreateTracker()` → `ldai.TrackMetricsOf(...)` for generate; `aiClient.CreateTracker(token, ctx)` → `tracker.TrackFeedback(...)` for thumbs. See the file header for the full read-order. |
-| `yahoo.go` | news waterfall (Finnhub → Massive → Yahoo) + shared `../stories/` cache — unchanged from [21-agent-completion-config/go/yahoo.go](../../21-agent-completion-config/go/yahoo.go) / [01-reference-agent/go/yahoo.go](../../../01-reference-agent/go/yahoo.go) |
+| `yahoo.go` | news waterfall (Finnhub → Massive → Yahoo) + shared `../stories/` cache — unchanged from [201-agent-completion-config/go/yahoo.go](../../201-agent-completion-config/go/yahoo.go) / [01-reference-agent/go/yahoo.go](../../../01-reference-agent/go/yahoo.go) |
 
 ## Go AI SDK note (API quirks vs Python / Node / .NET)
 
-Builds on the module-path quirk documented in [21/go/README.md](../../21-agent-completion-config/go/README.md#go-ai-sdk-note-api-quirks-vs-python--node--net) (this example imports the same separate `github.com/launchdarkly/go-server-sdk-ai` module, package `ldai`, aliased `ld` here). Additional quirks specific to **tracked completion**:
+Builds on the module-path quirk documented in [21/go/README.md](../../201-agent-completion-config/go/README.md#go-ai-sdk-note-api-quirks-vs-python--node--net) (this example imports the same separate `github.com/launchdarkly/go-server-sdk-ai` module, package `ldai`, aliased `ld` here). Additional quirks specific to **tracked completion**:
 
 - **`TrackMetricsOf` is a free generic function, not a `Tracker` method.** Go methods can't declare their own type parameters, so the SDK exposes `ldai.TrackMetricsOf[T any](t *Tracker, extract func(T) AIMetrics, operation func() (T, error)) (T, error)` at package scope instead of `tracker.TrackMetricsOf(...)`. Python/Node/.NET all attach the equivalent (`track_metrics_of` / `trackMetricsOf` / `TrackMetricsOf`) directly as a method on the tracker object — call-site shape differs, behavior doesn't.
 - **`Tracker.ResumptionToken()` is synchronous and local** — it base64-encodes `{runId, configKey, variationKey, version}`; minting one costs no network round trip. `aiClient.CreateTracker(token, ctx)` decodes it back into a `*Tracker` that reuses the original `runId`, so feedback events correlate with the generate that produced them in Monitoring. Same contract as the other AI SDKs' `createTracker(token, context)` / `create_tracker(token, context)`.
@@ -111,5 +111,5 @@ Builds on the module-path quirk documented in [21/go/README.md](../../21-agent-c
 
 - [../README.md](../README.md) — example landing (architecture diagram, ports, `get-feedback-status.sh`)
 - [../rest/README.md](../rest/README.md) — provisioning + feedback status script
-- [21-agent-completion-config/go](../../21-agent-completion-config/go/) — completion config without tracking (baseline for this port's chrome)
+- [201-agent-completion-config/go](../../201-agent-completion-config/go/) — completion config without tracking (baseline for this port's chrome)
 - [../python/README.md](../python/README.md) · [../node/README.md](../node/README.md) · [../java/README.md](../java/README.md) · [../dotnet/README.md](../dotnet/README.md) — web twins

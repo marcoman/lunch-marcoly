@@ -1,4 +1,4 @@
-# 29-team-rollout
+# 209-team-rollout
 
 **Status: stub — not implemented yet.**
 
@@ -35,7 +35,7 @@ one assignment.
 - Toby, Betty, and the other briefing people are the users. The team control
   is separate from the person.
 - Fixed percentage. Do not add rollout stages or a clock.
-- Does not roll into [20-capstone](../20-capstone/).
+- Does not roll into [20-capstone-1](../20-capstone-1/).
 - **Do not use ports :8290–:8293.** Those belong to the capstone. Pick ports
   when this lesson is built. Not in the series portal until then.
 

@@ -1,4 +1,4 @@
-# 25-agent-graph
+# 205-agent-graph
 
 LaunchDarkly **AgentControl Agent Graphs**: a multi-step equity briefing demo.
 
@@ -50,7 +50,7 @@ export LD_ENVIRONMENT_KEY=test
 ollama pull llama3.2:3b
 
 cd rest && ./create-all.sh
-cd ../python && python 25-agent-graph.py   # → http://127.0.0.1:8250/
+cd ../python && python 205-agent-graph.py   # → http://127.0.0.1:8250/
 ```
 
 | Language | Port | Entry |
@@ -77,7 +77,7 @@ Series portals: Python **:8200** · Node **:8201** · Java **:8202** · .NET **:
 
 ## Related
 
-- [21-agent-completion-config](../21-agent-completion-config/) — completion + personas
-- [23-agent-tools](../23-agent-tools/) — tools pattern
-- [24-agent-judges](../24-agent-judges/) — Trace UX
+- [201-agent-completion-config](../201-agent-completion-config/) — completion + personas
+- [203-agent-tools](../203-agent-tools/) — tools pattern
+- [204-agent-judges](../204-agent-judges/) — Trace UX
 - [20-agent-config README](../README.md)

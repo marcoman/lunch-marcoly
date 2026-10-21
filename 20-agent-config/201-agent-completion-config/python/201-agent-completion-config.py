@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-21-agent-completion-config.py — thin HTTP adapter for the AgentControl demo UI.
+201-agent-completion-config.py — thin HTTP adapter for the AgentControl demo UI.
 
 =============================================================================
 HOW TO READ THIS FILE
@@ -49,7 +49,7 @@ from yahoo_news import (  # noqa: E402
     get_last_pair_cached,
 )
 
-APP_BANNER = "21-agent-completion-config[python]"
+APP_BANNER = "201-agent-completion-config[python]"
 # Distinct from 01-reference-agent (8090).
 PORT = 8210
 

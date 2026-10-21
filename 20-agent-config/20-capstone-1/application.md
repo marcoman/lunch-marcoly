@@ -9,11 +9,11 @@ Series setup: [20-agent-config README](../README.md).
 
 ## Goal
 
-1. **Graph** ([25](../25-agent-graph/)): assess → specialist → finalize. The joke specialist branch is not in this graph.
-2. **Tools** ([23](../23-agent-tools/)): three Library tools the learner checks. The app runs the checked ones. The model cannot skip them.
-3. **Judges** ([24](../24-agent-judges/)): both judges score the specialist draft. The scores do not rewrite it.
-4. **Feedback** ([22](../22-config-outside-code/)): thumbs record that same draft.
-5. **Completion** ([21](../21-agent-completion-config/)): personas and report-node targeting. This app does not replace that lesson.
+1. **Graph** ([25](../205-agent-graph/)): assess → specialist → finalize. The joke specialist branch is not in this graph.
+2. **Tools** ([23](../203-agent-tools/)): three Library tools the learner checks. The app runs the checked ones. The model cannot skip them.
+3. **Judges** ([24](../204-agent-judges/)): both judges score the specialist draft. The scores do not rewrite it.
+4. **Feedback** ([22](../202-config-outside-code/)): thumbs record that same draft.
+5. **Completion** ([21](../201-agent-completion-config/)): personas and report-node targeting. This app does not replace that lesson.
 
 `21` is the completion-config base. The capstone does not reuse `equity-briefing-completion` or `equity-briefing-graph`.
 
@@ -93,7 +93,7 @@ Example 23's `analyze-ticker-stories` and `compare-ticker-analyses` stay in that
 
 ## Judges and feedback
 
-Judges run at 100% on the specialist draft, before tools. Threshold and judge models follow [24](../24-agent-judges/application.md). A failing score is shown. It does not rewrite the draft and it does not choose Charlie, so the tool steps keep a stable input.
+Judges run at 100% on the specialist draft, before tools. Threshold and judge models follow [24](../204-agent-judges/application.md). A failing score is shown. It does not rewrite the draft and it does not choose Charlie, so the tool steps keep a stable input.
 
 | Name | Key |
 |------|-----|
@@ -156,8 +156,8 @@ restarts.
 
 ## Leave in place
 
-- [21](../21-agent-completion-config/) through [25](../25-agent-graph/) — single-idea lessons, all languages they already have.
-- [26-flags-vs-agent-control](../26-flags-vs-agent-control/) — the flag-versus-config comparison.
+- [21](../201-agent-completion-config/) through [25](../205-agent-graph/) — single-idea lessons, all languages they already have.
+- [206-flags-vs-agent-control](../206-flags-vs-agent-control/) — the flag-versus-config comparison.
 - Series portal stays on `21`–`26`. This app is not a portal tab.
 - Number **27** stays free for the next single-idea lesson.
 

@@ -1,5 +1,5 @@
 """
-agent_core.py — 24-agent-judges domain logic (no HTTP here).
+agent_core.py — 204-agent-judges domain logic (no HTTP here).
 
 =============================================================================
 HOW TO READ THIS FILE
@@ -259,6 +259,72 @@ def evaluate_completion(persona: Persona, stories_text: str):
     )
 
 
+def _reason_dict(reason: Any) -> dict[str, Any] | None:
+    """Normalize an SDK evaluation reason to the dict the Received tab reads."""
+    if reason is None:
+        return None
+    if isinstance(reason, dict):
+        return reason or None
+    kind = getattr(reason, "kind", None)
+    if kind is None:
+        return None
+    kind_text = kind if isinstance(kind, str) else getattr(kind, "value", str(kind))
+    out: dict[str, Any] = {"kind": kind_text}
+    rule_index = getattr(reason, "rule_index", None)
+    if rule_index is None:
+        rule_index = getattr(reason, "ruleIndex", None)
+    if rule_index is not None:
+        out["ruleIndex"] = rule_index
+    rule_id = getattr(reason, "rule_id", None)
+    if rule_id is None:
+        rule_id = getattr(reason, "ruleId", None)
+    if rule_id:
+        out["ruleId"] = rule_id
+    return out
+
+
+def evaluation_meta(persona: Persona) -> dict[str, Any]:
+    """Metadata for the served variation (public SDK: variation_detail).
+
+    completion_config returns model and messages. The variation key and match
+    reason live on variation_detail: ``_ldMeta`` plus ``reason``.
+    LaunchDarkly: evaluation reasons
+    https://launchdarkly.com/docs/sdk/features/evaluation-reasons
+    """
+    client = _ld_client
+    if client is None:
+        init_launchdarkly()
+        client = _ld_client
+    assert client is not None
+
+    detail = client.variation_detail(
+        config_key(),
+        build_context(persona),
+        skeptic_completion_default().to_dict(),
+    )
+    value = detail.value if isinstance(detail.value, dict) else {}
+    meta = value.get("_ldMeta") or {}
+    return {
+        "variationKey": meta.get("variationKey"),
+        "variationIndex": detail.variation_index,
+        "reason": _reason_dict(detail.reason),
+    }
+
+
+def log_served_variation(persona: Persona, meta: dict[str, Any] | None) -> None:
+    """One-line server log: which AgentControl variation we received."""
+    if not meta:
+        print(f"[generate] {persona.name}: variation=(unknown)", flush=True)
+        return
+    key = meta.get("variationKey") or "(none)"
+    reason = meta.get("reason") or {}
+    reason_kind = reason.get("kind") if isinstance(reason, dict) else reason
+    print(
+        f"[generate] {persona.name}: variation={key!r} reason={reason_kind!r}",
+        flush=True,
+    )
+
+
 def messages_as_dicts(config) -> list[dict[str, str]]:
     out: list[dict[str, str]] = []
     for msg in config.messages or []:
@@ -285,6 +351,9 @@ def build_ld_transaction(
     messages: list[dict[str, str]],
     served_meta: dict[str, Any] | None,
     enabled: bool | None,
+    tracked: bool = False,
+    resumption_token: str | None = None,
+    judge_keys: list[str] | None = None,
 ) -> dict[str, object]:
     """Payload for the UI 'LD details' overlay (last generate: sent + received)."""
     context = build_context(persona)
@@ -322,14 +391,12 @@ def build_ld_transaction(
             "configKey": config_key_value,
             "variationKey": (served_meta or {}).get("variationKey"),
             "variationIndex": (served_meta or {}).get("variationIndex"),
-            "reason": reason,
-            "version": (served_meta or {}).get("version"),
-            "versionKey": (served_meta or {}).get("versionKey"),
-            "ldMode": (served_meta or {}).get("mode"),
-            "modelKey": (served_meta or {}).get("modelKey"),
-            "modelVersion": (served_meta or {}).get("modelVersion"),
+            "reason": reason if isinstance(reason, dict) else None,
             "provider": provider,
             "model": model,
+            "judgeKeys": list(judge_keys or []),
+            "tracked": tracked,
+            "resumptionToken": None if resumption_token is None else str(resumption_token),
             "messages": messages,
         },
     }
@@ -498,6 +565,17 @@ def generate_stream(
         yield {"type": "done"}
         return
 
+    resumption_token = getattr(tracker, "resumption_token", None)
+    try:
+        served_meta = evaluation_meta(persona)
+    except Exception as meta_exc:  # noqa: BLE001
+        print(
+            f"[generate] {persona.name}: variation detail unavailable ({meta_exc})",
+            flush=True,
+        )
+        served_meta = None
+    log_served_variation(persona, served_meta)
+
     prompt_preview = user_message_text(messages) or stories_text
     yield {
         "type": "meta",
@@ -519,8 +597,11 @@ def generate_stream(
             provider=provider,
             model=model,
             messages=messages,
-            served_meta=None,
+            served_meta=served_meta,
             enabled=True,
+            tracked=True,
+            resumption_token=resumption_token,
+            judge_keys=[judge_fidelity_key(), judge_discipline_key()],
         ),
     }
 

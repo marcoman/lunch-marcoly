@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared helpers for 20-capstone REST provisioning.
+# Shared helpers for 20-capstone-1 REST provisioning.
 # LaunchDarkly: AgentControl · agent graphs · Library tools · judges
 # https://launchdarkly.com/docs/api/agent-control
 # https://launchdarkly.com/docs/home/agentcontrol/agent-graphs

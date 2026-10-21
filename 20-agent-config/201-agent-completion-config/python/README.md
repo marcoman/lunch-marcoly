@@ -32,8 +32,8 @@ ollama list
 
 ```bash
 source .venv/bin/activate          # from repo root
-cd 20-agent-config/21-agent-completion-config/python
-python 21-agent-completion-config.py
+cd 20-agent-config/201-agent-completion-config/python
+python 201-agent-completion-config.py
 ```
 
 Open **http://127.0.0.1:8210/** (01 uses 8090).
@@ -51,7 +51,7 @@ Open **http://127.0.0.1:8210/** (01 uses 8090).
 
 | File | Role |
 |------|------|
-| `21-agent-completion-config.py` | HTTP + SSE |
+| `201-agent-completion-config.py` | HTTP + SSE |
 | `agent_core.py` | **LD insertion:** `completion_config` → Ollama/Bedrock stream |
 | `yahoo_news.py` | News waterfall (Finnhub → Massive → Yahoo) + `../stories/` cache |
 | `index.html` | Browser UI |

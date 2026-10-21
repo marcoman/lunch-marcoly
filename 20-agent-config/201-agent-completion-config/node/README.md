@@ -32,7 +32,7 @@ ollama list
 ## Run
 
 ```bash
-cd 20-agent-config/21-agent-completion-config/node
+cd 20-agent-config/201-agent-completion-config/node
 npm install
 npm start
 # or: node 21-agent-completion-config.js

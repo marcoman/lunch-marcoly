@@ -1,4 +1,4 @@
-# 25-agent-graph — Python web
+# 205-agent-graph — Python web
 
 LaunchDarkly **Agent Graphs**: assess → specialist → finalize with Trace.
 
@@ -15,9 +15,11 @@ ollama pull llama3.2:3b
 cd ../rest && ./create-all.sh
 
 cd ../python
-python 25-agent-graph.py
+python 205-agent-graph.py
 # → http://127.0.0.1:8250/
 ```
+
+After a run, **LaunchDarkly → Received** shows the graph variation, evaluation reason, specialist, and node path.
 
 ## What to click
 

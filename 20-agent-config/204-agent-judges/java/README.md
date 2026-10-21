@@ -1,4 +1,4 @@
-# 24-agent-judges — Java web
+# 204-agent-judges — Java web
 
 Port **8242**. Requires Java **21+**, `LD_SDK_KEY`, provisioned completion + judge
 configs, and local Ollama.
@@ -33,7 +33,7 @@ cd ../rest
 ## Build & run
 
 ```bash
-cd 20-agent-config/24-agent-judges/java
+cd 20-agent-config/204-agent-judges/java
 ./mvnw -q -DskipTests package
 java -jar target/24-agent-judges.jar
 ```

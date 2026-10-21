@@ -1,6 +1,6 @@
 # Agent judges — application specification
 
-This document defines **24-agent-judges**: the equity briefing agent from [01-reference-agent](../../01-reference-agent/application.md) / [21-agent-completion-config](../21-agent-completion-config/), with LaunchDarkly **AgentControl Judges** as a **runtime quality gate**. When judges fail, the app shows the bad draft and scores, then regenerates once with a safer variation (Charlie).
+This document defines **204-agent-judges**: the equity briefing agent from [01-reference-agent](../../01-reference-agent/application.md) / [201-agent-completion-config](../201-agent-completion-config/), with LaunchDarkly **AgentControl Judges** as a **runtime quality gate**. When judges fail, the app shows the bad draft and scores, then regenerates once with a safer variation (Charlie).
 
 Repository conventions: [project.md](../../project.md).  
 Series setup: [20-agent-config README](../README.md).  
@@ -163,7 +163,7 @@ No Anthropic key required for v1. Optional local alt tried in class: `qwen2.5:7b
 
 ## Related
 
-- [21-agent-completion-config](../21-agent-completion-config/) — completion + personas (base shape)
-- [23-agent-tools](../23-agent-tools/) — tools (optional future fidelity sharpening)
-- [22-config-outside-code](../22-config-outside-code/) — tracked metrics + feedback
+- [201-agent-completion-config](../201-agent-completion-config/) — completion + personas (base shape)
+- [203-agent-tools](../203-agent-tools/) — tools (optional future fidelity sharpening)
+- [202-config-outside-code](../202-config-outside-code/) — tracked metrics + feedback
 - [Judges](https://launchdarkly.com/docs/home/agentcontrol/judges)

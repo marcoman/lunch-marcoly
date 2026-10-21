@@ -12,4 +12,4 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo
 echo "Provision complete."
 echo "  Graph:  equity-briefing-graph"
-echo "  Python: cd ../python && python 25-agent-graph.py"
+echo "  Python: cd ../python && python 205-agent-graph.py"

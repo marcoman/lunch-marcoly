@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-22-config-outside-code.py — thin HTTP adapter for the tracked-completion demo UI.
+202-config-outside-code.py — thin HTTP adapter for the tracked-completion demo UI.
 
 Same jobs as 01-reference-agent.py / 21:
   1. Serve index.html
@@ -38,7 +38,7 @@ from yahoo_news import (  # noqa: E402
     get_last_pair_cached,
 )
 
-APP_BANNER = "22-config-outside-code[python]"
+APP_BANNER = "202-config-outside-code[python]"
 # Distinct from 01 (8090) and 21 (8210–8212).
 PORT = 8220
 

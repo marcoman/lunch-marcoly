@@ -33,7 +33,7 @@ CREATE_BODY="$(jq -n \
   '{
     key: $key,
     name: $name,
-    description: "Completion config for 23-agent-tools: Library tools analyze-ticker-stories + compare-ticker-analyses. Anthropic for reliable tool calling.",
+    description: "Completion config for 203-agent-tools: Library tools analyze-ticker-stories + compare-ticker-analyses. Anthropic for reliable tool calling.",
     mode: "completion",
     tags: ["lunch-marcoly", "agent-tools", "equity-briefing"],
     defaultVariation: {

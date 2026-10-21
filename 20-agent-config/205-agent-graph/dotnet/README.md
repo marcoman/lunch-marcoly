@@ -1,4 +1,4 @@
-# 25-agent-graph — .NET web
+# 205-agent-graph — .NET web
 
 Port **8253**. Requires .NET **10**, `LD_SDK_KEY`, a provisioned agent graph +
 node configs, and local Ollama.
@@ -26,7 +26,7 @@ cd ../rest
 ## Build & run
 
 ```bash
-cd 20-agent-config/25-agent-graph/dotnet
+cd 20-agent-config/205-agent-graph/dotnet
 dotnet run
 ```
 

@@ -1,6 +1,6 @@
 # REST — Original variation
 
-Provisions the AgentControl side of [26-flags-vs-agent-control](../README.md). Separate flags and the JSON flag are not in this script.
+Provisions the AgentControl side of [206-flags-vs-agent-control](../README.md). Separate flags and the JSON flag are not in this script.
 
 | Resource | Key | Role |
 |----------|-----|------|
@@ -20,7 +20,7 @@ AgentControl:
 export LD_API_ACCESS_TOKEN="api-..."
 export LD_PROJECT_KEY="lunch-marcoly"
 export LD_ENVIRONMENT_KEY="test"
-cd 20-agent-config/26-flags-vs-agent-control/rest
+cd 20-agent-config/206-flags-vs-agent-control/rest
 ./create-original.sh
 ./attach-repair-tool.sh
 ```

@@ -2,7 +2,7 @@
 
 Create, read, retarget, and delete the **`equity-briefing-completion`** AgentControl config with the [LaunchDarkly REST API](https://launchdarkly.com/docs/guides/api/rest-api).
 
-This is the **primary** provisioning path for [21-agent-completion-config](../README.md). Use the [UI checklist](../PROVISIONING.md) only if you prefer the dashboard.
+This is the **primary** provisioning path for [201-agent-completion-config](../README.md). Use the [UI checklist](../PROVISIONING.md) only if you prefer the dashboard.
 
 Keywords: **AgentControl** · **completion config** · **AI model config** · **config variations** · **config targeting** · **semantic patch**
 
@@ -63,7 +63,7 @@ ollama list                # confirm all three appear
 ## How to run
 
 ```bash
-cd 20-agent-config/21-agent-completion-config/rest
+cd 20-agent-config/201-agent-completion-config/rest
 chmod +x *.sh
 ./create-config.sh
 ./update-name-targeting.sh

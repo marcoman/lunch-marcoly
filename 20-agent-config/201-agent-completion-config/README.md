@@ -1,8 +1,8 @@
-# 21-agent-completion-config
+# 201-agent-completion-config
 
 LaunchDarkly **AgentControl** for the equity briefing agent: serve **model**, **system prompt**, and **user prompt** from an AgentControl **completion config** at runtime—without redeploying.
 
-Agent mode, one instructions value, is the stub [27-agent-mode](../27-agent-mode/). This example stays completion mode.
+Agent mode, one instructions value, is the stub [207-agent-mode](../207-agent-mode/). This example stays completion mode.
 
 Series landing page (Ollama, AWS SSO, shared env): [../README.md](../README.md).
 
@@ -20,7 +20,7 @@ Keywords: **AgentControl** · **completion config** · **completion mode** · **
 
 ## Architecture
 
-The user picks a persona and generates a briefing. LaunchDarkly **targets** a variation (prompts + model) from the context `name`; the app streams the model response—no tools yet (those arrive in [23](../23-agent-tools/)).
+The user picks a persona and generates a briefing. LaunchDarkly **targets** a variation (prompts + model) from the context `name`; the app streams the model response—no tools yet (those arrive in [23](../203-agent-tools/)).
 
 ```mermaid
 flowchart TB
@@ -116,7 +116,7 @@ If `ollama list` is missing a tag, switching to that persona and pressing **Gene
 ## Relationship to 01-reference-agent
 
 ```text
-01-reference-agent          21-agent-completion-config
+01-reference-agent          201-agent-completion-config
 ─────────────────────       ──────────────────────────
 system_prompt.txt    →      AgentControl system message
 AGENT_LLM_MODE       →      AgentControl model (+ provider)
@@ -178,7 +178,7 @@ export PATH="/usr/local/share/dotnet:$PATH"
 cd dotnet && dotnet restore && dotnet build && dotnet run
 
 # Go console (no port)
-cd go && go mod tidy && go build -o 21-agent-completion-config . && ./21-agent-completion-config
+cd go && go mod tidy && go build -o 201-agent-completion-config . && ./201-agent-completion-config
 ```
 
 Full steps per language: [dotnet/README.md](dotnet/README.md) · [go/README.md](go/README.md).

@@ -1,8 +1,8 @@
-# 22-config-outside-code
+# 202-config-outside-code
 
 AgentControl **tracked completion**: model + prompts live in LaunchDarkly, and every generate is wrapped in **`track_metrics_of`** so tokens / success / latency show up in the config **Monitoring** tab. Thumbs up/down send **feedback** via a resumption token.
 
-Templated from [01-reference-agent](../../01-reference-agent/) (same news → generate UI). Sibling of [21-agent-completion-config](../21-agent-completion-config/); 21 teaches completion config + personas; **22 headlines metrics + feedback**.
+Templated from [01-reference-agent](../../01-reference-agent/) (same news → generate UI). Sibling of [201-agent-completion-config](../201-agent-completion-config/); 21 teaches completion config + personas; **22 headlines metrics + feedback**.
 
 Inspired by: [Managing AI model configuration outside of code (Node.js)](https://launchdarkly.com/docs/guides/agentcontrol/config-outside-code-nodejs) — same idea here with Ollama + Anthropic (Python / Node / Java).
 
@@ -83,7 +83,7 @@ export ANTHROPIC_API_KEY=sk-ant-...
 # Python (8220)
 cd ../python
 source ../../../.venv/bin/activate
-python 22-config-outside-code.py
+python 202-config-outside-code.py
 
 # Node (8221)
 cd ../node && npm install && npm start
@@ -96,7 +96,7 @@ export PATH="/usr/local/share/dotnet:$PATH"
 cd ../dotnet && dotnet restore && dotnet build && dotnet run
 
 # Go console (raw-terminal TUI; no port)
-cd ../go && go mod tidy && go build -o 22-config-outside-code . && ./22-config-outside-code
+cd ../go && go mod tidy && go build -o 202-config-outside-code . && ./202-config-outside-code
 ```
 
 Java note: no official **Java AI SDK** yet — server SDK JSON evaluation + best-effort `track` for thumbs.

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared helpers for 24-agent-judges REST provisioning.
+# Shared helpers for 204-agent-judges REST provisioning.
 # LaunchDarkly: AgentControl · Judges · completion configs
 # https://launchdarkly.com/docs/api/agent-control
 # https://launchdarkly.com/docs/home/agentcontrol/judges

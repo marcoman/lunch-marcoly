@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared helpers for 25-agent-graph REST provisioning.
+# Shared helpers for 205-agent-graph REST provisioning.
 # LaunchDarkly: AgentControl · Agent graphs · Agents
 # https://launchdarkly.com/docs/api/agent-control
 # https://launchdarkly.com/docs/home/agentcontrol/agent-graphs

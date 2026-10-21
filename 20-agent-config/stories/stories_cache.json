@@ -1,25 +1,25 @@
 {
-  "updated_at": "2026-10-19T19:02:20Z",
+  "updated_at": "2026-10-20T23:19:18+00:00",
   "tickers": {
     "NVDA": {
       "name": "NVDA",
       "stories": [
         {
-          "title": "Why EOS Energy Soared as Much as 11% Today",
+          "title": "SpaceX Crushes Q3 with Some Help From Musk",
           "publisher": "Yahoo",
-          "published": "2026-10-19T17:50:57Z",
-          "link": "https://finnhub.io/api/news?id=c22d903841adccf4df301d76d827ee3eab9b8d314160ebeef474229643628f09",
-          "uuid": "143009420"
+          "published": "2026-10-20T17:32:39-04:00",
+          "link": "https://finnhub.io/api/news?id=671e31bda042a32f2c18bc99c14a3961fcd5257bf224c2c4722811f77330ed8b",
+          "uuid": "143032056"
         },
         {
-          "title": "AMZN Stock Set For Best Day In Three Months: Morgan Stanley Expects Amazon's AWS To Grow 47% In 2027, Denotes Stock As 'Top Pick'",
+          "title": "Major gold holder backs NVIDIA challenger",
           "publisher": "Yahoo",
-          "published": "2026-10-19T17:48:58Z",
-          "link": "https://finnhub.io/api/news?id=948792b45d937f2b1377bed687c0cd01d2b00ef91cf990f3dbb58b1ae98faf0b",
-          "uuid": "143009424"
+          "published": "2026-10-20T17:28:00-04:00",
+          "link": "https://finnhub.io/api/news?id=051c6dd9f8f62ceba74591218953033eb7b944ec3cc7cbeac9777e83d0458be7",
+          "uuid": "143032057"
         }
       ],
-      "cached_at": "2026-10-19T19:02:20Z"
+      "cached_at": "2026-10-20T23:19:18+00:00"
     },
     "RKLB": {
       "name": "Rocket Lab Corporation",
@@ -43,21 +43,21 @@
       "name": "SPCX",
       "stories": [
         {
-          "title": "Buying dip in tech market, Anthropic's \"Public Benefit\" fund, and Musk's SpaceX pledge",
+          "title": "Dow Jones Futures Rise; SpaceX Crushes Views, Eyes Tesla Merger; Supermicro Reports Blowout Sales",
           "publisher": "Yahoo",
-          "published": "2026-10-19T17:45:44Z",
-          "link": "https://finnhub.io/api/news?id=9387af110791488e2a9628e7723ac62dc7071431fce61ec140ddc13a3bb12581",
-          "uuid": "143009834"
+          "published": "2026-10-20T18:06:22-04:00",
+          "link": "https://finnhub.io/api/news?id=db917cb5240a9ff8ca7a04415bcc3eebceb2030c8e6dfbeab45a09f65f705f82",
+          "uuid": "143032377"
         },
         {
-          "title": "5 Dividend Stocks for Investors Who Want Income Without the Market’s Wild Swings",
+          "title": "SpaceX-Tesla merger? Musk speaks on 'tap-dancing through a minefield'",
           "publisher": "Yahoo",
-          "published": "2026-10-19T17:45:10Z",
-          "link": "https://finnhub.io/api/news?id=4982dffdeb351849a404906646263fd5d01cb6bb6967bbf33d83da719d37b0ce",
-          "uuid": "143009597"
+          "published": "2026-10-20T17:57:18-04:00",
+          "link": "https://finnhub.io/api/news?id=66509a6bac90fcb81bf82a4290be052d477a0ba1fe1edcbadc4676ddfa476745",
+          "uuid": "143032125"
         }
       ],
-      "cached_at": "2026-10-19T19:02:20Z"
+      "cached_at": "2026-10-20T23:19:18+00:00"
     }
   },
   "last_pair": {

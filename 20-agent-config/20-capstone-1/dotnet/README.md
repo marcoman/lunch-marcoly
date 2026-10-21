@@ -1,4 +1,4 @@
-# 20-capstone — .NET web
+# 20-capstone-1 — .NET web
 
 Same capstone as the Node app: assess → specialist → judges → checked tools → finalize.
 
@@ -22,7 +22,7 @@ export LD_SDK_KEY="sdk-..."
 export PATH="/usr/local/share/dotnet:$PATH"
 ollama pull llama3.2:3b
 
-cd 20-agent-config/20-capstone/dotnet
+cd 20-agent-config/20-capstone-1/dotnet
 dotnet run
 ```
 

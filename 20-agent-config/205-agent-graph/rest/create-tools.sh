@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Create Library tools for 25-agent-graph scorers (Trace teaching).
+# Create Library tools for 205-agent-graph scorers (Trace teaching).
 # LaunchDarkly: AgentControl · Library tools
 # https://launchdarkly.com/docs/api/agent-control/post-ai-tool
 # https://launchdarkly.com/docs/home/agentcontrol/tools

@@ -1,4 +1,4 @@
-# 22-config-outside-code — Node web
+# 202-config-outside-code — Node web
 
 Port **8221**. Requires Node 20+, `LD_SDK_KEY`, and (for Best Betty) `ANTHROPIC_API_KEY`.
 

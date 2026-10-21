@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agent completion config</title>
   <!--
-    UI for 22-config-outside-code (Python web).
+    UI for 202-config-outside-code (Python web).
 
     Same flow as 01-reference-agent, but Generate uses LaunchDarkly AgentControl
     for model + system/user messages (completion config).
@@ -759,7 +759,7 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="app-banner" id="app-banner">23-agent-tools[python]</div>
+    <div class="app-banner" id="app-banner">203-agent-tools[python]</div>
     <h1>AgentControl tools</h1>
     <p class="subtitle">Pull ticker headlines, then generate a briefing via a Library tools loop (analyze → compare).</p>
 
@@ -915,7 +915,7 @@
         <div class="ld-block-title">What this example is</div>
         <p class="ld-about-p">This example teaches AgentControl <strong>Library tools</strong>: tool schemas live in LaunchDarkly; the app runs a model-driven loop (analyze each ticker, then compare) and tracks tool calls.</p>
         <div class="ld-block-title">What we show</div>
-        <p class="ld-about-p">Generate with stories loaded. Trace / response show tool use; Sent / Received show the completion config that carried the tool definitions. Handlers stay in app code; schemas stay in LD.</p>
+        <p class="ld-about-p">Generate with stories loaded. Received shows the served variation, the tools attached to it, the evaluation reason, and the metrics <code>track_metrics_of</code> recorded. Trace shows each tool call. Handlers stay in app code; schemas stay in LD.</p>
         <div class="ld-block-title">Why it matters</div>
         <p class="ld-about-p">You separate <em>what tools exist</em> (governed in LaunchDarkly) from <em>how they execute</em> (your handlers)—so tool contracts can evolve without rewriting the whole agent.</p>
       </div>
@@ -934,7 +934,7 @@
      * Generate AI Report is the only action that runs the LLM.
      */
 
-    const STORAGE_KEY = "22-config-outside-code-stories-v1";
+    const STORAGE_KEY = "202-config-outside-code-stories-v1";
     const STORIES_CHROME_KEY = "22-stories-chrome-collapsed";
 
     let personas = [];
@@ -1388,6 +1388,9 @@
       `;
 
       const reason = received.reason || {};
+      const reasonKind = reason && typeof reason === "object" ? reason.kind : reason;
+      const metrics = received.metrics || {};
+      const toolNames = Array.isArray(received.tools) ? received.tools.join(", ") : received.tools;
       els.ldReceived.innerHTML = `
         <div class="ld-block-title">Evaluation</div>
         ${kvHtml([
@@ -1397,21 +1400,24 @@
           ["Config key", received.configKey],
           ["Variation", received.variationKey],
           ["Variation index", received.variationIndex],
-          ["Reason", reason.kind || reason],
-          ["Rule index", reason.ruleIndex],
-          ["Rule id", reason.ruleId],
-          ["Version", received.version],
-          ["Version key", received.versionKey],
-          ["LD mode", received.ldMode],
-          ["Model key", received.modelKey],
-          ["Model version", received.modelVersion],
+          ["Reason", reasonKind],
           ["Provider", received.provider],
           ["Model", received.model],
+          ["Tools", toolNames],
+        ])}
+        <div class="ld-block-title">Tracked run</div>
+        ${kvHtml([
+          ["Tracked", received.tracked],
+          ["Resumption token", received.resumptionToken],
+          ["Latency ms", metrics.latency_ms],
+          ["TTFT ms", metrics.ttft_ms],
+          ["Prompt tokens", metrics.prompt_tokens],
+          ["Completion tokens", metrics.completion_tokens],
+          ["Total tokens", metrics.total_tokens],
+          ["Finish reason", metrics.finish_reason],
         ])}
         <div class="ld-block-title">Messages (served)</div>
         ${messageBlocksHtml(received.messages || [], "ld-recv")}
-        <div class="ld-block-title">Raw reason JSON</div>
-        <pre class="ld-json">${escapeHtml(JSON.stringify(reason, null, 2))}</pre>
       `;
 
       setLdTab(ldTab);
@@ -1827,6 +1833,10 @@
         els.completion.textContent = fmt(m.completion_tokens);
         els.total.textContent = fmt(m.total_tokens);
         els.finish.textContent = fmt(m.finish_reason);
+        if (lastLdTransaction && lastLdTransaction.received) {
+          lastLdTransaction.received.metrics = m;
+          if (els.ldDrawer.classList.contains("open")) renderLdDrawer();
+        }
         return;
       }
       if (event.type === "status") {

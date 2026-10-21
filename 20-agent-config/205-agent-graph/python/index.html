@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agent graph</title>
   <!--
-    UI for 25-agent-graph (Python web).
+    UI for 205-agent-graph (Python web).
 
     LaunchDarkly AgentControl Agent Graphs: assess → specialist → finalize.
 
@@ -796,7 +796,7 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="app-banner" id="app-banner">25-agent-graph[python]</div>
+    <div class="app-banner" id="app-banner">205-agent-graph[python]</div>
     <h1>Agent graph</h1>
     <p class="subtitle">Pull ticker headlines, pick an action, and watch assess → specialist → finalize in Trace.</p>
 
@@ -983,7 +983,7 @@
         <div class="ld-block-title">What this example is</div>
         <p class="ld-about-p">This example teaches LaunchDarkly <strong>Agent Graphs</strong>: a multi-step walk (assess → specialist → finalize) with different UI actions routing to different specialists.</p>
         <div class="ld-block-title">What we show</div>
-        <p class="ld-about-p">Use Report, Questions, Good &amp; Bad, or Joke. Trace and Path show the graph handoffs; Sent / Received summarize the graph evaluation and the prompt behind the streamed answer.</p>
+        <p class="ld-about-p">Use Report, Questions, Good &amp; Bad, or Joke. Received shows the graph variation, the evaluation reason, the specialist, and the node path. Trace and Path show the same handoffs as they happen.</p>
         <div class="ld-block-title">Why it matters</div>
         <p class="ld-about-p">You see multi-agent topology outside the app—so you can change routing and node behavior in LaunchDarkly while keeping a single UI that makes the path observable.</p>
       </div>
@@ -1002,7 +1002,7 @@
      * Four actions: report / questions / good / joke.
      */
 
-    const STORAGE_KEY = "25-agent-graph-stories";
+    const STORAGE_KEY = "205-agent-graph-stories";
     const STORIES_CHROME_KEY = "25-stories-chrome-collapsed";
 
     let personas = [];
@@ -1555,31 +1555,41 @@
         <pre class="ld-json">${escapeHtml(JSON.stringify(ctx, null, 2))}</pre>
       `;
 
-      const reason = received.reason || {};
+      const reason = received.reason;
+      const reasonKind = reason && typeof reason === "object" ? reason.kind : reason;
+      const metrics = received.metrics || {};
+      const pathText = Array.isArray(received.path) ? received.path.join(" → ") : received.path;
+      const evalRows = [
+        ["Fallback", received.fallback],
+        ["Mode", received.mode],
+        ["Enabled", received.enabled],
+        ["Graph key", received.configKey],
+      ];
+      if (received.variationKey) evalRows.push(["Variation", received.variationKey]);
+      evalRows.push(
+        ["Variation index", received.variationIndex],
+        ["Reason", reasonKind],
+        ["Specialist", received.specialist],
+        ["Path", pathText],
+        ["Provider", received.provider],
+        ["Model", received.model],
+      );
       els.ldReceived.innerHTML = `
         <div class="ld-block-title">Evaluation</div>
-        ${kvHtml([
-          ["Fallback", received.fallback],
-          ["Mode", received.mode],
-          ["Enabled", received.enabled],
-          ["Config key", received.configKey],
-          ["Variation", received.variationKey],
-          ["Variation index", received.variationIndex],
-          ["Reason", reason.kind || reason],
-          ["Rule index", reason.ruleIndex],
-          ["Rule id", reason.ruleId],
-          ["Version", received.version],
-          ["Version key", received.versionKey],
-          ["LD mode", received.ldMode],
-          ["Model key", received.modelKey],
-          ["Model version", received.modelVersion],
-          ["Provider", received.provider],
-          ["Model", received.model],
-        ])}
+        ${kvHtml(evalRows)}
+        <div class="ld-block-title">Tracked run</div>
+        ${kvHtml(
+          [
+            ["Latency ms", metrics.latency_ms],
+            ["TTFT ms", metrics.ttft_ms],
+            ["Prompt tokens", metrics.prompt_tokens],
+            ["Completion tokens", metrics.completion_tokens],
+            ["Total tokens", metrics.total_tokens],
+            ["Finish reason", metrics.finish_reason],
+          ].filter(([, value]) => value !== null && value !== undefined && value !== "")
+        )}
         <div class="ld-block-title">Messages (served)</div>
         ${messageBlocksHtml(received.messages || [], "ld-recv")}
-        <div class="ld-block-title">Raw reason JSON</div>
-        <pre class="ld-json">${escapeHtml(JSON.stringify(reason, null, 2))}</pre>
       `;
 
       setLdTab(ldTab);
@@ -2033,6 +2043,10 @@
         els.providerModel.textContent =
           `${event.provider || "ollama"} / ${event.model || "?"}` +
           (event.phase ? ` (${event.phase})` : "");
+        if (event.ldTransaction) {
+          lastLdTransaction = event.ldTransaction;
+          if (els.ldDrawer.classList.contains("open")) renderLdDrawer();
+        }
         return;
       }
       if (event.type === "tool") {
@@ -2051,6 +2065,10 @@
         els.completion.textContent = fmt(m.completion_tokens);
         els.total.textContent = fmt(m.total_tokens);
         els.finish.textContent = fmt(m.finish_reason);
+        if (lastLdTransaction && lastLdTransaction.received) {
+          lastLdTransaction.received.metrics = m;
+          if (els.ldDrawer.classList.contains("open")) renderLdDrawer();
+        }
         return;
       }
       if (event.type === "info") {
@@ -2066,6 +2084,19 @@
         return;
       }
       if (event.type === "done") {
+        if (event.ldTransaction) {
+          const priorMetrics =
+            lastLdTransaction && lastLdTransaction.received && lastLdTransaction.received.metrics;
+          lastLdTransaction = event.ldTransaction;
+          if (
+            priorMetrics &&
+            lastLdTransaction.received &&
+            !lastLdTransaction.received.metrics
+          ) {
+            lastLdTransaction.received.metrics = priorMetrics;
+          }
+          if (els.ldDrawer.classList.contains("open")) renderLdDrawer();
+        }
         if (!els.status.classList.contains("error")) {
           const action = event.action || "run";
           setStatus(`Complete (${action}) for ${personas[index].name}.`, "ok");

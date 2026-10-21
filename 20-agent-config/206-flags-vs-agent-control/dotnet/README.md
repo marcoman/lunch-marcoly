@@ -19,7 +19,7 @@ Keywords: **feature flags** · **JSON variations** · **AgentControl** · **comp
 ```bash
 export LD_SDK_KEY="sdk-..."
 export PATH="/usr/local/share/dotnet:$PATH"
-cd 20-agent-config/26-flags-vs-agent-control/dotnet
+cd 20-agent-config/206-flags-vs-agent-control/dotnet
 dotnet run
 ```
 

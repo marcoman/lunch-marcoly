@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared helpers for 23-agent-tools AgentControl REST scripts.
+# Shared helpers for 203-agent-tools AgentControl REST scripts.
 # LaunchDarkly: AgentControl · Library tools · completion config
 # https://launchdarkly.com/docs/api/agent-control
 # https://launchdarkly.com/docs/home/agentcontrol/tools

@@ -1,4 +1,4 @@
-# 23-agent-tools — .NET web
+# 203-agent-tools — .NET web
 
 Port **8233**. Requires **.NET 10 SDK**, `LD_SDK_KEY`, and a provisioned AgentControl config
 (`equity-briefing-tools` with Library tools attached). Uses
@@ -35,7 +35,7 @@ Provision once: `cd ../rest && ./create-tools.sh && ./create-config.sh`
 ## Build & run
 
 ```bash
-cd 20-agent-config/23-agent-tools/dotnet
+cd 20-agent-config/203-agent-tools/dotnet
 dotnet restore
 dotnet build
 dotnet run

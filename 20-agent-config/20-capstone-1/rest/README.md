@@ -1,4 +1,4 @@
-# 20-capstone REST
+# 20-capstone-1 REST
 
 Creates only the capstone keys. It does not change `equity-briefing-completion` or `equity-briefing-graph`.
 
@@ -31,7 +31,7 @@ Spanish variations (`spanish`) exist on assess, questions, good, and finalize. A
 export LD_API_ACCESS_TOKEN="api-..."
 export LD_PROJECT_KEY="your-project"
 export LD_ENVIRONMENT_KEY="test"
-cd 20-agent-config/20-capstone/rest
+cd 20-agent-config/20-capstone-1/rest
 ./create-all.sh
 ```
 

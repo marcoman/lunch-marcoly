@@ -1,7 +1,7 @@
 # Go (console)
 
 Terminal UI twin of the web ports (Python/Node/Java/.NET). **No HTTP port** — fixed
-hotkey chrome like [21-agent-completion-config/go](../../21-agent-completion-config/go/).
+hotkey chrome like [201-agent-completion-config/go](../../201-agent-completion-config/go/).
 Same runtime gate: draft → two custom judges (≥ **0.65** AND) → optional one
 **Conservative Charlie** rewrite.
 
@@ -38,16 +38,16 @@ cd ../rest
 From this directory (so `../rest/messages/` and `../stories/` resolve):
 
 ```bash
-cd 20-agent-config/24-agent-judges/go
+cd 20-agent-config/204-agent-judges/go
 go mod tidy
 go run .
-# or: go build -o 24-agent-judges . && ./24-agent-judges
+# or: go build -o 204-agent-judges . && ./204-agent-judges
 ```
 
 ## Screen chrome
 
 ```text
-24-agent-judges[go]                           Tickers: NVDA (2 stories) SPCX (2 stories)
+204-agent-judges[go]                           Tickers: NVDA (2 stories) SPCX (2 stories)
 config:equity-briefing-judged                            Name: Thoughtless Toby.
 (t)oby  (c)harlie  storie(s)  tic(k)ers  (g)enerate  (q)uit      1=Toby  2=Charlie
 ```

@@ -1,4 +1,4 @@
-# 25-agent-graph — Node.js web
+# 205-agent-graph — Node.js web
 
 LaunchDarkly **Agent Graphs**: assess → specialist → finalize with Trace.
 
@@ -32,7 +32,7 @@ cd ../rest && ./create-all.sh
 ## Build & run
 
 ```bash
-cd 20-agent-config/25-agent-graph/node
+cd 20-agent-config/205-agent-graph/node
 npm install
 npm start
 ```

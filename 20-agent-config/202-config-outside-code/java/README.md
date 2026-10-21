@@ -1,4 +1,4 @@
-# 22-config-outside-code — Java web
+# 202-config-outside-code — Java web
 
 Port **8222**. Requires Java 21+, `LD_SDK_KEY`, and (for Best Betty) `ANTHROPIC_API_KEY`.
 
@@ -25,7 +25,7 @@ Provision once: `cd ../rest && ./create-config.sh && ./update-name-targeting.sh`
 ## Build & run
 
 ```bash
-cd 20-agent-config/22-config-outside-code/java
+cd 20-agent-config/202-config-outside-code/java
 ./mvnw -q -DskipTests package
 java -jar target/22-config-outside-code.jar
 ```

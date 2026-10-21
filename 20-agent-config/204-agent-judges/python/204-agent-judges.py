@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-24-agent-judges.py — thin HTTP adapter for the Judges runtime-gate demo.
+204-agent-judges.py — thin HTTP adapter for the Judges runtime-gate demo.
 
   GET /                 → index.html
   GET /api/bootstrap    → personas, tickers, config/judge keys
@@ -39,7 +39,7 @@ from yahoo_news import (  # noqa: E402
     get_last_pair_cached,
 )
 
-APP_BANNER = "24-agent-judges[python]"
+APP_BANNER = "204-agent-judges[python]"
 PORT = 8240
 
 

@@ -17,7 +17,7 @@ Keywords: **feature flags** · **JSON variations** · **AgentControl** · **comp
 
 ```bash
 export LD_SDK_KEY="sdk-..."
-cd 20-agent-config/26-flags-vs-agent-control/node
+cd 20-agent-config/206-flags-vs-agent-control/node
 npm install
 npm start
 ```

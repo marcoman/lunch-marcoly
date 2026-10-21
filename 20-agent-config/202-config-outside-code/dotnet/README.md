@@ -1,4 +1,4 @@
-# 22-config-outside-code — .NET web
+# 202-config-outside-code — .NET web
 
 Port **8223**. Requires .NET **10.0 SDK**, `LD_SDK_KEY`, and (for Best Betty) `ANTHROPIC_API_KEY`.
 
@@ -29,7 +29,7 @@ Provision once: `cd ../rest && ./create-config.sh && ./update-name-targeting.sh`
 ## Build & run
 
 ```bash
-cd 20-agent-config/22-config-outside-code/dotnet
+cd 20-agent-config/202-config-outside-code/dotnet
 dotnet restore
 dotnet build
 dotnet run
