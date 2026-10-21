@@ -12,7 +12,7 @@ using LaunchDarkly.Sdk.Server.Ai.Tracking;
 namespace ConfigOutsideCode;
 
 /// <summary>
-/// Domain logic for 22-config-outside-code (no HTTP here).
+/// Domain logic for 202-config-outside-code (no HTTP here).
 ///
 /// =============================================================================
 /// HOW TO READ THIS FILE

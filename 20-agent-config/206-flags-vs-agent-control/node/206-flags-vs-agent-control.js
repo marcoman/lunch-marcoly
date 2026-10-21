@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 26-flags-vs-agent-control.js — HTTP adapter for the three briefing sources.
+ * 206-flags-vs-agent-control.js — HTTP adapter for the three briefing sources.
  *
  * GET  /              → index.html
  * GET  /api/bootstrap → personas, tickers, cached stories
@@ -32,7 +32,7 @@ const {
   getLastPairCached,
 } = require("./yahooNews");
 
-const APP_BANNER = "26-flags-vs-agent-control[node]";
+const APP_BANNER = "206-flags-vs-agent-control[node]";
 const PORT = Number(process.env.PORT || 8261);
 const ROOT = __dirname;
 

@@ -23,7 +23,7 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>22-config-outside-code</finalName>
+        <finalName>202-config-outside-code</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

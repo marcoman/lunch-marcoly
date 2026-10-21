@@ -37,7 +37,7 @@ ollama list
 cd 20-agent-config/201-agent-completion-config/java
 ./mvnw -q -DskipTests package
 # or: mvn -q -DskipTests package
-java -jar target/21-agent-completion-config.jar
+java -jar target/201-agent-completion-config.jar
 ```
 
 Open **http://127.0.0.1:8212/** (Python twin: 8210; Node twin: 8211; 01 uses 8090).

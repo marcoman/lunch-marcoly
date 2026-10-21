@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 
 /**
- * Thin HTTP adapter for the 24-agent-judges UI.
+ * Thin HTTP adapter for the 204-agent-judges UI.
  *
  * GET  /              → index.html
  * GET  /api/bootstrap → personas, tickers, config/judge keys, passThreshold
@@ -29,7 +29,7 @@ import java.util.concurrent.Executors;
  * LaunchDarkly work lives in AgentCore (jsonValueVariationDetail + Ollama judges).
  */
 public class WebServer {
-    private static final String APP_BANNER = "24-agent-judges[java]";
+    private static final String APP_BANNER = "204-agent-judges[java]";
     private static final int PORT = Integer.parseInt(System.getenv().getOrDefault("PORT", "8242"));
     private static final Gson GSON = new Gson();
 

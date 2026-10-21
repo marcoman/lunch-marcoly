@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 /**
- * Domain logic for 26-flags-vs-agent-control (no HTTP here).
+ * Domain logic for 206-flags-vs-agent-control (no HTTP here).
  *
  * There is no official Java AI SDK. Completion configs, the judge config, and
  * feature flags are evaluated with the server SDK. The app interpolates

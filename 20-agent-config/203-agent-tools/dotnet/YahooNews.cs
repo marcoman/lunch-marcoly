@@ -31,7 +31,7 @@ public static class YahooNews
     private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(20) };
 
     /// <summary>
-    /// Locate 23-agent-tools/ by finding rest/messages/baseline-system.txt, walking
+    /// Locate 203-agent-tools/ by finding rest/messages/baseline-system.txt, walking
     /// up from the current working directory. Mirrors the Java port's exampleRoot().
     /// </summary>
     public static string ExampleRoot()
@@ -41,7 +41,7 @@ public static class YahooNews
         {
             cwd,
             Directory.GetParent(cwd)?.FullName ?? cwd,
-            Path.Combine(cwd, "23-agent-tools"),
+            Path.Combine(cwd, "203-agent-tools"),
             Path.GetFullPath(Path.Combine(cwd, "..")),
             Path.GetFullPath(Path.Combine(cwd, "..", "..")),
         };

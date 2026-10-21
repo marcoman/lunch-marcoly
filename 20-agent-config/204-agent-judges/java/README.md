@@ -35,7 +35,7 @@ cd ../rest
 ```bash
 cd 20-agent-config/204-agent-judges/java
 ./mvnw -q -DskipTests package
-java -jar target/24-agent-judges.jar
+java -jar target/204-agent-judges.jar
 ```
 
 Open **http://127.0.0.1:8242/** (Python twin: **8240**; Node twin: **8241**).

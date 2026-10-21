@@ -115,7 +115,7 @@ python 203-agent-tools.py
 cd ../node && npm install && npm start
 
 # Java (8232)
-cd ../java && ./mvnw -q -DskipTests package && java -jar target/23-agent-tools.jar
+cd ../java && ./mvnw -q -DskipTests package && java -jar target/203-agent-tools.jar
 
 # .NET (8233)
 export PATH="/usr/local/share/dotnet:$PATH"

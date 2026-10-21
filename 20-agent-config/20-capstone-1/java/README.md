@@ -24,7 +24,7 @@ ollama pull llama3.2:3b
 
 cd 20-agent-config/20-capstone-1/java
 ./mvnw -q -DskipTests package
-java -jar target/20-capstone.jar
+java -jar target/20-capstone-1.jar
 ```
 
 Open **http://127.0.0.1:8292/**.

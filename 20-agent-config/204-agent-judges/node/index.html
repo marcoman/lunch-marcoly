@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agent judges</title>
   <!--
-    UI for 24-agent-judges (Python web).
+    UI for 204-agent-judges (Node web).
 
-    Same chrome as 21-agent-completion-config, plus decorated Response for the
+    Same chrome as 201-agent-completion-config, plus decorated Response for the
     runtime judge gate: Draft → Judge scores → optional Charlie rewrite.
 
     Flow:
@@ -686,7 +686,7 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="app-banner" id="app-banner">24-agent-judges[python]</div>
+    <div class="app-banner" id="app-banner">204-agent-judges[node]</div>
     <h1>Agent judges</h1>
     <p class="subtitle">Pull ticker headlines, generate a briefing, then watch custom judges gate a rewrite when the draft fails.</p>
 
@@ -857,7 +857,7 @@
      * Generate AI Report is the only action that runs the LLM.
      */
 
-    const STORAGE_KEY = "24-agent-judges-stories-node";
+    const STORAGE_KEY = "204-agent-judges-stories-node";
     const STORIES_CHROME_KEY = "24-stories-chrome-collapsed-node";
 
     let personas = [];

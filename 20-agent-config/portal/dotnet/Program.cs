@@ -24,22 +24,22 @@ var children = new[]
 {
     new Child("201", "Completion",
         Path.Combine(seriesRoot, "201-agent-completion-config", "dotnet"),
-        "21-agent-completion-config.csproj", 8213),
+        "201-agent-completion-config.csproj", 8213),
     new Child("202", "Tracked + feedback",
         Path.Combine(seriesRoot, "202-config-outside-code", "dotnet"),
-        "22-config-outside-code.csproj", 8223),
+        "202-config-outside-code.csproj", 8223),
     new Child("203", "Tools",
         Path.Combine(seriesRoot, "203-agent-tools", "dotnet"),
-        "23-agent-tools.csproj", 8233),
+        "203-agent-tools.csproj", 8233),
     new Child("204", "Judges",
         Path.Combine(seriesRoot, "204-agent-judges", "dotnet"),
-        "24-agent-judges.csproj", 8243),
+        "204-agent-judges.csproj", 8243),
     new Child("205", "Graph",
         Path.Combine(seriesRoot, "205-agent-graph", "dotnet"),
-        "25-agent-graph.csproj", 8253),
+        "205-agent-graph.csproj", 8253),
     new Child("206", "Flag compare",
         Path.Combine(seriesRoot, "206-flags-vs-agent-control", "dotnet"),
-        "26-flags-vs-agent-control.csproj", 8263),
+        "206-flags-vs-agent-control.csproj", 8263),
 };
 
 var procs = new Dictionary<string, Process>();

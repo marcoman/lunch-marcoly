@@ -48,12 +48,12 @@ Override the portal listen port with `PORTAL_PORT` (default `8202`).
 ```text
 java -jar target/portal-java.jar
   ├─ HTTP :8202  → portal/java/index.html (tabs)
-  ├─ child 201   → …/201-…/java/target/21-….jar :8212  ← iframe
-  ├─ child 202   → …/202-…/java/target/22-….jar :8222
-  ├─ child 203   → …/203-…/java/target/23-….jar :8232
-  ├─ child 204   → …/204-…/java/target/24-….jar :8242
-  ├─ child 205   → …/205-…/java/target/25-….jar :8252
-  └─ child 206   → …/206-…/java/target/26-….jar :8262
+  ├─ child 201   → …/201-…/java/target/201-….jar :8212  ← iframe
+  ├─ child 202   → …/202-…/java/target/202-….jar :8222
+  ├─ child 203   → …/203-…/java/target/203-….jar :8232
+  ├─ child 204   → …/204-…/java/target/204-….jar :8242
+  ├─ child 205   → …/205-…/java/target/205-….jar :8252
+  └─ child 206   → …/206-…/java/target/206-….jar :8262
 ```
 
 - Children inherit the portal’s environment (`LD_SDK_KEY`, Ollama, etc.).

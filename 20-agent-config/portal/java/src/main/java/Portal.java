@@ -45,22 +45,22 @@ public final class Portal {
     private static final List<Child> CHILDREN = List.of(
             new Child("201", "Completion",
                     SERIES_ROOT.resolve("201-agent-completion-config/java"),
-                    "21-agent-completion-config.jar", 8212),
+                    "201-agent-completion-config.jar", 8212),
             new Child("202", "Tracked + feedback",
                     SERIES_ROOT.resolve("202-config-outside-code/java"),
-                    "22-config-outside-code.jar", 8222),
+                    "202-config-outside-code.jar", 8222),
             new Child("203", "Tools",
                     SERIES_ROOT.resolve("203-agent-tools/java"),
-                    "23-agent-tools.jar", 8232),
+                    "203-agent-tools.jar", 8232),
             new Child("204", "Judges",
                     SERIES_ROOT.resolve("204-agent-judges/java"),
-                    "24-agent-judges.jar", 8242),
+                    "204-agent-judges.jar", 8242),
             new Child("205", "Graph",
                     SERIES_ROOT.resolve("205-agent-graph/java"),
-                    "25-agent-graph.jar", 8252),
+                    "205-agent-graph.jar", 8252),
             new Child("206", "Flag compare",
                     SERIES_ROOT.resolve("206-flags-vs-agent-control/java"),
-                    "26-flags-vs-agent-control.jar", 8262)
+                    "206-flags-vs-agent-control.jar", 8262)
     );
 
     private static final Map<String, Process> PROCS = new ConcurrentHashMap<>();

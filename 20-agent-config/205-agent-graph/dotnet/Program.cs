@@ -1,4 +1,4 @@
-// 25-agent-graph — thin HTTP adapter for the Agent Graphs demo.
+// 205-agent-graph — thin HTTP adapter for the Agent Graphs demo.
 //
 // =============================================================================
 // HOW TO READ THIS FILE
@@ -23,7 +23,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using AgentGraph;
 
-const string AppBanner = "25-agent-graph[dotnet]";
+const string AppBanner = "205-agent-graph[dotnet]";
 var Port = int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var envPort) ? envPort : 8253;
 
 AgentCore.InitLaunchDarkly();

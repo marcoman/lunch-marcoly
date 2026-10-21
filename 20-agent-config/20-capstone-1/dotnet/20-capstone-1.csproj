@@ -4,8 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>FlagCompare</RootNamespace>
-    <AssemblyName>FlagCompare26</AssemblyName>
+    <RootNamespace>Capstone</RootNamespace>
+    <AssemblyName>Capstone201</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

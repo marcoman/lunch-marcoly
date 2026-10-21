@@ -19,7 +19,7 @@ Keywords: **feature flags** · **JSON variations** · **AgentControl** · **serv
 export LD_SDK_KEY="sdk-..."
 cd 20-agent-config/206-flags-vs-agent-control/java
 ./mvnw -q package
-java -jar target/26-flags-vs-agent-control.jar
+java -jar target/206-flags-vs-agent-control.jar
 ```
 
 Open **http://127.0.0.1:8262/**. Provision first with [../rest/README.md](../rest/README.md). Requires Java 21.

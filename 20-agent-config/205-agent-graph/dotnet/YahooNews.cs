@@ -35,7 +35,7 @@ public static class YahooNews
     private static string? _cachedExampleRoot;
 
     /// <summary>
-    /// Locate the 25-agent-graph example root (the folder containing
+    /// Locate the 205-agent-graph example root (the folder containing
     /// <c>rest/</c>) so messages resolve the same way whether you run
     /// <c>dotnet run</c> from <c>dotnet/</c> or launch the published binary directly.
     /// </summary>

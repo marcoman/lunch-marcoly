@@ -6,7 +6,7 @@ namespace AgentJudges;
 /// <summary>
 /// Small helpers for converting between <see cref="JsonNode"/> trees and the loosely typed
 /// <c>Dictionary&lt;string, object?&gt;</c> shape used throughout this example (mirrors the
-/// plain-object/Map style used by the Node and Java ports of 24-agent-judges).
+/// plain-object/Map style used by the Node and Java ports of 204-agent-judges).
 /// </summary>
 internal static class JsonUtil
 {

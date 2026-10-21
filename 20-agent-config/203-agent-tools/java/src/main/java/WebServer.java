@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 
 /**
- * Thin HTTP adapter for the 23-agent-tools UI.
+ * Thin HTTP adapter for the 203-agent-tools UI.
  *
  * GET  /              → index.html
  * GET  /api/bootstrap → personas, tickers, cache, config key
@@ -29,7 +29,7 @@ import java.util.concurrent.Executors;
  * LaunchDarkly work lives in AgentCore (jsonValueVariationDetail + tool loop).
  */
 public class WebServer {
-    private static final String APP_BANNER = "23-agent-tools[java]";
+    private static final String APP_BANNER = "203-agent-tools[java]";
     private static final int PORT = Integer.parseInt(System.getenv().getOrDefault("PORT", "8232"));
     private static final Gson GSON = new Gson();
 

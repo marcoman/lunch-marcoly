@@ -56,14 +56,14 @@ public final class YahooNews {
     }
 
     /**
-     * Locate 24-agent-judges/ by finding rest/messages (skeptic or judge system prompts).
+     * Locate 204-agent-judges/ by finding rest/messages (skeptic or judge system prompts).
      */
     static Path exampleRoot() {
         Path cwd = Path.of("").toAbsolutePath().normalize();
         List<Path> candidates = List.of(
                 cwd,
                 cwd.getParent() == null ? cwd : cwd.getParent(),
-                cwd.resolve("24-agent-judges"),
+                cwd.resolve("204-agent-judges"),
                 cwd.resolve("..").normalize(),
                 cwd.resolve("../..").normalize()
         );

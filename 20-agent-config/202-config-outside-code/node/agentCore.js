@@ -1,5 +1,5 @@
 /**
- * agentCore.js — domain logic for 22-config-outside-code (no HTTP here).
+ * agentCore.js — domain logic for 202-config-outside-code (no HTTP here).
  *
  * Teaching focus: AgentControl completion config **outside code**, with
  * **trackMetricsOf** + thumbs feedback as the headline (Monitoring tab).

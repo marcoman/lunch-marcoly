@@ -1,5 +1,5 @@
 /*
- * Program.cs — thin HTTP adapter for the 23-agent-tools tools demo UI.
+ * Program.cs — thin HTTP adapter for the 203-agent-tools tools demo UI.
  *
  *   1. Serve wwwroot/index.html
  *   2. JSON bootstrap (personas, cached tickers, config key)
@@ -13,7 +13,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using AgentTools;
 
-const string AppBanner = "23-agent-tools[dotnet]";
+const string AppBanner = "203-agent-tools[dotnet]";
 var Port = int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var envPort) ? envPort : 8233;
 
 var builder = WebApplication.CreateBuilder(args);

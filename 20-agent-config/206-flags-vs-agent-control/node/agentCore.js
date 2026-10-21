@@ -1,5 +1,5 @@
 /**
- * agentCore.js — domain logic for 26-flags-vs-agent-control (no HTTP here).
+ * agentCore.js — domain logic for 206-flags-vs-agent-control (no HTTP here).
  *
  * Three sources, one Generate:
  *   original  completionConfig (model, messages, {{ stories }}, attached tools)

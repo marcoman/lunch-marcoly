@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 
 /**
- * Thin HTTP adapter for the 21-agent-completion-config UI.
+ * Thin HTTP adapter for the 201-agent-completion-config UI.
  *
  * GET  /              → index.html
  * GET  /api/bootstrap → personas, tickers, cache, config key
@@ -29,7 +29,7 @@ import java.util.concurrent.Executors;
  * LaunchDarkly work lives in AgentCore (jsonValueVariationDetail at generate time).
  */
 public class WebServer {
-    private static final String APP_BANNER = "21-agent-completion-config[java]";
+    private static final String APP_BANNER = "201-agent-completion-config[java]";
     private static final int PORT = Integer.parseInt(System.getenv().getOrDefault("PORT", "8212"));
     private static final Gson GSON = new Gson();
 

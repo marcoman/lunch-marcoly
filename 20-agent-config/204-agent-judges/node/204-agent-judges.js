@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 /**
- * 22-config-outside-code.js — thin HTTP adapter for the tracked-completion demo UI.
+ * 204-agent-judges.js — thin HTTP adapter for the Judges runtime-gate UI.
  *
- *   GET /                 → index.html
- *   GET /api/bootstrap    → personas, tickers, cached stories, config key
- *   GET /api/stories      → headlines (Finnhub → Massive → Yahoo)
- *   POST /api/generate    → SSE (trackMetricsOf path)
- *   POST /api/feedback    → thumbs via resumption token
+ * GET  /              → index.html
+ * GET  /api/bootstrap → personas, tickers, config/judge keys
+ * GET  /api/stories   → headlines (Finnhub → Massive → Yahoo)
+ * POST /api/generate  → SSE (draft → judges → optional Charlie rewrite)
  */
 
 "use strict";
@@ -21,8 +20,10 @@ const {
   configKey,
   generateStream,
   initLaunchDarkly,
+  judgeDisciplineKey,
+  judgeFidelityKey,
+  passThreshold,
   personaById,
-  submitFeedback,
 } = require("./agentCore");
 const {
   DEFAULT_TICKER_1,
@@ -31,8 +32,8 @@ const {
   getLastPairCached,
 } = require("./yahooNews");
 
-const APP_BANNER = "22-config-outside-code[node]";
-const PORT = Number(process.env.PORT || 8221);
+const APP_BANNER = "204-agent-judges[node]";
+const PORT = Number(process.env.PORT || 8241);
 const ROOT = __dirname;
 
 function sendJson(res, status, body) {
@@ -72,7 +73,8 @@ function readBody(req) {
 async function handleGenerate(req, res) {
   let payload = {};
   try {
-    payload = JSON.parse((await readBody(req)) || "{}");
+    const raw = await readBody(req);
+    payload = JSON.parse(raw || "{}");
   } catch {
     sendJson(res, 400, { error: "Invalid JSON body." });
     return;
@@ -94,31 +96,11 @@ async function handleGenerate(req, res) {
       res.write(`data: ${JSON.stringify(event)}\n\n`);
     }
   } catch (exc) {
-    if (exc.code !== "EPIPE" && exc.code !== "ECONNRESET") console.error(exc);
+    if (exc.code !== "EPIPE" && exc.code !== "ECONNRESET") {
+      console.error(exc);
+    }
   }
   res.end();
-}
-
-async function handleFeedback(req, res) {
-  let payload = {};
-  try {
-    payload = JSON.parse((await readBody(req)) || "{}");
-  } catch {
-    sendJson(res, 400, { error: "Invalid JSON body." });
-    return;
-  }
-  const personaId = String(payload.personaId || PERSONAS[0].id);
-  const persona = personaById(personaId) || PERSONAS[0];
-  try {
-    const body = await submitFeedback({
-      persona,
-      resumptionToken: String(payload.resumptionToken || ""),
-      kind: String(payload.kind || ""),
-    });
-    sendJson(res, 200, body);
-  } catch (exc) {
-    sendJson(res, 400, { error: String(exc.message || exc) });
-  }
 }
 
 const server = http.createServer(async (req, res) => {
@@ -139,17 +121,18 @@ const server = http.createServer(async (req, res) => {
           id: p.id,
           name: p.name,
           profile: p.profile,
-          anonymous: Boolean(p.anonymous),
         })),
         defaultTickers: {
           ticker1: (cached && cached.ticker1) || DEFAULT_TICKER_1,
           ticker2: (cached && cached.ticker2) || DEFAULT_TICKER_2,
         },
         cachedStories: cached,
-        mode: "launchdarkly",
+        mode: "launchdarkly-judges",
         provider: "AgentControl",
         model: `config:${configKey()}`,
         configKey: configKey(),
+        judgeKeys: [judgeFidelityKey(), judgeDisciplineKey()],
+        passThreshold: passThreshold(),
       });
       return;
     }
@@ -157,7 +140,8 @@ const server = http.createServer(async (req, res) => {
     if (req.method === "GET" && pathname === "/api/stories") {
       const ticker1 = url.searchParams.get("ticker1") || DEFAULT_TICKER_1;
       const ticker2 = url.searchParams.get("ticker2") || DEFAULT_TICKER_2;
-      sendJson(res, 200, await fetchStoriesForTickers(ticker1, ticker2, 2));
+      const body = await fetchStoriesForTickers(ticker1, ticker2, 2);
+      sendJson(res, 200, body);
       return;
     }
 
@@ -166,17 +150,15 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    if (req.method === "POST" && pathname === "/api/feedback") {
-      await handleFeedback(req, res);
-      return;
-    }
-
     res.writeHead(404);
     res.end("Not found");
   } catch (exc) {
     console.error(exc);
-    if (!res.headersSent) sendJson(res, 500, { error: String(exc.message || exc) });
-    else res.end();
+    if (!res.headersSent) {
+      sendJson(res, 500, { error: String(exc.message || exc) });
+    } else {
+      res.end();
+    }
   }
 });
 
@@ -186,6 +168,8 @@ async function main() {
     console.log(APP_BANNER);
     console.log(`Open http://127.0.0.1:${PORT}/`);
     console.log(`LD_AGENT_CONFIG_KEY=${configKey()}`);
+    console.log(`Judges: ${judgeFidelityKey()}, ${judgeDisciplineKey()}`);
+    console.log(`Pass threshold: ${passThreshold()}`);
     console.log("Press Ctrl+C to stop.");
   });
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 23-agent-tools.js — thin HTTP adapter for the tools demo UI.
+ * 203-agent-tools.js — thin HTTP adapter for the tools demo UI.
  *
  *   GET /              → index.html
  *   GET /api/bootstrap → personas, tickers, cached stories, config key
@@ -31,7 +31,7 @@ const {
   getLastPairCached,
 } = require("./yahooNews");
 
-const APP_BANNER = "23-agent-tools[node]";
+const APP_BANNER = "203-agent-tools[node]";
 const PORT = Number(process.env.PORT || 8231);
 const ROOT = __dirname;
 

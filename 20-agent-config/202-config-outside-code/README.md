@@ -89,7 +89,7 @@ python 202-config-outside-code.py
 cd ../node && npm install && npm start
 
 # Java (8222)
-cd ../java && ./mvnw -q -DskipTests package && java -jar target/22-config-outside-code.jar
+cd ../java && ./mvnw -q -DskipTests package && java -jar target/202-config-outside-code.jar
 
 # .NET (8223)
 export PATH="/usr/local/share/dotnet:$PATH"

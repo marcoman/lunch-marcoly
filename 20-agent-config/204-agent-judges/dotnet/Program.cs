@@ -1,10 +1,10 @@
-// 24-agent-judges — thin HTTP adapter for the Judges runtime-gate UI.
+// 204-agent-judges — thin HTTP adapter for the Judges runtime-gate UI.
 //
 // =============================================================================
 // HOW TO READ THIS FILE
 // =============================================================================
 //
-// Same four jobs as 21-agent-completion-config:
+// Same four jobs as 201-agent-completion-config:
 //
 //   1. Serve wwwroot/index.html
 //   2. JSON bootstrap (personas, tickers, config/judge keys, passThreshold)
@@ -25,7 +25,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using AgentJudges;
 
-const string AppBanner = "24-agent-judges[dotnet]";
+const string AppBanner = "204-agent-judges[dotnet]";
 var Port = int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var envPort) ? envPort : 8243;
 
 AgentCore.InitLaunchDarkly();

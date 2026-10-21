@@ -23,7 +23,7 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>23-agent-tools</finalName>
+        <finalName>203-agent-tools</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -6,7 +6,7 @@ namespace AgentGraph;
 /// <summary>
 /// Small helpers for converting between <see cref="JsonNode"/> trees and the loosely typed
 /// <c>Dictionary&lt;string, object?&gt;</c> shape used throughout this example (mirrors the
-/// plain-object/Map style used by the Node and Java ports of 25-agent-graph).
+/// plain-object/Map style used by the Node and Java ports of 205-agent-graph).
 /// </summary>
 internal static class JsonUtil
 {

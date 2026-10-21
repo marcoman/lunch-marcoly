@@ -56,14 +56,14 @@ public final class YahooNews {
     }
 
     /**
-     * Locate 25-agent-graph/ by finding rest/messages (assess/finalize instructions).
+     * Locate 205-agent-graph/ by finding rest/messages (assess/finalize instructions).
      */
     static Path exampleRoot() {
         Path cwd = Path.of("").toAbsolutePath().normalize();
         List<Path> candidates = List.of(
                 cwd,
                 cwd.getParent() == null ? cwd : cwd.getParent(),
-                cwd.resolve("25-agent-graph"),
+                cwd.resolve("205-agent-graph"),
                 cwd.resolve("..").normalize(),
                 cwd.resolve("../..").normalize()
         );

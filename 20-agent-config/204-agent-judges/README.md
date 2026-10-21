@@ -99,7 +99,7 @@ python 204-agent-judges.py   # → http://127.0.0.1:8240/
 cd ../node && npm install && npm start   # → :8241
 
 # Java
-cd ../java && ./mvnw -q -DskipTests package && java -jar target/24-agent-judges.jar  # → :8242
+cd ../java && ./mvnw -q -DskipTests package && java -jar target/204-agent-judges.jar  # → :8242
 
 # .NET
 cd ../dotnet && dotnet run   # → :8243

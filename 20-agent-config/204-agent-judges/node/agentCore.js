@@ -1,5 +1,5 @@
 /**
- * agentCore.js — 24-agent-judges domain logic (no HTTP here).
+ * agentCore.js — 204-agent-judges domain logic (no HTTP here).
  *
  * Same equity-briefing product as 21, plus a **runtime judge gate**:
  *   draft → judgeConfig (×2) + Ollama JSON → optional one Charlie rewrite

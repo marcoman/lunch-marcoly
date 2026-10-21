@@ -56,14 +56,14 @@ public final class YahooNews {
     }
 
     /**
-     * Locate 23-agent-tools/ by finding rest/messages/tools-system.txt or baseline-system.txt.
+     * Locate 203-agent-tools/ by finding rest/messages/tools-system.txt or baseline-system.txt.
      */
     static Path exampleRoot() {
         Path cwd = Path.of("").toAbsolutePath().normalize();
         List<Path> candidates = List.of(
                 cwd,
                 cwd.getParent() == null ? cwd : cwd.getParent(),
-                cwd.resolve("23-agent-tools"),
+                cwd.resolve("203-agent-tools"),
                 cwd.resolve("..").normalize(),
                 cwd.resolve("../..").normalize()
         );

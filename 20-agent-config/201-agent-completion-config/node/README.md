@@ -35,7 +35,7 @@ ollama list
 cd 20-agent-config/201-agent-completion-config/node
 npm install
 npm start
-# or: node 21-agent-completion-config.js
+# or: node 201-agent-completion-config.js
 ```
 
 Open **http://127.0.0.1:8211/** (Python twin uses 8210; 01 uses 8090).
@@ -52,7 +52,7 @@ Open **http://127.0.0.1:8211/** (Python twin uses 8210; 01 uses 8090).
 
 | File | Role |
 |------|------|
-| `21-agent-completion-config.js` | HTTP + SSE |
+| `201-agent-completion-config.js` | HTTP + SSE |
 | `agentCore.js` | **LD insertion:** `completionConfig` → Ollama stream |
 | `yahooNews.js` | News waterfall (Finnhub → Massive → Yahoo) + `../stories/` cache |
 | `index.html` | Browser UI |

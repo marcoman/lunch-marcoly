@@ -14,7 +14,7 @@ Open http://127.0.0.1:8221/
 
 | File | Role |
 |------|------|
-| `22-config-outside-code.js` | HTTP + SSE + `/api/feedback` |
+| `202-config-outside-code.js` | HTTP + SSE + `/api/feedback` |
 | `agentCore.js` | **LD insertion:** `completionConfig` · `trackMetricsOf` · `trackFeedback` |
 | `yahooNews.js` | Headlines |
 | `index.html` | UI + thumbs |

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agent completion config</title>
   <!--
-    UI for 22-config-outside-code (Python web).
+    UI for 203-agent-tools (Node web).
 
     Same flow as 01-reference-agent, but Generate uses LaunchDarkly AgentControl
     for model + system/user messages (completion config).
@@ -764,7 +764,7 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="app-banner" id="app-banner">23-agent-tools[node]</div>
+    <div class="app-banner" id="app-banner">203-agent-tools[node]</div>
     <h1>AgentControl tools</h1>
     <p class="subtitle">Pull ticker headlines, then generate a briefing via a Library tools loop (analyze → compare).</p>
 
@@ -939,7 +939,7 @@
      * Generate AI Report is the only action that runs the LLM.
      */
 
-    const STORAGE_KEY = "22-config-outside-code-stories-v1";
+    const STORAGE_KEY = "202-config-outside-code-stories-v1";
     const STORIES_CHROME_KEY = "22-stories-chrome-collapsed";
 
     let personas = [];

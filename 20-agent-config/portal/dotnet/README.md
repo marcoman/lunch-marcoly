@@ -47,12 +47,12 @@ Override the portal listen port with `PORTAL_PORT` (default `8203`).
 ```text
 dotnet run
   ├─ HTTP :8203  → portal/dotnet/wwwroot/index.html (tabs)
-  ├─ child 201   → …/201-…/dotnet 21-….csproj :8213  ← iframe
-  ├─ child 202   → …/202-…/dotnet 22-….csproj :8223
-  ├─ child 203   → …/203-…/dotnet 23-….csproj :8233
-  ├─ child 204   → …/204-…/dotnet 24-….csproj :8243
-  ├─ child 205   → …/205-…/dotnet 25-….csproj :8253
-  └─ child 206   → …/206-…/dotnet 26-….csproj :8263
+  ├─ child 201   → …/201-…/dotnet 201-….csproj :8213  ← iframe
+  ├─ child 202   → …/202-…/dotnet 202-….csproj :8223
+  ├─ child 203   → …/203-…/dotnet 203-….csproj :8233
+  ├─ child 204   → …/204-…/dotnet 204-….csproj :8243
+  ├─ child 205   → …/205-…/dotnet 205-….csproj :8253
+  └─ child 206   → …/206-…/dotnet 206-….csproj :8263
 ```
 
 - Children inherit the portal’s environment (`LD_SDK_KEY`, Ollama, etc.).

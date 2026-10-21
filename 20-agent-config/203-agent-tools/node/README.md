@@ -18,7 +18,7 @@ npm start
 
 | File | Role |
 |------|------|
-| `23-agent-tools.js` | HTTP + SSE |
+| `203-agent-tools.js` | HTTP + SSE |
 | `agentCore.js` | **LD insertion:** `completionConfig` · tool loop · `trackToolCall` |
 | `yahooNews.js` | Headlines → `../stories/` |
 | `index.html` | UI + tool trace |

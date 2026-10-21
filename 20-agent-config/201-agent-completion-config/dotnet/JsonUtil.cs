@@ -6,7 +6,7 @@ namespace AgentCompletionConfig;
 /// <summary>
 /// Small helpers for converting between <see cref="JsonNode"/> trees and the loosely typed
 /// <c>Dictionary&lt;string, object?&gt;</c> shape used throughout this example (mirrors the
-/// plain-object/Map style used by the Node and Java ports of 21-agent-completion-config).
+/// plain-object/Map style used by the Node and Java ports of 201-agent-completion-config).
 /// </summary>
 internal static class JsonUtil
 {

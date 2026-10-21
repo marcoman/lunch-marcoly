@@ -14,7 +14,7 @@ using LaunchDarkly.Sdk.Server.Ai.Interfaces;
 namespace AgentGraph;
 
 /// <summary>
-/// Domain logic for 25-agent-graph (no HTTP here).
+/// Domain logic for 205-agent-graph (no HTTP here).
 ///
 /// =============================================================================
 /// HOW TO READ THIS FILE

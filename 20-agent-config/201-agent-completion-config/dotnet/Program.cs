@@ -1,4 +1,4 @@
-// 21-agent-completion-config — thin HTTP adapter for the AgentControl demo UI.
+// 201-agent-completion-config — thin HTTP adapter for the AgentControl demo UI.
 //
 // =============================================================================
 // HOW TO READ THIS FILE
@@ -25,7 +25,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using AgentCompletionConfig;
 
-const string AppBanner = "21-agent-completion-config[dotnet]";
+const string AppBanner = "201-agent-completion-config[dotnet]";
 const int Port = 8213;
 
 AgentCore.InitLaunchDarkly();

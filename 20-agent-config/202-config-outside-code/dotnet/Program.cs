@@ -1,4 +1,4 @@
-// 22-config-outside-code.dotnet — thin HTTP adapter for the tracked-completion demo UI.
+// 202-config-outside-code.dotnet — thin HTTP adapter for the tracked-completion demo UI.
 //
 //   GET  /                 → wwwroot/index.html
 //   GET  /api/bootstrap    → personas, tickers, cached stories, config key
@@ -13,7 +13,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using ConfigOutsideCode;
 
-const string AppBanner = "22-config-outside-code[dotnet]";
+const string AppBanner = "202-config-outside-code[dotnet]";
 
 AgentCore.InitLaunchDarkly();
 

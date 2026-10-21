@@ -1,11 +1,26 @@
 #!/usr/bin/env node
 /**
- * 24-agent-judges.js — thin HTTP adapter for the Judges runtime-gate UI.
+ * 201-agent-completion-config.js — thin HTTP adapter for the AgentControl demo UI.
  *
- * GET  /              → index.html
- * GET  /api/bootstrap → personas, tickers, config/judge keys
- * GET  /api/stories   → headlines (Finnhub → Massive → Yahoo)
- * POST /api/generate  → SSE (draft → judges → optional Charlie rewrite)
+ * =============================================================================
+ * HOW TO READ THIS FILE
+ * =============================================================================
+ *
+ * Same four jobs as 01-reference-agent.js:
+ *
+ *   1. Serve index.html
+ *   2. JSON bootstrap
+ *   3. Headlines (Finnhub → Massive → Yahoo)
+ *   4. Bridge browser SSE → agentCore.generateStream()
+ *
+ * The LaunchDarkly work lives in agentCore.js (completionConfig at generate time).
+ *
+ * Request map
+ * -----------
+ *   GET /                 → index.html
+ *   GET /api/bootstrap    → personas, tickers, cached stories, config key
+ *   GET /api/stories      → headlines for two tickers (Finnhub → Massive → Yahoo)
+ *   POST /api/generate    → SSE stream (personaId + stories already on screen)
  */
 
 "use strict";
@@ -20,9 +35,6 @@ const {
   configKey,
   generateStream,
   initLaunchDarkly,
-  judgeDisciplineKey,
-  judgeFidelityKey,
-  passThreshold,
   personaById,
 } = require("./agentCore");
 const {
@@ -32,8 +44,8 @@ const {
   getLastPairCached,
 } = require("./yahooNews");
 
-const APP_BANNER = "24-agent-judges[node]";
-const PORT = Number(process.env.PORT || 8241);
+const APP_BANNER = "201-agent-completion-config[node]";
+const PORT = Number(process.env.PORT || 8211);
 const ROOT = __dirname;
 
 function sendJson(res, status, body) {
@@ -121,18 +133,17 @@ const server = http.createServer(async (req, res) => {
           id: p.id,
           name: p.name,
           profile: p.profile,
+          anonymous: Boolean(p.anonymous),
         })),
         defaultTickers: {
           ticker1: (cached && cached.ticker1) || DEFAULT_TICKER_1,
           ticker2: (cached && cached.ticker2) || DEFAULT_TICKER_2,
         },
         cachedStories: cached,
-        mode: "launchdarkly-judges",
+        mode: "launchdarkly",
         provider: "AgentControl",
         model: `config:${configKey()}`,
         configKey: configKey(),
-        judgeKeys: [judgeFidelityKey(), judgeDisciplineKey()],
-        passThreshold: passThreshold(),
       });
       return;
     }
@@ -168,8 +179,6 @@ async function main() {
     console.log(APP_BANNER);
     console.log(`Open http://127.0.0.1:${PORT}/`);
     console.log(`LD_AGENT_CONFIG_KEY=${configKey()}`);
-    console.log(`Judges: ${judgeFidelityKey()}, ${judgeDisciplineKey()}`);
-    console.log(`Pass threshold: ${passThreshold()}`);
     console.log("Press Ctrl+C to stop.");
   });
 }

@@ -1,11 +1,11 @@
 {
-  "name": "20-capstone",
+  "name": "20-capstone-1",
   "version": "1.0.0",
   "private": true,
   "description": "AgentControl capstone — graph, forced tools, judges, and feedback",
-  "main": "20-capstone.js",
+  "main": "20-capstone-1.js",
   "scripts": {
-    "start": "node 20-capstone.js"
+    "start": "node 20-capstone-1.js"
   },
   "engines": {
     "node": ">=20"

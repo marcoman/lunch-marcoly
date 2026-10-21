@@ -1,11 +1,11 @@
 {
-  "name": "23-agent-tools",
+  "name": "203-agent-tools",
   "version": "1.0.0",
   "private": true,
-  "description": "23-agent-tools — AgentControl Library tools loop (Node web)",
-  "main": "23-agent-tools.js",
+  "description": "203-agent-tools — AgentControl Library tools loop (Node web)",
+  "main": "203-agent-tools.js",
   "scripts": {
-    "start": "node 23-agent-tools.js"
+    "start": "node 203-agent-tools.js"
   },
   "engines": {
     "node": ">=20"

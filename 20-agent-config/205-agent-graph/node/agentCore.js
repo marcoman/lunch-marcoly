@@ -1,5 +1,5 @@
 /**
- * agentCore.js — domain logic for 25-agent-graph (no HTTP here).
+ * agentCore.js — domain logic for 205-agent-graph (no HTTP here).
  *
  * =============================================================================
  * HOW TO READ THIS FILE

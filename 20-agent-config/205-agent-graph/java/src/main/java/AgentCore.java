@@ -33,7 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Domain logic for 25-agent-graph (no HTTP here).
+ * Domain logic for 205-agent-graph (no HTTP here).
  *
  * =============================================================================
  * HOW TO READ THIS FILE

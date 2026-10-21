@@ -1,11 +1,11 @@
 {
-  "name": "22-config-outside-code",
+  "name": "202-config-outside-code",
   "version": "1.0.0",
   "private": true,
-  "description": "22-config-outside-code — tracked AgentControl completion (Node web)",
-  "main": "22-config-outside-code.js",
+  "description": "202-config-outside-code — tracked AgentControl completion (Node web)",
+  "main": "202-config-outside-code.js",
   "scripts": {
-    "start": "node 22-config-outside-code.js"
+    "start": "node 202-config-outside-code.js"
   },
   "engines": {
     "node": ">=20"

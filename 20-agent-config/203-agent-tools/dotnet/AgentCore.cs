@@ -58,7 +58,7 @@ public sealed class Metrics
 }
 
 /// <summary>
-/// Domain logic for 23-agent-tools (no HTTP here).
+/// Domain logic for 203-agent-tools (no HTTP here).
 ///
 /// Teaching focus: AgentControl <b>Library tools</b> attached to a completion
 /// variation; the app runs a model-driven tool loop and records

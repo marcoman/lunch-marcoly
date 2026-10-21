@@ -57,12 +57,12 @@ Override the portal listen port with `PORTAL_PORT` (default `8201`).
 ```text
 node portal.js
   ├─ HTTP :8201  → portal/node/index.html (tabs)
-  ├─ child 201   → …/201-…/node/21-….js :8211  ← iframe
-  ├─ child 202   → …/202-…/node/22-….js :8221
-  ├─ child 203   → …/203-…/node/23-….js :8231
-  ├─ child 204   → …/204-…/node/24-….js :8241
-  ├─ child 205   → …/205-…/node/25-….js :8251
-  └─ child 206   → …/206-…/node/26-….js :8261
+  ├─ child 201   → …/201-…/node/201-….js :8211  ← iframe
+  ├─ child 202   → …/202-…/node/202-….js :8221
+  ├─ child 203   → …/203-…/node/203-….js :8231
+  ├─ child 204   → …/204-…/node/204-….js :8241
+  ├─ child 205   → …/205-…/node/205-….js :8251
+  └─ child 206   → …/206-…/node/206-….js :8261
 ```
 
 - Children inherit the portal’s environment (`LD_SDK_KEY`, Ollama, etc.).

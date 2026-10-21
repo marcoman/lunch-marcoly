@@ -28,7 +28,7 @@ Provision once: `cd ../rest && ./create-config.sh`
 ```bash
 cd 20-agent-config/203-agent-tools/java
 ./mvnw -q -DskipTests package
-java -jar target/23-agent-tools.jar
+java -jar target/203-agent-tools.jar
 ```
 
 Open **http://127.0.0.1:8232/** (Python 8230 · Node 8231).

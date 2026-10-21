@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 25-agent-graph.js — thin HTTP adapter for the Agent Graphs demo.
+ * 205-agent-graph.js — thin HTTP adapter for the Agent Graphs demo.
  *
  * GET  /              → index.html
  * GET  /api/bootstrap → personas, tickers, graph/node keys
@@ -32,7 +32,7 @@ const {
   getLastPairCached,
 } = require("./yahooNews");
 
-const APP_BANNER = "25-agent-graph[node]";
+const APP_BANNER = "205-agent-graph[node]";
 const PORT = Number(process.env.PORT || 8251);
 const ROOT = __dirname;
 const NODE_ROLES = ["assess", "report", "questions", "good", "joke", "finalize"];

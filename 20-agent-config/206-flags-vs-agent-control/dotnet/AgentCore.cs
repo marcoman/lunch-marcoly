@@ -14,7 +14,7 @@ using LaunchDarkly.Sdk.Server.Ai.Tracking;
 namespace FlagCompare;
 
 /// <summary>
-/// Domain logic for 26-flags-vs-agent-control (no HTTP here).
+/// Domain logic for 206-flags-vs-agent-control (no HTTP here).
 ///
 /// Three sources, one Generate:
 ///   original  CompletionConfig (model, messages, {{ stories }}, attached tools)

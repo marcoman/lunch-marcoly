@@ -55,13 +55,13 @@ public final class YahooNews {
     private YahooNews() {
     }
 
-    /** Locate 22-config-outside-code/ by finding rest/messages/baseline-system.txt. */
+    /** Locate 202-config-outside-code/ by finding rest/messages/baseline-system.txt. */
     static Path exampleRoot() {
         Path cwd = Path.of("").toAbsolutePath().normalize();
         List<Path> candidates = List.of(
                 cwd,
                 cwd.getParent() == null ? cwd : cwd.getParent(),
-                cwd.resolve("22-config-outside-code"),
+                cwd.resolve("202-config-outside-code"),
                 cwd.resolve("..").normalize(),
                 cwd.resolve("../..").normalize()
         );

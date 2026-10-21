@@ -13,7 +13,7 @@ using LaunchDarkly.Sdk.Server.Ai.Tracking;
 namespace AgentCompletionConfig;
 
 /// <summary>
-/// Domain logic for 21-agent-completion-config (no HTTP here).
+/// Domain logic for 201-agent-completion-config (no HTTP here).
 ///
 /// =============================================================================
 /// HOW TO READ THIS FILE

@@ -23,7 +23,7 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>20-capstone</finalName>
+        <finalName>20-capstone-1</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

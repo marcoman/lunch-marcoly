@@ -31,7 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Domain logic for 23-agent-tools (no HTTP here).
+ * Domain logic for 203-agent-tools (no HTTP here).
  *
  * Teaching focus: AgentControl Library tools attached to a completion variation;
  * the app runs a model-driven tool loop and records tool-call events for Monitoring.

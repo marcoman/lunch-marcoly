@@ -27,7 +27,7 @@ Provision once: `cd ../rest && ./create-config.sh && ./update-name-targeting.sh`
 ```bash
 cd 20-agent-config/202-config-outside-code/java
 ./mvnw -q -DskipTests package
-java -jar target/22-config-outside-code.jar
+java -jar target/202-config-outside-code.jar
 ```
 
 Open **http://127.0.0.1:8222/** (Python 8220 · Node 8221).

@@ -1,26 +1,12 @@
 #!/usr/bin/env node
 /**
- * 21-agent-completion-config.js — thin HTTP adapter for the AgentControl demo UI.
+ * 202-config-outside-code.js — thin HTTP adapter for the tracked-completion demo UI.
  *
- * =============================================================================
- * HOW TO READ THIS FILE
- * =============================================================================
- *
- * Same four jobs as 01-reference-agent.js:
- *
- *   1. Serve index.html
- *   2. JSON bootstrap
- *   3. Headlines (Finnhub → Massive → Yahoo)
- *   4. Bridge browser SSE → agentCore.generateStream()
- *
- * The LaunchDarkly work lives in agentCore.js (completionConfig at generate time).
- *
- * Request map
- * -----------
  *   GET /                 → index.html
  *   GET /api/bootstrap    → personas, tickers, cached stories, config key
- *   GET /api/stories      → headlines for two tickers (Finnhub → Massive → Yahoo)
- *   POST /api/generate    → SSE stream (personaId + stories already on screen)
+ *   GET /api/stories      → headlines (Finnhub → Massive → Yahoo)
+ *   POST /api/generate    → SSE (trackMetricsOf path)
+ *   POST /api/feedback    → thumbs via resumption token
  */
 
 "use strict";
@@ -36,6 +22,7 @@ const {
   generateStream,
   initLaunchDarkly,
   personaById,
+  submitFeedback,
 } = require("./agentCore");
 const {
   DEFAULT_TICKER_1,
@@ -44,8 +31,8 @@ const {
   getLastPairCached,
 } = require("./yahooNews");
 
-const APP_BANNER = "21-agent-completion-config[node]";
-const PORT = Number(process.env.PORT || 8211);
+const APP_BANNER = "202-config-outside-code[node]";
+const PORT = Number(process.env.PORT || 8221);
 const ROOT = __dirname;
 
 function sendJson(res, status, body) {
@@ -85,8 +72,7 @@ function readBody(req) {
 async function handleGenerate(req, res) {
   let payload = {};
   try {
-    const raw = await readBody(req);
-    payload = JSON.parse(raw || "{}");
+    payload = JSON.parse((await readBody(req)) || "{}");
   } catch {
     sendJson(res, 400, { error: "Invalid JSON body." });
     return;
@@ -108,11 +94,31 @@ async function handleGenerate(req, res) {
       res.write(`data: ${JSON.stringify(event)}\n\n`);
     }
   } catch (exc) {
-    if (exc.code !== "EPIPE" && exc.code !== "ECONNRESET") {
-      console.error(exc);
-    }
+    if (exc.code !== "EPIPE" && exc.code !== "ECONNRESET") console.error(exc);
   }
   res.end();
+}
+
+async function handleFeedback(req, res) {
+  let payload = {};
+  try {
+    payload = JSON.parse((await readBody(req)) || "{}");
+  } catch {
+    sendJson(res, 400, { error: "Invalid JSON body." });
+    return;
+  }
+  const personaId = String(payload.personaId || PERSONAS[0].id);
+  const persona = personaById(personaId) || PERSONAS[0];
+  try {
+    const body = await submitFeedback({
+      persona,
+      resumptionToken: String(payload.resumptionToken || ""),
+      kind: String(payload.kind || ""),
+    });
+    sendJson(res, 200, body);
+  } catch (exc) {
+    sendJson(res, 400, { error: String(exc.message || exc) });
+  }
 }
 
 const server = http.createServer(async (req, res) => {
@@ -151,8 +157,7 @@ const server = http.createServer(async (req, res) => {
     if (req.method === "GET" && pathname === "/api/stories") {
       const ticker1 = url.searchParams.get("ticker1") || DEFAULT_TICKER_1;
       const ticker2 = url.searchParams.get("ticker2") || DEFAULT_TICKER_2;
-      const body = await fetchStoriesForTickers(ticker1, ticker2, 2);
-      sendJson(res, 200, body);
+      sendJson(res, 200, await fetchStoriesForTickers(ticker1, ticker2, 2));
       return;
     }
 
@@ -161,15 +166,17 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    if (req.method === "POST" && pathname === "/api/feedback") {
+      await handleFeedback(req, res);
+      return;
+    }
+
     res.writeHead(404);
     res.end("Not found");
   } catch (exc) {
     console.error(exc);
-    if (!res.headersSent) {
-      sendJson(res, 500, { error: String(exc.message || exc) });
-    } else {
-      res.end();
-    }
+    if (!res.headersSent) sendJson(res, 500, { error: String(exc.message || exc) });
+    else res.end();
   }
 });
 

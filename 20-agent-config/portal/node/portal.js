@@ -35,7 +35,7 @@ const CHILDREN = [
       SERIES_ROOT,
       "201-agent-completion-config",
       "node",
-      "21-agent-completion-config.js"
+      "201-agent-completion-config.js"
     ),
     cwd: path.join(SERIES_ROOT, "201-agent-completion-config", "node"),
     port: 8211,
@@ -43,28 +43,28 @@ const CHILDREN = [
   {
     id: "202",
     label: "Tracked + feedback",
-    script: path.join(SERIES_ROOT, "202-config-outside-code", "node", "22-config-outside-code.js"),
+    script: path.join(SERIES_ROOT, "202-config-outside-code", "node", "202-config-outside-code.js"),
     cwd: path.join(SERIES_ROOT, "202-config-outside-code", "node"),
     port: 8221,
   },
   {
     id: "203",
     label: "Tools",
-    script: path.join(SERIES_ROOT, "203-agent-tools", "node", "23-agent-tools.js"),
+    script: path.join(SERIES_ROOT, "203-agent-tools", "node", "203-agent-tools.js"),
     cwd: path.join(SERIES_ROOT, "203-agent-tools", "node"),
     port: 8231,
   },
   {
     id: "204",
     label: "Judges",
-    script: path.join(SERIES_ROOT, "204-agent-judges", "node", "24-agent-judges.js"),
+    script: path.join(SERIES_ROOT, "204-agent-judges", "node", "204-agent-judges.js"),
     cwd: path.join(SERIES_ROOT, "204-agent-judges", "node"),
     port: 8241,
   },
   {
     id: "205",
     label: "Graph",
-    script: path.join(SERIES_ROOT, "205-agent-graph", "node", "25-agent-graph.js"),
+    script: path.join(SERIES_ROOT, "205-agent-graph", "node", "205-agent-graph.js"),
     cwd: path.join(SERIES_ROOT, "205-agent-graph", "node"),
     port: 8251,
   },
@@ -75,7 +75,7 @@ const CHILDREN = [
       SERIES_ROOT,
       "206-flags-vs-agent-control",
       "node",
-      "26-flags-vs-agent-control.js"
+      "206-flags-vs-agent-control.js"
     ),
     cwd: path.join(SERIES_ROOT, "206-flags-vs-agent-control", "node"),
     port: 8261,

@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 
 /**
- * Thin HTTP adapter for the 25-agent-graph UI.
+ * Thin HTTP adapter for the 205-agent-graph UI.
  *
  * GET  /              -> index.html
  * GET  /api/bootstrap -> personas, tickers, graph/node keys, actions
@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
  * key + each agent node key, since there is no Java AI SDK).
  */
 public class WebServer {
-    private static final String APP_BANNER = "25-agent-graph[java]";
+    private static final String APP_BANNER = "205-agent-graph[java]";
     private static final int PORT = Integer.parseInt(System.getenv().getOrDefault("PORT", "8252"));
     private static final Gson GSON = new Gson();
 

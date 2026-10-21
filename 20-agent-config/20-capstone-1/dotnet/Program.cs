@@ -1,4 +1,4 @@
-// 20-capstone — thin HTTP adapter.
+// 20-capstone-1 — thin HTTP adapter.
 //
 // GET  /              → wwwroot/index.html
 // GET  /api/bootstrap → personas, tools, graph keys, persisted stories
@@ -13,7 +13,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Capstone;
 
-const string AppBanner = "20-capstone[dotnet]";
+const string AppBanner = "20-capstone-1[dotnet]";
 var port = int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var envPort) ? envPort : 8293;
 
 AgentCore.InitLaunchDarkly();

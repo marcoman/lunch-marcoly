@@ -40,7 +40,7 @@ cd ../rest && ./create-all.sh
 ```bash
 cd 20-agent-config/205-agent-graph/java
 ./mvnw -q -DskipTests package
-java -jar target/25-agent-graph.jar
+java -jar target/205-agent-graph.jar
 ```
 
 Open **http://127.0.0.1:8252/** (Python twin: **8250**).

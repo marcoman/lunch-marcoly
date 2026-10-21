@@ -1,4 +1,4 @@
-// 26-flags-vs-agent-control — HTTP adapter for the three briefing sources.
+// 206-flags-vs-agent-control — HTTP adapter for the three briefing sources.
 //
 // GET  /              → wwwroot/index.html
 // GET  /api/bootstrap → Toby, tickers, cached stories, source labels
@@ -12,7 +12,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using FlagCompare;
 
-const string AppBanner = "26-flags-vs-agent-control[dotnet]";
+const string AppBanner = "206-flags-vs-agent-control[dotnet]";
 var Port = int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var envPort) ? envPort : 8263;
 
 AgentCore.InitLaunchDarkly();

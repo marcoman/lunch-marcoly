@@ -39,7 +39,7 @@ public static class YahooNews
     }
 
     /// <summary>
-    /// Locate the example root (22-config-outside-code/) by walking a few
+    /// Locate the example root (202-config-outside-code/) by walking a few
     /// candidate directories relative to the current working directory until
     /// rest/messages/baseline-system.txt is found. Shared with AgentCore for
     /// the baseline (code-fallback) prompt files.
@@ -54,7 +54,7 @@ public static class YahooNews
         {
             cwd,
             parent,
-            Path.Combine(cwd, "22-config-outside-code"),
+            Path.Combine(cwd, "202-config-outside-code"),
             Path.GetFullPath(Path.Combine(cwd, "..")),
             Path.GetFullPath(Path.Combine(cwd, "..", "..")),
         };

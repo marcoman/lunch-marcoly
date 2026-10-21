@@ -64,7 +64,7 @@ python portal.py   (or node / java / dotnet twin)
   └─ child 206   → …/206-…/<lang>/… :826x
 ```
 
-Node, Java, and .NET still launch the previous entrypoint filenames (`21-….js`, `21-….jar`, `21-….csproj`) inside those folders. Python launches `201-….py` through `206-….py`.
+Each language launches `201-…` through `206-…` entrypoints: Python `.py`, Node `.js`, Java jars, and .NET `.csproj`.
 
 - Children inherit the portal’s environment (`LD_SDK_KEY`, Ollama, etc.).
 - If a child port is already in use, the portal **does not** spawn a second

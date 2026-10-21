@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
  * LaunchDarkly work lives in AgentCore.
  */
 public class WebServer {
-    private static final String APP_BANNER = "20-capstone[java]";
+    private static final String APP_BANNER = "20-capstone-1[java]";
     private static final int PORT = Integer.parseInt(System.getenv().getOrDefault("PORT", "8292"));
     private static final Gson GSON = new Gson();
 

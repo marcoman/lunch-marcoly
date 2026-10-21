@@ -1,5 +1,5 @@
 /**
- * agentCore.js — domain logic for 23-agent-tools (no HTTP here).
+ * agentCore.js — domain logic for 203-agent-tools (no HTTP here).
  *
  * Teaching focus: AgentControl **Library tools** attached to a completion
  * variation; the app runs a model-driven tool loop and records

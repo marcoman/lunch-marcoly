@@ -13,7 +13,7 @@ using LaunchDarkly.Sdk.Server.Ai.Tracking;
 namespace AgentJudges;
 
 /// <summary>
-/// Domain logic for 24-agent-judges (no HTTP here).
+/// Domain logic for 204-agent-judges (no HTTP here).
 ///
 /// =============================================================================
 /// HOW TO READ THIS FILE

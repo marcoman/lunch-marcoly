@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 20-capstone Node web.
+ * 20-capstone-1 Node web.
  *
  * GET  /              → index.html
  * GET  /api/bootstrap → personas, tools, graph keys
@@ -36,7 +36,7 @@ const {
   getLastPairCached,
 } = require("./yahooNews");
 
-const APP_BANNER = "20-capstone[node]";
+const APP_BANNER = "20-capstone-1[node]";
 const PORT = Number(process.env.PORT || 8291);
 const ROOT = __dirname;
 const ROLES = ["assess", "report", "questions", "good", "finalize"];

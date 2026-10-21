@@ -1,11 +1,11 @@
 {
-  "name": "25-agent-graph",
+  "name": "205-agent-graph",
   "version": "1.0.0",
   "private": true,
-  "description": "25-agent-graph — AgentControl Agent Graphs demo (Node web)",
-  "main": "25-agent-graph.js",
+  "description": "205-agent-graph — AgentControl Agent Graphs demo (Node web)",
+  "main": "205-agent-graph.js",
   "scripts": {
-    "start": "node 25-agent-graph.js"
+    "start": "node 205-agent-graph.js"
   },
   "engines": {
     "node": ">=20"

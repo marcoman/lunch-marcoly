@@ -1,11 +1,11 @@
 {
-  "name": "24-agent-judges",
+  "name": "204-agent-judges",
   "version": "1.0.0",
   "private": true,
-  "description": "24-agent-judges — AgentControl Judges runtime gate (Node web)",
-  "main": "24-agent-judges.js",
+  "description": "204-agent-judges — AgentControl Judges runtime gate (Node web)",
+  "main": "204-agent-judges.js",
   "scripts": {
-    "start": "node 24-agent-judges.js"
+    "start": "node 204-agent-judges.js"
   },
   "engines": {
     "node": ">=20"
