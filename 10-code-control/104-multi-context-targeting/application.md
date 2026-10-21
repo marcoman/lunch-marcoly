@@ -123,7 +123,7 @@ console prompts) let the operator walk the 2×2 **without logout**:
 
 Each change builds a new multi-context and re-evaluates. Server-side SDKs send
 the updated context on the next variation call; this example is not the
-client-side `identify()` lesson ([32-client-identify](../../30-client-sdk/32-client-identify/)).
+client-side `identify()` lesson ([302-client-identify](../../30-client-sdk/302-client-identify/)).
 
 ## Header behavior
 

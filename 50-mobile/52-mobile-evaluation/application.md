@@ -7,7 +7,7 @@ Baseline grid behavior (login, 2×2 orthogonal tap, logout, lab drawer) is
 [51-reference/application.md](../51-reference/application.md). This example
 adds LaunchDarkly **on the device**.
 
-It is **not** a port of [31-client-evaluation](../../30-client-sdk/31-client-evaluation/application.md).
+It is **not** a port of [301-client-evaluation](../../30-client-sdk/301-client-evaluation/application.md).
 31 is the browser JS SDK and a **client-side ID**. 52 is the Android / iOS
 **mobile SDK** and a **mobile key**. Flag keys are dedicated — do not reuse
 31’s `enable-client-grid-highlight` / `show-client-move-count`.

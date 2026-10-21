@@ -138,9 +138,9 @@ Set `kind` in `inventory/flags.yaml` to the type in that example's `application.
 
 | Key | Next step |
 |-----|-----------|
-| `enable-client-bootstrap-highlight`, `show-client-bootstrap-move-count` | Provision [35-client-bootstrap](../30-client-sdk/35-client-bootstrap/rest/). |
+| `enable-client-bootstrap-highlight`, `show-client-bootstrap-move-count` | Provision [305-client-bootstrap](../30-client-sdk/305-client-bootstrap/rest/). |
 | `enable-mobile-platform-rollout` | Provision [54-platform-rollout](../50-mobile/54-platform-rollout/rest/). `create-flag.sh` is state 1 (Android only). |
-| `show-twilio-inner-circle-badge` | Provision [34-synced-segments-twilio](../30-client-sdk/34-synced-segments-twilio/rest/). |
+| `show-twilio-inner-circle-badge` | Provision [304-synced-segments-twilio](../30-client-sdk/304-synced-segments-twilio/rest/). |
 | `equity-briefing-graph` | This is the graph id (`DEFAULT_GRAPH_KEY`), not an AI Config. The node configs (`equity-briefing-graph-assess`, and the rest) are the AI Configs, and they reported `present`. Remove this key from `inventory/agent-configs.yaml`. Do not create an AI Config with this key. |
 
 ### `instrument`

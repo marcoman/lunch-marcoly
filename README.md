@@ -6,7 +6,7 @@ A collection of programming examples, each demonstrating a single concept across
 
 ```
 lunch-marcoly/
-├── TODO.md                  # Next examples (17 → 35 → 36)
+├── TODO.md                  # Next examples (see the queue)
 ├── requirements.txt         # Python dependencies (repository-wide)
 ├── .python-version          # Python version for pyenv (repository-wide)
 ├── .nvmrc                   # Node.js version for nvm (repository-wide)
@@ -47,28 +47,28 @@ lunch-marcoly/
 │   ├── README.md
 │   ├── portal/                   # Python :8200 · Node :8201 · Java :8202 · .NET :8203
 │   ├── stories/                  # Shared Yahoo headlines cache
-│   ├── 20-capstone/              # Python :8290 · Node :8291 · Java :8292 · .NET :8293; en/es; not in the portal
-│   ├── 21-agent-completion-config/
-│   ├── 22-config-outside-code/
-│   ├── 23-agent-tools/
-│   ├── 24-agent-judges/
-│   ├── 25-agent-graph/           # assess → specialist → finalize
-│   ├── 26-flags-vs-agent-control/ # Python :8260 · Node :8261 · Java :8262 · .NET :8263
-│   ├── 27-agent-mode/            # Stub: agent mode only; not the capstone
-│   ├── 28-context-attributes/    # Stub: region + audience select a variation
-│   └── 29-team-rollout/          # Stub: sticky % rollout bucketed by team
+│   ├── 20-capstone-1/            # Python :8290 · Node :8291 · Java :8292 · .NET :8293; en/es; not in the portal
+│   ├── 201-agent-completion-config/
+│   ├── 202-config-outside-code/
+│   ├── 203-agent-tools/
+│   ├── 204-agent-judges/
+│   ├── 205-agent-graph/          # assess → specialist → finalize
+│   ├── 206-flags-vs-agent-control/ # Python :8260 · Node :8261 · Java :8262 · .NET :8263
+│   ├── 207-agent-mode/           # Stub: agent mode only; not the capstone
+│   ├── 208-context-attributes/   # Stub: region + audience select a variation
+│   └── 209-team-rollout/         # Stub: sticky % rollout bucketed by team
 ├── 30-client-sdk/               # Browser JavaScript SDK
 │   ├── README.md
-│   ├── portal/                  # JS :8300 · React :8301 · Vue :8302 (31–36)
-│   ├── 31-client-evaluation/
-│   ├── 32-client-identify/
-│   ├── 33-synced-segments/
-│   ├── 34-synced-segments-twilio/
-│   ├── 35-client-bootstrap/     # Bootstrap first paint :8350–:8352
-│   ├── 36-client-track-events/  # track() login_completed + grid_move :8360–:8362
-│   ├── 37-client-evaluation-details/  # Stub: variationDetail vs variation
-│   ├── 38-client-secure-mode/   # Stub: secure-mode hash
-│   └── 39-client-context-cache/ # Stub: local storage cache, not bootstrap
+│   ├── portal/                  # JS :8300 · React :8301 · Vue :8302 (301–306; portal paths still old)
+│   ├── 301-client-evaluation/
+│   ├── 302-client-identify/
+│   ├── 303-synced-segments/
+│   ├── 304-synced-segments-twilio/
+│   ├── 305-client-bootstrap/    # Bootstrap first paint :8350–:8352
+│   ├── 306-client-track-events/ # track() login_completed + grid_move :8360–:8362
+│   ├── 307-client-evaluation-details/  # Stub: variationDetail vs variation
+│   ├── 308-client-secure-mode/  # Stub: secure-mode hash
+│   └── 309-client-context-cache/ # Stub: local storage cache, not bootstrap
 ├── 40-dont-do-this/             # Anti-patterns (do not ship)
 │   ├── README.md
 │   ├── 41-no-sdk-singleton/     # Stub: new LDClient per evaluation
@@ -110,11 +110,11 @@ lunch-marcoly/
 └── ...
 ```
 
-Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control sort order. **10-code-control** children are three digits, **101–109** so far (`101`–`199` is the range). Other decade series still use two-digit children (`21`–`29`, `31`–`39`, …) until that series is renumbered. Letter suffixes stay unused. A fourth digit is not part of the scheme.
+Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control sort order. **10-code-control** children are **101–109**, **20-agent-config** children are **201–209** (capstone folder `20-capstone-1`), and **30-client-sdk** children are **301–309**. Other decade series still use two-digit children (`41`–`42`, `51`–`56`, …) until that series is renumbered. Letter suffixes stay unused. A fourth digit is not part of the scheme.
 
 ## Languages
 
-Each example may include implementations in any of these languages. Python, Node.js, Java, and **.NET** default to **web applications** with a browser UI. **JavaScript** (`javascript/`), **React Web** (`react/`), and **Vue** (`vue/`) are **browser applications**: the page owns the logic. **Android** (`android/`) and **iOS** (`ios/`) are **mobile applications** (2×2 tap navigator in series 50). Go, Rust, and C++ are **console applications**. Optional `-console` variants exist for Python, Node.js, and Java when a terminal-based version is also needed.
+Each example may include implementations in any of these languages. Every application includes an **About** page: on a web example it is a tab in the drawer that shows the application-related details; a console example puts that same explanation in its README. Python, Node.js, Java, and **.NET** default to **web applications** with a browser UI. **JavaScript** (`javascript/`), **React Web** (`react/`), and **Vue** (`vue/`) are **browser applications**: the page owns the logic. **Android** (`android/`) and **iOS** (`ios/`) are **mobile applications** (2×2 tap navigator in series 50). Go, Rust, and C++ are **console applications**. Optional `-console` variants exist for Python, Node.js, and Java when a terminal-based version is also needed.
 
 | Language | Directory | Application type |
 |----------|-----------|------------------|
@@ -152,28 +152,28 @@ Each example may include implementations in any of these languages. Python, Node
 | 107 | [107-scheduled-changes](10-code-control/107-scheduled-changes/) | Replaceable scheduled flag turn-on with elapsed timer (web **:8170–:8173** + Python / Node / Java / Go / Rust / C++ consoles + REST/Terraform) |
 | 108 | [108-flag-approvals](10-code-control/108-flag-approvals/) | **Stub:** approval to turn the move-count flag on |
 | 109 | [109-evaluation-reasons](10-code-control/109-evaluation-reasons/) | **Stub:** on-screen `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, `ERROR` |
-| — | [segment-targeting](10-code-control/segment-targeting/) | **Stub:** included-targets segment. Unnumbered so it does not take 20. Read before 33 |
+| — | [segment-targeting](10-code-control/segment-targeting/) | **Stub:** included-targets segment. Unnumbered so it does not take 20. Read before 303 |
 | 20 | [20-agent-config](20-agent-config/) | AgentControl series (shared LLM / AWS / LD setup); [portal](20-agent-config/portal/) Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
-| — | [20-capstone](20-agent-config/20-capstone/) | **Python :8290 · Node :8291 · Java :8292 · .NET :8293, not in the portal.** Composes `21`–`25`. Checked tools run before finalize. Judges and feedback stay on the draft. English and Spanish live here |
-| 21 | [21-agent-completion-config](20-agent-config/21-agent-completion-config/) | Completion config: model + system/user prompts (web + Go console) |
-| 22 | [22-config-outside-code](20-agent-config/22-config-outside-code/) | Tracked completion: metrics + thumbs feedback (web + Go console) |
-| 23 | [23-agent-tools](20-agent-config/23-agent-tools/) | Library tools + tool loop + `track_tool_call` (web + Go console) |
-| 24 | [24-agent-judges](20-agent-config/24-agent-judges/) | Judges runtime gate + rewrite (Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console) |
-| 25 | [25-agent-graph](20-agent-config/25-agent-graph/) | Agent graph: assess → specialist → finalize (Python **8250** · Node **8251** · Java **8252** · .NET **8253**) |
-| 26 | [26-flags-vs-agent-control](20-agent-config/26-flags-vs-agent-control/) | Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**. AgentControl, four flags, or one JSON flag. Guardrail scores pass/fail |
-| 27 | [27-agent-mode](20-agent-config/27-agent-mode/) | **Stub:** agent mode only, one instructions value. Does not roll into the capstone |
-| 28 | [28-context-attributes](20-agent-config/28-context-attributes/) | **Stub:** North America / South America and an audience select the variation |
-| 29 | [29-team-rollout](20-agent-config/29-team-rollout/) | **Stub:** sticky percentage rollout bucketed by `team`. Not ports :8290–:8293 |
-| 30 | [30-client-sdk](30-client-sdk/) | Browser client-side SDK series (client-side ID); [portal](30-client-sdk/portal/) JS **:8300** · React **:8301** · Vue **:8302** (31–36) |
-| 31 | [31-client-evaluation](30-client-sdk/31-client-evaluation/) | Initialize, client-side availability, `variation`, `change:` (**JS :8310** · **React :8311** · **Vue :8312**) |
-| 32 | [32-client-identify](30-client-sdk/32-client-identify/) | `identify()` context switch without reload (**JS :8320** · **React :8321** · **Vue :8322**) |
-| 33 | [33-synced-segments](30-client-sdk/33-synced-segments/) | Synced/big segment inner-circle badge (**JS :8330** · **React :8331** · **Vue :8332**) |
-| 34 | [34-synced-segments-twilio](30-client-sdk/34-synced-segments-twilio/) | Twilio Segment Audiences sync (**JS :8340** · **React :8341** · **Vue :8342**) |
-| 35 | [35-client-bootstrap](30-client-sdk/35-client-bootstrap/) | Bootstrap first paint (`green` / count on) before the client is ready |
-| 36 | [36-client-track-events](30-client-sdk/36-client-track-events/) | Client `track()` — `login_completed`, `grid_move` (**JS :8360** · **React :8361** · **Vue :8362**) |
-| 37 | [37-client-evaluation-details](30-client-sdk/37-client-evaluation-details/) | **Stub:** `variationDetail()` next to `variation()` |
-| 38 | [38-client-secure-mode](30-client-sdk/38-client-secure-mode/) | **Stub:** secure-mode hash for the browser context |
-| 39 | [39-client-context-cache](30-client-sdk/39-client-context-cache/) | **Stub:** local storage cache, called out in the UI. Not 35 |
+| — | [20-capstone-1](20-agent-config/20-capstone-1/) | **Python :8290 · Node :8291 · Java :8292 · .NET :8293, not in the portal.** Composes `201`–`205`. Checked tools run before finalize. Judges and feedback stay on the draft. English and Spanish live here |
+| 201 | [201-agent-completion-config](20-agent-config/201-agent-completion-config/) | Completion config: model + system/user prompts (web + Go console) |
+| 202 | [202-config-outside-code](20-agent-config/202-config-outside-code/) | Tracked completion: metrics + thumbs feedback (web + Go console) |
+| 203 | [203-agent-tools](20-agent-config/203-agent-tools/) | Library tools + tool loop + `track_tool_call` (web + Go console) |
+| 204 | [204-agent-judges](20-agent-config/204-agent-judges/) | Judges runtime gate + rewrite (Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console) |
+| 205 | [205-agent-graph](20-agent-config/205-agent-graph/) | Agent graph: assess → specialist → finalize (Python **8250** · Node **8251** · Java **8252** · .NET **8253**) |
+| 206 | [206-flags-vs-agent-control](20-agent-config/206-flags-vs-agent-control/) | Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**. AgentControl, four flags, or one JSON flag. Guardrail scores pass/fail |
+| 207 | [207-agent-mode](20-agent-config/207-agent-mode/) | **Stub:** agent mode only, one instructions value. Does not roll into the capstone |
+| 208 | [208-context-attributes](20-agent-config/208-context-attributes/) | **Stub:** North America / South America and an audience select the variation |
+| 209 | [209-team-rollout](20-agent-config/209-team-rollout/) | **Stub:** sticky percentage rollout bucketed by `team`. Not ports :8290–:8293 |
+| 30 | [30-client-sdk](30-client-sdk/) | Browser client-side SDK series (client-side ID); [portal](30-client-sdk/portal/) JS **:8300** · React **:8301** · Vue **:8302** (301–306; portal paths still old) |
+| 301 | [301-client-evaluation](30-client-sdk/301-client-evaluation/) | Initialize, client-side availability, `variation`, `change:` (**JS :8310** · **React :8311** · **Vue :8312**) |
+| 302 | [302-client-identify](30-client-sdk/302-client-identify/) | `identify()` context switch without reload (**JS :8320** · **React :8321** · **Vue :8322**) |
+| 303 | [303-synced-segments](30-client-sdk/303-synced-segments/) | Synced/big segment inner-circle badge (**JS :8330** · **React :8331** · **Vue :8332**) |
+| 304 | [304-synced-segments-twilio](30-client-sdk/304-synced-segments-twilio/) | Twilio Segment Audiences sync (**JS :8340** · **React :8341** · **Vue :8342**) |
+| 305 | [305-client-bootstrap](30-client-sdk/305-client-bootstrap/) | Bootstrap first paint (`green` / count on) before the client is ready |
+| 306 | [306-client-track-events](30-client-sdk/306-client-track-events/) | Client `track()` — `login_completed`, `grid_move` (**JS :8360** · **React :8361** · **Vue :8362**) |
+| 307 | [307-client-evaluation-details](30-client-sdk/307-client-evaluation-details/) | **Stub:** `variationDetail()` next to `variation()` |
+| 308 | [308-client-secure-mode](30-client-sdk/308-client-secure-mode/) | **Stub:** secure-mode hash for the browser context |
+| 309 | [309-client-context-cache](30-client-sdk/309-client-context-cache/) | **Stub:** local storage cache, called out in the UI. Not 305 |
 | 40 | [40-dont-do-this](40-dont-do-this/) | Anti-pattern series (do not ship) |
 | 41 | [41-no-sdk-singleton](40-dont-do-this/41-no-sdk-singleton/) | **Stub:** new server SDK client per evaluation |
 | 42 | [42-local-if-no-sdk](40-dont-do-this/42-local-if-no-sdk/) | **Stub:** local `if` / hardcoded boolean, never `variation()` |

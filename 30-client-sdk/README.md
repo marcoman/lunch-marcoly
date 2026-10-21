@@ -3,25 +3,27 @@
 LaunchDarkly **client-side SDK** examples for the lunch-marcoly grid navigator.
 The application runs in the browser. Evaluation uses a **client-side ID**, never
 a server-side SDK key. **JavaScript** (`javascript/`) uses the JS SDK.
-**React Web** (`react/`, 31–36) uses the [React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web).
-**Vue** (`vue/`, 31–36) uses the [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue).
+**React Web** (`react/`, 301–306) uses the [React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web).
+**Vue** (`vue/`, 301–306) uses the [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue).
 
 Baseline (no LaunchDarkly): [02-reference-client-code](../02-reference-client-code/).
 Server-side flags live in [10-code-control](../10-code-control/).
 
 | Example | Folder | What it teaches |
 |---------|--------|-----------------|
-| **31** | [31-client-evaluation/](31-client-evaluation/) | Initialize, **client-side availability**, `variation`, `change:` |
-| **32** | [32-client-identify/](32-client-identify/) | **`identify()`** — switch context without reload |
-| **33** | [33-synced-segments/](33-synced-segments/) | **Synced / big segment** — inner-circle badge + REST membership |
-| **34** | [34-synced-segments-twilio/](34-synced-segments-twilio/) | **Twilio Segment Audiences** — same badge; `identify`/`track` then sync |
-| **35** | [35-client-bootstrap/](35-client-bootstrap/) | **Bootstrap** initial flag values so the first paint is not the SDK default |
-| **36** | [36-client-track-events/](36-client-track-events/) | Client SDK **`track()`** — `login_completed`, `grid_move` |
-| **37** | [37-client-evaluation-details/](37-client-evaluation-details/) | **Stub.** `variationDetail()` next to `variation()`. Not client offline mode |
-| **38** | [38-client-secure-mode/](38-client-secure-mode/) | **Stub.** Secure-mode hash for the browser context |
-| **39** | [39-client-context-cache/](39-client-context-cache/) | **Stub.** Local storage cache, called out in the UI. Not bootstrap |
+| **301** | [301-client-evaluation/](301-client-evaluation/) | Initialize, **client-side availability**, `variation`, `change:` |
+| **302** | [302-client-identify/](302-client-identify/) | **`identify()`** — switch context without reload |
+| **303** | [303-synced-segments/](303-synced-segments/) | **Synced / big segment** — inner-circle badge + REST membership |
+| **304** | [304-synced-segments-twilio/](304-synced-segments-twilio/) | **Twilio Segment Audiences** — same badge; `identify`/`track` then sync |
+| **305** | [305-client-bootstrap/](305-client-bootstrap/) | **Bootstrap** initial flag values so the first paint is not the SDK default |
+| **306** | [306-client-track-events/](306-client-track-events/) | Client SDK **`track()`** — `login_completed`, `grid_move` |
+| **307** | [307-client-evaluation-details/](307-client-evaluation-details/) | **Stub.** `variationDetail()` next to `variation()`. Not client offline mode |
+| **308** | [308-client-secure-mode/](308-client-secure-mode/) | **Stub.** Secure-mode hash for the browser context |
+| **309** | [309-client-context-cache/](309-client-context-cache/) | **Stub.** Local storage cache, called out in the UI. Not bootstrap |
 
-Work order: [TODO.md](../TODO.md). Portal covers **31–36**. **37–39** are stubs and are not portal tabs yet.
+Work order: [TODO.md](../TODO.md). Portal covers **301–306** once its paths are updated. **307–309** are stubs and are not portal tabs.
+
+JavaScript, React, and Vue in **301** use the new number, including the About tab. The apps in **302–306** still announce the old names. The portal still launches `31-…` through `36-…` until that pass. Stub READMEs still use the old titles.
 
 ## Credentials
 
@@ -44,8 +46,9 @@ SDK credentials: [environment keys](https://launchdarkly.com/docs/home/account/e
 
 ## Portal
 
-One command starts **31**–**36** for a single client SDK in a
-tabbed shell: [portal/](portal/).
+One command starts **301**–**306** for a single client SDK in a
+tabbed shell: [portal/](portal/). The portal still looks up the old `31-…`
+through `36-…` folders. Use a standalone `javascript/` server until that pass.
 
 | Client SDK | Command | Portal | Children |
 |------------|---------|--------|----------|

@@ -70,4 +70,4 @@ see listeners fire.
 - [application.md](application.md)
 - [50-mobile](../README.md)
 - [51-reference](../51-reference/)
-- [31-client-evaluation](../../30-client-sdk/31-client-evaluation/) — browser analog
+- [301-client-evaluation](../../30-client-sdk/301-client-evaluation/) — browser analog

@@ -49,6 +49,8 @@ Used by [50-mobile](50-mobile/). Do not wrap the 00/02 WASD grid; 51 defines a
 
 **Console applications** (`python-console/`, `node-console/`, `java-console/`, `go/`, `cpp/`, `rust/`) run in the terminal with text-based input and output.
 
+Every application includes an **About** page. It describes the one idea, the steps a person takes, and one official LaunchDarkly docs link. The usual place is a tab in the drawer that shows the application-related details. Console examples, and any example that has no drawer yet, put that same explanation in the example README. Details: [About tab](#about-tab).
+
 Use the default language directory when adding a web implementation. Add the `-console` variant only when an example also needs a terminal-based version of the same concept in that language.
 
 ## Repository Layout
@@ -131,23 +133,23 @@ lunch-marcoly/
 ├── 30-client-sdk/               # Browser client-side SDK (client-side ID)
 │   ├── README.md
 │   ├── portal/                  # Series shell: JS :8300 · React :8301 · Vue :8302
-│   ├── 31-client-evaluation/    # initialize · variation · change:  :8310 JS · :8311 React · :8312 Vue
+│   ├── 301-client-evaluation/    # initialize · variation · change:  :8310 JS · :8311 React · :8312 Vue
 │   │   ├── README.md · application.md · rest/ · terraform/
 │   │   └── javascript/ · react/ · vue/
-│   ├── 32-client-identify/      # identify() context switch  :8320 JS · :8321 React · :8322 Vue
+│   ├── 302-client-identify/      # identify() context switch  :8320 JS · :8321 React · :8322 Vue
 │   │   ├── README.md · application.md · rest/ · terraform/
 │   │   └── javascript/ · react/ · vue/
-│   ├── 33-synced-segments/      # synced/big segment badge  :8330 JS · :8331 React · :8332 Vue
+│   ├── 303-synced-segments/      # synced/big segment badge  :8330 JS · :8331 React · :8332 Vue
 │   │   ├── README.md · application.md · rest/ · terraform/
 │   │   └── javascript/ · react/ · vue/
-│   ├── 34-synced-segments-twilio/  # Twilio Segment Audiences  :8340 JS · :8341 React · :8342 Vue
+│   ├── 304-synced-segments-twilio/  # Twilio Segment Audiences  :8340 JS · :8341 React · :8342 Vue
 │   │   ├── README.md · application.md · rest/ · terraform/
 │   │   └── javascript/ · react/ · vue/
-│   ├── 35-client-bootstrap/     # bootstrap first paint  :8350 JS · :8351 React · :8352 Vue
-│   ├── 36-client-track-events/  # track() login_completed + grid_move  :8360 JS · :8361 React · :8362 Vue
-│   ├── 37-client-evaluation-details/  # Stub: variationDetail vs variation
-│   ├── 38-client-secure-mode/   # Stub: secure-mode hash
-│   └── 39-client-context-cache/ # Stub: local storage cache, not bootstrap
+│   ├── 305-client-bootstrap/     # bootstrap first paint  :8350 JS · :8351 React · :8352 Vue
+│   ├── 306-client-track-events/  # track() login_completed + grid_move  :8360 JS · :8361 React · :8362 Vue
+│   ├── 307-client-evaluation-details/  # Stub: variationDetail vs variation
+│   ├── 308-client-secure-mode/   # Stub: secure-mode hash
+│   └── 309-client-context-cache/ # Stub: local storage cache, not bootstrap
 ├── 40-dont-do-this/             # Anti-patterns (do not ship)
 │   ├── README.md
 │   ├── 41-no-sdk-singleton/     # Stub: new LDClient per evaluation
@@ -204,7 +206,7 @@ lunch-marcoly/
 - Prefix with a **two-digit number**: `00-reference-code`, `01-hello-world`, `02-binary-search`
 - Follow the number with a **kebab-case** name describing the concept
 - Use the next available number when adding a new example (`03`, `04`, …)
-- Decade series keep that two-digit folder (`10`, `20`, `30`, …). **10-code-control** children are **101–109**. **20-agent-config** children are **201–209**, and the capstone folder is `20-capstone-1`. Other series still use two-digit children (`31`–`39`, …) until that series is renumbered the same way (`301`–`399`, and the same hundreds digit for `40`, `50`, and `60`). Letter suffixes (`1a`, `1b`) stay unused. A fourth digit is not part of the scheme. Inside a renumbered series, Python web uses the new number. Other language entrypoints keep their previous filenames until that platform is updated. Listen ports for 101–107 stay **8110–8170**. AgentControl ports stay **8210–8260**, with the capstone on **8290–8293**.
+- Decade series keep that two-digit folder (`10`, `20`, `30`, …). **10-code-control** children are **101–109**. **20-agent-config** children are **201–209**, and the capstone folder is `20-capstone-1`. **30-client-sdk** children are **301–309**. Other series still use two-digit children (`41`–`42`, `51`–`56`, …) until that series is renumbered the same way (`401`–`499`, and the same hundreds digit for `50` and `60`). Letter suffixes (`1a`, `1b`) stay unused. A fourth digit is not part of the scheme. Inside a renumbered series, the first language pass uses the new number. Other language entrypoints keep their previous filenames until that platform is updated. JavaScript, React, and Vue in **301** use the new number, including the About tab. **302–306** and the client-SDK portal still use the old names. Listen ports for 101–107 stay **8110–8170**. AgentControl ports stay **8210–8260**, with the capstone on **8290–8293**. Client SDK ports stay **8310–8362**.
 - `70-model-demos` and `99-use-cases` already count children inside the folder (`01`, `02`, …). They do not consume `71`–`79` or the next decade. Leave that inner count as it is until the three-digit refactor, if it ever includes them.
 - `00-reference-code` is reserved for the reference grid navigator app and repository conventions. It does **not** include LaunchDarkly integration.
 - `02-reference-client-code` is the same navigator **in the browser** (client JavaScript). It does **not** include LaunchDarkly. Later client-SDK examples (series **30**) build on this shape.
@@ -231,17 +233,17 @@ lunch-marcoly/
 - `107-scheduled-changes` (under `10-code-control/`) demonstrates a replaceable scheduled `turnFlagOn` change with an elapsed timer (Python / Node / Java / .NET web **:8170–:8173**, consoles Python / Node / Java / Go / Rust / C++, REST/Terraform).
 - `108-flag-approvals` (under `10-code-control/`) is a stub. An approval request turns the move-count flag on. Intended ports **:8180–:8183**.
 - `109-evaluation-reasons` (under `10-code-control/`) is a stub. The screen shows `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, and `ERROR`. Intended ports **:8190–:8193**.
-- `segment-targeting` (under `10-code-control/`) is an unnumbered stub. One included-targets segment on the server SDK, read before `33-synced-segments`. **18** and **19** fill the decade, so this folder does not take **20**.
-- `30-client-sdk` groups **browser** client-side SDK examples (client-side ID, not `LD_SDK_KEY`); series portals live in its `portal/` (JavaScript **:8300** · React **:8301** · Vue **:8302**).
-- `31-client-evaluation` (under `30-client-sdk/`) demonstrates initialize, client-side availability, variation, and `change:` (JavaScript **:8310**, React Web **:8311**, Vue **:8312**).
-- `32-client-identify` (under `30-client-sdk/`) demonstrates `identify()` (switch user without reload; JavaScript **:8320**, React Web **:8321**, Vue **:8322**).
-- `33-synced-segments` (under `30-client-sdk/`) demonstrates a boolean flag targeted by a synced/big-style segment (inner-circle badge; JavaScript **:8330**, React Web **:8331**, Vue **:8332**).
-- `34-synced-segments-twilio` (under `30-client-sdk/`) demonstrates the same badge with membership from **Twilio Segment** Analytics.js + LaunchDarkly Audiences sync (JavaScript **:8340**, React Web **:8341**, Vue **:8342**).
-- `35-client-bootstrap` (under `30-client-sdk/`) demonstrates bootstrapping client-side flag values so the grid paints before `ready` (JavaScript **:8350**, React Web **:8351**, Vue **:8352**).
-- `36-client-track-events` (under `30-client-sdk/`) demonstrates client SDK `track()` for `login_completed` and `grid_move` (JavaScript **:8360**, React Web **:8361**, Vue **:8362**).
-- `37-client-evaluation-details` is a stub. The browser shows `variationDetail()` next to `variation()`. Client offline mode does not own this number.
-- `38-client-secure-mode` is a stub. The server signs the context hash used by the browser SDK.
-- `39-client-context-cache` is a stub. The UI calls out the SDK local-storage cache. It is not `35-client-bootstrap`.
+- `segment-targeting` (under `10-code-control/`) is an unnumbered stub. One included-targets segment on the server SDK, read before `303-synced-segments`. **18** and **19** fill the decade, so this folder does not take **20**.
+- `30-client-sdk` groups **browser** client-side SDK examples (client-side ID, not `LD_SDK_KEY`); series portals live in its `portal/` (JavaScript **:8300** · React **:8301** · Vue **:8302**). The portal still launches the old `31-…` through `36-…` paths.
+- `301-client-evaluation` (under `30-client-sdk/`) demonstrates initialize, client-side availability, variation, and `change:` (JavaScript **:8310**, React Web **:8311**, Vue **:8312**). Each has an Evaluation tab and an About tab. The JavaScript entrypoint is `301-client-evaluation.js`.
+- `302-client-identify` (under `30-client-sdk/`) demonstrates `identify()` (switch user without reload; JavaScript **:8320**, React Web **:8321**, Vue **:8322**).
+- `303-synced-segments` (under `30-client-sdk/`) demonstrates a boolean flag targeted by a synced/big-style segment (inner-circle badge; JavaScript **:8330**, React Web **:8331**, Vue **:8332**).
+- `304-synced-segments-twilio` (under `30-client-sdk/`) demonstrates the same badge with membership from **Twilio Segment** Analytics.js + LaunchDarkly Audiences sync (JavaScript **:8340**, React Web **:8341**, Vue **:8342**).
+- `305-client-bootstrap` (under `30-client-sdk/`) demonstrates bootstrapping client-side flag values so the grid paints before `ready` (JavaScript **:8350**, React Web **:8351**, Vue **:8352**).
+- `306-client-track-events` (under `30-client-sdk/`) demonstrates client SDK `track()` for `login_completed` and `grid_move` (JavaScript **:8360**, React Web **:8361**, Vue **:8362**).
+- `307-client-evaluation-details` is a stub. The browser shows `variationDetail()` next to `variation()`. Client offline mode does not own this number.
+- `308-client-secure-mode` is a stub. The server signs the context hash used by the browser SDK.
+- `309-client-context-cache` is a stub. The UI calls out the SDK local-storage cache. It is not `305-client-bootstrap`.
 - `40-dont-do-this` groups **anti-pattern** examples (loud do-not-ship). Children start at **41**.
 - `41-no-sdk-singleton` (under `40-dont-do-this/`) will demonstrate a new server SDK client per evaluation instead of one process-wide client.
 - `42-local-if-no-sdk` (under `40-dont-do-this/`) will demonstrate a local `if` / hardcoded boolean instead of `variation()` — flipping the dashboard flag does nothing.
@@ -283,8 +285,8 @@ Follow the idiomatic naming style of each language:
 | Python   | `python/`, `python-console/` | `{example-name}.py` | `00-reference-code.py` |
 | Node.js  | `node/`, `node-console/` | `{example-name}.js` | `00-reference-code.js` |
 | JavaScript | `javascript/` | `{example-name}.js` (static server) + `index.html` | `02-reference-client-code.js` |
-| React Web | `react/` | Vite `index.html` + `src/` | `31-client-evaluation/react` |
-| Vue       | `vue/`   | Vite `index.html` + `src/` | `31-client-evaluation/vue` |
+| React Web | `react/` | Vite `index.html` + `src/` | `301-client-evaluation/react` |
+| Vue       | `vue/`   | Vite `index.html` + `src/` | `301-client-evaluation/vue` |
 | Java     | `java/`, `java-console/` | PascalCase (classes) | `WebServer.java` |
 | .NET     | `dotnet/` | `{example-name}.csproj` + PascalCase classes | `01-reference-agent.csproj`, `Program.cs`, `AgentCore.cs` |
 | C++      | `cpp/`    | `main.cpp` + Makefile | binary `00-reference-code` |
@@ -366,15 +368,16 @@ Larger examples may add tests, config files, or sub-packages as appropriate for 
 
 ### About tab
 
-Every web example includes an **About** tab in the right-hand drawer:
+Every application includes an **About** page. It describes the one idea, the steps a person takes, and one official LaunchDarkly docs link.
+
+The usual place is a tab in the drawer that shows the application-related details:
 
 - The header reads **LaunchDarkly · lab**.
 - Underline tabs sit directly under that header. One tab is the working surface. **About** is the other.
 - The grid, or the example's main view, stays visible while the tabs change.
-- About explains the one idea, the steps a person takes, and one official LaunchDarkly docs link.
 - The working tab already shows the context that was sent and the result that came back. About does not add a second context window.
 
-Console examples put that same explanation in the example README.
+Console examples, and any example that has no drawer yet, put that same explanation in the example README.
 
 ### Dependency files
 
@@ -483,10 +486,10 @@ Default URL: [http://127.0.0.1:8020/](http://127.0.0.1:8020/). `PORT` overrides 
 
 ### React Web (browser)
 
-Used by [31-client-evaluation](30-client-sdk/31-client-evaluation/react/),
-[32-client-identify](30-client-sdk/32-client-identify/react/),
-[33-synced-segments](30-client-sdk/33-synced-segments/react/), and
-[34-synced-segments-twilio](30-client-sdk/34-synced-segments-twilio/react/). Same Node version pin. The app is a Vite + React SPA; **flag evaluation is in the page** via the [React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web).
+Used by [301-client-evaluation](30-client-sdk/301-client-evaluation/react/),
+[302-client-identify](30-client-sdk/302-client-identify/react/),
+[303-synced-segments](30-client-sdk/303-synced-segments/react/), and
+[304-synced-segments-twilio](30-client-sdk/304-synced-segments-twilio/react/). Same Node version pin. The app is a Vite + React SPA; **flag evaluation is in the page** via the [React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web).
 
 - **Dependencies:** `package.json` in `react/` (`@launchdarkly/react-sdk`).
 - **Run:** from the language folder:
@@ -495,14 +498,14 @@ Used by [31-client-evaluation](30-client-sdk/31-client-evaluation/react/),
 npm start
 ```
 
-Default URL for 31: [http://127.0.0.1:8311/](http://127.0.0.1:8311/). `PORT` overrides the Vite port. Do not put `LD_SDK_KEY` in the page; the Vite process proxies lab Controls.
+Default URL for 301: [http://127.0.0.1:8311/](http://127.0.0.1:8311/). `PORT` overrides the Vite port. Do not put `LD_SDK_KEY` in the page; the Vite process proxies lab Controls.
 
 ### Vue (browser)
 
-Used by [31-client-evaluation](30-client-sdk/31-client-evaluation/vue/),
-[32-client-identify](30-client-sdk/32-client-identify/vue/),
-[33-synced-segments](30-client-sdk/33-synced-segments/vue/), and
-[34-synced-segments-twilio](30-client-sdk/34-synced-segments-twilio/vue/). Same Node version pin. The app is a Vite + Vue SPA; **flag evaluation is in the page** via the [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue).
+Used by [301-client-evaluation](30-client-sdk/301-client-evaluation/vue/),
+[302-client-identify](30-client-sdk/302-client-identify/vue/),
+[303-synced-segments](30-client-sdk/303-synced-segments/vue/), and
+[304-synced-segments-twilio](30-client-sdk/304-synced-segments-twilio/vue/). Same Node version pin. The app is a Vite + Vue SPA; **flag evaluation is in the page** via the [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue).
 
 - **Dependencies:** `package.json` in `vue/` (`launchdarkly-vue-client-sdk`).
 - **Run:** from the language folder:
@@ -511,7 +514,7 @@ Used by [31-client-evaluation](30-client-sdk/31-client-evaluation/vue/),
 npm start
 ```
 
-Default URL for 31: [http://127.0.0.1:8312/](http://127.0.0.1:8312/). `PORT` overrides the Vite port. Do not put `LD_SDK_KEY` in the page; the Vite process proxies lab Controls.
+Default URL for 301: [http://127.0.0.1:8312/](http://127.0.0.1:8312/). `PORT` overrides the Vite port. Do not put `LD_SDK_KEY` in the page; the Vite process proxies lab Controls.
 
 ### Java
 

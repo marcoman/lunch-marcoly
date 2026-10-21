@@ -18,7 +18,7 @@ numbered children and an optional [portal](portal/) to run them side by side.
 | **107** | [107-scheduled-changes/](107-scheduled-changes/) | Web (Python / Node / Java / .NET **:8170–:8173**) + consoles (Python / Node / Java / Go / Rust / C++) + REST/Terraform: replaceable scheduled highlight, elapsed timer |
 | **108** | [108-flag-approvals/](108-flag-approvals/) | **Stub.** Approval to turn the move-count flag on. Intended ports **:8180–:8183**. Not in the portal yet |
 | **109** | [109-evaluation-reasons/](109-evaluation-reasons/) | **Stub.** On-screen `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, `ERROR`. Intended ports **:8190–:8193**. Not in the portal yet |
-| — | [segment-targeting/](segment-targeting/) | **Stub.** Included-targets segment (server SDK). Still unnumbered. Read before [33-synced-segments](../30-client-sdk/33-synced-segments/) |
+| — | [segment-targeting/](segment-targeting/) | **Stub.** Included-targets segment (server SDK). Still unnumbered. Read before [303-synced-segments](../30-client-sdk/303-synced-segments/) |
 
 Migration flags are not in this series. Stub:
 [99-use-cases/17-migration-flags](../99-use-cases/17-migration-flags/).

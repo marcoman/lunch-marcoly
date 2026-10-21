@@ -4,7 +4,7 @@ Work queue for new lunch-marcoly examples. Ship in this order.
 
 ## Next
 
-30-client-sdk **31–36** are in. Remaining stubs:
+30-client-sdk folders are **301–309**. JavaScript, React, and Vue in **301** use the new number, including the About tab. Examples **302–306** and the portal still use the old names. Remaining stubs:
 
 - [41-no-sdk-singleton](40-dont-do-this/41-no-sdk-singleton/)
 - [42-local-if-no-sdk](40-dont-do-this/42-local-if-no-sdk/)
@@ -16,13 +16,13 @@ New stubs (README only, not built):
 
 - [108-flag-approvals](10-code-control/108-flag-approvals/) — approval to turn the move-count flag on. Ports **:8180–:8183** when built.
 - [109-evaluation-reasons](10-code-control/109-evaluation-reasons/) — `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, `ERROR` on screen. Ports **:8190–:8193** when built.
-- [segment-targeting](10-code-control/segment-targeting/) — included-targets segment, server SDK. Still unnumbered. Read this before [33-synced-segments](30-client-sdk/33-synced-segments/).
+- [segment-targeting](10-code-control/segment-targeting/) — included-targets segment, server SDK. Still unnumbered. Read this before [303-synced-segments](30-client-sdk/303-synced-segments/).
 - [207-agent-mode](20-agent-config/207-agent-mode/) — agent mode only, one instructions value. Does not roll into the capstone. Ports **:8270–:8273**.
 - [208-context-attributes](20-agent-config/208-context-attributes/) — region and audience select a variation. Not `{{ }}` prompt variables. Ports **:8280–:8283**.
 - [209-team-rollout](20-agent-config/209-team-rollout/) — sticky percentage rollout bucketed by `team`. Not [14-progressive-rollout](99-use-cases/14-progressive-rollout/). Do not use ports **:8290–:8293** (capstone).
-- [37-client-evaluation-details](30-client-sdk/37-client-evaluation-details/) — client `variationDetail()` next to `variation()`.
-- [38-client-secure-mode](30-client-sdk/38-client-secure-mode/)
-- [39-client-context-cache](30-client-sdk/39-client-context-cache/) — local storage cache, called out in the UI. Not [35-client-bootstrap](30-client-sdk/35-client-bootstrap/).
+- [307-client-evaluation-details](30-client-sdk/307-client-evaluation-details/) — client `variationDetail()` next to `variation()`.
+- [308-client-secure-mode](30-client-sdk/308-client-secure-mode/)
+- [309-client-context-cache](30-client-sdk/309-client-context-cache/) — local storage cache, called out in the UI. Not [305-client-bootstrap](30-client-sdk/305-client-bootstrap/).
 - [55-automatic-environment-attributes](50-mobile/55-automatic-environment-attributes/)
 - [56-mobile-multi-environment](50-mobile/56-mobile-multi-environment/)
 - [63-server-errors](60-observability/63-server-errors/) — one deliberate error, visible as an error and a log line. **64** stays free.
@@ -34,15 +34,15 @@ New stubs (README only, not built):
 | Idea | Why not |
 |------|---------|
 | **26-offline-evaluation** (AgentControl) | Name collides with SDK offline mode. The fixture / side-by-side prompt idea was declined. **Don't do.** |
-| **Client offline mode** | Server fallbacks already live in [18-sdk-fallbacks](99-use-cases/18-sdk-fallbacks/). Client airplane-mode is a weak classroom demo. **Don't do.** It does not own a number. **37** is [37-client-evaluation-details](30-client-sdk/37-client-evaluation-details/). |
+| **Client offline mode** | Server fallbacks already live in [18-sdk-fallbacks](99-use-cases/18-sdk-fallbacks/). Client airplane-mode is a weak classroom demo. **Don't do.** It does not own a number. **307** is [307-client-evaluation-details](30-client-sdk/307-client-evaluation-details/). |
 | **Online evals as their own series** | Dropped. **80** stays the next free decade. Judges already link the product docs from [204-agent-judges](20-agent-config/204-agent-judges/). |
 
 Do not create a folder for offline evaluation, client offline mode, or an online-evals series.
 
 ## Notes
 
-- 10-series children are **101–109**. **106** is percentage rollout, not migration flags. Migration remains [99-use-cases/17-migration-flags](99-use-cases/17-migration-flags/). **108** is approvals. **109** is evaluation reasons. Included-targets segments are the unnumbered [segment-targeting](10-code-control/segment-targeting/) folder. Web and console entrypoints for 101–107 use those numbers. Ports for 101–107 stay **8110–8170**. Letter suffixes stay unused. **20-agent-config** children are **201–209**, and the capstone is [20-capstone-1](20-agent-config/20-capstone-1/). Other series stay two-digit until their own renumber (`301`–`399`, …). A fourth digit is not part of the scheme.
+- 10-series children are **101–109**. **106** is percentage rollout, not migration flags. Migration remains [99-use-cases/17-migration-flags](99-use-cases/17-migration-flags/). **108** is approvals. **109** is evaluation reasons. Included-targets segments are the unnumbered [segment-targeting](10-code-control/segment-targeting/) folder. Web and console entrypoints for 101–107 use those numbers. Ports for 101–107 stay **8110–8170**. Letter suffixes stay unused. **20-agent-config** children are **201–209**, and the capstone is [20-capstone-1](20-agent-config/20-capstone-1/). **30-client-sdk** children are **301–309**. JavaScript, React, and Vue in [301-client-evaluation](30-client-sdk/301-client-evaluation/) use that number, including the About tab. Examples 302–306, stub READMEs, and the portal still use the old names. Ports stay **8310–8362**. Other series stay two-digit until their own renumber (`401`–`499`, …). A fourth digit is not part of the scheme.
 - 20-series **206** is [206-flags-vs-agent-control](20-agent-config/206-flags-vs-agent-control/). **207** is agent mode, **208** is context attributes, **209** is the team percentage rollout. [20-capstone-1](20-agent-config/20-capstone-1/) does not consume **207** and does not use the **209** lesson's ports. Capstone ports stay **:8290–:8293**. Web entrypoints for 201–206 and 20-capstone-1 use the new numbers in Python, Node, Java, and .NET. Portals use tab ids 201–206. Console entrypoints in this series still use the old names. The image / essay / animal apps stay **70-model-demos**.
 - **70-model-demos** children are `01`, `02`, `03`, `04` inside that folder. `04-terraform-codegen` is Python **:8740**. **80** stays the next free decade.
-- Client bootstrap folder is `35-client-bootstrap`, not `bootstrapRender`.
+- Client bootstrap folder is `305-client-bootstrap`, not `bootstrapRender`.
 - Track events: `login_completed` + `grid_move` only unless `cell_selected` is specified later.

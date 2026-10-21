@@ -7,8 +7,8 @@ serves because the current user is on that list. Add or remove the logged-in
 user and the next evaluation follows.
 
 This is the small server-side lesson to read before
-[33-synced-segments](../../30-client-sdk/33-synced-segments/) and
-[34-synced-segments-twilio](../../30-client-sdk/34-synced-segments-twilio/).
+[303-synced-segments](../../30-client-sdk/303-synced-segments/) and
+[304-synced-segments-twilio](../../30-client-sdk/304-synced-segments-twilio/).
 Big and synced segments are the same idea with membership that lives outside
 the flag UI.
 
