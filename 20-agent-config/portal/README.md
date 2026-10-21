@@ -1,6 +1,6 @@
 # 20-agent-config portal
 
-One-command series shells for AgentControl examples **21–26**. Each portal serves
+One-command series shells for AgentControl examples **201–206**. Each portal serves
 a tabbed UI, spawns that language’s existing web servers as children, and embeds
 them in **iframes**.
 
@@ -55,14 +55,16 @@ A shim at [`portal.py`](portal.py) still forwards to [`python/portal.py`](python
 
 ```text
 python portal.py   (or node / java / dotnet twin)
-  ├─ HTTP :820x  → language/index.html (tabs)
-  ├─ child 21    → …/21-…/<lang>/… :82x1
-  ├─ child 22    → …/22-…/<lang>/… :82x2
-  ├─ child 23    → …/23-…/<lang>/… :82x3
-  ├─ child 24    → …/24-…/<lang>/… :82x4
-  ├─ child 25    → …/25-…/<lang>/… :82x5
-  └─ child 26    → …/26-…/<lang>/… :82x6
+  ├─ HTTP :820x  → language/index.html (tabs 201–206)
+  ├─ child 201   → …/201-…/<lang>/… :821x
+  ├─ child 202   → …/202-…/<lang>/… :822x
+  ├─ child 203   → …/203-…/<lang>/… :823x
+  ├─ child 204   → …/204-…/<lang>/… :824x
+  ├─ child 205   → …/205-…/<lang>/… :825x
+  └─ child 206   → …/206-…/<lang>/… :826x
 ```
+
+Node, Java, and .NET still launch the previous entrypoint filenames (`21-….js`, `21-….jar`, `21-….csproj`) inside those folders. Python launches `201-….py` through `206-….py`.
 
 - Children inherit the portal’s environment (`LD_SDK_KEY`, Ollama, etc.).
 - If a child port is already in use, the portal **does not** spawn a second
@@ -84,9 +86,9 @@ Standalone per-example entrypoints still work without the portal.
 - Series setup: [../README.md](../README.md)
 - [python/README.md](python/README.md) · [node/README.md](node/README.md) ·
   [java/README.md](java/README.md) · [dotnet/README.md](dotnet/README.md)
-- [21-agent-completion-config](../21-agent-completion-config/)
-- [22-config-outside-code](../22-config-outside-code/)
-- [23-agent-tools](../23-agent-tools/)
-- [24-agent-judges](../24-agent-judges/)
-- [25-agent-graph](../25-agent-graph/)
-- [26-flags-vs-agent-control](../26-flags-vs-agent-control/)
+- [201-agent-completion-config](../201-agent-completion-config/)
+- [202-config-outside-code](../202-config-outside-code/)
+- [203-agent-tools](../203-agent-tools/)
+- [204-agent-judges](../204-agent-judges/)
+- [205-agent-graph](../205-agent-graph/)
+- [206-flags-vs-agent-control](../206-flags-vs-agent-control/)

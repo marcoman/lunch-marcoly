@@ -1,6 +1,6 @@
 # 20-agent-config portal — Python
 
-One-command **Python** shell for the AgentControl series examples **21–26**.
+One-command **Python** shell for the AgentControl series examples **201–206**.
 
 Twin of the [Node](../node/), [Java](../java/), and [.NET](../dotnet/) portals.
 This portal serves a tabbed UI on **:8200**, spawns each example’s existing
@@ -29,12 +29,12 @@ Open **http://127.0.0.1:8200/**
 
 | Tab | Example | Child port |
 |-----|---------|------------|
-| 21 | Completion | **8210** |
-| 22 | Tracked + feedback | **8220** |
-| 23 | Tools | **8230** |
-| 24 | Judges | **8240** |
-| 25 | Graph | **8250** |
-| 26 | Flag compare | **8260** |
+| 201 | Completion | **8210** |
+| 202 | Tracked + feedback | **8220** |
+| 203 | Tools | **8230** |
+| 204 | Judges | **8240** |
+| 205 | Graph | **8250** |
+| 206 | Flag compare | **8260** |
 
 **Ctrl+C** stops the portal **and** all child servers.
 
@@ -47,12 +47,12 @@ A shim at [`../portal.py`](../portal.py) still forwards to this entrypoint.
 ```text
 python portal.py
   ├─ HTTP :8200  → portal/python/index.html (tabs)
-  ├─ child 21    → …/21-…/python/…py :8210  ← iframe
-  ├─ child 22    → …/22-…/python/…py :8220
-  ├─ child 23    → …/23-…/python/…py :8230
-  ├─ child 24    → …/24-…/python/…py :8240
-  ├─ child 25    → …/25-…/python/…py :8250
-  └─ child 26    → …/26-…/python/…py :8260
+  ├─ child 201   → …/201-…/python/201-….py :8210  ← iframe
+  ├─ child 202   → …/202-…/python/202-….py :8220
+  ├─ child 203   → …/203-…/python/203-….py :8230
+  ├─ child 204   → …/204-…/python/204-….py :8240
+  ├─ child 205   → …/205-…/python/205-….py :8250
+  └─ child 206   → …/206-…/python/206-….py :8260
 ```
 
 - Children inherit the portal’s environment (`LD_SDK_KEY`, Ollama, etc.).

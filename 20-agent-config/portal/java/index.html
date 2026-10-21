@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>20-agent-config portal (Java)</title>
   <!--
-    Series shell for AgentControl examples 21–26.
+    Series shell for AgentControl examples 201–206.
     Tabs switch iframes to each example's own Java server (spawned by the Java portal).
   -->
   <style>
@@ -141,12 +141,12 @@
   </div>
   <script>
     const CHILDREN = [
-      { id: "21", label: "Completion", port: 8212 },
-      { id: "22", label: "Tracked + feedback", port: 8222 },
-      { id: "23", label: "Tools", port: 8232 },
-      { id: "24", label: "Judges", port: 8242 },
-      { id: "25", label: "Graph", port: 8252 },
-      { id: "26", label: "Flag compare", port: 8262 },
+      { id: "201", label: "Completion", port: 8212 },
+      { id: "202", label: "Tracked + feedback", port: 8222 },
+      { id: "203", label: "Tools", port: 8232 },
+      { id: "204", label: "Judges", port: 8242 },
+      { id: "205", label: "Graph", port: 8252 },
+      { id: "206", label: "Flag compare", port: 8262 },
     ];
 
     const tabsEl = document.getElementById("tabs");
@@ -155,8 +155,8 @@
     const buttons = new Map();
     const frames = new Map();
 
-    let activeId = (new URLSearchParams(location.search).get("tab") || "21").replace(/\D/g, "") || "21";
-    if (!CHILDREN.some((c) => c.id === activeId)) activeId = "21";
+    let activeId = (new URLSearchParams(location.search).get("tab") || "201").replace(/\D/g, "") || "201";
+    if (!CHILDREN.some((c) => c.id === activeId)) activeId = "201";
 
     function selectTab(id) {
       activeId = id;

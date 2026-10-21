@@ -1,6 +1,6 @@
 # 20-agent-config portal — Java
 
-One-command **Java** shell for the AgentControl series examples **21–26**.
+One-command **Java** shell for the AgentControl series examples **201–206**.
 
 Twin of the [Python](../python/), [Node](../node/), and [.NET](../dotnet/) portals.
 This portal serves a tabbed UI on **:8202**, spawns each example’s shaded jar,
@@ -32,12 +32,12 @@ Open **http://127.0.0.1:8202/**
 
 | Tab | Example | Child port |
 |-----|---------|------------|
-| 21 | Completion | **8212** |
-| 22 | Tracked + feedback | **8222** |
-| 23 | Tools | **8232** |
-| 24 | Judges | **8242** |
-| 25 | Graph | **8252** |
-| 26 | Flag compare | **8262** |
+| 201 | Completion | **8212** |
+| 202 | Tracked + feedback | **8222** |
+| 203 | Tools | **8232** |
+| 204 | Judges | **8242** |
+| 205 | Graph | **8252** |
+| 206 | Flag compare | **8262** |
 
 **Ctrl+C** stops the portal **and** all child servers.
 
@@ -48,12 +48,12 @@ Override the portal listen port with `PORTAL_PORT` (default `8202`).
 ```text
 java -jar target/portal-java.jar
   ├─ HTTP :8202  → portal/java/index.html (tabs)
-  ├─ child 21    → …/21-…/java/target/….jar :8212  ← iframe
-  ├─ child 22    → …/22-…/java/target/….jar :8222
-  ├─ child 23    → …/23-…/java/target/….jar :8232
-  ├─ child 24    → …/24-…/java/target/….jar :8242
-  ├─ child 25    → …/25-…/java/target/….jar :8252
-  └─ child 26    → …/26-…/java/target/….jar :8262
+  ├─ child 201   → …/201-…/java/target/21-….jar :8212  ← iframe
+  ├─ child 202   → …/202-…/java/target/22-….jar :8222
+  ├─ child 203   → …/203-…/java/target/23-….jar :8232
+  ├─ child 204   → …/204-…/java/target/24-….jar :8242
+  ├─ child 205   → …/205-…/java/target/25-….jar :8252
+  └─ child 206   → …/206-…/java/target/26-….jar :8262
 ```
 
 - Children inherit the portal’s environment (`LD_SDK_KEY`, Ollama, etc.).

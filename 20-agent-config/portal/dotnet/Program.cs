@@ -1,4 +1,4 @@
-// Portal — series shell for 20-agent-config (.NET web examples 21–26).
+// Portal — series shell for 20-agent-config (.NET web examples 201–206).
 //
 // One process for the user:
 //   - Serves wwwroot/index.html on :8203 (PORTAL_PORT)
@@ -22,23 +22,23 @@ var seriesRoot = Path.GetFullPath(Path.Combine(here, "..", ".."));
 
 var children = new[]
 {
-    new Child("21", "Completion",
-        Path.Combine(seriesRoot, "21-agent-completion-config", "dotnet"),
+    new Child("201", "Completion",
+        Path.Combine(seriesRoot, "201-agent-completion-config", "dotnet"),
         "21-agent-completion-config.csproj", 8213),
-    new Child("22", "Tracked + feedback",
-        Path.Combine(seriesRoot, "22-config-outside-code", "dotnet"),
+    new Child("202", "Tracked + feedback",
+        Path.Combine(seriesRoot, "202-config-outside-code", "dotnet"),
         "22-config-outside-code.csproj", 8223),
-    new Child("23", "Tools",
-        Path.Combine(seriesRoot, "23-agent-tools", "dotnet"),
+    new Child("203", "Tools",
+        Path.Combine(seriesRoot, "203-agent-tools", "dotnet"),
         "23-agent-tools.csproj", 8233),
-    new Child("24", "Judges",
-        Path.Combine(seriesRoot, "24-agent-judges", "dotnet"),
+    new Child("204", "Judges",
+        Path.Combine(seriesRoot, "204-agent-judges", "dotnet"),
         "24-agent-judges.csproj", 8243),
-    new Child("25", "Graph",
-        Path.Combine(seriesRoot, "25-agent-graph", "dotnet"),
+    new Child("205", "Graph",
+        Path.Combine(seriesRoot, "205-agent-graph", "dotnet"),
         "25-agent-graph.csproj", 8253),
-    new Child("26", "Flag compare",
-        Path.Combine(seriesRoot, "26-flags-vs-agent-control", "dotnet"),
+    new Child("206", "Flag compare",
+        Path.Combine(seriesRoot, "206-flags-vs-agent-control", "dotnet"),
         "26-flags-vs-agent-control.csproj", 8263),
 };
 

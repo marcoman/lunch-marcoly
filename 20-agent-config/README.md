@@ -6,7 +6,7 @@ Examples here keep the same news → generate product shape. What changes is **w
 
 ## Series portal
 
-Prefer a **portal** when you want to flip between **201–206** in one browser window. The portal process still uses tab ids **21–26** until the portal pass.
+Prefer a **portal** when you want to flip between **201–206** in one browser window. Tab ids are **201–206**. Ports stay **8210–8263**.
 
 | Language | Command | URL |
 |----------|---------|-----|
@@ -25,7 +25,7 @@ Shared headline cache: [stories/](stories/) (`20-agent-config/stories/stories_ca
 
 | # | Directory | What it adds |
 |---|-----------|--------------|
-| — | [portal](portal/) | **Series shell**: tabs still **21–26** until the portal pass — Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
+| — | [portal](portal/) | **Series shell**: tabs **201–206** — Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
 | — | [20-capstone-1](20-capstone-1/) | **Python :8290 · Node :8291 · Java :8292 · .NET :8293, not in the portal.** Composes `201`–`205`. Checked tools run after the specialist and before finalize. Judges and feedback stay on the draft. English and Spanish live here. Spec: [application.md](20-capstone-1/application.md) |
 | 201 | [201-agent-completion-config](201-agent-completion-config/) | **Completion config**: runtime **model**, **system prompt**, and **user prompt** — provision with [rest/](201-agent-completion-config/rest/); `get-targeting-status.sh`. Web: Python/Node/Java/.NET. Console: Python (curses), **Go** (raw-terminal) |
 | 202 | [202-config-outside-code](202-config-outside-code/) | **Tracked completion**: **`track_metrics_of`**, thumbs feedback, Ollama / Anthropic (Best Betty) — Python **8220** · Node **8221** · Java **8222** · .NET **8223**; `get-feedback-status.sh`. Console: **Go** (raw-terminal, `+`/`-` feedback hotkeys) |

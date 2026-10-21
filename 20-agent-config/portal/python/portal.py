@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-portal.py — series shell for 20-agent-config (Python web examples 21–26).
+portal.py — series shell for 20-agent-config (Python web examples 201–206).
 
 One process for the user:
   - Serves this folder's index.html on :8200 (PORTAL_PORT)
@@ -36,51 +36,51 @@ APP_BANNER = "20-agent-config[portal-python]"
 # cwd = each example's python/ so index.html + imports resolve like a solo run.
 CHILDREN: list[dict[str, Any]] = [
     {
-        "id": "21",
+        "id": "201",
         "label": "Completion",
         "script": SERIES_ROOT
-        / "21-agent-completion-config"
+        / "201-agent-completion-config"
         / "python"
-        / "21-agent-completion-config.py",
-        "cwd": SERIES_ROOT / "21-agent-completion-config" / "python",
+        / "201-agent-completion-config.py",
+        "cwd": SERIES_ROOT / "201-agent-completion-config" / "python",
         "port": 8210,
     },
     {
-        "id": "22",
+        "id": "202",
         "label": "Tracked + feedback",
-        "script": SERIES_ROOT / "22-config-outside-code" / "python" / "22-config-outside-code.py",
-        "cwd": SERIES_ROOT / "22-config-outside-code" / "python",
+        "script": SERIES_ROOT / "202-config-outside-code" / "python" / "202-config-outside-code.py",
+        "cwd": SERIES_ROOT / "202-config-outside-code" / "python",
         "port": 8220,
     },
     {
-        "id": "23",
+        "id": "203",
         "label": "Tools",
-        "script": SERIES_ROOT / "23-agent-tools" / "python" / "23-agent-tools.py",
-        "cwd": SERIES_ROOT / "23-agent-tools" / "python",
+        "script": SERIES_ROOT / "203-agent-tools" / "python" / "203-agent-tools.py",
+        "cwd": SERIES_ROOT / "203-agent-tools" / "python",
         "port": 8230,
     },
     {
-        "id": "24",
+        "id": "204",
         "label": "Judges",
-        "script": SERIES_ROOT / "24-agent-judges" / "python" / "24-agent-judges.py",
-        "cwd": SERIES_ROOT / "24-agent-judges" / "python",
+        "script": SERIES_ROOT / "204-agent-judges" / "python" / "204-agent-judges.py",
+        "cwd": SERIES_ROOT / "204-agent-judges" / "python",
         "port": 8240,
     },
     {
-        "id": "25",
+        "id": "205",
         "label": "Graph",
-        "script": SERIES_ROOT / "25-agent-graph" / "python" / "25-agent-graph.py",
-        "cwd": SERIES_ROOT / "25-agent-graph" / "python",
+        "script": SERIES_ROOT / "205-agent-graph" / "python" / "205-agent-graph.py",
+        "cwd": SERIES_ROOT / "205-agent-graph" / "python",
         "port": 8250,
     },
     {
-        "id": "26",
+        "id": "206",
         "label": "Flag compare",
         "script": SERIES_ROOT
-        / "26-flags-vs-agent-control"
+        / "206-flags-vs-agent-control"
         / "python"
-        / "26-flags-vs-agent-control.py",
-        "cwd": SERIES_ROOT / "26-flags-vs-agent-control" / "python",
+        / "206-flags-vs-agent-control.py",
+        "cwd": SERIES_ROOT / "206-flags-vs-agent-control" / "python",
         "port": 8260,
     },
 ]

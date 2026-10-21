@@ -1,6 +1,6 @@
 # 20-agent-config portal — Node
 
-One-command **Node** shell for the AgentControl series examples **21–26**.
+One-command **Node** shell for the AgentControl series examples **201–206**.
 
 Twin of the [Python](../python/), [Java](../java/), and [.NET](../dotnet/) portals.
 This portal serves a tabbed UI on **:8201**, spawns each example’s existing Node
@@ -16,12 +16,12 @@ export LD_SDK_KEY="sdk-..."
 
 # Install deps once per example (portal will refuse to spawn without node_modules)
 for d in \
-  ../../21-agent-completion-config/node \
-  ../../22-config-outside-code/node \
-  ../../23-agent-tools/node \
-  ../../24-agent-judges/node \
-  ../../25-agent-graph/node \
-  ../../26-flags-vs-agent-control/node
+  ../../201-agent-completion-config/node \
+  ../../202-config-outside-code/node \
+  ../../203-agent-tools/node \
+  ../../204-agent-judges/node \
+  ../../205-agent-graph/node \
+  ../../206-flags-vs-agent-control/node
 do
   (cd "$d" && npm install)
 done
@@ -41,12 +41,12 @@ Open **http://127.0.0.1:8201/**
 
 | Tab | Example | Child port |
 |-----|---------|------------|
-| 21 | Completion | **8211** |
-| 22 | Tracked + feedback | **8221** |
-| 23 | Tools | **8231** |
-| 24 | Judges | **8241** |
-| 25 | Graph | **8251** |
-| 26 | Flag compare | **8261** |
+| 201 | Completion | **8211** |
+| 202 | Tracked + feedback | **8221** |
+| 203 | Tools | **8231** |
+| 204 | Judges | **8241** |
+| 205 | Graph | **8251** |
+| 206 | Flag compare | **8261** |
 
 **Ctrl+C** stops the portal **and** all child servers.
 
@@ -57,12 +57,12 @@ Override the portal listen port with `PORTAL_PORT` (default `8201`).
 ```text
 node portal.js
   ├─ HTTP :8201  → portal/node/index.html (tabs)
-  ├─ child 21    → …/21-…/node/…js :8211  ← iframe
-  ├─ child 22    → …/22-…/node/…js :8221
-  ├─ child 23    → …/23-…/node/…js :8231
-  ├─ child 24    → …/24-…/node/…js :8241
-  ├─ child 25    → …/25-…/node/…js :8251
-  └─ child 26    → …/26-…/node/…js :8261
+  ├─ child 201   → …/201-…/node/21-….js :8211  ← iframe
+  ├─ child 202   → …/202-…/node/22-….js :8221
+  ├─ child 203   → …/203-…/node/23-….js :8231
+  ├─ child 204   → …/204-…/node/24-….js :8241
+  ├─ child 205   → …/205-…/node/25-….js :8251
+  └─ child 206   → …/206-…/node/26-….js :8261
 ```
 
 - Children inherit the portal’s environment (`LD_SDK_KEY`, Ollama, etc.).

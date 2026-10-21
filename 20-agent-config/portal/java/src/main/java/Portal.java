@@ -1,5 +1,5 @@
 /**
- * Portal — series shell for 20-agent-config (Java web examples 21–26).
+ * Portal — series shell for 20-agent-config (Java web examples 201–206).
  *
  * One process for the user:
  *   - Serves this folder's index.html on :8202 (PORTAL_PORT)
@@ -43,23 +43,23 @@ public final class Portal {
     }
 
     private static final List<Child> CHILDREN = List.of(
-            new Child("21", "Completion",
-                    SERIES_ROOT.resolve("21-agent-completion-config/java"),
+            new Child("201", "Completion",
+                    SERIES_ROOT.resolve("201-agent-completion-config/java"),
                     "21-agent-completion-config.jar", 8212),
-            new Child("22", "Tracked + feedback",
-                    SERIES_ROOT.resolve("22-config-outside-code/java"),
+            new Child("202", "Tracked + feedback",
+                    SERIES_ROOT.resolve("202-config-outside-code/java"),
                     "22-config-outside-code.jar", 8222),
-            new Child("23", "Tools",
-                    SERIES_ROOT.resolve("23-agent-tools/java"),
+            new Child("203", "Tools",
+                    SERIES_ROOT.resolve("203-agent-tools/java"),
                     "23-agent-tools.jar", 8232),
-            new Child("24", "Judges",
-                    SERIES_ROOT.resolve("24-agent-judges/java"),
+            new Child("204", "Judges",
+                    SERIES_ROOT.resolve("204-agent-judges/java"),
                     "24-agent-judges.jar", 8242),
-            new Child("25", "Graph",
-                    SERIES_ROOT.resolve("25-agent-graph/java"),
+            new Child("205", "Graph",
+                    SERIES_ROOT.resolve("205-agent-graph/java"),
                     "25-agent-graph.jar", 8252),
-            new Child("26", "Flag compare",
-                    SERIES_ROOT.resolve("26-flags-vs-agent-control/java"),
+            new Child("206", "Flag compare",
+                    SERIES_ROOT.resolve("206-flags-vs-agent-control/java"),
                     "26-flags-vs-agent-control.jar", 8262)
     );
 
