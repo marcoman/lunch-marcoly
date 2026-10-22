@@ -147,6 +147,19 @@ show-host-os-emoji
 
 All implementations require `LD_SDK_KEY` and provisioned flags. See each language README for build and run commands.
 
+## Code examples in the lab
+
+The Python, Node.js, Java, and .NET web drawers include a **Code Example** tab
+before **About**. Each tab is a short excerpt from that implementation: build
+the LaunchDarkly context, evaluate `enable-grid-selection-highlight`, and use
+the served variation in the grid response. The snippets are representative
+rather than copies of the entire application. Java's drawer is Code Example
+and About. The other three also include Controls and Context.
+
+For process-wide client initialization and dependency installation in Python,
+Node.js, Java, .NET, Go, Rust, and C++, see the series
+[Server SDK startup by language](../SDK-STARTUP.md).
+
 ## Portal (series)
 
 The [10-code-control portal](../portal/) embeds examples **11–15** in tabs:

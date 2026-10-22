@@ -42,6 +42,8 @@
     .history button{display:flex;align-items:center;justify-content:space-between;width:100%;text-align:left;gap:.6rem;padding:.4rem .55rem}
     .history .value{font:700 .75rem ui-monospace,monospace}.history .value.green{color:var(--accent)}.history .value.none{color:var(--muted)}
     a{color:#90caf9}
+    .code-example-source{margin:0 0 .55rem;color:var(--muted);font-size:.78rem;line-height:1.4}
+    .code-example{margin:0;padding:.75rem .85rem;overflow:auto;border:1px solid var(--line);border-radius:8px;background:#1a1a28;color:var(--ink);font:.75rem/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;tab-size:4;white-space:pre}
   </style>
 </head>
 <body>
@@ -72,6 +74,7 @@
       <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
       <div class="ld-tabs" role="tablist">
         <button type="button" class="ld-tab active" data-tab="rollout" role="tab" aria-selected="true">Rollout</button>
+        <button type="button" class="ld-tab" data-tab="code" role="tab" aria-selected="false">Code Example</button>
         <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
       </div>
       <div class="ld-rail-body">
@@ -112,6 +115,29 @@
       <div class="block-title">Why it sticks</div>
       <p id="sticky" class="muted">LaunchDarkly hashes flag + context kind + context key into one of 100,000 buckets. Same inputs, same bucket.</p>
       <p class="muted">Try several usernames. Two names can legitimately land in the same side.</p>
+      </section>
+      <section id="ld-section-code" class="ld-section">
+        <div class="block-title">Context → variation → response</div>
+        <p class="ld-about-p">Build a user context from the username, ask for the variation detail, then return the value, variation index, and reason. The app never computes a percent.</p>
+        <p class="code-example-source">Trimmed from <code>Rollout.java</code>, served by <code>WebServer.java</code>.</p>
+        <pre class="code-example"><code>// Context: the username is the user key LaunchDarkly buckets.
+LDContext context = LDContext.builder(username).kind("user").name(username).build();
+
+// Evaluation: stringVariationDetail returns the value plus why it was served.
+EvaluationDetail&lt;String&gt; detail =
+        client.stringVariationDetail(FLAG_KEY, context, DEFAULT_VALUE);
+String raw = detail.getValue();
+String value = VALID.contains(raw) ? raw : DEFAULT_VALUE;
+
+// Response: served value, variation index, and reason for the drawer.
+Map&lt;String, Object&gt; result = new LinkedHashMap&lt;&gt;();
+result.put("flagKey", FLAG_KEY);
+result.put("flagValue", value);
+result.put("highlightColor", value);
+result.put("variationIndex", variationIndex(detail));
+result.put("reason", reasonPayload(detail.getReason()));
+result.put("ldContext", contextPayload);
+return result;</code></pre>
       </section>
       <section id="ld-section-about" class="ld-section">
         <div class="block-title">What this teaches</div>

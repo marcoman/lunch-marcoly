@@ -30,4 +30,9 @@ Open [http://127.0.0.1:8080/](http://127.0.0.1:8080/).
 
 ## What to expect
 
-Same as [python/README.md](../python/README.md).
+Same grid as [python/README.md](../python/README.md). After login, the lab drawer
+opens on **Code Example**: the trimmed context, flag evaluation, and grid
+response from `FlagEvaluator` and `HostOs`. **About** explains the flags.
+
+Feature flags — evaluating variations:
+<https://launchdarkly.com/docs/sdk/features/evaluating>

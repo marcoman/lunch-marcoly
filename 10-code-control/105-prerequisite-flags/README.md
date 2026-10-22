@@ -20,7 +20,11 @@ Keywords: **prerequisites** · **dependent flag** · **off variation** ·
 
 Docs: [Flag prerequisites](https://launchdarkly.com/docs/home/flags/prereqs)
 
-The web apps explain this on the **About** tab in the right drawer. The **Prerequisite** tab shows both variations, the context, and the controls.
+The web apps explain this on the **About** tab in the right drawer. The
+**Prerequisite** tab shows both variations, the context, and the controls.
+**Code Example**, immediately before About, shows that the application always
+evaluates both the parent and child flags and lets LaunchDarkly enforce the
+prerequisite.
 
 ## The dependency
 

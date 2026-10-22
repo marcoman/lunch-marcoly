@@ -142,6 +142,24 @@
     }
     .ld-section { display: none; }
     .ld-section.active { display: block; }
+    .code-example-source {
+      margin: 0 0 0.55rem;
+      color: var(--about-muted);
+      font-size: 0.78rem;
+      line-height: 1.4;
+    }
+    .code-example {
+      margin: 0;
+      padding: 0.75rem 0.85rem;
+      overflow: auto;
+      border: 1px solid var(--about-line);
+      border-radius: 8px;
+      background: #1a1a28;
+      color: var(--about-ink);
+      font: 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+      tab-size: 4;
+      white-space: pre;
+    }
     .ld-block-title {
       margin: 1rem 0 0.35rem;
       font-size: 0.8rem;
@@ -432,6 +450,7 @@
       <div class="ld-tabs" role="tablist">
         <button type="button" class="ld-tab active" data-tab="controls" role="tab" aria-selected="true">Controls</button>
         <button type="button" class="ld-tab" data-tab="context" role="tab" aria-selected="false">Context</button>
+        <button type="button" class="ld-tab" data-tab="code" role="tab" aria-selected="false">Code Example</button>
         <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
       </div>
       <div class="ld-rail-body">
@@ -452,6 +471,38 @@
         <div id="ld-section-context" class="ld-section">
           <p class="ld-controls-meta" id="context-meta">Log in to see evaluation contexts.</p>
           <div id="context-body"></div>
+        </div>
+        <div id="ld-section-code" class="ld-section">
+          <div class="ld-block-title">Context → variation → response</div>
+          <p class="ld-about-p">Build the anonymous and user contexts, evaluate boolean, string, number, and JSON variations with safe defaults, then shape the served values for the grid.</p>
+          <p class="code-example-source">Trimmed from <code>java/src/main/java/HostOs.java</code> and <code>java/src/main/java/FlagEvaluator.java</code>.</p>
+          <pre class="code-example"><code>// Context: anonymous context with private hostOs, plus the logged-in user.
+LDContext anonContext = LDContext.builder(ANONYMOUS_CONTEXT_KEY)
+        .anonymous(true)
+        .set("hostOs", HOST_OS)
+        .privateAttributes("hostOs")
+        .build();
+LDContext userContext = LDContext.builder(username).build();
+
+// Evaluate each flag with its typed variation call and a safe default.
+boolean showEmoji = client.boolVariation(
+        HostOs.FLAG_ANON_OS_EMOJI, anonContext, false);
+String countLabel = client.stringVariation(
+        FLAG_COUNT_LABEL, userContext, DEFAULT_COUNT_LABEL);
+int luckyNumber = client.intVariation(
+        FLAG_LUCKY_NUMBER, userContext, DEFAULT_LUCKY_NUMBER);
+LDValue maxMovesRaw = client.jsonValueVariation(
+        FLAG_MAX_MOVES,
+        userContext,
+        LDValue.buildObject().put("maxMoves", DEFAULT_MAX_MOVES).build());
+
+// The served values choose label, lucky number, move cap, and emoji.
+return new FlagValues(
+        countLabel == null || countLabel.isBlank() ? DEFAULT_COUNT_LABEL : countLabel,
+        luckyNumber,
+        parseMaxMoves(maxMovesRaw),
+        HostOs.osEmojiFor(HOST_OS, showEmoji),
+        username);</code></pre>
         </div>
         <div id="ld-section-about" class="ld-section">
           <div class="ld-block-title">What this example is</div>

@@ -29,6 +29,13 @@ Work order: [TODO.md](../TODO.md).
 
 Baseline (no LaunchDarkly): [00-reference-code](../00-reference-code/).
 
+## Common SDK startup
+
+Before an application builds a context or evaluates a flag, it initializes one
+process-wide LaunchDarkly client and reuses it. See
+[Server SDK startup by language](SDK-STARTUP.md) for short Python, Node.js,
+Java, .NET, Go, Rust, and C++ examples.
+
 ## Portals
 
 ```bash

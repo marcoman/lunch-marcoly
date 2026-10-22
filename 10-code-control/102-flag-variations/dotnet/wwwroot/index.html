@@ -142,6 +142,24 @@
     }
     .ld-section { display: none; }
     .ld-section.active { display: block; }
+    .code-example-source {
+      margin: 0 0 0.55rem;
+      color: var(--about-muted);
+      font-size: 0.78rem;
+      line-height: 1.4;
+    }
+    .code-example {
+      margin: 0;
+      padding: 0.75rem 0.85rem;
+      overflow: auto;
+      border: 1px solid var(--about-line);
+      border-radius: 8px;
+      background: #1a1a28;
+      color: var(--about-ink);
+      font: 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+      tab-size: 4;
+      white-space: pre;
+    }
     .ld-block-title {
       margin: 1rem 0 0.35rem;
       font-size: 0.8rem;
@@ -432,6 +450,7 @@
       <div class="ld-tabs" role="tablist">
         <button type="button" class="ld-tab active" data-tab="controls" role="tab" aria-selected="true">Controls</button>
         <button type="button" class="ld-tab" data-tab="context" role="tab" aria-selected="false">Context</button>
+        <button type="button" class="ld-tab" data-tab="code" role="tab" aria-selected="false">Code Example</button>
         <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
       </div>
       <div class="ld-rail-body">
@@ -452,6 +471,34 @@
         <div id="ld-section-context" class="ld-section">
           <p class="ld-controls-meta" id="context-meta">Log in to see evaluation contexts.</p>
           <div id="context-body"></div>
+        </div>
+        <div id="ld-section-code" class="ld-section">
+          <div class="ld-block-title">Context → variation → response</div>
+          <p class="ld-about-p">Build the user and anonymous contexts, evaluate boolean, string, number, and JSON variations with safe defaults, then shape the served values for the grid.</p>
+          <p class="code-example-source">Trimmed from <code>dotnet/Program.cs</code>.</p>
+          <pre class="code-example"><code>// Context: the logged-in user, plus an anonymous context with private hostOs.
+var userContext = Context.Builder(username).Build();
+var anonymousContext = Context.Builder(AnonymousKey)
+    .Anonymous(true)
+    .Set(HostOsAttribute, HostOs)
+    .Private(HostOsAttribute)
+    .Build();
+
+// Evaluate each flag with its typed variation call and a safe default.
+var showEmoji = _client?.BoolVariation(EmojiFlag, anonymousContext, false) ?? false;
+var countLabel = _client?.StringVariation(LabelFlag, userContext, "Count") ?? "Count";
+var luckyNumber = _client?.DoubleVariation(LuckyFlag, userContext, 0) ?? 0;
+var maxMovesValue = _client?.JsonVariation(MaxMovesFlag, userContext, defaultMaxMoves)
+    ?? defaultMaxMoves;
+
+// The served values choose label, lucky number, move cap, and emoji.
+return new
+{
+    countLabel = string.IsNullOrEmpty(countLabel) ? "Count" : countLabel,
+    luckyNumber,
+    maxMoves,
+    osEmoji = showEmoji ? OsEmoji(HostOs) : "",
+};</code></pre>
         </div>
         <div id="ld-section-about" class="ld-section">
           <div class="ld-block-title">What this example is</div>

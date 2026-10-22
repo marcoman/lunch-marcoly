@@ -5,13 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Grid Navigator — Flag Enablement</title>
   <style>
+    html, body { height: 100%; }
     body {
       font-family: system-ui, sans-serif;
       background: #1e1e2e;
       color: #e8e8ec;
+      margin: 0;
+      min-height: 100%;
+    }
+    #login-screen {
       max-width: 480px;
       margin: 2rem auto;
       padding: 0 1rem;
+    }
+    #app-shell {
+      display: none;
+      height: 100vh;
+      box-sizing: border-box;
+      grid-template-columns: minmax(0, 1fr) min(28rem, 42vw);
+      grid-template-rows: minmax(0, 1fr);
+    }
+    body.grid-active #app-shell { display: grid; }
+    #grid-screen {
+      grid-column: 1;
+      grid-row: 1;
+      box-sizing: border-box;
+      min-width: 0;
+      min-height: 0;
+      overflow: auto;
+      padding: 1.5rem 1.25rem;
+      outline: none;
     }
     h1 { font-size: 1.25rem; margin-bottom: 1rem; }
     label { display: block; margin-bottom: 0.5rem; }
@@ -83,7 +106,97 @@
       border-color: #6a1b9a;
     }
     .hint { margin-top: 1rem; color: #aaa; font-size: 0.875rem; }
-    .hidden { display: none; }
+    .hidden { display: none !important; }
+
+    :root {
+      --about-ink: #e8e8ec;
+      --about-muted: #9a9aab;
+      --about-panel: #2d2d3d;
+      --about-line: #4a4a5c;
+      --about-accent: #64b5f6;
+    }
+    .ld-rail {
+      grid-column: 2;
+      grid-row: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background: var(--about-panel);
+      border-left: 1px solid var(--about-line);
+      color: var(--about-ink);
+      box-sizing: border-box;
+    }
+    .ld-rail-header {
+      padding: 0.85rem 1.1rem;
+      border-bottom: 1px solid var(--about-line);
+      flex: 0 0 auto;
+    }
+    .ld-rail-header h2 { margin: 0; font-size: 1.05rem; font-weight: 600; }
+    .ld-tabs {
+      display: flex;
+      gap: 0.35rem;
+      padding: 0.65rem 1.1rem 0;
+      border-bottom: 1px solid var(--about-line);
+      flex: 0 0 auto;
+    }
+    .ld-tab {
+      border: none;
+      background: transparent;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      padding: 0.45rem 0.65rem;
+      color: var(--about-muted);
+      font: inherit;
+      cursor: pointer;
+    }
+    .ld-tab.active {
+      color: var(--about-ink);
+      border-bottom-color: var(--about-accent);
+      font-weight: 600;
+    }
+    .ld-rail-body {
+      flex: 1 1 auto;
+      overflow: auto;
+      padding: 1rem 1.1rem 1.5rem;
+      min-height: 0;
+    }
+    .ld-block-title {
+      margin: 0 0 0.4rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--about-accent);
+    }
+    .ld-about-p {
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--about-ink);
+    }
+    .ld-about-p a { color: var(--about-accent); }
+    .ld-section { display: none; }
+    .ld-section.active { display: block; }
+    .code-example-source {
+      margin: 0 0 0.55rem;
+      color: var(--about-muted);
+      font-size: 0.78rem;
+      line-height: 1.4;
+    }
+    .code-example {
+      margin: 0;
+      padding: 0.75rem 0.85rem;
+      overflow: auto;
+      border: 1px solid var(--about-line);
+      border-radius: 8px;
+      background: #1a1a28;
+      color: var(--about-ink);
+      font: 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+      tab-size: 4;
+      white-space: pre;
+    }
     .color-pink { color: #f48fb1; }
     .color-yellow { color: #fff176; }
     .color-red { color: #ef5350; }
@@ -102,17 +215,90 @@
     <button id="login-btn" type="button">Continue</button>
   </section>
 
-  <section id="grid-screen" class="hidden" tabindex="0">
-    <div class="header">
-      <div class="app-banner">101-flag-enablement[java]</div>
-      <div>Name: <span id="hdr-name"></span><span id="hdr-cohort"></span></div>
-      <div>Current position: <span id="hdr-current"></span></div>
-      <div>Previous position: <span id="hdr-previous"></span></div>
-      <div id="hdr-count-row" class="hidden">Count: <span id="hdr-count"></span></div>
-    </div>
-    <div id="grid" class="grid" aria-label="3 by 3 grid"></div>
-    <p class="hint">Use arrow keys or WASD to move. Press L to log out, Q to quit.</p>
-  </section>
+  <div id="app-shell">
+    <section id="grid-screen" tabindex="0">
+      <div class="header">
+        <div class="app-banner">101-flag-enablement[java]</div>
+        <div>Name: <span id="hdr-name"></span><span id="hdr-cohort"></span></div>
+        <div>Current position: <span id="hdr-current"></span></div>
+        <div>Previous position: <span id="hdr-previous"></span></div>
+        <div id="hdr-count-row" class="hidden">Count: <span id="hdr-count"></span></div>
+      </div>
+      <div id="grid" class="grid" aria-label="3 by 3 grid"></div>
+      <p class="hint">Use arrow keys or WASD to move. Press L to log out, Q to quit.</p>
+    </section>
+
+    <aside id="ld-rail" class="ld-rail" aria-label="LaunchDarkly lab">
+      <div class="ld-rail-header">
+        <h2>LaunchDarkly · lab</h2>
+      </div>
+      <div class="ld-tabs" role="tablist">
+        <button type="button" class="ld-tab active" data-tab="code" role="tab" aria-selected="true">Code Example</button>
+        <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
+      </div>
+      <div class="ld-rail-body">
+        <div id="ld-section-code" class="ld-section active">
+          <div class="ld-block-title">Context → variation → response</div>
+          <p class="ld-about-p">Build the evaluation context, evaluate the string flag with a safe default, then shape the served value for the grid.</p>
+          <p class="code-example-source">Trimmed from <code>HostOs.java</code> and <code>FlagEvaluator.java</code>.</p>
+          <pre class="code-example"><code>// Context: user key plus private hostOs for targeting.
+LDContext context = LDContext.builder(username)
+    .set("hostOs", HOST_OS)
+    .privateAttributes("hostOs")
+    .build();
+
+// Evaluate each flag. The last argument is the safe default.
+String highlightRaw = client.stringVariation(
+    "enable-grid-selection-highlight",
+    context,
+    "none"
+);
+boolean highlight = !HighlightStyle.isHighlightOff(highlightRaw);
+String servedColor = highlight ? highlightRaw : null;
+boolean contextHighlight = client.boolVariation(
+    HighlightStyle.FLAG_CONTEXT, context, false
+);
+boolean showCount = client.boolVariation(
+    HighlightStyle.FLAG_COUNT, context, false
+);
+boolean showOsEmoji = client.boolVariation(
+    HostOs.FLAG_OS_EMOJI, context, false
+);
+
+// The served values choose highlight, count, and emoji.
+HighlightStyle.Style style = HighlightStyle.resolve(
+    username, highlight, contextHighlight, servedColor
+);
+String osEmoji = HostOs.osEmojiFor(HOST_OS, showOsEmoji);
+return new FlagValues(
+    highlight,
+    contextHighlight,
+    showCount,
+    style.highlightColor(),
+    style.cohortLabel(),
+    osEmoji
+);</code></pre>
+        </div>
+        <div id="ld-section-about" class="ld-section">
+          <div class="ld-block-title">What this example is</div>
+          <p class="ld-about-p">This example teaches LaunchDarkly <strong>feature flags</strong> on the grid navigator: a <strong>string</strong> highlight flag, a boolean <strong>color override</strong>, move count, and a host OS emoji.</p>
+          <div class="ld-block-title">What we show</div>
+          <p class="ld-about-p">Log in and move on the grid. <strong>Code Example</strong> is the server path that builds the context, evaluates <code>enable-grid-selection-highlight</code>, and shapes the served value for the grid.</p>
+          <div class="ld-block-title">Color override (app logic)</div>
+          <p class="ld-about-p">
+            <code>enable-grid-highlight-color-override</code> is a boolean <strong>gate</strong>:
+            LaunchDarkly only says on/off. When on, <strong>this application</strong> looks for
+            <code>human</code> / <code>robot</code> / <code>beta</code> in the login name and chooses the color:
+            human→yellow, robot→red, beta→blue, human+beta→green, robot+beta→purple.
+            Try logging in as <code>human-beta</code>.
+          </p>
+          <div class="ld-block-title">Why it matters</div>
+          <p class="ld-about-p">You ship the app once and enable features in LaunchDarkly—so product and ops can change behavior without a redeploy. Keywords: <strong>string variations</strong>, <strong>boolean variations</strong>, <strong>contexts</strong>, <strong>private attributes</strong>.</p>
+          <p class="ld-about-p"><a href="https://launchdarkly.com/docs/sdk/features/evaluating">Evaluating flags</a></p>
+        </div>
+      </div>
+    </aside>
+  </div>
 
   <script>
     const ROWS = ["t", "m", "b"];
@@ -132,6 +318,19 @@
       osEmoji: "",
     };
     let flagPollTimer = null;
+    let ldTab = "code";
+
+    function selectLdTab(tab) {
+      ldTab = tab;
+      document.querySelectorAll(".ld-tab").forEach((btn) => {
+        const on = btn.getAttribute("data-tab") === tab;
+        btn.classList.toggle("active", on);
+        btn.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      document.querySelectorAll(".ld-section").forEach((sec) => {
+        sec.classList.toggle("active", sec.id === `ld-section-${tab}`);
+      });
+    }
 
     function formatPos(r, c) {
       return `${ROWS[r]}/${COLS[c]}`;
@@ -231,7 +430,7 @@
 
       document.getElementById("username").value = "";
       document.getElementById("login-error").classList.add("hidden");
-      document.getElementById("grid-screen").classList.add("hidden");
+      document.body.classList.remove("grid-active");
       document.getElementById("login-screen").classList.remove("hidden");
       document.getElementById("username").focus();
     }
@@ -257,7 +456,8 @@
         osEmoji: "",
       };
       document.getElementById("login-screen").classList.add("hidden");
-      document.getElementById("grid-screen").classList.remove("hidden");
+      document.body.classList.add("grid-active");
+      selectLdTab(ldTab || "code");
       refreshFlags();
       if (flagPollTimer) clearInterval(flagPollTimer);
       flagPollTimer = setInterval(refreshFlags, 2000);
@@ -280,7 +480,18 @@
       if (e.key === "Enter") document.getElementById("login-btn").click();
     });
 
-    document.getElementById("grid-screen").addEventListener("keydown", (e) => {
+    document.querySelectorAll(".ld-tab").forEach((btn) => {
+      btn.addEventListener("click", () => selectLdTab(btn.getAttribute("data-tab")));
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (!username) return;
+      const tag = (e.target && e.target.tagName) || "";
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      handleNavKey(e);
+    });
+
+    function handleNavKey(e) {
       const key = e.key.toLowerCase();
       if (key === "q") {
         e.preventDefault();
@@ -299,7 +510,7 @@
       else return;
       e.preventDefault();
       renderGrid();
-    });
+    }
   </script>
 </body>
 </html>

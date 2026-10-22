@@ -10,6 +10,10 @@ On the web screens, login still chooses the first team. The header then offers *
 
 See [application.md](application.md) for the full specification.
 
+The Python, Node.js, Java, and .NET web drawers include **Code Example** before
+**About**. The excerpt shows the public `team` context attribute, string and
+JSON flag evaluations, and the response used by the grid.
+
 ## Targeting table
 
 | Team context | Variation |

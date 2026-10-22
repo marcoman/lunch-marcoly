@@ -50,6 +50,12 @@
     .ld-section { display:none; }
     .ld-section.active { display:block; }
     .ld-block-title { margin:1rem 0 .35rem; color:var(--muted); font-size:.8rem; font-weight:700; text-transform:uppercase; }
+    .code-example-source { margin:0 0 .55rem; color:var(--muted); font-size:.78rem; line-height:1.4; }
+    .code-example {
+      margin:0; padding:.75rem .85rem; overflow:auto; border:1px solid var(--line); border-radius:8px;
+      background:#1a1a28; color:var(--ink); font:.75rem/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+      tab-size:4; white-space:pre;
+    }
     .ld-about-p,.flag-summary { font-size:.86rem; line-height:1.45; }
     code,.context-v { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
     .controls-warn { border:1px solid #8a3a3a; background:#3a2222; color:#ffcdd2; padding:.55rem; margin-bottom:.7rem; }
@@ -123,6 +129,7 @@
       <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
       <div class="ld-tabs" role="tablist">
         <button type="button" class="ld-tab active" data-tab="controls" role="tab" aria-selected="true">Controls</button>
+        <button type="button" class="ld-tab" data-tab="code" role="tab" aria-selected="false">Code Example</button>
         <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
       </div>
       <div class="ld-rail-body">
@@ -161,6 +168,29 @@
           <button id="controls-refresh">Refresh status</button>
           <div id="controls-list"></div>
           <p class="ld-about-p muted">Leave the flag <strong>on</strong>. This lab changes on/off and fallthrough only. Rules are provisioned via REST.</p>
+        </section>
+        <section id="ld-section-code" class="ld-section">
+          <div class="ld-block-title">Multi-context → variation → response</div>
+          <p class="ld-about-p">Build one user + organization multi-context, evaluate the boolean partner-badge flag with a safe default, then return the value and reason to the page.</p>
+          <p class="code-example-source">Trimmed from <code>partner.js</code>, served by <code>node/104-multi-context-targeting.js</code>.</p>
+          <pre class="code-example"><code>// Context: user and organization are separate kinds in one multi-context.
+const context = {
+  kind: "multi",
+  user: { kind: "user", key: userKey },
+  organization: { kind: "organization", key: orgKey, name: ORG_LABELS[orgKey] },
+};
+
+// Evaluate the boolean flag. False is the safe default.
+const detail = await client.variationDetail(FLAG_PARTNER_BADGE, context, false);
+
+// Response: the badge value and the reason the lab shows.
+return {
+  username: userKey,
+  org: orgKey,
+  partner: Boolean(detail.value),
+  variationIndex: detail.variationIndex ?? null,
+  reason: reasonPayload(detail.reason),
+};</code></pre>
         </section>
         <section id="ld-section-about" class="ld-section">
           <div class="ld-block-title">What this teaches</div>

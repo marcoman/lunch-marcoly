@@ -30,6 +30,10 @@ The right drawer’s **Controls** tab keeps three things visible together as you
 - the exact JSON multi-context sent to LaunchDarkly
 - current match status plus an event/evaluation history
 
+The **Code Example** tab sits before About in every web implementation. It
+shows the real user + organization multi-context, boolean flag evaluation, and
+response path in Python, Node.js, Java, or .NET.
+
 ## Provisioning
 
 - [REST](rest/) creates the flag and the two AND rules.

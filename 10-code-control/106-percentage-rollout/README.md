@@ -15,6 +15,10 @@ Keywords: **percentage rollout** · **context key** · **sticky bucketing** ·
 
 Docs: [Percentage rollouts](https://launchdarkly.com/docs/home/flags/rollouts)
 
+Each web drawer includes **Code Example** before **About**. It shows the real
+user context, variation-detail evaluation, and response fields—including the
+variation index and evaluation reason—in Python, Node.js, Java, or .NET.
+
 ## Intended aha
 
 Log in as `alice`, then click through `alice1`, `alice2`, and so on until the

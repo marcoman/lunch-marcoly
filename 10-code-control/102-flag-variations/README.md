@@ -18,7 +18,9 @@ Unlike [101-flag-enablement](../101-flag-enablement/), this example does **not**
 See [application.md](application.md) for the full specification and acceptance criteria.
 
 The Python, Node.js, Java, and .NET web implementations share the same permanent
-**LaunchDarkly lab** (Controls / Context / About) and bottom **Trace** chrome.
+**LaunchDarkly lab** (Controls / Context / Code Example / About) and bottom
+**Trace** chrome. Code Example shows the real context, variation evaluation,
+and response path in that language.
 Console implementations remain terminal-only examples.
 
 ## Prerequisites

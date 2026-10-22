@@ -198,6 +198,24 @@
     .ld-about-p strong { font-weight: 650; }
     .ld-section { display: none; }
     .ld-section.active { display: block; }
+    .code-example-source {
+      margin: 0 0 0.55rem;
+      color: var(--about-muted);
+      font-size: 0.78rem;
+      line-height: 1.4;
+    }
+    .code-example {
+      margin: 0;
+      padding: 0.75rem 0.85rem;
+      overflow: auto;
+      border: 1px solid var(--about-line);
+      border-radius: 8px;
+      background: #1a1a28;
+      color: var(--about-ink);
+      font: 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+      tab-size: 4;
+      white-space: pre;
+    }
     .context-kv {
       margin: 0 0 0.85rem;
       border: 1px solid var(--about-line);
@@ -552,6 +570,7 @@
       <div class="ld-tabs" role="tablist">
         <button type="button" class="ld-tab active" data-tab="controls" role="tab" aria-selected="true">Controls</button>
         <button type="button" class="ld-tab" data-tab="context" role="tab" aria-selected="false">Context</button>
+        <button type="button" class="ld-tab" data-tab="code" role="tab" aria-selected="false">Code Example</button>
         <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
       </div>
       <div class="ld-rail-body">
@@ -572,6 +591,55 @@
         <div id="ld-section-context" class="ld-section">
           <p class="ld-controls-meta" id="context-meta">Log in to see the evaluation context for the current user.</p>
           <div id="context-body"></div>
+        </div>
+        <div id="ld-section-code" class="ld-section">
+          <div class="ld-block-title">Context → variation → response</div>
+          <p class="ld-about-p">Build the evaluation context, evaluate the string flag with a safe default, then shape the served value for the grid.</p>
+          <p class="code-example-source">Trimmed from <code>dotnet/Program.cs</code>.</p>
+          <pre class="code-example"><code>// Context: user key plus private hostOs for targeting.
+var context = Context.Builder(username)
+    .Set("hostOs", HostOs)
+    .Private("hostOs")
+    .Build();
+
+// Evaluate each flag. The last argument is the safe default.
+var rawHighlight = _client?.StringVariation(
+    "enable-grid-selection-highlight",
+    context,
+    "none"
+) ?? "none";
+var highlightEnabled = !IsOff(rawHighlight);
+var servedColor = highlightEnabled
+    ? rawHighlight.ToLowerInvariant()
+    : null;
+var useOverride = _client?.BoolVariation(
+    OverrideFlag, context, false
+) ?? false;
+var showCount = _client?.BoolVariation(
+    CountFlag, context, false
+) ?? false;
+var showEmoji = _client?.BoolVariation(
+    OsEmojiFlag, context, false
+) ?? false;
+var (human, robot, beta) = Cohorts(username);
+
+// The served values choose highlight, count, and emoji.
+var color = ResolveColor(
+    highlightEnabled,
+    useOverride,
+    servedColor,
+    human,
+    robot,
+    beta
+);
+
+return new {
+    highlightEnabled,
+    contextHighlight = useOverride,
+    showMoveCount = showCount,
+    highlightColor = color,
+    osEmoji = showEmoji ? OsEmoji(HostOs) : "",
+};</code></pre>
         </div>
         <div id="ld-section-about" class="ld-section">
           <div class="ld-block-title">What this example is</div>
