@@ -416,6 +416,23 @@
     .trace-line .hi { color: #fff176; }
     .trace-line .on { color: #81c784; }
     .trace-line .off { color: #ef9a9a; }
+
+    /* Drag the left edge to resize the lab column. The grid keeps the rest. */
+    .ld-rail { position: relative; }
+    .ld-rail-resize {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 8px;
+      z-index: 3;
+      cursor: col-resize;
+      touch-action: none;
+    }
+    .ld-rail-resize:hover,
+    .ld-rail-resize.dragging { background: rgba(100, 181, 246, 0.35); }
+    .ld-rail-resize:focus-visible { outline: 2px solid #64b5f6; outline-offset: -2px; }
+    body.ld-rail-dragging { cursor: col-resize; user-select: none; }
   </style>
 </head>
 <body>
@@ -444,6 +461,7 @@
     </section>
 
     <aside class="ld-rail" id="ld-rail" aria-label="LaunchDarkly lab">
+      <div class="ld-rail-resize" role="separator" aria-orientation="vertical" aria-label="Resize lab drawer" title="Drag to resize" tabindex="0"></div>
       <div class="ld-rail-header">
         <h2>LaunchDarkly · lab</h2>
       </div>
@@ -1088,5 +1106,87 @@ return build_flag_response(
 
     refreshControls();
   </script>
+
+  <script>
+    // Drag the lab rail's left edge. The grid keeps the remaining width.
+    (function () {
+      var shell = document.getElementById("app-shell") || document.getElementById("shell");
+      var grip = document.querySelector(".ld-rail-resize");
+      var rail = document.querySelector(".ld-rail");
+      if (!shell || !grip || !rail) return;
+
+      var RAIL_MIN = 280;
+      var GRID_MIN = 320;
+      var KEY = "ld-rail-width:" + location.pathname;
+      var dragging = false;
+
+      function limits() {
+        return { min: RAIL_MIN, max: Math.max(RAIL_MIN, window.innerWidth - GRID_MIN) };
+      }
+
+      function apply(px) {
+        var bound = limits();
+        var width = Math.min(Math.max(Math.round(px), bound.min), bound.max);
+        shell.style.gridTemplateColumns = "minmax(0, 1fr) " + width + "px";
+        grip.setAttribute("aria-valuemin", String(bound.min));
+        grip.setAttribute("aria-valuemax", String(bound.max));
+        grip.setAttribute("aria-valuenow", String(width));
+        return width;
+      }
+
+      function remember(width) {
+        try { localStorage.setItem(KEY, String(width)); } catch (err) {}
+      }
+
+      try {
+        var saved = Number(localStorage.getItem(KEY));
+        if (saved) apply(saved);
+      } catch (err) {}
+
+      window.addEventListener("resize", function () {
+        if (!shell.style.gridTemplateColumns) return;
+        apply(rail.getBoundingClientRect().width);
+      });
+
+      grip.addEventListener("pointerdown", function (ev) {
+        if (ev.button !== 0) return;
+        dragging = true;
+        grip.classList.add("dragging");
+        document.body.classList.add("ld-rail-dragging");
+        ev.preventDefault();
+      });
+
+      window.addEventListener("pointermove", function (ev) {
+        if (!dragging) return;
+        apply(window.innerWidth - ev.clientX);
+      });
+
+      window.addEventListener("pointerup", function () {
+        if (!dragging) return;
+        dragging = false;
+        grip.classList.remove("dragging");
+        document.body.classList.remove("ld-rail-dragging");
+        remember(Math.round(rail.getBoundingClientRect().width));
+      });
+
+      grip.addEventListener("dblclick", function (ev) {
+        ev.preventDefault();
+        shell.style.gridTemplateColumns = "";
+        grip.removeAttribute("aria-valuenow");
+        try { localStorage.removeItem(KEY); } catch (err) {}
+      });
+
+      grip.addEventListener("keydown", function (ev) {
+        var step = ev.shiftKey ? 48 : 16;
+        var width = rail.getBoundingClientRect().width;
+        if (ev.key === "ArrowLeft") width += step;
+        else if (ev.key === "ArrowRight") width -= step;
+        else return;
+        ev.preventDefault();
+        remember(apply(width));
+      });
+    })();
+  </script>
+
 </body>
 </html>
