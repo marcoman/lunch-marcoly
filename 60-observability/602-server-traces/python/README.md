@@ -1,6 +1,6 @@
-# 62-server-traces — Python web
+# 602-server-traces — Python web
 
-The `61-reference` server-owned navigator plus LaunchDarkly's Python
+The `601-reference` server-owned navigator plus LaunchDarkly's Python
 observability plugin, a `grid.login` span, and a `grid.move` span.
 
 ## Prerequisites
@@ -27,8 +27,8 @@ From the repository root:
 ```bash
 source .venv/bin/activate
 export LD_SDK_KEY="sdk-..."
-cd 60-observability/62-server-traces/python
-python 62-server-traces.py
+cd 60-observability/602-server-traces/python
+python 602-server-traces.py
 ```
 
 Open [http://127.0.0.1:8620/](http://127.0.0.1:8620/).
@@ -39,8 +39,8 @@ A successful login creates a `grid.login` span with `grid.username`. Each move
 that changes position creates a `grid.move` span with direction, origin, and
 destination. Blocked edge moves do not create manual spans. View them under
 LaunchDarkly **Observability → Traces**, filtering on service
-`lunch-marcoly-62-server-traces`.
+`lunch-marcoly-602-server-traces`.
 
 The Python file encloses every LaunchDarkly addition in
 `BEGIN/END LAUNCHDARKLY OBSERVABILITY` block comments for a clean comparison
-with `61-reference.py`.
+with `601-reference.py`.

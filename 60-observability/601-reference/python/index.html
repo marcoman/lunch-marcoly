@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>62-server-traces</title>
+  <title>601-reference</title>
   <style>
     body { font-family: system-ui, sans-serif; background: #fafafa; color: #222; max-width: 480px; margin: 2rem auto; padding: 0 1rem; }
     h1 { font-size: 1.25rem; margin-bottom: 1rem; }
@@ -22,7 +22,7 @@
 </head>
 <body>
   <section id="login-screen">
-    <div class="app-banner">62-server-traces[python]</div>
+    <div class="app-banner">601-reference[python]</div>
     <h1>Login</h1>
     <label for="username">Username</label>
     <input id="username" type="text" autocomplete="username" autofocus>
@@ -32,13 +32,13 @@
 
   <section id="grid-screen" class="hidden" tabindex="0">
     <div class="header">
-      <div class="app-banner">62-server-traces[python]</div>
+      <div class="app-banner">601-reference[python]</div>
       <div>Name: <span id="hdr-name"></span></div>
       <div>Current position: <span id="hdr-current"></span></div>
       <div>Previous position: <span id="hdr-previous"></span></div>
     </div>
     <div id="grid" class="grid" aria-label="3 by 3 grid"></div>
-    <p class="hint">Login creates grid.login; successful moves create grid.move. Arrows/WASD; L logs out, Q quits.</p>
+    <p class="hint">Use arrow keys or WASD to move. Press L to log out, Q to quit.</p>
   </section>
 
   <script>

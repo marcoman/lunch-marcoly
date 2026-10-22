@@ -12,10 +12,10 @@ OpenTelemetry span for login (with username) and for each successful grid move.
 
 | Example | Purpose | Default URL |
 |---------|---------|-------------|
-| [61-reference](61-reference/) | Server-owned navigator baseline; no LaunchDarkly | [http://127.0.0.1:8610](http://127.0.0.1:8610) |
-| [62-server-traces](62-server-traces/) | Add the Python SDK observability plugin; login and successful-move spans | [http://127.0.0.1:8620](http://127.0.0.1:8620) |
-| [63-server-errors](63-server-errors/) | **Stub.** One deliberate error, visible as an error and a log line. **64** stays free | :8630 when built |
-| [65-server-metrics](65-server-metrics/) | **Stub.** One custom metric. Not the spans in 62 | :8650 when built |
+| [601-reference](601-reference/) | Server-owned navigator baseline; no LaunchDarkly | [http://127.0.0.1:8610](http://127.0.0.1:8610) |
+| [602-server-traces](602-server-traces/) | Add the Python SDK observability plugin; login and successful-move spans | [http://127.0.0.1:8620](http://127.0.0.1:8620) |
+| [603-server-errors](603-server-errors/) | **Stub.** One deliberate error, visible as an error and a log line. **604** stays free | :8630 when built |
+| [605-server-metrics](605-server-metrics/) | **Stub.** One custom metric. Not the spans in 602 | :8650 when built |
 
 Read them in order. Comparing the Python files shows exactly where
 observability enters the application.
@@ -50,25 +50,25 @@ observability enters the application.
    pip install -r requirements.txt
    ```
 
-5. Run `61-reference` first and verify navigation:
+5. Run `601-reference` first and verify navigation:
 
    ```bash
-   cd 60-observability/61-reference/python
-   python 61-reference.py
+   cd 60-observability/601-reference/python
+   python 601-reference.py
    ```
 
 6. Stop it with Ctrl+C. Then export the SDK key and run the traced version:
 
    ```bash
    export LD_SDK_KEY="sdk-..."
-   cd ../../62-server-traces/python
-   python 62-server-traces.py
+   cd ../../602-server-traces/python
+   python 602-server-traces.py
    ```
 
 7. Log in and make several successful moves. The login span includes
    `grid.username`. Boundary presses deliberately produce no span.
 8. Open **Observability → Traces** in LaunchDarkly and filter for service
-   `lunch-marcoly-62-server-traces` or spans `grid.login` / `grid.move`.
+   `lunch-marcoly-602-server-traces` or spans `grid.login` / `grid.move`.
 
 Telemetry can take a short time to appear. Stop the server with Ctrl+C so the
 SDK can flush and close cleanly.

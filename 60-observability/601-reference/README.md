@@ -1,10 +1,10 @@
-# 61-reference
+# 601-reference
 
 Python web baseline for the observability series.
 
 It preserves the [00-reference-code behavior](../../00-reference-code/application.md),
 but moves login, navigation, and logout state from browser JavaScript into
-Python HTTP endpoints. This gives `62-server-traces` meaningful server
+Python HTTP endpoints. This gives `602-server-traces` meaningful server
 operations to trace without mixing an architecture rewrite into the
 observability lesson.
 
@@ -26,8 +26,8 @@ There is **no LaunchDarkly integration** in this example.
 3. Start the application:
 
    ```bash
-   cd 60-observability/61-reference/python
-   python 61-reference.py
+   cd 60-observability/601-reference/python
+   python 601-reference.py
    ```
 
 4. Open [http://127.0.0.1:8610/](http://127.0.0.1:8610/).

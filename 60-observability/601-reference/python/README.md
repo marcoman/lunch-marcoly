@@ -1,4 +1,4 @@
-# 61-reference — Python web
+# 601-reference — Python web
 
 Server-owned baseline for the observability series. Python implements the
 navigator API; the browser renders returned state. No LaunchDarkly code is
@@ -21,8 +21,8 @@ From the repository root:
 
 ```bash
 source .venv/bin/activate
-cd 60-observability/61-reference/python
-python 61-reference.py
+cd 60-observability/601-reference/python
+python 601-reference.py
 ```
 
 Open [http://127.0.0.1:8610/](http://127.0.0.1:8610/).

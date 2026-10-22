@@ -1,13 +1,13 @@
-# 62-server-traces
+# 602-server-traces
 
-Add LaunchDarkly Observability to [61-reference](../61-reference/): a
+Add LaunchDarkly Observability to [601-reference](../601-reference/): a
 manual server-side span for each **successful login** and each **successful**
 grid move.
 
 Keywords: **Observability** · **OpenTelemetry** · **traces** · **spans** ·
 **ObservabilityPlugin**
 
-## What changes from 61
+## What changes from 601
 
 1. Initialize the LaunchDarkly Python server SDK with
    [`ObservabilityPlugin`](https://launchdarkly.com/docs/sdk/observability/python).
@@ -31,8 +31,8 @@ blocks is the baseline application.
 
 This example evaluates no feature flags, but the plugin still belongs on the
 server SDK configuration. A deliberate error plus a log line is
-[63-server-errors](../63-server-errors/). A custom metric is
-[65-server-metrics](../65-server-metrics/). This lesson stays spans.
+[603-server-errors](../603-server-errors/). A custom metric is
+[605-server-metrics](../605-server-metrics/). This lesson stays spans.
 
 ### 2. Get the correct credential
 
@@ -61,8 +61,8 @@ The relevant packages are `launchdarkly-server-sdk>=9.12` and
 
 ```bash
 export LD_SDK_KEY="sdk-..."
-cd 60-observability/62-server-traces/python
-python 62-server-traces.py
+cd 60-observability/602-server-traces/python
+python 602-server-traces.py
 ```
 
 Open [http://127.0.0.1:8620/](http://127.0.0.1:8620/).
@@ -82,7 +82,7 @@ Open [LaunchDarkly Observability](https://launchdarkly.com/docs/home/observabili
 then:
 
 1. Select **Traces**.
-2. Filter service name to `lunch-marcoly-62-server-traces`.
+2. Filter service name to `lunch-marcoly-602-server-traces`.
 3. Find spans named `grid.login` and `grid.move`.
 4. On `grid.login`, inspect `grid.username`. On `grid.move`, inspect
    `grid.direction`, `grid.from`, and `grid.to`.

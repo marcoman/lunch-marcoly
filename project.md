@@ -163,10 +163,10 @@ lunch-marcoly/
 │   ├── 55-automatic-environment-attributes/  # Stub: SDK-supplied attributes
 │   └── 56-mobile-multi-environment/          # Stub: two mobile keys
 ├── 60-observability/            # Server-side observability series
-│   ├── 61-reference/            # Python-owned navigator API; no LaunchDarkly :8610
-│   ├── 62-server-traces/        # ObservabilityPlugin + move spans :8620
-│   ├── 63-server-errors/        # Stub: one error, also a log line; 64 stays free
-│   └── 65-server-metrics/       # Stub: one custom metric
+│   ├── 601-reference/            # Python-owned navigator API; no LaunchDarkly :8610
+│   ├── 602-server-traces/        # ObservabilityPlugin + move spans :8620
+│   ├── 603-server-errors/        # Stub: one error, also a log line; 604 stays free
+│   └── 605-server-metrics/       # Stub: one custom metric
 ├── 70-model-demos/              # Model apps; children 01–04 inside the folder
 │   ├── README.md                # 80 remains the next free decade
 │   ├── 01-image-processing/     # Stub: four cat photos
@@ -206,7 +206,7 @@ lunch-marcoly/
 - Prefix with a **two-digit number**: `00-reference-code`, `01-hello-world`, `02-binary-search`
 - Follow the number with a **kebab-case** name describing the concept
 - Use the next available number when adding a new example (`03`, `04`, …)
-- Decade series keep that two-digit folder (`10`, `20`, `30`, …). **10-code-control** children are **101–109**. **20-agent-config** children are **201–209**, and the capstone folder is `20-capstone-1`. **30-client-sdk** children are **301–309**. **40-dont-do-this** children are **401** and **402**. Other series still use two-digit children (`51`–`56`, …) until that series is renumbered the same way (`501`–`599`, and the same hundreds digit for `60`). Letter suffixes (`1a`, `1b`) stay unused. A fourth digit is not part of the scheme. Inside a renumbered series, the first language pass uses the new number. Other language entrypoints keep their previous filenames until that platform is updated. JavaScript, React, and Vue in **301–306** use the new numbers, including an About tab. The client-SDK portal still uses the old names. Listen ports for 101–107 stay **8110–8170**. AgentControl ports stay **8210–8260**, with the capstone on **8290–8293**. Client SDK ports stay **8310–8362**.
+- Decade series keep that two-digit folder (`10`, `20`, `30`, …). **10-code-control** children are **101–109**. **20-agent-config** children are **201–209**, and the capstone folder is `20-capstone-1`. **30-client-sdk** children are **301–309**. **40-dont-do-this** children are **401** and **402**. **60-observability** children are **601**, **602**, **603**, and **605**. **604** stays free. Other series still use two-digit children (`51`–`56`, …) until that series is renumbered the same way (`501`–`599`). Letter suffixes (`1a`, `1b`) stay unused. A fourth digit is not part of the scheme. Inside a renumbered series, the first language pass uses the new number. Other language entrypoints keep their previous filenames until that platform is updated. JavaScript, React, and Vue in **301–306** use the new numbers, including an About tab. The client-SDK portal still uses the old names. Listen ports for 101–107 stay **8110–8170**. AgentControl ports stay **8210–8260**, with the capstone on **8290–8293**. Client SDK ports stay **8310–8362**.
 - `70-model-demos` and `99-use-cases` already count children inside the folder (`01`, `02`, …). They do not consume `71`–`79` or the next decade. Leave that inner count as it is until the three-digit refactor, if it ever includes them.
 - `00-reference-code` is reserved for the reference grid navigator app and repository conventions. It does **not** include LaunchDarkly integration.
 - `02-reference-client-code` is the same navigator **in the browser** (client JavaScript). It does **not** include LaunchDarkly. Later client-SDK examples (series **30**) build on this shape.
@@ -254,11 +254,11 @@ lunch-marcoly/
 - `54-platform-rollout` (under `50-mobile/`) turns one boolean release on for `platform=android`, then a REST script adds `ios` to that clause. Counts come from `mobile_platform_rollout_move`, not from an experiment.
 - `55-automatic-environment-attributes` is a stub. The 2×2 navigator lists environment attributes the mobile SDK attached.
 - `56-mobile-multi-environment` is a stub. Two mobile keys, two environments, and the screen names which one served the flag.
-- `60-observability` groups **server-side observability** examples. Children start at **61**; Python ships first.
-- `61-reference` (under `60-observability/`) moves the 00 web navigator state into Python APIs without LaunchDarkly (**:8610**).
-- `62-server-traces` adds the Python `ObservabilityPlugin` and manual spans for successful login (`grid.login` with username) and successful moves (`grid.move`) (**:8620**). It evaluates no flags. It does not send errors, logs, or custom metrics.
-- `63-server-errors` is a stub. One deliberate error shows up as an Observability error and a log line. **64** stays free.
-- `65-server-metrics` is a stub. One custom metric. It does not replace the spans in `62`.
+- `60-observability` groups **server-side observability** examples. Children are **601**, **602**, **603**, and **605**. **604** stays free; Python ships first.
+- `601-reference` (under `60-observability/`) moves the 00 web navigator state into Python APIs without LaunchDarkly (**:8610**).
+- `602-server-traces` adds the Python `ObservabilityPlugin` and manual spans for successful login (`grid.login` with username) and successful moves (`grid.move`) (**:8620**). It evaluates no flags. It does not send errors, logs, or custom metrics.
+- `603-server-errors` is a stub. One deliberate error shows up as an Observability error and a log line. **604** stays free.
+- `605-server-metrics` is a stub. One custom metric. It does not replace the spans in `602`.
 - `70-model-demos` groups model apps (image check, text origin, guess the animal, and a Terraform code-generator comparison). The series owns global **70**. Children are `01`, `02`, `03`, … inside the folder and may pass ten. **80** stays the next free decade. `01-image-processing`, `02-text-origin`, and `03-guess-the-animal` are stub READMEs. `04-terraform-codegen` is the Python web app on **:8740**: two local models, one Terraform file, `terraform validate`, no apply. These apps may use an AI Config, a judge, or a tool. They are not the equity briefing and not the grid.
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive/guarded rollouts, adaptive triggers, SDK fallbacks, and a migration-flags stub).
 - `19-terraform-sentinel` (under `99-use-cases/`) is Sentinel policy for Terraform-managed flags (`temporary`, `sunset` custom property). Pass and fail fixtures only — no grid app and no SDK.

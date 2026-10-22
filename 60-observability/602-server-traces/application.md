@@ -1,14 +1,14 @@
-# 62-server-traces application specification
+# 602-server-traces application specification
 
 This application preserves the complete
-[61-reference contract](../61-reference/application.md) and adds LaunchDarkly
+[601-reference contract](../601-reference/application.md) and adds LaunchDarkly
 server-side observability.
 
 ## LaunchDarkly surface
 
 - [Python observability plugin](https://launchdarkly.com/docs/sdk/observability/python)
 - [Manual traces and spans](https://launchdarkly.com/docs/sdk/features/observability-traces#python)
-- OpenTelemetry service name: `lunch-marcoly-62-server-traces`
+- OpenTelemetry service name: `lunch-marcoly-602-server-traces`
 - Span names: `grid.login`, `grid.move`
 
 ## Instrumentation rules

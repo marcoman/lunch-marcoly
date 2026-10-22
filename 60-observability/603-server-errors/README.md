@@ -1,12 +1,12 @@
-# 63-server-errors
+# 603-server-errors
 
 **Status: stub — not implemented yet.**
 
 One **deliberate error** on the Python navigator. It shows up as an
 Observability **error** and as a **log line**. Logs do not get a separate
-example. **64** stays free.
+example. **604** stays free.
 
-[62-server-traces](../62-server-traces/) records successful `grid.login` and
+[602-server-traces](../602-server-traces/) records successful `grid.login` and
 `grid.move` spans. It does not emit this error. Leave those spans as they are.
 
 Keywords: **Observability** · **errors** · **logs** · **OpenTelemetry**
@@ -22,15 +22,15 @@ runner can find both from one action.
 
 ## Direction
 
-- Python first, same navigator shape as 61 and 62. Intended port **:8630**.
+- Python first, same navigator shape as 601 and 602. Intended port **:8630**.
 - One error. Do not also invent a metrics lesson here. That is
-  [65-server-metrics](../65-server-metrics/).
+  [605-server-metrics](../605-server-metrics/).
 - The error is deliberate and labeled in the UI.
 
 ## When implementing
 
 1. `application.md` naming the error and the log message.
-2. Start from 62 so the plugin is already initialized.
+2. Start from 602 so the plugin is already initialized.
 3. The rail tells the runner where to look: Errors, and Logs.
 
 ## Implementation

@@ -82,10 +82,10 @@ lunch-marcoly/
 │   ├── 55-automatic-environment-attributes/  # Stub: SDK-supplied attributes
 │   └── 56-mobile-multi-environment/          # Stub: two mobile keys
 ├── 60-observability/            # Server-side observability series
-│   ├── 61-reference/            # Python-owned navigator API; no LaunchDarkly
-│   ├── 62-server-traces/        # Python ObservabilityPlugin + manual move spans
-│   ├── 63-server-errors/        # Stub: one error, also a log line; 64 stays free
-│   └── 65-server-metrics/       # Stub: one custom metric
+│   ├── 601-reference/            # Python-owned navigator API; no LaunchDarkly
+│   ├── 602-server-traces/        # Python ObservabilityPlugin + manual move spans
+│   ├── 603-server-errors/        # Stub: one error, also a log line; 604 stays free
+│   └── 605-server-metrics/       # Stub: one custom metric
 ├── 70-model-demos/              # Model apps; children 01–04 inside the folder
 │   ├── README.md                # 80 remains the next free decade
 │   ├── 01-image-processing/     # Stub: four cat photos
@@ -110,7 +110,7 @@ lunch-marcoly/
 └── ...
 ```
 
-Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control sort order. **10-code-control** children are **101–109**, **20-agent-config** children are **201–209** (capstone folder `20-capstone-1`), and **30-client-sdk** children are **301–309**. **40-dont-do-this** children are **401** and **402**. Other decade series still use two-digit children (`51`–`56`, …) until that series is renumbered. Letter suffixes stay unused. A fourth digit is not part of the scheme.
+Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control sort order. **10-code-control** children are **101–109**, **20-agent-config** children are **201–209** (capstone folder `20-capstone-1`), and **30-client-sdk** children are **301–309**. **40-dont-do-this** children are **401** and **402**. **60-observability** children are **601**, **602**, **603**, and **605**. **604** stays free. Other decade series still use two-digit children (`51`–`56`, …) until that series is renumbered. Letter suffixes stay unused. A fourth digit is not part of the scheme.
 
 ## Languages
 
@@ -185,10 +185,10 @@ Each example may include implementations in any of these languages. Every applic
 | 55 | [55-automatic-environment-attributes](50-mobile/55-automatic-environment-attributes/) | **Stub:** automatic environment attributes on Android and iOS |
 | 56 | [56-mobile-multi-environment](50-mobile/56-mobile-multi-environment/) | **Stub:** two environments, two mobile keys |
 | 60 | [60-observability](60-observability/) | Observability series: Python server-side telemetry on the grid navigator |
-| 61 | [61-reference](60-observability/61-reference/) | Server-owned Python navigator baseline (**:8610**; no LaunchDarkly) |
-| 62 | [62-server-traces](60-observability/62-server-traces/) | Python `ObservabilityPlugin` + `grid.login` / `grid.move` spans (**:8620**) |
-| 63 | [63-server-errors](60-observability/63-server-errors/) | **Stub:** one deliberate error, visible as an error and a log line. **64** stays free |
-| 65 | [65-server-metrics](60-observability/65-server-metrics/) | **Stub:** one custom metric. 62 stays spans |
+| 601 | [601-reference](60-observability/601-reference/) | Server-owned Python navigator baseline (**:8610**; no LaunchDarkly) |
+| 602 | [602-server-traces](60-observability/602-server-traces/) | Python `ObservabilityPlugin` + `grid.login` / `grid.move` spans (**:8620**) |
+| 603 | [603-server-errors](60-observability/603-server-errors/) | **Stub:** one deliberate error, visible as an error and a log line. **604** stays free |
+| 605 | [605-server-metrics](60-observability/605-server-metrics/) | **Stub:** one custom metric. 602 stays spans |
 | 70 | [70-model-demos](70-model-demos/) | Model apps. Children `01`–`04` inside the folder. `01`–`03` are stubs. `04-terraform-codegen` is Python **:8740**. **80** stays free |
 | 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (experiments, segments, rollouts, adaptive triggers, SDK fallbacks, …) |
 | — | [01-abcd-test](99-use-cases/01-abcd-test/) | A-B-C-D experiment on the navigation count label |

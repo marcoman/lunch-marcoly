@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Serve the server-owned grid navigator baseline on port 8610."""
+"""Serve the grid navigator with LaunchDarkly login and move traces."""
 
 from __future__ import annotations
 
@@ -11,6 +11,20 @@ from http import cookies
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
+
+# =============================================================================
+# BEGIN LAUNCHDARKLY OBSERVABILITY: plugin and tracing imports
+#
+# ObservabilityPlugin connects the Python server SDK to LaunchDarkly
+# Observability. `observe` provides the manual span API used below.
+# https://launchdarkly.com/docs/sdk/observability/python
+# =============================================================================
+import ldclient
+from ldclient.config import Config
+from ldobserve import ObservabilityConfig, ObservabilityPlugin, observe
+# =============================================================================
+# END LAUNCHDARKLY OBSERVABILITY: plugin and tracing imports
+# =============================================================================
 
 ROWS = ("t", "m", "b")
 COLS = ("l", "m", "r")
@@ -46,6 +60,26 @@ class SessionStore:
 SESSIONS = SessionStore()
 
 
+def apply_login(state: dict[str, Any], username: str) -> None:
+    """Reset the session and record who logged in."""
+    # =========================================================================
+    # BEGIN LAUNCHDARKLY OBSERVABILITY: successful-login span
+    #
+    # Record the username on this demo span so Traces can show who started the
+    # session. Empty-username failures never reach this function.
+    # https://launchdarkly.com/docs/sdk/features/observability-traces#python
+    # =========================================================================
+    with observe.start_span(
+        "grid.login",
+        attributes={"grid.username": username},
+    ):
+        state.update(new_state())
+        state["username"] = username
+    # =========================================================================
+    # END LAUNCHDARKLY OBSERVABILITY: successful-login span
+    # =========================================================================
+
+
 def public_state(state: dict[str, Any], *, moved: bool | None = None) -> dict[str, Any]:
     """Serialize internal row/column indexes into the browser-facing contract."""
     result: dict[str, Any] = {
@@ -60,15 +94,39 @@ def public_state(state: dict[str, Any], *, moved: bool | None = None) -> dict[st
 
 
 def apply_move(state: dict[str, Any], direction: str) -> bool:
-    """Move one cell without wrap-around; return whether position changed."""
+    """Move one cell and trace it only when the position actually changes."""
     dr, dc = DIRECTIONS[direction]
     old_row, old_col = state["row"], state["col"]
     new_row = max(0, min(2, old_row + dr))
     new_col = max(0, min(2, old_col + dc))
     if (new_row, new_col) == (old_row, old_col):
         return False
-    state["previous"] = f"{ROWS[old_row]}/{COLS[old_col]}"
-    state["row"], state["col"] = new_row, new_col
+
+    old_position = f"{ROWS[old_row]}/{COLS[old_col]}"
+    new_position = f"{ROWS[new_row]}/{COLS[new_col]}"
+
+    # =========================================================================
+    # BEGIN LAUNCHDARKLY OBSERVABILITY: successful-move span
+    #
+    # `start_span` is a context manager: leaving this block ends and exports the
+    # span. Safe, low-cardinality attributes explain the move without recording
+    # the username or other potentially sensitive data.
+    # https://launchdarkly.com/docs/sdk/features/observability-traces#python
+    # =========================================================================
+    with observe.start_span(
+        "grid.move",
+        attributes={
+            "grid.direction": direction,
+            "grid.from": old_position,
+            "grid.to": new_position,
+        },
+    ):
+        state["previous"] = old_position
+        state["row"], state["col"] = new_row, new_col
+    # =========================================================================
+    # END LAUNCHDARKLY OBSERVABILITY: successful-move span
+    # =========================================================================
+
     return True
 
 
@@ -99,11 +157,7 @@ class Handler(SimpleHTTPRequestHandler):
                 self._json(400, {"error": "Username is required."}, session_id if is_new else None)
                 return
 
-            def login(state: dict[str, Any]) -> None:
-                state.update(new_state())
-                state["username"] = username
-
-            SESSIONS.update(session_id, login)
+            SESSIONS.update(session_id, lambda state: apply_login(state, username))
             self._json(200, public_state(SESSIONS.get(session_id)), session_id if is_new else None)
             return
 
@@ -159,18 +213,59 @@ class Handler(SimpleHTTPRequestHandler):
         self.wfile.write(encoded)
 
 
+# =============================================================================
+# BEGIN LAUNCHDARKLY OBSERVABILITY: initialize SDK and plugin
+#
+# The plugin config names the OpenTelemetry service shown in LaunchDarkly.
+# Config.plugins attaches it to the process-wide LaunchDarkly server SDK client.
+# This example uses the SDK for observability only; it evaluates no flags.
+# https://launchdarkly.com/docs/sdk/observability/python
+# =============================================================================
+def initialize_observability() -> ldclient.LDClient:
+    """Initialize the process-wide SDK client and observability exporter."""
+    sdk_key = os.environ.get("LD_SDK_KEY", "").strip()
+    if not sdk_key:
+        raise RuntimeError(
+            "LD_SDK_KEY is required. Export an environment server-side SDK key."
+        )
+
+    plugin = ObservabilityPlugin(
+        ObservabilityConfig(
+            service_name="lunch-marcoly-602-server-traces",
+            service_version=os.environ.get("SERVICE_VERSION", "development"),
+        )
+    )
+    ldclient.set_config(Config(sdk_key=sdk_key, plugins=[plugin]))
+    return ldclient.get()
+# =============================================================================
+# END LAUNCHDARKLY OBSERVABILITY: initialize SDK and plugin
+# =============================================================================
+
+
 def main() -> None:
-    """Run the local threaded web server until interrupted."""
-    port = int(os.environ.get("PORT") or "8610")
+    """Initialize observability, then run the local server until interrupted."""
+    client = initialize_observability()
+    port = int(os.environ.get("PORT") or "8620")
     server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
-    print(f"61-reference running at http://127.0.0.1:{port}/")
-    print("Press Ctrl+C to stop.")
+    print(f"602-server-traces running at http://127.0.0.1:{port}/")
+    print("Login and successful moves create spans. Press Ctrl+C to stop.")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
         pass
     finally:
         server.server_close()
+
+        # =====================================================================
+        # BEGIN LAUNCHDARKLY OBSERVABILITY: graceful shutdown
+        #
+        # Close the SDK so queued observability data can flush before exit.
+        # https://launchdarkly.com/docs/sdk/server-side/python#shut-down-the-client
+        # =====================================================================
+        client.close()
+        # =====================================================================
+        # END LAUNCHDARKLY OBSERVABILITY: graceful shutdown
+        # =====================================================================
 
 
 if __name__ == "__main__":
