@@ -23,7 +23,7 @@ Server-side flags live in [10-code-control](../10-code-control/).
 
 Work order: [TODO.md](../TODO.md). Portal covers **301–306** once its paths are updated. **307–309** are stubs and are not portal tabs.
 
-JavaScript, React, and Vue in **301** use the new number, including the About tab. The apps in **302–306** still announce the old names. The portal still launches `31-…` through `36-…` until that pass. Stub READMEs still use the old titles.
+JavaScript, React, and Vue in **301–306** use the new numbers, including an About tab. Stub READMEs use **307–309**. The portal still launches `31-…` through `36-…` until that pass.
 
 ## Credentials
 
@@ -32,7 +32,7 @@ JavaScript, React, and Vue in **301** use the new number, including the About ta
 | `LD_CLIENT_SIDE_ID` | Browser SDK (same project/environment as your flags) |
 | `LD_SDK_KEY` | **Not used** here — do not put it in the page |
 | `LD_API_ACCESS_TOKEN` + `LD_PROJECT_KEY` + `LD_ENVIRONMENT_KEY` | Provisioning and lab Controls (local proxy only) |
-| `SEGMENT_WRITE_KEY` | **34 only** — Twilio Segment Analytics.js write key (page-safe, like the client-side ID) |
+| `SEGMENT_WRITE_KEY` | **304 only** — Twilio Segment Analytics.js write key (page-safe, like the client-side ID) |
 
 Find the client-side ID in the LaunchDarkly UI: project → environment → **Client-side ID**.
 It is not the value that starts with `sdk-`.

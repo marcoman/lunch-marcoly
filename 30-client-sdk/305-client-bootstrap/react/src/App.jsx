@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { LdSession, usePaintReport } from "./ld-session.jsx";
+import { LdSession, unlockStartupAudio, usePaintReport } from "./ld-session.jsx";
 
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
-const BANNER = "35-client-bootstrap[react]";
+const BANNER = "305-client-bootstrap[react]";
 
 function formatPos(r, c) {
   return `${ROWS[r]}/${COLS[c]}`;
@@ -25,7 +25,7 @@ function App() {
 
   const onSdkEvent = useCallback((kind, detail) => {
     const line = { t: new Date().toISOString().slice(11, 23), kind, detail };
-    console.log(`[35 bootstrap][react] ${kind}${detail ? " " + detail : ""}`);
+    console.log(`[305 bootstrap][react] ${kind}${detail ? " " + detail : ""}`);
     setSdkCallLog((prev) => {
       const next = [...prev, line];
       return next.length > 40 ? next.slice(-40) : next;
@@ -218,6 +218,7 @@ function App() {
                 return;
               }
               setLoginError(false);
+              unlockStartupAudio();
               startGrid(name);
             }}
           >
@@ -326,8 +327,11 @@ function formatPaintLine(paint, highlight, showCount) {
   }
   const first = `highlight=${paint.first.highlight} count=${paint.first.showCount}`;
   const now = `highlight=${highlight} count=${showCount}`;
+  if (paint.holding) {
+    return `The grid is the bootstrap paint (${now}). Live flags apply at 0.`;
+  }
   if (paint.source === "bootstrap") {
-    return `Paint: bootstrap ${now} — before ready. Without bootstrap this would still be the code default (none / hidden).`;
+    return `Paint: bootstrap ${now}. Waiting for the stream.`;
   }
   const replaced =
     paint.first.highlight !== highlight || paint.first.showCount !== showCount;
@@ -351,9 +355,16 @@ function LabRail({
   onPostControl,
   paint = null,
 }) {
+  const [labTab, setLabTab] = useState("bootstrap");
   return (
     <aside className="ld-rail" aria-label="LaunchDarkly lab">
-      <h2>LaunchDarkly · lab</h2>
+      <div className="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+      <div className="ld-tabs" role="tablist">
+        <button type="button" role="tab" className={labTab === "bootstrap" ? "ld-tab active" : "ld-tab"} aria-selected={labTab === "bootstrap"} onClick={() => setLabTab("bootstrap")}>Bootstrap</button>
+        <button type="button" role="tab" className={labTab === "about" ? "ld-tab active" : "ld-tab"} aria-selected={labTab === "about"} onClick={() => setLabTab("about")}>About</button>
+      </div>
+      <div className="ld-rail-body">
+        <section className={labTab === "bootstrap" ? "ld-section active" : "ld-section"}>
       <div style={{ fontWeight: 650 }}>SDK calls</div>
       <p className="sdk-call-counts">
         initialize ×{initializeCount} · change ×{changeCount}
@@ -368,6 +379,9 @@ function LabRail({
               </div>
             ))}
       </div>
+      {paint?.holding ? (
+        <p className="startup-delay">{`Simulating a startup delay — ${paint.secondsLeft}s`}</p>
+      ) : null}
       <p className="ld-controls-meta">{formatPaintLine(paint, highlight, showCount)}</p>
       <p className="ld-controls-meta">
         {clientSideId
@@ -428,7 +442,8 @@ function LabRail({
       <p className="ld-about-p">
         This build passes <code>bootstrap</code> (<code>green</code> / count on)
         into the React Web SDK so the first paint is not the code default.
-        After ready, <code>useStringVariation</code> / <code>useBoolVariation</code> show the stream.
+        A countdown holds that paint for 8 seconds to simulate a startup delay.
+        At 0, <code>useStringVariation</code> / <code>useBoolVariation</code> show the stream.
         <a href="https://launchdarkly.com/docs/sdk/client-side/react/react-web">React Web</a>
         {" · "}
         <a href="https://launchdarkly.com/docs/home/account/environment/keys">environment keys</a>.
@@ -439,7 +454,22 @@ function LabRail({
           ? JSON.stringify({ kind: "user", key: username }, null, 2)
           : "Log in to set the evaluation context."}
       </pre>
-    </aside>
+    
+        </section>
+        <section className={labTab === "about" ? "ld-section active" : "ld-section"}>
+          <div style={{ fontWeight: 650 }}>What this teaches</div>
+          <p className="ld-about-p">Bootstrap passes flag values into the client at initialize, so the first paint is not the code default. This lab holds that paint for 8 seconds and counts down, which simulates a startup delay. At 0, the live evaluation replaces it.</p>
+          <p className="ld-about-p">The Bootstrap tab shows the SDK calls, the paint line, and the context that was sent.</p>
+          <div style={{ marginTop: "1rem", fontWeight: 650 }}>Try it</div>
+          <ol className="ld-about-p">
+            <li>Log in. The grid shows the bootstrap paint while a countdown simulates a startup delay.</li>
+            <li>At 0, the paint line says whether the stream matched. The log already recorded ready.</li>
+            <li>Turn highlight off and log in again. Bootstrap stays through the countdown, then the stream corrects it.</li>
+          </ol>
+          <p className="ld-about-p"><a href="https://launchdarkly.com/docs/sdk/features/bootstrapping#javascript" style={{ color: "#64b5f6" }}>Bootstrapping</a></p>
+        </section>
+      </div>
+</aside>
   );
 }
 

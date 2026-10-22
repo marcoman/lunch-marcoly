@@ -1,8 +1,8 @@
 # Synced segments (Twilio) application specification
 
-This document defines **34-synced-segments-twilio**. Grid, initialize,
+This document defines **304-synced-segments-twilio**. Grid, initialize,
 `identify()`, and the badge flag shape match
-[33-synced-segments](../33-synced-segments/application.md). The difference is
+[303-synced-segments](../303-synced-segments/application.md). The difference is
 **who writes membership**.
 
 **Causal chain:** the page calls Twilio Segment **Analytics.js**
@@ -27,9 +27,9 @@ Docs: [Twilio Segment Audiences](https://launchdarkly.com/docs/home/flags/twilio
 The flag is **client-side available**. Fallthrough and off are `false`.
 A targeting rule: **if context is in the synced segment, serve `true`**.
 
-## Production vs 33 vs this lab
+## Production vs 303 vs this lab
 
-| 33 | 34 |
+| 303 | 304 |
 |----|----|
 | Lab REST `included.add` on LaunchDarkly | Twilio Segment `identify` + `track` |
 | Instant (same API the CDP would eventually call) | Real sync delay (first destination sync ~10 min) |
@@ -60,4 +60,10 @@ only. Membership buttons call Segment in the browser with `SEGMENT_WRITE_KEY`.
 
 ## Further reading
 
-- [33-synced-segments/application.md](../33-synced-segments/application.md)
+- [303-synced-segments/application.md](../303-synced-segments/application.md)
+
+## Lab drawer
+
+The header reads **LaunchDarkly · lab**. Underline tabs sit under that header.
+The working tab is the live lab. **About** states this idea, the steps, and one
+docs link. About does not repeat the context.

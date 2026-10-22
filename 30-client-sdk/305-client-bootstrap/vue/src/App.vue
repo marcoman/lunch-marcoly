@@ -3,8 +3,9 @@ import { onMounted, ref, watch } from "vue";
 import FlaggedShell from "./FlaggedShell.vue";
 import LdSession from "./LdSession.vue";
 import LoggedInUI from "./LoggedInUI.vue";
+import { unlockStartupAudio } from "./ld.js";
 
-const BANNER = "35-client-bootstrap[vue]";
+const BANNER = "305-client-bootstrap[vue]";
 
 const clientSideId = ref(null);
 const username = ref("");
@@ -20,7 +21,7 @@ const controlsWarn = ref("");
 
 function onSdkEvent(kind, detail) {
   const line = { t: new Date().toISOString().slice(11, 23), kind, detail };
-  console.log(`[35 bootstrap][vue] ${kind}${detail ? " " + detail : ""}`);
+  console.log(`[305 bootstrap][vue] ${kind}${detail ? " " + detail : ""}`);
   const next = [...sdkCallLog.value, line];
   sdkCallLog.value = next.length > 40 ? next.slice(-40) : next;
   if (kind === "initialize") initializeCount.value += 1;
@@ -116,6 +117,7 @@ function submitLogin() {
     return;
   }
   loginError.value = false;
+  unlockStartupAudio();
   startGrid(name);
 }
 

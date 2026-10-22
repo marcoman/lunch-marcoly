@@ -1,4 +1,4 @@
-# 32-client-identify
+# 302-client-identify
 
 Change the LaunchDarkly **context** in the browser with **`identify()`** — no
 reload, no second `initialize`. Targeting on context **key** makes Alice vs Bob
@@ -13,7 +13,7 @@ Docs: [identify](https://launchdarkly.com/docs/sdk/features/identify) ·
 [React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web) ·
 [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue)
 
-Baseline: [31-client-evaluation](../31-client-evaluation/) ·
+Baseline: [301-client-evaluation](../301-client-evaluation/) ·
 [02-reference-client-code](../../02-reference-client-code/).
 Spec: [application.md](application.md).
 
@@ -30,7 +30,7 @@ and Count persist; only the **context** (and flag results) change.
 
 ## Prerequisites
 
-Same credentials as 31: `LD_CLIENT_SIDE_ID`, plus REST/token env for
+Same credentials as 301: `LD_CLIENT_SIDE_ID`, plus REST/token env for
 provisioning and Controls.
 
 ```bash
@@ -47,7 +47,7 @@ export LD_API_ACCESS_TOKEN="api-..."
 | REST | [rest/](rest/) |
 | Terraform | [terraform/](terraform/) |
 
-Creates **new** flag keys (does not retarget 31’s flags). Flags default **on**
+Creates **new** flag keys (does not retarget 301’s flags). Flags default **on**
 with Alice/Bob rules.
 
 ## Language implementations
@@ -62,4 +62,4 @@ with Alice/Bob rules.
 
 - [application.md](application.md)
 - [30-client-sdk](../README.md)
-- [33-synced-segments](../33-synced-segments/) — synced/big segment badge
+- [303-synced-segments](../303-synced-segments/) — synced/big segment badge

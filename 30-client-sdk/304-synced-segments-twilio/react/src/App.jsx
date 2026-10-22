@@ -8,7 +8,7 @@ import {
 
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
-const BANNER = "34-synced-segments-twilio[react]";
+const BANNER = "304-synced-segments-twilio[react]";
 const SEGMENT_SYNC_HINT =
   "Wait for Twilio Segment → LaunchDarkly Audiences (often tens of seconds; first destination sync ~10 min), then change:.";
 
@@ -35,7 +35,7 @@ function App() {
 
   const onSdkEvent = useCallback((kind, detail) => {
     const line = { t: new Date().toISOString().slice(11, 23), kind, detail };
-    console.log(`[34 synced-segments-twilio][react] ${kind}${detail ? " " + detail : ""}`);
+    console.log(`[304 synced-segments-twilio][react] ${kind}${detail ? " " + detail : ""}`);
     setSdkCallLog((prev) => {
       const next = [...prev, line];
       return next.length > 40 ? next.slice(-40) : next;
@@ -258,6 +258,7 @@ function LoggedInUI({
   onRefresh,
   onPostControl,
 }) {
+  const [labTab, setLabTab] = useState("segment");
   const gridRef = useRef(null);
   const [switchName, setSwitchName] = useState(username);
   const [identifyBusy, setIdentifyBusy] = useState(false);
@@ -366,7 +367,13 @@ function LoggedInUI({
         </p>
       </section>
       <aside className="ld-rail" aria-label="LaunchDarkly lab">
-        <h2>LaunchDarkly · lab</h2>
+        <div className="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+        <div className="ld-tabs" role="tablist">
+          <button type="button" role="tab" className={labTab === "segment" ? "ld-tab active" : "ld-tab"} aria-selected={labTab === "segment"} onClick={() => setLabTab("segment")}>Segment</button>
+          <button type="button" role="tab" className={labTab === "about" ? "ld-tab active" : "ld-tab"} aria-selected={labTab === "about"} onClick={() => setLabTab("about")}>About</button>
+        </div>
+        <div className="ld-rail-body">
+          <section className={labTab === "segment" ? "ld-section active" : "ld-section"}>
         <div style={{ fontWeight: 650 }}>Inner circle</div>
         <p className="ld-about-p" style={{ marginTop: "0.35rem" }}>
           Flag <code>show-twilio-inner-circle-badge</code> is true when this context is in the
@@ -489,7 +496,22 @@ function LoggedInUI({
             ? JSON.stringify({ kind: "user", key: username }, null, 2)
             : "Log in to set the evaluation context."}
         </pre>
-      </aside>
+      
+          </section>
+          <section className={labTab === "about" ? "ld-section active" : "ld-section"}>
+            <div style={{ fontWeight: 650 }}>What this teaches</div>
+            <p className="ld-about-p">The badge is the same synced-segment flag. Membership is owned by a Twilio Segment Audience. The page sends Segment <code>identify</code> and <code>track</code>, and the audience syncs into LaunchDarkly.</p>
+            <p className="ld-about-p">The Segment tab shows the join control, the SDK calls, and the context that was sent.</p>
+            <div style={{ marginTop: "1rem", fontWeight: 650 }}>Try it</div>
+            <ol className="ld-about-p">
+              <li>Log in. The page sends a Segment identify for this context.</li>
+              <li>Join the inner circle. The page sends the Segment track the audience expects.</li>
+              <li>When the audience syncs, the badge updates. That wait is the sync, not a second page load.</li>
+            </ol>
+            <p className="ld-about-p"><a href="https://launchdarkly.com/docs/home/flags/twilio" style={{ color: "#64b5f6" }}>Twilio Segment Audiences</a></p>
+          </section>
+        </div>
+</aside>
     </div>
   );
 }

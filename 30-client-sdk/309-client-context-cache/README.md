@@ -1,4 +1,4 @@
-# 39-client-context-cache
+# 309-client-context-cache
 
 **Status: stub — not implemented yet.**
 
@@ -6,7 +6,7 @@ The browser SDK's **local storage** cache of flag values for a context. The
 UI calls the cache out: what was stored, for which context, and what the next
 load paints before the stream refreshes.
 
-This is not [35-client-bootstrap](../35-client-bootstrap/). Bootstrap is a
+This is not [305-client-bootstrap](../305-client-bootstrap/). Bootstrap is a
 payload the page supplies at init. This lesson is the SDK writing and reading
 its own cache.
 
@@ -31,7 +31,7 @@ The screen points at the cache entry so the runner can see it.
 
 ## When implementing
 
-1. `application.md`. Keep 35's bootstrap payload out of this lab.
+1. `application.md`. Keep 305's bootstrap payload out of this lab.
 2. JavaScript first. Show the storage key and a short preview of the cached
    values.
 3. One button clears the cache so the next load is obvious.

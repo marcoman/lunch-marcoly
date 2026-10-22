@@ -1,7 +1,7 @@
 <script setup>
 import { nextTick, onMounted, ref, watch } from "vue";
 
-const BANNER = "36-client-track-events[vue]";
+const BANNER = "306-client-track-events[vue]";
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
 
@@ -26,6 +26,7 @@ const props = defineProps({
 });
 
 const gridRef = ref(null);
+const labTab = ref("track");
 const logRef = ref(null);
 
 function formatPos(r, c) {
@@ -94,7 +95,13 @@ watch(
       <p class="hint">Use arrow keys or WASD to move. Press L to log out, Q to quit.</p>
     </section>
     <aside class="ld-rail" aria-label="LaunchDarkly lab">
-      <h2>LaunchDarkly · lab</h2>
+      <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+      <div class="ld-tabs" role="tablist">
+        <button type="button" role="tab" class="ld-tab" :class="{ active: labTab === 'track' }" :aria-selected="labTab === 'track'" @click="labTab = 'track'">Track</button>
+        <button type="button" role="tab" class="ld-tab" :class="{ active: labTab === 'about' }" :aria-selected="labTab === 'about'" @click="labTab = 'about'">About</button>
+      </div>
+      <div class="ld-rail-body">
+        <section class="ld-section" :class="{ active: labTab === 'track' }">
       <div style="font-weight: 650">SDK calls</div>
       <p class="sdk-call-counts">initialize ×{{ initializeCount }} · change ×{{ changeCount }} · track ×{{ trackCount }}</p>
       <div class="sdk-log" ref="logRef" aria-live="polite">
@@ -172,6 +179,21 @@ watch(
           ? JSON.stringify({ kind: "user", key: username }, null, 2)
           : "Log in to set the evaluation context."
       }}</pre>
-    </aside>
+    
+        </section>
+        <section class="ld-section" :class="{ active: labTab === 'about' }">
+          <div style="font-weight:650;">What this teaches</div>
+          <p class="ld-about-p">The client sends custom events with <code>track</code>. Login sends <code>login_completed</code>. A real move sends <code>grid_move</code>. <code>flush</code> pushes the batch right away.</p>
+          <p class="ld-about-p">The Track tab shows the SDK calls and the context those events are for.</p>
+          <div style="margin-top:1rem;font-weight:650;">Try it</div>
+          <ol class="ld-about-p">
+            <li>Log in. The log records <code>track</code> for <code>login_completed</code>.</li>
+            <li>Move to a new cell. The log records <code>grid_move</code>.</li>
+            <li>Open Live events in LaunchDarkly and filter to custom events for this context.</li>
+          </ol>
+          <p class="ld-about-p"><a href="https://launchdarkly.com/docs/sdk/features/events" style="color:#64b5f6">Sending custom events</a></p>
+        </section>
+      </div>
+</aside>
   </div>
 </template>

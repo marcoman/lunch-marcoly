@@ -1,9 +1,9 @@
 /**
- * 35-client-bootstrap React Web SDK session.
+ * 305-client-bootstrap React Web SDK session.
  * LaunchDarkly: createLDReactProvider bootstrap, useStringVariation, useBoolVariation
  * https://launchdarkly.com/docs/sdk/features/bootstrapping#javascript
  */
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   createLDReactProvider,
   useBoolVariation,
@@ -25,6 +25,47 @@ export const BOOTSTRAP = {
   [FLAG_COUNT]: true,
 };
 
+/**
+ * Hold the bootstrap paint after login so the handoff is visible.
+ * The client still initializes immediately. This is a lab delay, not an SDK option.
+ */
+const STARTUP_DELAY_SEC = 8;
+
+/**
+ * Countdown cue. Same oscillator shape as 107-scheduled-changes:
+ * 440 Hz on each second, 880 Hz when the live flags apply.
+ * The login click unlocks audio; later ticks play from the timer.
+ */
+let audioContext = null;
+
+export function unlockStartupAudio() {
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  if (!Ctx) return null;
+  audioContext = audioContext || new Ctx();
+  if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
+  return audioContext;
+}
+
+function playStartupTone(kind) {
+  const context = unlockStartupAudio();
+  if (!context) return;
+  const finish = kind === "finish";
+  const frequency = finish ? 880 : 440;
+  const duration = finish ? 0.32 : 0.16;
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+  const now = context.currentTime;
+  oscillator.type = "sine";
+  oscillator.frequency.setValueAtTime(frequency, now);
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(0.08, now + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+  oscillator.start(now);
+  oscillator.stop(now + duration + 0.02);
+}
+
 const COLORS = new Set(["green", "yellow", "red", "blue", "purple"]);
 
 export function interpretHighlight(raw) {
@@ -43,7 +84,7 @@ function formatChangeDetail(payload) {
 
 /**
  * Mounts the React Web SDK only after login, with the real user context.
- * Does not initialize anonymously then identify — that is example 32.
+ * Does not initialize anonymously then identify — that is example 302.
  */
 export function LdSession({ clientSideId, username, onSdkEvent, children }) {
   const Provider = useMemo(
@@ -123,8 +164,7 @@ function LdBridge({ username, onSdkEvent, children }) {
 }
 
 /**
- * Until the client is ready, the grid shows the bootstrap map.
- * After ready, typed variation hooks show the live values.
+ * The grid shows the bootstrap map through a lab countdown, then the live values.
  * LaunchDarkly: bootstrap, then variation
  * https://launchdarkly.com/docs/sdk/features/bootstrapping#javascript
  */
@@ -132,16 +172,40 @@ export function usePaintReport() {
   const init = useInitializationStatus();
   const status = typeof init === "string" ? init : init && init.status;
   const live = useGridFlags();
-  const ready = status === "complete" || status === "failed" || status === "timeout";
+  const sdkReady = status === "complete" || status === "failed" || status === "timeout";
+  const [secondsLeft, setSecondsLeft] = useState(STARTUP_DELAY_SEC);
+  const [holding, setHolding] = useState(true);
   const first = useRef({
     highlight: BOOTSTRAP[FLAG_HIGHLIGHT],
     showCount: BOOTSTRAP[FLAG_COUNT],
   });
+
+  useEffect(() => {
+    playStartupTone(secondsLeft === 0 ? "finish" : "tick");
+  }, [secondsLeft]);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setSecondsLeft((left) => {
+        if (left <= 1) {
+          clearInterval(id);
+          setHolding(false);
+          return 0;
+        }
+        return left - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const showBootstrap = holding || !sdkReady;
   return {
-    source: ready ? "stream" : "bootstrap",
+    source: showBootstrap ? "bootstrap" : "stream",
+    holding,
+    secondsLeft,
     first: first.current,
-    highlight: ready ? live.highlight : first.current.highlight,
-    showCount: ready ? live.showCount : first.current.showCount,
+    highlight: showBootstrap ? first.current.highlight : live.highlight,
+    showCount: showBootstrap ? first.current.showCount : live.showCount,
   };
 }
 

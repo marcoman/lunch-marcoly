@@ -72,7 +72,7 @@ has_rule="$(jq --arg env "$LD_ENVIRONMENT_KEY" --arg seg "$SEGMENT_KEY" '
 if [[ "$has_rule" == "true" ]]; then
   patch="$(jq -n --arg env "$LD_ENVIRONMENT_KEY" --arg hid "$false_id" '{
     environmentKey: $env,
-    comment: "34-synced-segments-twilio: flag on (segment rule already present)",
+    comment: "304-synced-segments-twilio: flag on (segment rule already present)",
     instructions: [
       {kind: "turnFlagOn"},
       {kind: "updateOffVariation", variationId: $hid},
@@ -85,7 +85,7 @@ else
     --arg vis "$true_id" --arg hid "$false_id" --arg seg "$SEGMENT_KEY" \
     '{
       environmentKey: $env,
-      comment: "34-synced-segments-twilio: Twilio-synced segment rule",
+      comment: "304-synced-segments-twilio: Twilio-synced segment rule",
       instructions: [
         {kind: "turnFlagOn"},
         {kind: "updateOffVariation", variationId: $hid},

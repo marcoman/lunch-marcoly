@@ -1,7 +1,7 @@
 <script setup>
 import { nextTick, onMounted, ref, watch } from "vue";
 
-const BANNER = "32-client-identify[vue]";
+const BANNER = "302-client-identify[vue]";
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
 
@@ -28,6 +28,7 @@ const props = defineProps({
 });
 
 const gridRef = ref(null);
+const labTab = ref("identify");
 const logRef = ref(null);
 const switchName = ref(props.username);
 const identifyBusy = ref(false);
@@ -126,7 +127,13 @@ watch(
       </p>
     </section>
     <aside class="ld-rail" aria-label="LaunchDarkly lab">
-      <h2>LaunchDarkly · lab</h2>
+      <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+      <div class="ld-tabs" role="tablist">
+        <button type="button" role="tab" class="ld-tab" :class="{ active: labTab === 'identify' }" :aria-selected="labTab === 'identify'" @click="labTab = 'identify'">Identify</button>
+        <button type="button" role="tab" class="ld-tab" :class="{ active: labTab === 'about' }" :aria-selected="labTab === 'about'" @click="labTab = 'about'">About</button>
+      </div>
+      <div class="ld-rail-body">
+        <section class="ld-section" :class="{ active: labTab === 'identify' }">
       <div style="font-weight: 650">Identify</div>
       <p class="ld-about-p" style="margin-top: 0.35rem">
         Same SDK client. <code>{{ "identify({ kind: \"user\", key })" }}</code> changes targeting without
@@ -211,6 +218,21 @@ watch(
           ? JSON.stringify({ kind: "user", key: username }, null, 2)
           : "Log in to set the evaluation context."
       }}</pre>
-    </aside>
+    
+        </section>
+        <section class="ld-section" :class="{ active: labTab === 'about' }">
+          <div style="font-weight:650;">What this teaches</div>
+          <p class="ld-about-p">One SDK client stays open. <code>identify</code> switches the user context, so targeting changes without a second <code>initialize</code> or a reload.</p>
+          <p class="ld-about-p">The Identify tab shows the live identify control, the SDK calls, and the context now on the client.</p>
+          <div style="margin-top:1rem;font-weight:650;">Try it</div>
+          <ol class="ld-about-p">
+            <li>Log in as any name.</li>
+            <li>Identify as <code>alice</code>. Highlight turns green and Count shows.</li>
+            <li>Identify as <code>bob</code>. Highlight turns blue and Count hides. The cell stays put.</li>
+          </ol>
+          <p class="ld-about-p"><a href="https://launchdarkly.com/docs/sdk/features/identify" style="color:#64b5f6">identify</a></p>
+        </section>
+      </div>
+</aside>
   </div>
 </template>

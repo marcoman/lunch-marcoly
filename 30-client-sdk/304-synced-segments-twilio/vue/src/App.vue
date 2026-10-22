@@ -4,7 +4,7 @@ import FlaggedShell from "./FlaggedShell.vue";
 import LdSession from "./LdSession.vue";
 import LoggedInUI from "./LoggedInUI.vue";
 
-const BANNER = "34-synced-segments-twilio[vue]";
+const BANNER = "304-synced-segments-twilio[vue]";
 
 const clientSideId = ref(null);
 const segmentWriteKey = ref(null);
@@ -23,7 +23,7 @@ const controlsWarn = ref("");
 
 function onSdkEvent(kind, detail) {
   const line = { t: new Date().toISOString().slice(11, 23), kind, detail };
-  console.log(`[34 synced-segments-twilio][vue] ${kind}${detail ? " " + detail : ""}`);
+  console.log(`[304 synced-segments-twilio][vue] ${kind}${detail ? " " + detail : ""}`);
   const next = [...sdkCallLog.value, line];
   sdkCallLog.value = next.length > 40 ? next.slice(-40) : next;
   if (kind === "initialize") initializeCount.value += 1;

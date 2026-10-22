@@ -1,11 +1,11 @@
 {
-  "name": "35-client-bootstrap",
+  "name": "305-client-bootstrap",
   "version": "1.0.0",
   "private": true,
   "description": "Browser grid with LaunchDarkly JavaScript SDK bootstrap",
-  "main": "35-client-bootstrap.js",
+  "main": "305-client-bootstrap.js",
   "scripts": {
-    "start": "node 35-client-bootstrap.js"
+    "start": "node 305-client-bootstrap.js"
   },
   "dependencies": {
     "launchdarkly-js-client-sdk": "^3.5.0"

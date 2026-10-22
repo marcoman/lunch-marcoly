@@ -3,7 +3,7 @@ import { LdSession, useGridFlags, useTrackGridMove } from "./ld-session.jsx";
 
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
-const BANNER = "36-client-track-events[react]";
+const BANNER = "306-client-track-events[react]";
 
 function formatPos(r, c) {
   return `${ROWS[r]}/${COLS[c]}`;
@@ -26,7 +26,7 @@ function App() {
 
   const onSdkEvent = useCallback((kind, detail) => {
     const line = { t: new Date().toISOString().slice(11, 23), kind, detail };
-    console.log(`[36 track][react] ${kind}${detail ? " " + detail : ""}`);
+    console.log(`[306 track][react] ${kind}${detail ? " " + detail : ""}`);
     setSdkCallLog((prev) => {
       const next = [...prev, line];
       return next.length > 40 ? next.slice(-40) : next;
@@ -260,6 +260,7 @@ function LoggedInUI({
   onRefresh,
   onPostControl,
 }) {
+  const [labTab, setLabTab] = useState("track");
   const gridRef = useRef(null);
 
   useEffect(() => {
@@ -335,7 +336,13 @@ function LabRail({
 }) {
   return (
     <aside className="ld-rail" aria-label="LaunchDarkly lab">
-      <h2>LaunchDarkly · lab</h2>
+      <div className="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+      <div className="ld-tabs" role="tablist">
+        <button type="button" role="tab" className={labTab === "track" ? "ld-tab active" : "ld-tab"} aria-selected={labTab === "track"} onClick={() => setLabTab("track")}>Track</button>
+        <button type="button" role="tab" className={labTab === "about" ? "ld-tab active" : "ld-tab"} aria-selected={labTab === "about"} onClick={() => setLabTab("about")}>About</button>
+      </div>
+      <div className="ld-rail-body">
+        <section className={labTab === "track" ? "ld-section active" : "ld-section"}>
       <div style={{ fontWeight: 650 }}>SDK calls</div>
       <p className="sdk-call-counts">
         initialize ×{initializeCount} · change ×{changeCount} · track ×{trackCount}
@@ -419,7 +426,22 @@ function LabRail({
           ? JSON.stringify({ kind: "user", key: username }, null, 2)
           : "Log in to set the evaluation context."}
       </pre>
-    </aside>
+    
+        </section>
+        <section className={labTab === "about" ? "ld-section active" : "ld-section"}>
+          <div style={{ fontWeight: 650 }}>What this teaches</div>
+          <p className="ld-about-p">The client sends custom events with <code>track</code>. Login sends <code>login_completed</code>. A real move sends <code>grid_move</code>. <code>flush</code> pushes the batch right away.</p>
+          <p className="ld-about-p">The Track tab shows the SDK calls and the context those events are for.</p>
+          <div style={{ marginTop: "1rem", fontWeight: 650 }}>Try it</div>
+          <ol className="ld-about-p">
+            <li>Log in. The log records <code>track</code> for <code>login_completed</code>.</li>
+            <li>Move to a new cell. The log records <code>grid_move</code>.</li>
+            <li>Open Live events in LaunchDarkly and filter to custom events for this context.</li>
+          </ol>
+          <p className="ld-about-p"><a href="https://launchdarkly.com/docs/sdk/features/events" style={{ color: "#64b5f6" }}>Sending custom events</a></p>
+        </section>
+      </div>
+</aside>
   );
 }
 

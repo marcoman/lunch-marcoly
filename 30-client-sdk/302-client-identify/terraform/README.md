@@ -1,6 +1,6 @@
 # Terraform provisioning
 
-Creates the **32-client-identify** flags with **client-side SDK availability**
+Creates the **302-client-identify** flags with **client-side SDK availability**
 and **key** targeting for `alice` / `bob`.
 
 Keywords: **Terraform** · **targeting rules** · **identify** · **using_environment_id**

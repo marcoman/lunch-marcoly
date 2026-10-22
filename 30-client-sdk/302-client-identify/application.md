@@ -1,9 +1,9 @@
 # Client identify application specification
 
-This document defines **32-client-identify**. Baseline grid behavior is
+This document defines **302-client-identify**. Baseline grid behavior is
 [02-reference-client-code/application.md](../../02-reference-client-code/application.md).
 Client SDK initialize / `variation` / `change:` is
-[31-client-evaluation](../31-client-evaluation/application.md).
+[301-client-evaluation](../301-client-evaluation/application.md).
 
 This example adds **`identify()`**: change the evaluation context **without**
 reloading the page or calling `initialize` again.
@@ -18,9 +18,9 @@ reloading the page or calling `initialize` again.
 Both flags are **client-side available** and **on** after provisioning, with
 rules for demo users `alice` and `bob`. Fallthrough matches 02 (`none` / hidden).
 
-## What 32 adds over 31
+## What 302 adds over 301
 
-| 31 | 32 |
+| 301 | 302 |
 |----|-----|
 | New `initialize` on every login | One client; **`identify(newContext)`** on switch |
 | Same flags for every username | Different variations per context **key** |
@@ -77,13 +77,13 @@ Move count is **app state**. Identify does not reset it. The flag only controls 
 After identify, `variation` and the Context pane must reflect the new key.
 Grid `m/m` start still applies only on **login**, not on identify.
 
-The lab **SDK calls** log (and the browser console, prefix `[32 identify]`)
+The lab **SDK calls** log (and the browser console, prefix `[302 identify]`)
 records each `initialize` / `identify` / `close`. Switching users must add
 `identify` lines without a new `initialize`.
 
 ## Lab Controls
 
-Same as 31: REST proxy on the Node host. Turning these flags **off** hides
+Same as 301: REST proxy on the Node host. Turning these flags **off** hides
 targeting (everyone gets off variations). Leave them **on** for the identify demo.
 
 ## Acceptance criteria
@@ -99,6 +99,12 @@ targeting (everyone gets off variations). Leave them **on** for the identify dem
 
 ## Further reading
 
-- [31-client-evaluation/application.md](../31-client-evaluation/application.md)
+- [301-client-evaluation/application.md](../301-client-evaluation/application.md)
 - [Identify](https://launchdarkly.com/docs/sdk/features/identify)
 - [JavaScript SDK](https://launchdarkly.com/docs/sdk/client-side/javascript)
+
+## Lab drawer
+
+The header reads **LaunchDarkly · lab**. Underline tabs sit under that header.
+The working tab is the live lab. **About** states this idea, the steps, and one
+docs link. About does not repeat the context.

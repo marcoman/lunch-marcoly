@@ -156,7 +156,7 @@ async function applyFlagControl(flagKey, { on } = {}) {
     `/flags/${cfg.projectKey}/${FLAG_BADGE}`,
     {
       environmentKey: cfg.environmentKey,
-      comment: "33-synced-segments UI",
+      comment: "303-synced-segments UI",
       instructions: [{ kind: on ? "turnFlagOn" : "turnFlagOff" }],
     },
     { semantic: true }
@@ -182,7 +182,14 @@ async function applyMembership(contextKey, action) {
     action === "add" ? { included: { add: [key] } } : { included: { remove: [key] } };
   try {
     await ldRequest("POST", `${base}/users`, included);
-    return { ok: true, mode: "big-segment-users", action, contextKey: key, segmentKey: SEGMENT_KEY };
+    return {
+      ok: true,
+      mode: "big-segment-users",
+      action,
+      contextKey: key,
+      segmentKey: SEGMENT_KEY,
+      request: { method: "POST", path: `/api/v2${base}/users`, body: included },
+    };
   } catch (exc) {
     const instruction =
       action === "add"
@@ -191,7 +198,7 @@ async function applyMembership(contextKey, action) {
     await ldRequest(
       "PATCH",
       base,
-      { comment: "33-synced-segments UI membership", instructions: [instruction] },
+      { comment: "303-synced-segments UI membership", instructions: [instruction] },
       { semantic: true }
     );
     return {
@@ -201,6 +208,11 @@ async function applyMembership(contextKey, action) {
       contextKey: key,
       segmentKey: SEGMENT_KEY,
       note: String(exc.message || ""),
+      request: {
+        method: "PATCH",
+        path: `/api/v2${base}`,
+        body: { instructions: [instruction] },
+      },
     };
   }
 }

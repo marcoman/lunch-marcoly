@@ -37,7 +37,7 @@ echo "Big-segment POST HTTP ${http}; trying list-based addIncludedTargets..."
 api PATCH "${ENV_PATH}" \
   -H "Content-Type: application/json; domain-model=launchdarkly.semanticpatch" \
   -d "$(jq -nc --arg k "$KEY" '{
-    comment: "33-synced-segments add member",
+    comment: "303-synced-segments add member",
     instructions: [{kind: "addIncludedTargets", contextKind: "user", values: [$k]}]
   }')" | jq '{key, name}'
 

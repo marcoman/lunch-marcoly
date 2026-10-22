@@ -4,7 +4,7 @@ import FlaggedShell from "./FlaggedShell.vue";
 import LdSession from "./LdSession.vue";
 import LoggedInUI from "./LoggedInUI.vue";
 
-const BANNER = "33-synced-segments[vue]";
+const BANNER = "303-synced-segments[vue]";
 
 const clientSideId = ref(null);
 const authKey = ref("");
@@ -22,7 +22,7 @@ const controlsWarn = ref("");
 
 function onSdkEvent(kind, detail) {
   const line = { t: new Date().toISOString().slice(11, 23), kind, detail };
-  console.log(`[33 synced-segments][vue] ${kind}${detail ? " " + detail : ""}`);
+  console.log(`[303 synced-segments][vue] ${kind}${detail ? " " + detail : ""}`);
   const next = [...sdkCallLog.value, line];
   sdkCallLog.value = next.length > 40 ? next.slice(-40) : next;
   if (kind === "initialize") initializeCount.value += 1;

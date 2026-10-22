@@ -27,7 +27,7 @@ api PATCH "/flags/${LD_PROJECT_KEY}/${FLAG_KEY}" \
     {
       "op": "replace",
       "path": "/description",
-      "value": "Updated via REST API example — 36-client-track-events."
+      "value": "Updated via REST API example — 306-client-track-events."
     }
   ]' | jq '{key, name, description}'
 

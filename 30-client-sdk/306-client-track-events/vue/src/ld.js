@@ -1,5 +1,5 @@
 /**
- * 36-client-track-events Vue SDK helpers.
+ * 306-client-track-events Vue SDK helpers.
  * LaunchDarkly: useLDFlag (string + boolean), streaming change:
  * https://launchdarkly.com/docs/sdk/client-side/vue
  */

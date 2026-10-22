@@ -63,7 +63,7 @@ if [[ -n "${LD_ENVIRONMENT_KEY:-}" ]]; then
       -H "Content-Type: application/json; domain-model=launchdarkly.semanticpatch" \
       -d "{
         \"environmentKey\": \"${LD_ENVIRONMENT_KEY}\",
-        \"comment\": \"36-client-track-events default: off\",
+        \"comment\": \"306-client-track-events default: off\",
         \"instructions\": [{\"kind\": \"turnFlagOff\"}]
       }" | jq ".environments.\"${LD_ENVIRONMENT_KEY}\" | {on, offVariation}"
   done

@@ -47,6 +47,6 @@ chmod +x *.sh
 | `add-member.sh <key>` | Include a user context key (inner circle) |
 | `remove-member.sh <key>` | Remove that key (`included.remove` / `removeIncludedTargets`) |
 | `get-flag.sh <key>` | Compact flag JSON |
-| `update-flag.sh` / `delete-flag.sh` | Same pattern as 31/32 |
+| `update-flag.sh` / `delete-flag.sh` | Same pattern as 301/302 |
 
 `get-flag.sh` still takes a flag key (example: `show-inner-circle-badge`).

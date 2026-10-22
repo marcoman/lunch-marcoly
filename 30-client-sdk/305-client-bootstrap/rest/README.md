@@ -1,6 +1,6 @@
 # REST API provisioning
 
-Create the **35-client-bootstrap** flags with **client-side SDK availability**.
+Create the **305-client-bootstrap** flags with **client-side SDK availability**.
 
 Keywords: **REST API** · **clientSideAvailability** · **usingEnvironmentId**
 

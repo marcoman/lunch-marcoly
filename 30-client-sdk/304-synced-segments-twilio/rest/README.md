@@ -29,6 +29,6 @@ chmod +x *.sh
 | `create-flags.sh` | Flag + segmentMatch (warns if the synced segment is missing) |
 | `get-flag-status.sh` | Demo snapshot (`--json` / `--verbose`) |
 | `get-flag.sh <key>` | Compact flag JSON |
-| `update-flag.sh` / `delete-flag.sh` | Same pattern as 31–33 |
+| `update-flag.sh` / `delete-flag.sh` | Same pattern as 301–303 |
 
-There is no `add-member.sh`. That was 33’s LaunchDarkly REST stand-in.
+There is no `add-member.sh`. That was 303’s LaunchDarkly REST stand-in.

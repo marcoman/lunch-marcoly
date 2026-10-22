@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Snapshot: inner-circle flag + segment (33-synced-segments).
+# Snapshot: inner-circle flag + segment (303-synced-segments).
 # https://launchdarkly.com/docs/api/feature-flags/get-feature-flag
 # https://launchdarkly.com/docs/api/segments/get-segment
 #

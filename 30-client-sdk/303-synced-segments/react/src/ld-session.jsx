@@ -1,5 +1,5 @@
 /**
- * 33-synced-segments React Web SDK session.
+ * 303-synced-segments React Web SDK session.
  * LaunchDarkly: identify + useBoolVariation(show-inner-circle-badge) + change:
  * https://launchdarkly.com/docs/home/flags/synced-segments
  * https://launchdarkly.com/docs/sdk/client-side/react/react-web

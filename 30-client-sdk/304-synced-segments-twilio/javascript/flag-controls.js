@@ -163,7 +163,7 @@ async function applyFlagControl(flagKey, { on } = {}) {
     `/flags/${cfg.projectKey}/${FLAG_BADGE}`,
     {
       environmentKey: cfg.environmentKey,
-      comment: "34-synced-segments-twilio UI",
+      comment: "304-synced-segments-twilio UI",
       instructions: [{ kind: on ? "turnFlagOn" : "turnFlagOff" }],
     },
     { semantic: true }

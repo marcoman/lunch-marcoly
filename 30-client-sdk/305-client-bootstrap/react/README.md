@@ -1,6 +1,6 @@
 # React Web
 
-Same [35-client-bootstrap](../application.md) flags, evaluated with the
+Same [305-client-bootstrap](../application.md) flags, evaluated with the
 [React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web)
 (`@launchdarkly/react-sdk`). Vite injects `LD_CLIENT_SIDE_ID` and proxies lab
 Controls. The page never sees `LD_SDK_KEY`.
@@ -41,7 +41,9 @@ This is a different process from [javascript/](../javascript/) (** :8350 **). Vu
 ## What to expect
 
 1. Log in. `createLDReactProvider` initializes with `{ kind: "user", key }`.
-   The lab log records `initialize` (console prefix `[35 bootstrap][react]`).
+   The lab log records `initialize` (console prefix `[305 bootstrap][react]`).
+   The grid stays on the bootstrap paint while the Paint line counts down from 8.
+   At 0 the live flags apply.
 2. Grid reads flags with `useStringVariation` / `useBoolVariation` — not on WASD.
 3. Toggle Controls → streaming `change:` updates the grid without reload.
 4. Logout then login again increments `initialize`. SDK call counts persist.

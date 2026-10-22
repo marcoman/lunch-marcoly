@@ -1,6 +1,6 @@
 # JavaScript (browser)
 
-Client-side **bootstrap** for the [35-client-bootstrap](../application.md) flags.
+Client-side **bootstrap** for the [305-client-bootstrap](../application.md) flags.
 The page passes a bootstrap map to the [JavaScript SDK](https://launchdarkly.com/docs/sdk/client-side/javascript)
 so the first paint is not the code default.
 Node only serves files, injects `LD_CLIENT_SIDE_ID`, and proxies lab Controls.
@@ -38,8 +38,9 @@ Open [http://127.0.0.1:8350/](http://127.0.0.1:8350/). `PORT` overrides the list
 ## What to expect
 
 1. Log in. The SDK initializes with `{ kind: "user", key: username }`. The lab
-   **SDK calls** log (and the console, prefix `[35 bootstrap]`) records
-   `initialize`.
+   **SDK calls** log (and the console, prefix `[305 bootstrap]`) records
+   `initialize`. The grid stays on the bootstrap paint while the Paint line
+   counts down from 8. At 0 the live flags apply.
 2. Flags off → `X` only, no Count (dark theme).
 3. Turn on highlight / count in Controls or the dashboard; the grid updates via
    `change:` without reload. The log adds `change:` — WASD does not.

@@ -1,4 +1,4 @@
-# 38-client-secure-mode
+# 308-client-secure-mode
 
 **Status: stub — not implemented yet.**
 

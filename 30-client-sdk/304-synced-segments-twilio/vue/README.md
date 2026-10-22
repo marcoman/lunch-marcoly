@@ -1,6 +1,6 @@
 # Vue
 
-Same [34-synced-segments-twilio](../application.md) flag, evaluated with the
+Same [304-synced-segments-twilio](../application.md) flag, evaluated with the
 [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue).
 Join/leave uses [@segment/analytics-next](https://www.npmjs.com/package/@segment/analytics-next).
 

@@ -1,5 +1,5 @@
 /**
- * 36-client-track-events React Web SDK session.
+ * 306-client-track-events React Web SDK session.
  * LaunchDarkly: track custom events, then flush
  * https://launchdarkly.com/docs/sdk/features/events
  */
@@ -57,7 +57,7 @@ function formatChangeDetail(payload) {
 
 /**
  * Mounts the React Web SDK only after login, with the real user context.
- * Does not initialize anonymously then identify — that is example 32.
+ * Does not initialize anonymously then identify — that is example 302.
  */
 export function LdSession({ clientSideId, username, onSdkEvent, children }) {
   const Provider = useMemo(

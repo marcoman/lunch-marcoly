@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# LaunchDarkly: feature-flag status snapshot (35-client-bootstrap)
+# LaunchDarkly: feature-flag status snapshot (305-client-bootstrap)
 # Demo-facing check: flags exist, client-side availability, env on/off + variations.
 # https://launchdarkly.com/docs/api/feature-flags/get-feature-flag
 # https://launchdarkly.com/docs/home/flags/creating-flags#make-flags-available-to-client-side-and-mobile-sdks

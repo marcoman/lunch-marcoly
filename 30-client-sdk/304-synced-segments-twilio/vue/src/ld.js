@@ -1,5 +1,5 @@
 /**
- * 34-synced-segments-twilio Vue SDK helpers.
+ * 304-synced-segments-twilio Vue SDK helpers.
  * LaunchDarkly: useLDFlag(show-twilio-inner-circle-badge) + identify + change:
  * https://launchdarkly.com/docs/home/flags/synced-segments
  * https://launchdarkly.com/docs/sdk/client-side/vue

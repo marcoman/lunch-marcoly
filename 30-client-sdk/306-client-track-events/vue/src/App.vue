@@ -4,7 +4,7 @@ import FlaggedShell from "./FlaggedShell.vue";
 import LdSession from "./LdSession.vue";
 import LoggedInUI from "./LoggedInUI.vue";
 
-const BANNER = "36-client-track-events[vue]";
+const BANNER = "306-client-track-events[vue]";
 
 const clientSideId = ref(null);
 const username = ref("");
@@ -21,7 +21,7 @@ const controlsWarn = ref("");
 
 function onSdkEvent(kind, detail) {
   const line = { t: new Date().toISOString().slice(11, 23), kind, detail };
-  console.log(`[36 track][vue] ${kind}${detail ? " " + detail : ""}`);
+  console.log(`[306 track][vue] ${kind}${detail ? " " + detail : ""}`);
   const next = [...sdkCallLog.value, line];
   sdkCallLog.value = next.length > 40 ? next.slice(-40) : next;
   if (kind === "initialize") initializeCount.value += 1;

@@ -41,7 +41,7 @@ function labApiPlugin() {
     name: "lab-api",
     configureServer(server) {
       const id = (process.env.LD_CLIENT_SIDE_ID || "").trim();
-      console.log("33-synced-segments[vue]");
+      console.log("303-synced-segments[vue]");
       console.log(`Open http://127.0.0.1:${PORT}/`);
       if (!id) {
         console.warn("Warning: LD_CLIENT_SIDE_ID is unset — flags stay at code defaults.");

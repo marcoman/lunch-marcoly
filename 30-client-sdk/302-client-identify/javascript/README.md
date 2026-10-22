@@ -1,6 +1,6 @@
 # JavaScript (browser)
 
-**`identify()`** on the [32-client-identify](../application.md) grid.
+**`identify()`** on the [302-client-identify](../application.md) grid.
 The [JavaScript SDK](https://launchdarkly.com/docs/sdk/client-side/javascript)
 stays initialized; switching user changes the **context** only.
 
@@ -8,7 +8,7 @@ Identify: [changing contexts](https://launchdarkly.com/docs/sdk/features/identif
 
 ## Prerequisites
 
-Same as 31: Node 20, `LD_CLIENT_SIDE_ID`, provisioned 32 flags.
+Same as 301: Node 20, `LD_CLIENT_SIDE_ID`, provisioned 302 flags.
 
 ```bash
 nvm use
@@ -38,7 +38,7 @@ Vue twin: [../vue/](../vue/) (** :8322 **).
 ## What to expect
 
 1. Log in as any name (SDK `initialize`). The lab **SDK calls** log (and the
-   console, prefix `[32 identify]`) records that call.
+   console, prefix `[302 identify]`) records that call.
 2. Click **Alice** or **Bob** (or type a key and **Identify**). The log adds
    `identify` — not another `initialize`. Grid position and Count persist.
 3. `alice` → green + Count; `bob` → blue, Count hidden; other keys → `X` only.

@@ -4,7 +4,7 @@ Work queue for new lunch-marcoly examples. Ship in this order.
 
 ## Next
 
-30-client-sdk folders are **301–309**. JavaScript, React, and Vue in **301** use the new number, including the About tab. Examples **302–306** and the portal still use the old names. Remaining stubs:
+30-client-sdk folders are **301–309**. JavaScript, React, and Vue in **301–306** use the new numbers, including an About tab. The portal still uses the old names. Remaining stubs:
 
 - [41-no-sdk-singleton](40-dont-do-this/41-no-sdk-singleton/)
 - [42-local-if-no-sdk](40-dont-do-this/42-local-if-no-sdk/)
@@ -41,7 +41,7 @@ Do not create a folder for offline evaluation, client offline mode, or an online
 
 ## Notes
 
-- 10-series children are **101–109**. **106** is percentage rollout, not migration flags. Migration remains [99-use-cases/17-migration-flags](99-use-cases/17-migration-flags/). **108** is approvals. **109** is evaluation reasons. Included-targets segments are the unnumbered [segment-targeting](10-code-control/segment-targeting/) folder. Web and console entrypoints for 101–107 use those numbers. Ports for 101–107 stay **8110–8170**. Letter suffixes stay unused. **20-agent-config** children are **201–209**, and the capstone is [20-capstone-1](20-agent-config/20-capstone-1/). **30-client-sdk** children are **301–309**. JavaScript, React, and Vue in [301-client-evaluation](30-client-sdk/301-client-evaluation/) use that number, including the About tab. Examples 302–306, stub READMEs, and the portal still use the old names. Ports stay **8310–8362**. Other series stay two-digit until their own renumber (`401`–`499`, …). A fourth digit is not part of the scheme.
+- 10-series children are **101–109**. **106** is percentage rollout, not migration flags. Migration remains [99-use-cases/17-migration-flags](99-use-cases/17-migration-flags/). **108** is approvals. **109** is evaluation reasons. Included-targets segments are the unnumbered [segment-targeting](10-code-control/segment-targeting/) folder. Web and console entrypoints for 101–107 use those numbers. Ports for 101–107 stay **8110–8170**. Letter suffixes stay unused. **20-agent-config** children are **201–209**, and the capstone is [20-capstone-1](20-agent-config/20-capstone-1/). **30-client-sdk** children are **301–309**. JavaScript, React, and Vue in **301–306** use those numbers, including an About tab. Stub READMEs use **307–309**. The portal still uses the old names. Ports stay **8310–8362**. Other series stay two-digit until their own renumber (`401`–`499`, …). A fourth digit is not part of the scheme.
 - 20-series **206** is [206-flags-vs-agent-control](20-agent-config/206-flags-vs-agent-control/). **207** is agent mode, **208** is context attributes, **209** is the team percentage rollout. [20-capstone-1](20-agent-config/20-capstone-1/) does not consume **207** and does not use the **209** lesson's ports. Capstone ports stay **:8290–:8293**. Web entrypoints for 201–206 and 20-capstone-1 use the new numbers in Python, Node, Java, and .NET. Portals use tab ids 201–206. Console entrypoints in this series still use the old names. The image / essay / animal apps stay **70-model-demos**.
 - **70-model-demos** children are `01`, `02`, `03`, `04` inside that folder. `04-terraform-codegen` is Python **:8740**. **80** stays the next free decade.
 - Client bootstrap folder is `305-client-bootstrap`, not `bootstrapRender`.

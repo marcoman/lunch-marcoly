@@ -1,5 +1,5 @@
 /**
- * 32-client-identify React Web SDK session.
+ * 302-client-identify React Web SDK session.
  * LaunchDarkly: createLDReactProvider once, then identify() — not a second initialize
  * https://launchdarkly.com/docs/sdk/features/identify
  * https://launchdarkly.com/docs/sdk/client-side/react/react-web

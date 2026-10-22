@@ -74,10 +74,35 @@
     .ld-rail {
       border-left: 1px solid #4a4a5c;
       background: #252535;
-      overflow: auto;
-      padding: 1rem 1rem 1.5rem;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
     }
-    .ld-rail h2 { margin: 0 0 0.75rem; font-size: 1rem; }
+    .ld-rail-header { padding: 0.85rem 1rem 0.65rem; }
+    .ld-rail h2 { margin: 0; font-size: 1rem; }
+    .ld-tabs {
+      display: flex;
+      gap: 0.35rem;
+      padding: 0 1rem;
+      border-bottom: 1px solid #4a4a5c;
+    }
+    button.ld-tab {
+      border: 0;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      background: transparent;
+      color: #9a9aab;
+      padding: 0.55rem 0.7rem;
+    }
+    button.ld-tab.active {
+      color: #e8e8ec;
+      border-bottom-color: #64b5f6;
+      font-weight: 700;
+    }
+    .ld-rail-body { overflow: auto; padding: 1rem 1rem 1.5rem; }
+    .ld-section { display: none; }
+    .ld-section.active { display: block; }
     .ld-controls-meta { font-size: 0.8rem; color: #9a9aab; margin: 0 0 1rem; line-height: 1.45; }
     .ld-controls-warn {
       margin: 0 0 1rem; padding: 0.65rem 0.75rem;
@@ -103,6 +128,8 @@
       white-space: pre-wrap; color: #c8d0da;
     }
     .ld-about-p { font-size: 0.85rem; line-height: 1.45; color: #c8d0da; }
+    .ld-about-p ol { padding-left: 1.15rem; margin: 0.4rem 0; }
+    .ld-about-p li { margin: 0.35rem 0; }
     .identify-row, .membership-row {
       display: flex;
       flex-wrap: wrap;
@@ -119,7 +146,7 @@
     .sdk-log {
       margin: 0.5rem 0 0;
       padding: 0.45rem 0.5rem;
-      max-height: 9rem;
+      max-height: 12rem;
       overflow: auto;
       background: #1a1a28;
       border: 1px solid #4a4a5c;
@@ -133,6 +160,7 @@
     .sdk-log-line.kind-initialize { color: #fff176; }
     .sdk-log-line.kind-identify { color: #81c784; }
     .sdk-log-line.kind-change { color: #64b5f6; }
+    .sdk-log-line.kind-rest { color: #ffcc80; }
     .sdk-log-line.kind-close, .sdk-log-line.kind-skip { color: #ef9a9a; }
     .sdk-call-counts { font-size: 0.78rem; color: #9a9aab; margin: 0.35rem 0 0; }
     #membership-msg { font-size: 0.8rem; color: #9a9aab; margin: 0 0 0.75rem; }
@@ -142,7 +170,7 @@
 </head>
 <body>
   <section id="login-screen">
-    <div class="app-banner">33-synced-segments[javascript]</div>
+    <div class="app-banner">303-synced-segments[javascript]</div>
     <h1>Login</h1>
     <label for="username">Username</label>
     <input id="username" type="text" autocomplete="username" autofocus>
@@ -153,7 +181,7 @@
   <div id="app-shell" class="hidden">
     <section id="grid-screen" tabindex="0">
       <div class="header">
-        <div class="app-banner">33-synced-segments[javascript]</div>
+        <div class="app-banner">303-synced-segments[javascript]</div>
         <div class="name-row">Name: <span id="hdr-name"></span>
           <span id="inner-badge" class="inner-badge hidden">inner circle</span>
         </div>
@@ -166,7 +194,13 @@
     </section>
 
     <aside class="ld-rail" aria-label="LaunchDarkly lab">
-      <h2>LaunchDarkly · lab</h2>
+      <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+      <div class="ld-tabs" role="tablist">
+        <button type="button" class="ld-tab active" data-tab="segments" role="tab" aria-selected="true">Segments</button>
+        <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
+      </div>
+      <div class="ld-rail-body">
+        <section id="ld-section-segments" class="ld-section active">
       <div style="font-weight:650;">Inner circle</div>
       <p class="ld-about-p" style="margin-top:0.35rem;">
         Flag <code>show-inner-circle-badge</code> is true when this context is in
@@ -191,9 +225,9 @@
         <button type="button" id="btn-alice">Alice</button>
         <button type="button" id="btn-bob">Bob</button>
       </div>
-      <div style="font-weight:650;">SDK calls</div>
+      <div style="font-weight:650;">Log</div>
       <p class="sdk-call-counts" id="sdk-call-counts">initialize ×0 · identify ×0 · change ×0</p>
-      <div class="sdk-log" id="sdk-call-log" aria-live="polite">No SDK client calls yet.</div>
+      <div class="sdk-log" id="sdk-call-log" aria-live="polite">No log lines yet.</div>
       <p class="ld-controls-meta" id="sdk-meta">Loading client-side ID…</p>
       <p class="ld-controls-meta" id="controls-meta">Loading flag status…</p>
       <div id="controls-warn" class="ld-controls-warn hidden"></div>
@@ -210,7 +244,22 @@
       </p>
       <div style="margin-top:1rem;font-weight:650;">Context</div>
       <pre class="context-pre" id="context-pre">Log in to set the evaluation context.</pre>
-    </aside>
+    
+        </section>
+        <section id="ld-section-about" class="ld-section">
+          <div style="font-weight:650;">What this teaches</div>
+          <p class="ld-about-p">The inner-circle badge is a flag targeted by a synced segment. Membership is a list of context keys. Adding or removing this key changes who is in the segment, and the client hears that on <code>change</code>.</p>
+          <p class="ld-about-p">The Segments tab shows the membership control, the log, and the context that was sent. Add and Remove record the REST call the host sent.</p>
+          <div style="margin-top:1rem;font-weight:650;">Try it</div>
+          <ol class="ld-about-p">
+            <li>Log in.</li>
+            <li>Add this context to the segment. The badge appears when the stream updates.</li>
+            <li>Remove this context. The badge clears. The grid position stays.</li>
+          </ol>
+          <p class="ld-about-p"><a href="https://launchdarkly.com/docs/home/flags/synced-segments" style="color:#64b5f6">synced segments</a></p>
+        </section>
+      </div>
+</aside>
   </div>
 
   <script src="/vendor/ldclient.min.js"></script>

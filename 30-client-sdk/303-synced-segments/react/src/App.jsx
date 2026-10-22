@@ -3,10 +3,22 @@ import { LdSession, useGridFlags, useIdentifyContext } from "./ld-session.jsx";
 
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
-const BANNER = "33-synced-segments[react]";
+const BANNER = "303-synced-segments[react]";
 
 function formatPos(r, c) {
   return `${ROWS[r]}/${COLS[c]}`;
+}
+
+/** REST membership highlight returned by the local host. No token. */
+function formatRestDetail(request) {
+  if (!request || !request.method || !request.path) return "";
+  let body = "";
+  try {
+    body = JSON.stringify(request.body, null, 2);
+  } catch (_err) {
+    body = String(request.body ?? "");
+  }
+  return body ? `${request.method} ${request.path}\n${body}` : `${request.method} ${request.path}`;
 }
 
 function App() {
@@ -27,7 +39,7 @@ function App() {
 
   const onSdkEvent = useCallback((kind, detail) => {
     const line = { t: new Date().toISOString().slice(11, 23), kind, detail };
-    console.log(`[33 synced-segments][react] ${kind}${detail ? " " + detail : ""}`);
+    console.log(`[303 synced-segments][react] ${kind}${detail ? " " + detail : ""}`);
     setSdkCallLog((prev) => {
       const next = [...prev, line];
       return next.length > 40 ? next.slice(-40) : next;
@@ -247,6 +259,7 @@ function LoggedInUI({
   onRefresh,
   onPostControl,
 }) {
+  const [labTab, setLabTab] = useState("segments");
   const gridRef = useRef(null);
   const [switchName, setSwitchName] = useState(username);
   const [identifyBusy, setIdentifyBusy] = useState(false);
@@ -294,6 +307,8 @@ function LoggedInUI({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || res.statusText);
+      const restDetail = formatRestDetail(data.request);
+      if (restDetail) onSdkEvent("rest", restDetail);
       setMembershipMsg(
         `${action === "add" ? "Added" : "Removed"} ${username} (${data.mode || "ok"}). Wait for change:.`
       );
@@ -347,7 +362,13 @@ function LoggedInUI({
         </p>
       </section>
       <aside className="ld-rail" aria-label="LaunchDarkly lab">
-        <h2>LaunchDarkly · lab</h2>
+        <div className="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+        <div className="ld-tabs" role="tablist">
+          <button type="button" role="tab" className={labTab === "segments" ? "ld-tab active" : "ld-tab"} aria-selected={labTab === "segments"} onClick={() => setLabTab("segments")}>Segments</button>
+          <button type="button" role="tab" className={labTab === "about" ? "ld-tab active" : "ld-tab"} aria-selected={labTab === "about"} onClick={() => setLabTab("about")}>About</button>
+        </div>
+        <div className="ld-rail-body">
+          <section className={labTab === "segments" ? "ld-section active" : "ld-section"}>
         <div style={{ fontWeight: 650 }}>Inner circle</div>
         <p className="ld-about-p" style={{ marginTop: "0.35rem" }}>
           Flag <code>show-inner-circle-badge</code> is true when this context is in segment{" "}
@@ -398,13 +419,13 @@ function LoggedInUI({
             Bob
           </button>
         </div>
-        <div style={{ fontWeight: 650 }}>SDK calls</div>
+        <div style={{ fontWeight: 650 }}>Log</div>
         <p className="sdk-call-counts">
           initialize ×{initializeCount} · identify ×{identifyCount} · change ×{changeCount}
         </p>
         <div className="sdk-log" ref={logRef} aria-live="polite">
           {!sdkCallLog.length
-            ? "No SDK client calls yet."
+            ? "No log lines yet."
             : sdkCallLog.map((entry, i) => (
                 <div key={i} className={"sdk-log-line kind-" + entry.kind}>
                   {entry.t} {entry.kind === "change" ? "change:" : entry.kind}
@@ -466,7 +487,22 @@ function LoggedInUI({
             ? JSON.stringify({ kind: "user", key: username }, null, 2)
             : "Log in to set the evaluation context."}
         </pre>
-      </aside>
+      
+          </section>
+          <section className={labTab === "about" ? "ld-section active" : "ld-section"}>
+            <div style={{ fontWeight: 650 }}>What this teaches</div>
+            <p className="ld-about-p">The inner-circle badge is a flag targeted by a synced segment. Membership is a list of context keys. Adding or removing this key changes who is in the segment, and the client hears that on <code>change</code>.</p>
+            <p className="ld-about-p">The Segments tab shows the membership control, the log, and the context that was sent. Add and Remove record the REST call the host sent.</p>
+            <div style={{ marginTop: "1rem", fontWeight: 650 }}>Try it</div>
+            <ol className="ld-about-p">
+              <li>Log in.</li>
+              <li>Add this context to the segment. The badge appears when the stream updates.</li>
+              <li>Remove this context. The badge clears. The grid position stays.</li>
+            </ol>
+            <p className="ld-about-p"><a href="https://launchdarkly.com/docs/home/flags/synced-segments" style={{ color: "#64b5f6" }}>synced segments</a></p>
+          </section>
+        </div>
+</aside>
     </div>
   );
 }

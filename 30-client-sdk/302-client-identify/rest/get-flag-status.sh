@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# LaunchDarkly: feature-flag status snapshot (32-client-identify)
+# LaunchDarkly: feature-flag status snapshot (302-client-identify)
 # Demo-facing check: flags exist, client-side availability, on, alice/bob key rules.
 # https://launchdarkly.com/docs/api/feature-flags/get-feature-flag
 # https://launchdarkly.com/docs/home/flags/creating-flags#make-flags-available-to-client-side-and-mobile-sdks

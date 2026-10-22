@@ -1,10 +1,10 @@
 # Client track events application specification
 
-This document defines **36-client-track-events**.
+This document defines **306-client-track-events**.
 
 Baseline grid behavior is
 [02-reference-client-code/application.md](../../02-reference-client-code/application.md).
-Flag evaluation matches [31-client-evaluation](../31-client-evaluation/application.md).
+Flag evaluation matches [301-client-evaluation](../301-client-evaluation/application.md).
 The lesson is client SDK **`track()`**.
 
 ## Overview
@@ -46,7 +46,7 @@ Missing `LD_CLIENT_SIDE_ID`: the page does not call `track`.
 | `show-client-track-move-count` | boolean | `false` |
 
 Both flags must be **available to client-side SDKs**. They are dedicated keys
-so 31 stays independent. The events do not depend on either flag being on.
+so 301 stays independent. The events do not depend on either flag being on.
 
 ## Acceptance criteria
 
@@ -60,6 +60,12 @@ so 31 stays independent. The events do not depend on either flag being on.
 
 ## Further reading
 
-- [31-client-evaluation](../31-client-evaluation/application.md)
+- [301-client-evaluation](../301-client-evaluation/application.md)
 - [Sending custom events](https://launchdarkly.com/docs/sdk/features/events)
-- [34-synced-segments-twilio](../34-synced-segments-twilio/) — Segment `track`, a different product
+- [304-synced-segments-twilio](../304-synced-segments-twilio/) — Segment `track`, a different product
+
+## Lab drawer
+
+The header reads **LaunchDarkly · lab**. Underline tabs sit under that header.
+The working tab is the live lab. **About** states this idea, the steps, and one
+docs link. About does not repeat the context.

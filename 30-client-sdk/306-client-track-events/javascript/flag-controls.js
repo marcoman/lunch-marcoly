@@ -228,7 +228,7 @@ async function applyFlagControl(flagKey, { on, fallthrough } = {}) {
   }
   await ldRequest("PATCH", `/flags/${cfg.projectKey}/${flagKey}`, {
     environmentKey: cfg.environmentKey,
-    comment: "36-client-track-events UI",
+    comment: "306-client-track-events UI",
     instructions,
   });
   flag = await ldRequest("GET", `/flags/${cfg.projectKey}/${flagKey}?${query}`);

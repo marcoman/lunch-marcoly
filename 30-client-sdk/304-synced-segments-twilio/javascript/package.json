@@ -1,12 +1,12 @@
 {
-  "name": "34-synced-segments-twilio",
+  "name": "304-synced-segments-twilio",
   "version": "1.0.0",
   "private": true,
   "description": "Browser grid with inner-circle badge from a Twilio Segment–synced audience",
-  "main": "34-synced-segments-twilio.js",
+  "main": "304-synced-segments-twilio.js",
   "scripts": {
     "build:segment": "esbuild segment-bridge.js --bundle --outfile=vendor/segment-analytics.js --format=iife --platform=browser",
-    "start": "npm run build:segment && node 34-synced-segments-twilio.js"
+    "start": "npm run build:segment && node 304-synced-segments-twilio.js"
   },
   "dependencies": {
     "@segment/analytics-next": "^1.81.0",

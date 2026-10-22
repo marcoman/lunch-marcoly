@@ -1,4 +1,4 @@
-# 33-synced-segments
+# 303-synced-segments
 
 **Synced / big segment** membership from the browser: an **inner-circle badge**
 when the current context is in `marcoly-inner-circle`. Lab Controls add and
@@ -14,8 +14,8 @@ Docs: [synced segments](https://launchdarkly.com/docs/home/flags/synced-segments
 [React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web) ·
 [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue)
 
-Baseline: [32-client-identify](../32-client-identify/) ·
-[31-client-evaluation](../31-client-evaluation/).
+Baseline: [302-client-identify](../302-client-identify/) ·
+[301-client-evaluation](../301-client-evaluation/).
 Small included-targets segment, server SDK, before this lesson:
 [segment-targeting](../../10-code-control/segment-targeting/).
 Spec: [application.md](application.md).
@@ -92,7 +92,7 @@ records that **user** key as an **included target** on the segment.
 From the CLI (same body, same endpoint):
 
 ```bash
-(cd 30-client-sdk/33-synced-segments/rest && ./add-member.sh alice)
+(cd 30-client-sdk/303-synced-segments/rest && ./add-member.sh alice)
 ```
 
 From the page, the browser POSTs `/api/segment-membership` on the local host.
@@ -119,7 +119,7 @@ unchanged.
 
 ### 4. What the browser does next
 
-The JS / React / Vue SDK is already initialized as that key (see **32**).
+The JS / React / Vue SDK is already initialized as that key (see **302**).
 LaunchDarkly streams targeting updates. The client fires **`change:`** for
 `show-inner-circle-badge`, `variation` becomes `true`, and the **inner circle**
 badge appears — no reload.
@@ -130,7 +130,7 @@ switches whose membership you are looking at.
 
 ## Prerequisites
 
-Same credentials as 31/32.
+Same credentials as 301/302.
 
 ```bash
 export LD_CLIENT_SIDE_ID="..."
@@ -158,5 +158,5 @@ export LD_API_ACCESS_TOKEN="api-..."
 
 - [application.md](application.md)
 - [30-client-sdk](../README.md)
-- [32-client-identify](../32-client-identify/)
-- [34-synced-segments-twilio](../34-synced-segments-twilio/) — same badge via Twilio Segment Audiences
+- [302-client-identify](../302-client-identify/)
+- [304-synced-segments-twilio](../304-synced-segments-twilio/) — same badge via Twilio Segment Audiences

@@ -1,6 +1,6 @@
 # REST API provisioning
 
-Create **32-client-identify** flags with **client-side availability** and
+Create **302-client-identify** flags with **client-side availability** and
 **key** targeting (`alice` / `bob`).
 
 Keywords: **REST API** · **identify** · **addRule** · **clientSideAvailability**

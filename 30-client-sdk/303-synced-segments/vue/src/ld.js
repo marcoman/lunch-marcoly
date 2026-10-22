@@ -1,5 +1,5 @@
 /**
- * 33-synced-segments Vue SDK helpers.
+ * 303-synced-segments Vue SDK helpers.
  * LaunchDarkly: useLDFlag(show-inner-circle-badge) + identify + change:
  * https://launchdarkly.com/docs/home/flags/synced-segments
  * https://launchdarkly.com/docs/sdk/client-side/vue

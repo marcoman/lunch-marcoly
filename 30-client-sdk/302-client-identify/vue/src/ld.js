@@ -1,5 +1,5 @@
 /**
- * 32-client-identify Vue SDK helpers.
+ * 302-client-identify Vue SDK helpers.
  * LaunchDarkly: useLDFlag + identify() on the existing client
  * https://launchdarkly.com/docs/sdk/features/identify
  * https://launchdarkly.com/docs/sdk/client-side/vue

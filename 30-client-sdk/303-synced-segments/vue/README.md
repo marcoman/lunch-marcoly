@@ -1,6 +1,6 @@
 # Vue
 
-Same [33-synced-segments](../application.md) flag and segment, evaluated with the
+Same [303-synced-segments](../application.md) flag and segment, evaluated with the
 [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue).
 Vite proxies membership writes. The page never sees `LD_API_ACCESS_TOKEN`.
 
@@ -42,4 +42,4 @@ Open [http://127.0.0.1:8332/](http://127.0.0.1:8332/). JavaScript is **:8330**. 
 1. Log in — `initialize`. Badge follows `show-inner-circle-badge`.
 2. **Add current key** — REST included targets on the segment; wait for `change:`.
 3. **Identify** another key — no second `initialize`; badge follows membership.
-4. Log records initialize / identify / change — not WASD.
+4. The **Log** records initialize / identify / change, plus the REST membership call from Add / Remove — not WASD.

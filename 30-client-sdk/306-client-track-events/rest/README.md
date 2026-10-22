@@ -1,6 +1,6 @@
 # REST API provisioning
 
-Create the **36-client-track-events** flags with **client-side SDK availability**.
+Create the **306-client-track-events** flags with **client-side SDK availability**.
 
 Keywords: **REST API** · **clientSideAvailability** · **usingEnvironmentId**
 

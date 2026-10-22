@@ -1,6 +1,6 @@
 # JavaScript (browser)
 
-Client SDK **`track()`** for the [36-client-track-events](../application.md)
+Client SDK **`track()`** for the [306-client-track-events](../application.md)
 events. The page uses the [JavaScript SDK](https://launchdarkly.com/docs/sdk/client-side/javascript).
 Node only serves files, injects `LD_CLIENT_SIDE_ID`, and proxies lab Controls.
 
@@ -39,7 +39,7 @@ Open [http://127.0.0.1:8360/](http://127.0.0.1:8360/). `PORT` overrides the list
 ## What to expect
 
 1. Log in. The SDK initializes with `{ kind: "user", key: username }`. After
-   ready, the lab **SDK calls** log (console prefix `[36 track]`) records
+   ready, the lab **SDK calls** log (console prefix `[306 track]`) records
    `track login_completed`.
 2. Move to a new cell. The log records `track grid_move` with `{ from, to }`.
    A wall bump does not.

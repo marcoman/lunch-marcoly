@@ -6,7 +6,7 @@ import {
   segmentLeaveInnerCircle,
 } from "./segment.js";
 
-const BANNER = "34-synced-segments-twilio[vue]";
+const BANNER = "304-synced-segments-twilio[vue]";
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
 const SEGMENT_SYNC_HINT =
@@ -36,6 +36,7 @@ const props = defineProps({
 });
 
 const gridRef = ref(null);
+const labTab = ref("segment");
 const logRef = ref(null);
 const switchName = ref(props.username);
 const identifyBusy = ref(false);
@@ -172,7 +173,13 @@ watch(
       </p>
     </section>
     <aside class="ld-rail" aria-label="LaunchDarkly lab">
-      <h2>LaunchDarkly · lab</h2>
+      <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+      <div class="ld-tabs" role="tablist">
+        <button type="button" role="tab" class="ld-tab" :class="{ active: labTab === 'segment' }" :aria-selected="labTab === 'segment'" @click="labTab = 'segment'">Segment</button>
+        <button type="button" role="tab" class="ld-tab" :class="{ active: labTab === 'about' }" :aria-selected="labTab === 'about'" @click="labTab = 'about'">About</button>
+      </div>
+      <div class="ld-rail-body">
+        <section class="ld-section" :class="{ active: labTab === 'segment' }">
       <div style="font-weight: 650">Inner circle</div>
       <p class="ld-about-p" style="margin-top: 0.35rem">
         Flag <code>show-twilio-inner-circle-badge</code> is true when this context is in the
@@ -276,6 +283,21 @@ watch(
           ? JSON.stringify({ kind: "user", key: username }, null, 2)
           : "Log in to set the evaluation context."
       }}</pre>
-    </aside>
+    
+        </section>
+        <section class="ld-section" :class="{ active: labTab === 'about' }">
+          <div style="font-weight:650;">What this teaches</div>
+          <p class="ld-about-p">The badge is the same synced-segment flag. Membership is owned by a Twilio Segment Audience. The page sends Segment <code>identify</code> and <code>track</code>, and the audience syncs into LaunchDarkly.</p>
+          <p class="ld-about-p">The Segment tab shows the join control, the SDK calls, and the context that was sent.</p>
+          <div style="margin-top:1rem;font-weight:650;">Try it</div>
+          <ol class="ld-about-p">
+            <li>Log in. The page sends a Segment identify for this context.</li>
+            <li>Join the inner circle. The page sends the Segment track the audience expects.</li>
+            <li>When the audience syncs, the badge updates. That wait is the sync, not a second page load.</li>
+          </ol>
+          <p class="ld-about-p"><a href="https://launchdarkly.com/docs/home/flags/twilio" style="color:#64b5f6">Twilio Segment Audiences</a></p>
+        </section>
+      </div>
+</aside>
   </div>
 </template>

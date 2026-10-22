@@ -1,7 +1,7 @@
 <script setup>
 /**
  * Mounts the Vue SDK only after login, with the real user context.
- * Does not initialize anonymously then identify — that is example 32.
+ * Does not initialize anonymously then identify — that is example 302.
  * LaunchDarkly: ldInit, ready, track, flush
  * https://launchdarkly.com/docs/sdk/features/events
  * https://launchdarkly.com/docs/sdk/client-side/vue

@@ -1,6 +1,6 @@
 # Terraform provisioning
 
-Creates the two **36-client-track-events** flags with **client-side SDK availability**.
+Creates the two **306-client-track-events** flags with **client-side SDK availability**.
 
 Keywords: **Terraform** · **client_side_availability** · **using_environment_id**
 

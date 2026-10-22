@@ -41,7 +41,7 @@ function logSdkCall(kind, detail) {
   const line = { t: new Date().toISOString().slice(11, 23), kind, detail };
   sdkCallLog.push(line);
   if (sdkCallLog.length > 40) sdkCallLog.shift();
-  console.log(`[32 identify] ${kind}${detail ? " " + detail : ""}`);
+  console.log(`[302 identify] ${kind}${detail ? " " + detail : ""}`);
   const el = document.getElementById("sdk-call-log");
   if (!el) return;
   el.innerHTML = "";
@@ -402,3 +402,19 @@ fetch("/api/config", { cache: "no-store" })
   .catch(() => {
     clientSideId = null;
   });
+
+/** Switch the lab drawer between the live lab and About. */
+function selectLdTab(tab) {
+  document.querySelectorAll(".ld-tab").forEach((btn) => {
+    const on = btn.getAttribute("data-tab") === tab;
+    btn.classList.toggle("active", on);
+    btn.setAttribute("aria-selected", on ? "true" : "false");
+  });
+  document.querySelectorAll(".ld-section").forEach((section) => {
+    section.classList.toggle("active", section.id === `ld-section-${tab}`);
+  });
+}
+
+document.querySelectorAll(".ld-tab").forEach((btn) => {
+  btn.addEventListener("click", () => selectLdTab(btn.getAttribute("data-tab")));
+});

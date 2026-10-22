@@ -29,19 +29,30 @@ let identifyCount = 0;
 let changeCount = 0;
 
 /**
- * Record SDK client lifecycle: initialize, identify, streaming change:.
+ * Record the lab log: SDK lifecycle plus the REST membership call.
  * Do not log variation() on WASD — that would bury the membership lesson.
  */
+function formatRestDetail(request) {
+  if (!request || !request.method || !request.path) return "";
+  let body = "";
+  try {
+    body = JSON.stringify(request.body, null, 2);
+  } catch (_err) {
+    body = String(request.body ?? "");
+  }
+  return body ? `${request.method} ${request.path}\n${body}` : `${request.method} ${request.path}`;
+}
+
 function logSdkCall(kind, detail) {
   const line = { t: new Date().toISOString().slice(11, 23), kind, detail };
   sdkCallLog.push(line);
   if (sdkCallLog.length > 40) sdkCallLog.shift();
-  console.log(`[33 synced-segments] ${kind}${detail ? " " + detail : ""}`);
+  console.log(`[303 synced-segments] ${kind}${detail ? " " + detail : ""}`);
   const el = document.getElementById("sdk-call-log");
   if (!el) return;
   el.innerHTML = "";
   if (!sdkCallLog.length) {
-    el.textContent = "No SDK client calls yet.";
+    el.textContent = "No log lines yet.";
     return;
   }
   for (const entry of sdkCallLog) {
@@ -348,6 +359,8 @@ async function postMembership(action) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || res.statusText);
+    const restDetail = formatRestDetail(data.request);
+    if (restDetail) logSdkCall("rest", restDetail);
     setMembershipMsg(`${action === "add" ? "Added" : "Removed"} ${username} (${data.mode || "ok"}). Wait for change:.`);
     await refreshControls();
     window.setTimeout(() => {
@@ -431,3 +444,19 @@ fetch("/api/config", { cache: "no-store" })
   .catch(() => {
     clientSideId = null;
   });
+
+/** Switch the lab drawer between the live lab and About. */
+function selectLdTab(tab) {
+  document.querySelectorAll(".ld-tab").forEach((btn) => {
+    const on = btn.getAttribute("data-tab") === tab;
+    btn.classList.toggle("active", on);
+    btn.setAttribute("aria-selected", on ? "true" : "false");
+  });
+  document.querySelectorAll(".ld-section").forEach((section) => {
+    section.classList.toggle("active", section.id === `ld-section-${tab}`);
+  });
+}
+
+document.querySelectorAll(".ld-tab").forEach((btn) => {
+  btn.addEventListener("click", () => selectLdTab(btn.getAttribute("data-tab")));
+});

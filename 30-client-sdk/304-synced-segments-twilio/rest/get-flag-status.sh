@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Snapshot: inner-circle flag + segment (34-synced-segments-twilio).
+# Snapshot: inner-circle flag + segment (304-synced-segments-twilio).
 # https://launchdarkly.com/docs/api/feature-flags/get-feature-flag
 # https://launchdarkly.com/docs/api/segments/get-segment
 #

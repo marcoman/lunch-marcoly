@@ -79,7 +79,7 @@ hl_patch="$(jq -n \
   --arg none "$hl_none" --arg green "$hl_green" --arg blue "$hl_blue" \
   '{
     environmentKey: $env,
-    comment: "32-client-identify: alice/bob key rules",
+    comment: "302-client-identify: alice/bob key rules",
     instructions: [
       {kind: "turnFlagOn"},
       {kind: "updateOffVariation", variationId: $none},
@@ -97,7 +97,7 @@ cnt_patch="$(jq -n \
   --arg vis "$cnt_true" --arg hid "$cnt_false" \
   '{
     environmentKey: $env,
-    comment: "32-client-identify: alice/bob key rules",
+    comment: "302-client-identify: alice/bob key rules",
     instructions: [
       {kind: "turnFlagOn"},
       {kind: "updateOffVariation", variationId: $hid},

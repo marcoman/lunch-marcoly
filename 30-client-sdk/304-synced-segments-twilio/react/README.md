@@ -1,6 +1,6 @@
 # React Web
 
-Same [34-synced-segments-twilio](../application.md) flag, evaluated with the
+Same [304-synced-segments-twilio](../application.md) flag, evaluated with the
 [React Web SDK](https://launchdarkly.com/docs/sdk/client-side/react/react-web).
 Join/leave uses [@segment/analytics-next](https://www.npmjs.com/package/@segment/analytics-next).
 

@@ -99,7 +99,7 @@ has_rule="$(jq --arg env "$LD_ENVIRONMENT_KEY" --arg seg "$SEGMENT_KEY" '
 if [[ "$has_rule" == "true" ]]; then
   patch="$(jq -n --arg env "$LD_ENVIRONMENT_KEY" --arg hid "$false_id" '{
     environmentKey: $env,
-    comment: "33-synced-segments: flag on (segment rule already present)",
+    comment: "303-synced-segments: flag on (segment rule already present)",
     instructions: [
       {kind: "turnFlagOn"},
       {kind: "updateOffVariation", variationId: $hid},
@@ -112,7 +112,7 @@ else
     --arg vis "$true_id" --arg hid "$false_id" --arg seg "$SEGMENT_KEY" \
     '{
       environmentKey: $env,
-      comment: "33-synced-segments: inner circle segment rule",
+      comment: "303-synced-segments: inner circle segment rule",
       instructions: [
         {kind: "turnFlagOn"},
         {kind: "updateOffVariation", variationId: $hid},

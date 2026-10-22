@@ -1,7 +1,7 @@
 <script setup>
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 
-const BANNER = "33-synced-segments[vue]";
+const BANNER = "303-synced-segments[vue]";
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
 
@@ -28,6 +28,7 @@ const props = defineProps({
 });
 
 const gridRef = ref(null);
+const labTab = ref("segments");
 const logRef = ref(null);
 const switchName = ref(props.username);
 const identifyBusy = ref(false);
@@ -37,6 +38,18 @@ const membershipErr = ref(false);
 
 function formatPos(r, c) {
   return `${ROWS[r]}/${COLS[c]}`;
+}
+
+/** REST membership highlight returned by the local host. No token. */
+function formatRestDetail(request) {
+  if (!request || !request.method || !request.path) return "";
+  let body = "";
+  try {
+    body = JSON.stringify(request.body, null, 2);
+  } catch (_err) {
+    body = String(request.body ?? "");
+  }
+  return body ? `${request.method} ${request.path}\n${body}` : `${request.method} ${request.path}`;
 }
 
 const segmentMeta = computed(() => {
@@ -80,6 +93,8 @@ async function postMembership(action) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || res.statusText);
+    const restDetail = formatRestDetail(data.request);
+    if (restDetail) props.onSdkEvent("rest", restDetail);
     membershipMsg.value = `${action === "add" ? "Added" : "Removed"} ${props.username} (${data.mode || "ok"}). Wait for change:.`;
     await props.onRefresh();
   } catch (err) {
@@ -156,7 +171,13 @@ watch(
       </p>
     </section>
     <aside class="ld-rail" aria-label="LaunchDarkly lab">
-      <h2>LaunchDarkly · lab</h2>
+      <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+      <div class="ld-tabs" role="tablist">
+        <button type="button" role="tab" class="ld-tab" :class="{ active: labTab === 'segments' }" :aria-selected="labTab === 'segments'" @click="labTab = 'segments'">Segments</button>
+        <button type="button" role="tab" class="ld-tab" :class="{ active: labTab === 'about' }" :aria-selected="labTab === 'about'" @click="labTab = 'about'">About</button>
+      </div>
+      <div class="ld-rail-body">
+        <section class="ld-section" :class="{ active: labTab === 'segments' }">
       <div style="font-weight: 650">Inner circle</div>
       <p class="ld-about-p" style="margin-top: 0.35rem">
         Flag <code>show-inner-circle-badge</code> is true when this context is in segment
@@ -189,12 +210,12 @@ watch(
         <button type="button" @click="identifyUser('alice')">Alice</button>
         <button type="button" @click="identifyUser('bob')">Bob</button>
       </div>
-      <div style="font-weight: 650">SDK calls</div>
+      <div style="font-weight: 650">Log</div>
       <p class="sdk-call-counts">
         initialize ×{{ initializeCount }} · identify ×{{ identifyCount }} · change ×{{ changeCount }}
       </p>
       <div class="sdk-log" ref="logRef" aria-live="polite">
-        <template v-if="!sdkCallLog.length">No SDK client calls yet.</template>
+        <template v-if="!sdkCallLog.length">No log lines yet.</template>
         <div
           v-else
           v-for="(entry, i) in sdkCallLog"
@@ -256,6 +277,21 @@ watch(
           ? JSON.stringify({ kind: "user", key: username }, null, 2)
           : "Log in to set the evaluation context."
       }}</pre>
-    </aside>
+    
+        </section>
+        <section class="ld-section" :class="{ active: labTab === 'about' }">
+          <div style="font-weight:650;">What this teaches</div>
+          <p class="ld-about-p">The inner-circle badge is a flag targeted by a synced segment. Membership is a list of context keys. Adding or removing this key changes who is in the segment, and the client hears that on <code>change</code>.</p>
+          <p class="ld-about-p">The Segments tab shows the membership control, the log, and the context that was sent. Add and Remove record the REST call the host sent.</p>
+          <div style="margin-top:1rem;font-weight:650;">Try it</div>
+          <ol class="ld-about-p">
+            <li>Log in.</li>
+            <li>Add this context to the segment. The badge appears when the stream updates.</li>
+            <li>Remove this context. The badge clears. The grid position stays.</li>
+          </ol>
+          <p class="ld-about-p"><a href="https://launchdarkly.com/docs/home/flags/synced-segments" style="color:#64b5f6">synced segments</a></p>
+        </section>
+      </div>
+</aside>
   </div>
 </template>

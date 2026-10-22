@@ -14,7 +14,7 @@ How Add to inner circle reaches LaunchDarkly:
 
 ## Prerequisites
 
-Same as 31/32, plus the 33 flag and segment provisioned.
+Same as 301/302, plus the 303 flag and segment provisioned.
 
 ```bash
 nvm use
@@ -48,4 +48,4 @@ Vue twin: [../vue/](../vue/) (** :8332 **).
    `marcoly-inner-circle`; `change:` should show the badge.
 3. **Identify** as another key — badge follows that key’s membership (no second initialize).
 4. **Remove from inner circle** — badge off.
-5. SDK call log records initialize / identify / change — not WASD `variation`.
+5. The **Log** records initialize / identify / change, plus the REST membership call from Add / Remove — not WASD `variation`.

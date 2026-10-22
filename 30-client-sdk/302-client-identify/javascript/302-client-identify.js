@@ -10,7 +10,7 @@ const fs = require("fs");
 const path = require("path");
 const { apiConfig, listFlagControls, applyFlagControl } = require("./flag-controls");
 
-const PORT = Number.parseInt(process.env.PORT || "8360", 10);
+const PORT = Number.parseInt(process.env.PORT || "8320", 10);
 const ROOT = __dirname;
 const LD_BUNDLE = path.join(
   ROOT,
@@ -127,7 +127,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, "127.0.0.1", () => {
   const id = (process.env.LD_CLIENT_SIDE_ID || "").trim();
-  console.log("36-client-track-events[javascript]");
+  console.log("302-client-identify[javascript]");
   console.log(`Open http://127.0.0.1:${PORT}/`);
   if (!id) {
     console.warn("Warning: LD_CLIENT_SIDE_ID is unset — flags stay at code defaults.");

@@ -1,10 +1,10 @@
 # Synced segments application specification
 
-This document defines **33-synced-segments**. Baseline grid behavior is
+This document defines **303-synced-segments**. Baseline grid behavior is
 [02-reference-client-code/application.md](../../02-reference-client-code/application.md).
 Client SDK initialize / `variation` / `change:` is
-[31-client-evaluation](../31-client-evaluation/application.md).
-`identify()` without reload is [32-client-identify](../32-client-identify/application.md).
+[301-client-evaluation](../301-client-evaluation/application.md).
+`identify()` without reload is [302-client-identify](../302-client-identify/application.md).
 
 This example adds a **boolean flag targeted by a big / synced-style segment**.
 The page shows an **inner-circle badge** when the current context is in the
@@ -85,11 +85,14 @@ members in the dashboard. This lab uses the API for that reason.
 | Surface | Role |
 |---------|------|
 | `initialize` | First login |
-| `identify` | Switch context key without reload (reuse 32) |
+| `identify` | Switch context key without reload (reuse 302) |
 | `variation` | Read `show-inner-circle-badge` |
 | `change:` | Badge updates when membership or the flag changes |
 
-The lab **SDK calls** log records `initialize`, `identify`, `change:`, and `close`.
+The lab **Log** records `initialize`, `identify`, `change:`, `close`, and the REST
+membership call from Add / Remove. That REST line is the request the host sent
+(`POST …/users` with `included.add` or `included.remove`, or the semantic PATCH
+when the big-segment route is not available). It does not include the API token.
 Do not log `variation` on every WASD move.
 
 ## Lab Controls
@@ -111,5 +114,11 @@ The page must not hold `LD_API_ACCESS_TOKEN`. The Node host proxies:
 
 ## Further reading
 
-- [32-client-identify/application.md](../32-client-identify/application.md)
-- [31-client-evaluation/application.md](../31-client-evaluation/application.md)
+- [302-client-identify/application.md](../302-client-identify/application.md)
+- [301-client-evaluation/application.md](../301-client-evaluation/application.md)
+
+## Lab drawer
+
+The header reads **LaunchDarkly · lab**. Underline tabs sit under that header.
+The working tab is the live lab. **About** states this idea, the steps, and one
+docs link. About does not repeat the context.

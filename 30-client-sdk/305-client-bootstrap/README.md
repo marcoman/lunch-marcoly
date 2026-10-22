@@ -1,8 +1,8 @@
-# 35-client-bootstrap
+# 305-client-bootstrap
 
 Browser **bootstrap**: pass initial flag values into the client SDK so the first
 paint is not the code default (`none` / count hidden) while initialization
-finishes. Compared with [31-client-evaluation](../31-client-evaluation/), the
+finishes. Compared with [301-client-evaluation](../301-client-evaluation/), the
 highlight is already `green` before `ready`.
 
 Baseline UI: [02-reference-client-code](../../02-reference-client-code/).
@@ -17,13 +17,14 @@ Docs: [Bootstrapping](https://launchdarkly.com/docs/sdk/features/bootstrapping#j
 
 ## What you should see
 
-Log in. The lab **Paint** line starts as bootstrap (`highlight=green`, `count=true`)
-before the client is ready. After `ready`, it says the stream matches — or that
-the stream replaced those values if the live flags differ.
+Log in. The grid shows the bootstrap paint (`highlight=green`, `count=true`) and
+the Paint line counts down from 8. That wait simulates a startup delay. The
+client initializes immediately; the log records `ready` when it finishes. At 0,
+the grid takes the live flags.
 
-Turn the highlight flag off in Controls and reload. First paint is still green.
-When the stream arrives, the cell drops to `X` only. That is the bootstrap map
-losing to the live evaluation.
+Turn the highlight flag off and log in again. The cell stays green through the
+countdown. At 0 it drops to `X` only. That is the bootstrap map losing to the
+live evaluation.
 
 ## Flags
 
@@ -32,7 +33,7 @@ losing to the live evaluation.
 | `enable-client-bootstrap-highlight` | `green` | `none` |
 | `show-client-bootstrap-move-count` | `true` | `false` |
 
-Dedicated keys so 31 stays independent. Both must be available to client-side SDKs.
+Dedicated keys so 301 stays independent. Both must be available to client-side SDKs.
 
 ## Prerequisites
 
@@ -55,4 +56,4 @@ export LD_API_ACCESS_TOKEN="api-..."
 | React Web | [react/](react/) | `npm start` | [http://127.0.0.1:8351/](http://127.0.0.1:8351/) |
 | Vue | [vue/](vue/) | `npm start` | [http://127.0.0.1:8352/](http://127.0.0.1:8352/) |
 
-Portal tabs: [../portal/](../portal/) (**35** on :8350 / :8351 / :8352).
+Portal tabs: [../portal/](../portal/) (**305** on :8350 / :8351 / :8352).

@@ -1,7 +1,7 @@
 <script setup>
 import { nextTick, onMounted, ref, watch } from "vue";
 
-const BANNER = "35-client-bootstrap[vue]";
+const BANNER = "305-client-bootstrap[vue]";
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
 
@@ -26,6 +26,7 @@ const props = defineProps({
 });
 
 const gridRef = ref(null);
+const labTab = ref("bootstrap");
 const logRef = ref(null);
 
 function formatPaintLine() {
@@ -35,8 +36,11 @@ function formatPaintLine() {
   }
   const first = `highlight=${paint.first.highlight} count=${paint.first.showCount}`;
   const now = `highlight=${props.highlight} count=${props.showCount}`;
+  if (paint.holding) {
+    return `The grid is the bootstrap paint (${now}). Live flags apply at 0.`;
+  }
   if (paint.source === "bootstrap") {
-    return `Paint: bootstrap ${now} — before ready. Without bootstrap this would still be the code default (none / hidden).`;
+    return `Paint: bootstrap ${now}. Waiting for the stream.`;
   }
   const replaced =
     paint.first.highlight !== props.highlight || paint.first.showCount !== props.showCount;
@@ -110,7 +114,13 @@ watch(
       <p class="hint">Use arrow keys or WASD to move. Press L to log out, Q to quit.</p>
     </section>
     <aside class="ld-rail" aria-label="LaunchDarkly lab">
-      <h2>LaunchDarkly · lab</h2>
+      <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+      <div class="ld-tabs" role="tablist">
+        <button type="button" role="tab" class="ld-tab" :class="{ active: labTab === 'bootstrap' }" :aria-selected="labTab === 'bootstrap'" @click="labTab = 'bootstrap'">Bootstrap</button>
+        <button type="button" role="tab" class="ld-tab" :class="{ active: labTab === 'about' }" :aria-selected="labTab === 'about'" @click="labTab = 'about'">About</button>
+      </div>
+      <div class="ld-rail-body">
+        <section class="ld-section" :class="{ active: labTab === 'bootstrap' }">
       <div style="font-weight: 650">SDK calls</div>
       <p class="sdk-call-counts">initialize ×{{ initializeCount }} · change ×{{ changeCount }}</p>
       <div class="sdk-log" ref="logRef" aria-live="polite">
@@ -125,6 +135,9 @@ watch(
           }}{{ entry.detail ? `  ${entry.detail}` : "" }}
         </div>
       </div>
+      <p v-if="paint && paint.holding" class="startup-delay">
+        Simulating a startup delay — {{ paint.secondsLeft }}s
+      </p>
       <p class="ld-controls-meta">{{ formatPaintLine() }}</p>
       <p class="ld-controls-meta">
         {{
@@ -178,8 +191,8 @@ watch(
       </div>
       <p class="ld-about-p">
         <code>ldInit</code> passes <code>bootstrap</code> (<code>green</code> / count on)
-        so the first paint is not the code default. After ready,
-        <code>useLDFlag</code> shows the stream.
+        so the first paint is not the code default. A countdown holds that paint
+        for 8 seconds to simulate a startup delay. At 0, <code>useLDFlag</code> shows the stream.
         <a href="https://launchdarkly.com/docs/sdk/client-side/vue">Vue SDK</a>
         ·
         <a href="https://launchdarkly.com/docs/home/account/environment/keys">environment keys</a>.
@@ -190,6 +203,21 @@ watch(
           ? JSON.stringify({ kind: "user", key: username }, null, 2)
           : "Log in to set the evaluation context."
       }}</pre>
-    </aside>
+    
+        </section>
+        <section class="ld-section" :class="{ active: labTab === 'about' }">
+          <div style="font-weight:650;">What this teaches</div>
+          <p class="ld-about-p">Bootstrap passes flag values into the client at initialize, so the first paint is not the code default. This lab holds that paint for 8 seconds and counts down, which simulates a startup delay. At 0, the live evaluation replaces it.</p>
+          <p class="ld-about-p">The Bootstrap tab shows the SDK calls, the paint line, and the context that was sent.</p>
+          <div style="margin-top:1rem;font-weight:650;">Try it</div>
+          <ol class="ld-about-p">
+            <li>Log in. The grid shows the bootstrap paint while a countdown simulates a startup delay.</li>
+            <li>At 0, the paint line says whether the stream matched. The log already recorded ready.</li>
+            <li>Turn highlight off and log in again. Bootstrap stays through the countdown, then the stream corrects it.</li>
+          </ol>
+          <p class="ld-about-p"><a href="https://launchdarkly.com/docs/sdk/features/bootstrapping#javascript" style="color:#64b5f6">Bootstrapping</a></p>
+        </section>
+      </div>
+</aside>
   </div>
 </template>

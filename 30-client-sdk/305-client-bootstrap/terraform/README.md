@@ -1,6 +1,6 @@
 # Terraform provisioning
 
-Creates the two **35-client-bootstrap** flags with **client-side SDK availability**.
+Creates the two **305-client-bootstrap** flags with **client-side SDK availability**.
 
 Keywords: **Terraform** · **client_side_availability** · **using_environment_id**
 

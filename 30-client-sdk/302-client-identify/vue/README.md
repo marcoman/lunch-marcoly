@@ -1,6 +1,6 @@
 # Vue
 
-Same [32-client-identify](../application.md) flags, with
+Same [302-client-identify](../application.md) flags, with
 [`identify()`](https://launchdarkly.com/docs/sdk/features/identify) on the
 [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue).
 `ldInit` runs once at login; Alice/Bob call `identify` on that client.
@@ -33,6 +33,6 @@ Open [http://127.0.0.1:8322/](http://127.0.0.1:8322/). JavaScript is **:8320**. 
 
 ## What to expect
 
-1. Log in — `initialize` (console prefix `[32 identify][vue]`).
+1. Log in — `initialize` (console prefix `[302 identify][vue]`).
 2. **Alice** / **Bob** — `identify` only; position and Count persist.
 3. `alice` → green + Count; `bob` → blue, Count hidden.

@@ -1,6 +1,6 @@
 # Vue
 
-Same [35-client-bootstrap](../application.md) flags, evaluated with the
+Same [305-client-bootstrap](../application.md) flags, evaluated with the
 [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue)
 (`launchdarkly-vue-client-sdk`). Vite injects `LD_CLIENT_SIDE_ID` and proxies lab
 Controls. The page never sees `LD_SDK_KEY`.
@@ -39,11 +39,10 @@ This is a different process from [javascript/](../javascript/) (** :8350 **) and
 
 ## What to expect
 
-1. Log in. `ldInit` initializes with `{ kind: "user", key }`, and the grid mounts
-   once that client reports `ready`. The lab log records `initialize` (console
-   prefix `[35 bootstrap][vue]`). `useLDFlag` reads `variation` once at setup, so
-   a child mounted before `ready` would hold the code default until the next
-   `change:` — see `src/LdSession.vue`.
+1. Log in. `ldInit` initializes with `{ kind: "user", key }`. The lab log records
+   `initialize` (console prefix `[305 bootstrap][vue]`). The grid stays on the
+   bootstrap paint while the Paint line counts down from 8. At 0, `useLDFlag`
+   shows the stream. See `src/LdSession.vue`.
 2. Grid reads flags with `useLDFlag` — not on WASD.
 3. Toggle Controls → streaming `change:` updates the grid without reload.
 4. Logout then login again increments `initialize`. SDK call counts persist.

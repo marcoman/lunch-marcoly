@@ -37,7 +37,7 @@ echo "Big-segment POST HTTP ${http}; trying list-based removeIncludedTargets..."
 api PATCH "${ENV_PATH}" \
   -H "Content-Type: application/json; domain-model=launchdarkly.semanticpatch" \
   -d "$(jq -nc --arg k "$KEY" '{
-    comment: "33-synced-segments remove member",
+    comment: "303-synced-segments remove member",
     instructions: [{kind: "removeIncludedTargets", contextKind: "user", values: [$k]}]
   }')" | jq '{key, name}'
 

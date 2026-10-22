@@ -3,7 +3,7 @@ import { LdSession, useGridFlags, useIdentifyContext } from "./ld-session.jsx";
 
 const ROWS = ["t", "m", "b"];
 const COLS = ["l", "m", "r"];
-const BANNER = "32-client-identify[react]";
+const BANNER = "302-client-identify[react]";
 
 function formatPos(r, c) {
   return `${ROWS[r]}/${COLS[c]}`;
@@ -26,7 +26,7 @@ function App() {
 
   const onSdkEvent = useCallback((kind, detail) => {
     const line = { t: new Date().toISOString().slice(11, 23), kind, detail };
-    console.log(`[32 identify][react] ${kind}${detail ? " " + detail : ""}`);
+    console.log(`[302 identify][react] ${kind}${detail ? " " + detail : ""}`);
     setSdkCallLog((prev) => {
       const next = [...prev, line];
       return next.length > 40 ? next.slice(-40) : next;
@@ -251,6 +251,7 @@ function LoggedInUI({
   onRefresh,
   onPostControl,
 }) {
+  const [labTab, setLabTab] = useState("identify");
   const gridRef = useRef(null);
   const [switchName, setSwitchName] = useState(username);
   const [identifyBusy, setIdentifyBusy] = useState(false);
@@ -318,7 +319,13 @@ function LoggedInUI({
         </p>
       </section>
       <aside className="ld-rail" aria-label="LaunchDarkly lab">
-        <h2>LaunchDarkly · lab</h2>
+        <div className="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+        <div className="ld-tabs" role="tablist">
+          <button type="button" role="tab" className={labTab === "identify" ? "ld-tab active" : "ld-tab"} aria-selected={labTab === "identify"} onClick={() => setLabTab("identify")}>Identify</button>
+          <button type="button" role="tab" className={labTab === "about" ? "ld-tab active" : "ld-tab"} aria-selected={labTab === "about"} onClick={() => setLabTab("about")}>About</button>
+        </div>
+        <div className="ld-rail-body">
+          <section className={labTab === "identify" ? "ld-section active" : "ld-section"}>
         <div style={{ fontWeight: 650 }}>Identify</div>
         <p className="ld-about-p" style={{ marginTop: "0.35rem" }}>
           Same SDK client. <code>{'identify({ kind: "user", key })'}</code> changes targeting
@@ -384,7 +391,22 @@ function LoggedInUI({
             ? JSON.stringify({ kind: "user", key: username }, null, 2)
             : "Log in to set the evaluation context."}
         </pre>
-      </aside>
+      
+          </section>
+          <section className={labTab === "about" ? "ld-section active" : "ld-section"}>
+            <div style={{ fontWeight: 650 }}>What this teaches</div>
+            <p className="ld-about-p">One SDK client stays open. <code>identify</code> switches the user context, so targeting changes without a second <code>initialize</code> or a reload.</p>
+            <p className="ld-about-p">The Identify tab shows the live identify control, the SDK calls, and the context now on the client.</p>
+            <div style={{ marginTop: "1rem", fontWeight: 650 }}>Try it</div>
+            <ol className="ld-about-p">
+              <li>Log in as any name.</li>
+              <li>Identify as <code>alice</code>. Highlight turns green and Count shows.</li>
+              <li>Identify as <code>bob</code>. Highlight turns blue and Count hides. The cell stays put.</li>
+            </ol>
+            <p className="ld-about-p"><a href="https://launchdarkly.com/docs/sdk/features/identify" style={{ color: "#64b5f6" }}>identify</a></p>
+          </section>
+        </div>
+</aside>
     </div>
   );
 }

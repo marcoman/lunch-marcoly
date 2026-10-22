@@ -1,6 +1,6 @@
-# 34-synced-segments-twilio
+# 304-synced-segments-twilio
 
-Same inner-circle **badge** as [33-synced-segments](../33-synced-segments/), but
+Same inner-circle **badge** as [303-synced-segments](../303-synced-segments/), but
 membership is owned by **Twilio Segment**, not a LaunchDarkly REST “include this
 key” call.
 
@@ -18,7 +18,7 @@ Docs: [syncing segments with Twilio Segment Audiences](https://launchdarkly.com/
 [@segment/analytics-next](https://www.npmjs.com/package/@segment/analytics-next) ·
 [identify (LaunchDarkly)](https://launchdarkly.com/docs/sdk/features/identify)
 
-Baseline: [33-synced-segments](../33-synced-segments/).
+Baseline: [303-synced-segments](../303-synced-segments/).
 Spec: [application.md](application.md).
 
 ## Install the Twilio Segment SDK
@@ -35,9 +35,9 @@ Each language folder already lists that dependency. From the folder you will
 run:
 
 ```bash
-(cd 30-client-sdk/34-synced-segments-twilio/javascript && npm install)
-(cd 30-client-sdk/34-synced-segments-twilio/react && npm install)
-(cd 30-client-sdk/34-synced-segments-twilio/vue && npm install)
+(cd 30-client-sdk/304-synced-segments-twilio/javascript && npm install)
+(cd 30-client-sdk/304-synced-segments-twilio/react && npm install)
+(cd 30-client-sdk/304-synced-segments-twilio/vue && npm install)
 ```
 
 The write key is a **Segment source write key** (`SEGMENT_WRITE_KEY`). It is
@@ -61,7 +61,7 @@ await analytics.track("Joined Inner Circle", { innerCircle: true });
 | Segment calls | `identify` + `track("Joined Inner Circle")` |
 | UI | Badge next to Name when the flag is `true` |
 
-**33** fakes the CDP with LaunchDarkly REST included-targets. **34** uses the
+**303** fakes the CDP with LaunchDarkly REST included-targets. **304** uses the
 real CDP path. You need a Twilio Segment workspace with **Engage Audiences**
 and the LaunchDarkly Audiences destination. First sync often takes about
 **ten minutes**; later updates are often tens of seconds.
@@ -110,7 +110,7 @@ members onto the flag.
 
 Flag `show-twilio-inner-circle-badge` has `segmentMatch` on that synced
 segment. When membership arrives, the client SDK streams **`change:`** and
-the badge appears. Expect a delay — this is not the instant REST path in 33.
+the badge appears. Expect a delay — this is not the instant REST path in 303.
 
 Client-side evaluation still does **not** need Redis.
 
@@ -142,5 +142,5 @@ already exist from Twilio.
 ## Further reading
 
 - [application.md](application.md)
-- [33-synced-segments](../33-synced-segments/) — REST stand-in for the same badge
+- [303-synced-segments](../303-synced-segments/) — REST stand-in for the same badge
 - [30-client-sdk](../README.md)

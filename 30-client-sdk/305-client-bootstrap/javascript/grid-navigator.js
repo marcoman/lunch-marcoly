@@ -27,6 +27,47 @@ const BOOTSTRAP = {
   [FLAG_COUNT]: true,
 };
 
+/**
+ * Hold the bootstrap paint after login so the handoff is visible.
+ * The client still initializes immediately. This is a lab delay, not an SDK option.
+ */
+const STARTUP_DELAY_SEC = 8;
+
+/**
+ * Countdown cue. Same oscillator shape as 107-scheduled-changes:
+ * 440 Hz on each second, 880 Hz when the live flags apply.
+ * The login click unlocks audio; later ticks play from the timer.
+ */
+let audioContext = null;
+
+function unlockStartupAudio() {
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  if (!Ctx) return null;
+  audioContext = audioContext || new Ctx();
+  if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
+  return audioContext;
+}
+
+function playStartupTone(kind) {
+  const context = unlockStartupAudio();
+  if (!context) return;
+  const finish = kind === "finish";
+  const frequency = finish ? 880 : 440;
+  const duration = finish ? 0.32 : 0.16;
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+  const now = context.currentTime;
+  oscillator.type = "sine";
+  oscillator.frequency.setValueAtTime(frequency, now);
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(0.08, now + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+  oscillator.start(now);
+  oscillator.stop(now + duration + 0.02);
+}
+
 const COLORS = new Set(["green", "yellow", "red", "blue", "purple"]);
 
 let username = "";
@@ -43,6 +84,12 @@ let initializeCount = 0;
 let changeCount = 0;
 let paintSource = "default";
 let firstPaint = null;
+let holdBootstrap = false;
+let startupSecondsLeft = 0;
+let startupTimer = null;
+let liveHighlight = "none";
+let liveShowCount = false;
+let liveReady = false;
 
 /**
  * Record SDK client lifecycle so the lab shows initialize vs streaming change:.
@@ -53,7 +100,7 @@ function logSdkCall(kind, detail) {
   const line = { t: new Date().toISOString().slice(11, 23), kind, detail };
   sdkCallLog.push(line);
   if (sdkCallLog.length > 40) sdkCallLog.shift();
-  console.log(`[35 bootstrap] ${kind}${detail ? " " + detail : ""}`);
+  console.log(`[305 bootstrap] ${kind}${detail ? " " + detail : ""}`);
   const el = document.getElementById("sdk-call-log");
   if (!el) return;
   el.innerHTML = "";
@@ -110,12 +157,56 @@ function interpretHighlight(raw) {
  */
 function readFlagsFromClient() {
   if (!ldClient) {
-    highlight = "none";
-    showCount = false;
-    return;
+    liveHighlight = "none";
+    liveShowCount = false;
+  } else {
+    liveHighlight = interpretHighlight(ldClient.variation(FLAG_HIGHLIGHT, "none"));
+    liveShowCount = Boolean(ldClient.variation(FLAG_COUNT, false));
   }
-  highlight = interpretHighlight(ldClient.variation(FLAG_HIGHLIGHT, "none"));
-  showCount = Boolean(ldClient.variation(FLAG_COUNT, false));
+  if (!holdBootstrap) {
+    highlight = liveHighlight;
+    showCount = liveShowCount;
+  }
+}
+
+function clearStartupTimer() {
+  if (startupTimer) {
+    clearInterval(startupTimer);
+    startupTimer = null;
+  }
+}
+
+/**
+ * Keep the grid on the bootstrap map while the countdown runs.
+ * Live variation() is stored and applied when the timer hits 0.
+ */
+function beginStartupHold() {
+  clearStartupTimer();
+  holdBootstrap = true;
+  startupSecondsLeft = STARTUP_DELAY_SEC;
+  highlight = interpretHighlight(BOOTSTRAP[FLAG_HIGHLIGHT]);
+  showCount = Boolean(BOOTSTRAP[FLAG_COUNT]);
+  playStartupTone("tick");
+  startupTimer = setInterval(() => {
+    startupSecondsLeft -= 1;
+    if (startupSecondsLeft <= 0) {
+      releaseStartupHold();
+      return;
+    }
+    playStartupTone("tick");
+    renderGrid();
+  }, 1000);
+}
+
+function releaseStartupHold() {
+  clearStartupTimer();
+  if (!holdBootstrap) return;
+  holdBootstrap = false;
+  highlight = liveHighlight;
+  showCount = liveShowCount;
+  if (liveReady) paintSource = "stream";
+  playStartupTone("finish");
+  renderGrid();
 }
 
 function renderGrid() {
@@ -162,6 +253,14 @@ function renderGrid() {
       ? `Client-side ID loaded (${clientSideId.slice(0, 6)}…). Highlight=${highlight} count=${showCount}.`
       : "No LD_CLIENT_SIDE_ID — using code defaults (none / hidden).";
   }
+  const delayEl = document.getElementById("startup-delay");
+  if (delayEl) {
+    delayEl.hidden = !holdBootstrap;
+    delayEl.classList.toggle("hidden", !holdBootstrap);
+    delayEl.textContent = holdBootstrap
+      ? `Simulating a startup delay — ${startupSecondsLeft}s`
+      : "";
+  }
   const paintEl = document.getElementById("paint-source");
   if (paintEl) paintEl.textContent = formatPaintLine();
 }
@@ -172,8 +271,11 @@ function formatPaintLine() {
   }
   const first = `highlight=${firstPaint.highlight} count=${firstPaint.showCount}`;
   const now = `highlight=${highlight} count=${showCount}`;
+  if (holdBootstrap) {
+    return `The grid is the bootstrap paint (${now}). Live flags apply at 0.`;
+  }
   if (paintSource === "bootstrap") {
-    return `Paint: bootstrap ${now} — before ready. Without bootstrap this would still be the code default (none / hidden).`;
+    return `Paint: bootstrap ${now}. Waiting for the stream.`;
   }
   const replaced = firstPaint.highlight !== highlight || firstPaint.showCount !== showCount;
   return replaced
@@ -182,6 +284,8 @@ function formatPaintLine() {
 }
 
 function closeLdClient() {
+  clearStartupTimer();
+  holdBootstrap = false;
   if (ldClient) {
     logSdkCall("close", "client discarded (logout / re-init)");
     try {
@@ -202,6 +306,7 @@ async function startLdClient(name) {
   closeLdClient();
   firstPaint = null;
   paintSource = "default";
+  liveReady = false;
   if (!clientSideId || typeof LDClient === "undefined") {
     logSdkCall("skip", "no client-side ID — did not call initialize");
     readFlagsFromClient();
@@ -211,6 +316,7 @@ async function startLdClient(name) {
   initializeCount += 1;
   logSdkCall("initialize", `key=${name}  (client #${initializeCount})`);
   ldClient = LDClient.initialize(clientSideId, context, { bootstrap: BOOTSTRAP });
+  beginStartupHold();
   readFlagsFromClient();
   firstPaint = { highlight, showCount };
   paintSource = "bootstrap";
@@ -229,22 +335,32 @@ async function startLdClient(name) {
     const keys = formatChangeDetail(payload);
     logSdkCall("change", keys ? `flags=${keys}` : "(stream update)");
     readFlagsFromClient();
-    renderGrid();
+    if (!holdBootstrap) renderGrid();
   });
-  let ready = false;
-  try {
-    await ldClient.waitForInitialization(5);
-    ready = true;
-  } catch (_err) {
-    ready = false;
-  }
-  readFlagsFromClient();
-  if (ready) {
-    paintSource = "stream";
-    logSdkCall("ready", `live highlight=${highlight} count=${showCount}`);
-  } else {
-    logSdkCall("ready", "init did not finish — still showing bootstrap");
-  }
+  const client = ldClient;
+  client.waitForInitialization(5).then(
+    () => {
+      if (ldClient !== client) return;
+      liveReady = true;
+      readFlagsFromClient();
+      logSdkCall(
+        "ready",
+        holdBootstrap
+          ? `live highlight=${liveHighlight} count=${liveShowCount} — grid stays on bootstrap during the startup delay`
+          : `live highlight=${liveHighlight} count=${liveShowCount}`
+      );
+      if (!holdBootstrap) {
+        paintSource = "stream";
+        highlight = liveHighlight;
+        showCount = liveShowCount;
+        renderGrid();
+      }
+    },
+    () => {
+      if (ldClient !== client) return;
+      logSdkCall("ready", "init did not finish — still showing bootstrap");
+    }
+  );
 }
 
 function logout() {
@@ -369,6 +485,7 @@ document.getElementById("login-btn").addEventListener("click", () => {
     return;
   }
   err.classList.add("hidden");
+  unlockStartupAudio();
   startGrid(name);
 });
 
@@ -410,3 +527,19 @@ fetch("/api/config", { cache: "no-store" })
   .catch(() => {
     clientSideId = null;
   });
+
+/** Switch the lab drawer between the live lab and About. */
+function selectLdTab(tab) {
+  document.querySelectorAll(".ld-tab").forEach((btn) => {
+    const on = btn.getAttribute("data-tab") === tab;
+    btn.classList.toggle("active", on);
+    btn.setAttribute("aria-selected", on ? "true" : "false");
+  });
+  document.querySelectorAll(".ld-section").forEach((section) => {
+    section.classList.toggle("active", section.id === `ld-section-${tab}`);
+  });
+}
+
+document.querySelectorAll(".ld-tab").forEach((btn) => {
+  btn.addEventListener("click", () => selectLdTab(btn.getAttribute("data-tab")));
+});

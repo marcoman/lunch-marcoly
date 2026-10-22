@@ -1,4 +1,4 @@
-# 37-client-evaluation-details
+# 307-client-evaluation-details
 
 **Status: stub — not implemented yet.**
 
@@ -8,7 +8,7 @@ only the value.
 
 This number used to be reserved for client offline mode. That idea stays
 rejected (server fallbacks already live in
-[18-sdk-fallbacks](../../99-use-cases/18-sdk-fallbacks/)). **37** is this
+[18-sdk-fallbacks](../../99-use-cases/18-sdk-fallbacks/)). **307** is this
 lesson.
 
 The server-side tour of four reason kinds is
@@ -29,7 +29,7 @@ flag, two methods, one of them explains the result.
 
 ## Direction
 
-- JavaScript, React, and Vue, same shape as 31–36.
+- JavaScript, React, and Vue, same shape as 301–306.
 - One flag is enough. The lesson is the two methods, not a gallery of four
   reason kinds.
 - Call the detail result out in the UI. Do not leave it in the console.
@@ -38,8 +38,8 @@ flag, two methods, one of them explains the result.
 
 ## When implementing
 
-1. `application.md` with a flag key 31 does not use.
-2. JavaScript first. React and Vue follow the 31 pattern.
+1. `application.md` with a flag key 301 does not use.
+2. JavaScript first. React and Vue follow the 301 pattern.
 3. The rail shows both return values on every refresh.
 
 ## Implementation

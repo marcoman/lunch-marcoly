@@ -72,10 +72,35 @@
     .ld-rail {
       border-left: 1px solid #4a4a5c;
       background: #252535;
-      overflow: auto;
-      padding: 1rem 1rem 1.5rem;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
     }
-    .ld-rail h2 { margin: 0 0 0.75rem; font-size: 1rem; }
+    .ld-rail-header { padding: 0.85rem 1rem 0.65rem; }
+    .ld-rail h2 { margin: 0; font-size: 1rem; }
+    .ld-tabs {
+      display: flex;
+      gap: 0.35rem;
+      padding: 0 1rem;
+      border-bottom: 1px solid #4a4a5c;
+    }
+    button.ld-tab {
+      border: 0;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      background: transparent;
+      color: #9a9aab;
+      padding: 0.55rem 0.7rem;
+    }
+    button.ld-tab.active {
+      color: #e8e8ec;
+      border-bottom-color: #64b5f6;
+      font-weight: 700;
+    }
+    .ld-rail-body { overflow: auto; padding: 1rem 1rem 1.5rem; }
+    .ld-section { display: none; }
+    .ld-section.active { display: block; }
     .ld-controls-meta { font-size: 0.8rem; color: #9a9aab; margin: 0 0 1rem; line-height: 1.45; }
     .ld-controls-warn {
       margin: 0 0 1rem; padding: 0.65rem 0.75rem;
@@ -106,6 +131,8 @@
       white-space: pre-wrap; color: #c8d0da;
     }
     .ld-about-p { font-size: 0.85rem; line-height: 1.45; color: #c8d0da; }
+    .ld-about-p ol { padding-left: 1.15rem; margin: 0.4rem 0; }
+    .ld-about-p li { margin: 0.35rem 0; }
     .ld-toolbar { margin-bottom: 0.75rem; }
     .sdk-log {
       margin: 0.5rem 0 1rem;
@@ -129,7 +156,7 @@
 </head>
 <body>
   <section id="login-screen">
-    <div class="app-banner">36-client-track-events[javascript]</div>
+    <div class="app-banner">306-client-track-events[javascript]</div>
     <h1>Login</h1>
     <label for="username">Username</label>
     <input id="username" type="text" autocomplete="username" autofocus>
@@ -140,7 +167,7 @@
   <div id="app-shell" class="hidden">
     <section id="grid-screen" tabindex="0">
       <div class="header">
-        <div class="app-banner">36-client-track-events[javascript]</div>
+        <div class="app-banner">306-client-track-events[javascript]</div>
         <div>Name: <span id="hdr-name"></span></div>
         <div>Current position: <span id="hdr-current"></span></div>
         <div>Previous position: <span id="hdr-previous"></span></div>
@@ -151,7 +178,13 @@
     </section>
 
     <aside class="ld-rail" aria-label="LaunchDarkly lab">
-      <h2>LaunchDarkly · lab</h2>
+      <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+      <div class="ld-tabs" role="tablist">
+        <button type="button" class="ld-tab active" data-tab="track" role="tab" aria-selected="true">Track</button>
+        <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
+      </div>
+      <div class="ld-rail-body">
+        <section id="ld-section-track" class="ld-section active">
       <div class="ld-block-title" style="font-weight:650;">SDK calls</div>
       <p class="sdk-call-counts" id="sdk-call-counts">initialize ×0 · change ×0 · track ×0</p>
       <div class="sdk-log" id="sdk-call-log" aria-live="polite">No SDK client calls yet.</div>
@@ -172,7 +205,22 @@
       </p>
       <div class="ld-block-title" style="margin-top:1rem;font-weight:650;">Context</div>
       <pre class="context-pre" id="context-pre">Log in to set the evaluation context.</pre>
-    </aside>
+    
+        </section>
+        <section id="ld-section-about" class="ld-section">
+          <div style="font-weight:650;">What this teaches</div>
+          <p class="ld-about-p">The client sends custom events with <code>track</code>. Login sends <code>login_completed</code>. A real move sends <code>grid_move</code>. <code>flush</code> pushes the batch right away.</p>
+          <p class="ld-about-p">The Track tab shows the SDK calls and the context those events are for.</p>
+          <div style="margin-top:1rem;font-weight:650;">Try it</div>
+          <ol class="ld-about-p">
+            <li>Log in. The log records <code>track</code> for <code>login_completed</code>.</li>
+            <li>Move to a new cell. The log records <code>grid_move</code>.</li>
+            <li>Open Live events in LaunchDarkly and filter to custom events for this context.</li>
+          </ol>
+          <p class="ld-about-p"><a href="https://launchdarkly.com/docs/sdk/features/events" style="color:#64b5f6">Sending custom events</a></p>
+        </section>
+      </div>
+</aside>
   </div>
 
   <script src="/vendor/ldclient.min.js"></script>

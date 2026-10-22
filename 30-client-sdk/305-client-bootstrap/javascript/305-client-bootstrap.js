@@ -127,7 +127,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, "127.0.0.1", () => {
   const id = (process.env.LD_CLIENT_SIDE_ID || "").trim();
-  console.log("35-client-bootstrap[javascript]");
+  console.log("305-client-bootstrap[javascript]");
   console.log(`Open http://127.0.0.1:${PORT}/`);
   if (!id) {
     console.warn("Warning: LD_CLIENT_SIDE_ID is unset — flags stay at code defaults.");

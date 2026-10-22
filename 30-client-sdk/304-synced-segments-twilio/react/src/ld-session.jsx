@@ -1,5 +1,5 @@
 /**
- * 34-synced-segments-twilio React Web SDK session.
+ * 304-synced-segments-twilio React Web SDK session.
  * LaunchDarkly: identify + useBoolVariation(show-twilio-inner-circle-badge) + change:
  * https://launchdarkly.com/docs/home/flags/synced-segments
  * https://launchdarkly.com/docs/sdk/client-side/react/react-web
