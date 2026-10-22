@@ -71,8 +71,8 @@ lunch-marcoly/
 │   └── 309-client-context-cache/ # Stub: local storage cache, not bootstrap
 ├── 40-dont-do-this/             # Anti-patterns (do not ship)
 │   ├── README.md
-│   ├── 41-no-sdk-singleton/     # Stub: new LDClient per evaluation
-│   └── 42-local-if-no-sdk/      # Stub: local if / no variation()
+│   ├── 401-no-sdk-singleton/    # Stub: new LDClient per evaluation
+│   └── 402-local-if-no-sdk/     # Stub: local if / no variation()
 ├── 50-mobile/                   # Mobile SDK series (2×2 tap navigator)
 │   ├── README.md
 │   ├── 51-reference/            # android/ · ios/ (no LaunchDarkly)
@@ -110,7 +110,7 @@ lunch-marcoly/
 └── ...
 ```
 
-Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control sort order. **10-code-control** children are **101–109**, **20-agent-config** children are **201–209** (capstone folder `20-capstone-1`), and **30-client-sdk** children are **301–309**. Other decade series still use two-digit children (`41`–`42`, `51`–`56`, …) until that series is renumbered. Letter suffixes stay unused. A fourth digit is not part of the scheme.
+Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control sort order. **10-code-control** children are **101–109**, **20-agent-config** children are **201–209** (capstone folder `20-capstone-1`), and **30-client-sdk** children are **301–309**. **40-dont-do-this** children are **401** and **402**. Other decade series still use two-digit children (`51`–`56`, …) until that series is renumbered. Letter suffixes stay unused. A fourth digit is not part of the scheme.
 
 ## Languages
 
@@ -175,8 +175,8 @@ Each example may include implementations in any of these languages. Every applic
 | 308 | [308-client-secure-mode](30-client-sdk/308-client-secure-mode/) | **Stub:** secure-mode hash for the browser context |
 | 309 | [309-client-context-cache](30-client-sdk/309-client-context-cache/) | **Stub:** local storage cache, called out in the UI. Not 305 |
 | 40 | [40-dont-do-this](40-dont-do-this/) | Anti-pattern series (do not ship) |
-| 41 | [41-no-sdk-singleton](40-dont-do-this/41-no-sdk-singleton/) | **Stub:** new server SDK client per evaluation |
-| 42 | [42-local-if-no-sdk](40-dont-do-this/42-local-if-no-sdk/) | **Stub:** local `if` / hardcoded boolean, never `variation()` |
+| 401 | [401-no-sdk-singleton](40-dont-do-this/401-no-sdk-singleton/) | **Stub:** new server SDK client per evaluation |
+| 402 | [402-local-if-no-sdk](40-dont-do-this/402-local-if-no-sdk/) | **Stub:** local `if` / hardcoded boolean, never `variation()` |
 | 50 | [50-mobile](50-mobile/) | Mobile SDK series (2×2 tap navigator; mobile key, not browser client-side ID) |
 | 51 | [51-reference](50-mobile/51-reference/) | Mobile reference app — login, 2×2 tap grid, drawer; Android + iOS; no LaunchDarkly |
 | 52 | [52-mobile-evaluation](50-mobile/52-mobile-evaluation/) | Mobile SDK: init, variation, listeners (`LD_MOBILE_KEY`; dedicated flag keys) |

@@ -1,4 +1,4 @@
-# 42-local-if-no-sdk
+# 402-local-if-no-sdk
 
 **Status: stub — not implemented yet.**
 
@@ -29,7 +29,7 @@ The SDK may still init so the contrast is honest — we are skipping
 
 - Leave this as the only copy-pasteable grid in the repo with no “do this
   instead” block
-- Mix this with [41-no-sdk-singleton](../41-no-sdk-singleton/) (that lab still
+- Mix this with [401-no-sdk-singleton](../401-no-sdk-singleton/) (that lab still
   calls `variation()`; it just constructs too many clients)
 - Confuse this with [18-sdk-fallbacks](../../99-use-cases/18-sdk-fallbacks/)
   (that lab *does* call `variation()` when LaunchDarkly is gone)

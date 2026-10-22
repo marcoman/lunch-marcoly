@@ -15,8 +15,8 @@ Keywords: **anti-patterns** · **server SDK** · **do not copy**
 
 | Example | Folder | Status |
 |---------|--------|--------|
-| **41** | [41-no-sdk-singleton/](41-no-sdk-singleton/) | Stub — new `LDClient` per evaluation |
-| **42** | [42-local-if-no-sdk/](42-local-if-no-sdk/) | Stub — local `if` / hardcoded boolean, no `variation()` |
+| **401** | [401-no-sdk-singleton/](401-no-sdk-singleton/) | Stub — new `LDClient` per evaluation |
+| **402** | [402-local-if-no-sdk/](402-local-if-no-sdk/) | Stub — local `if` / hardcoded boolean, no `variation()` |
 
 ## Safety
 
@@ -26,4 +26,4 @@ People will copy these. Every implemented example must:
 - Show the cost in the lab rail (client count, skipped `variation()`, …)
 - End with a 10-line “do this instead” that matches 11
 
-Do not mix 41 and 42 in one lab.
+Do not mix 401 and 402 in one lab.

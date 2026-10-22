@@ -152,8 +152,8 @@ lunch-marcoly/
 │   └── 309-client-context-cache/ # Stub: local storage cache, not bootstrap
 ├── 40-dont-do-this/             # Anti-patterns (do not ship)
 │   ├── README.md
-│   ├── 41-no-sdk-singleton/     # Stub: new LDClient per evaluation
-│   └── 42-local-if-no-sdk/      # Stub: local if / no variation()
+│   ├── 401-no-sdk-singleton/    # Stub: new LDClient per evaluation
+│   └── 402-local-if-no-sdk/     # Stub: local if / no variation()
 ├── 50-mobile/                   # Mobile SDK series (2×2 tap navigator)
 │   ├── README.md                # Mobile key, simulators, no AgentControl
 │   ├── 51-reference/            # No LaunchDarkly — android/ · ios/
@@ -206,7 +206,7 @@ lunch-marcoly/
 - Prefix with a **two-digit number**: `00-reference-code`, `01-hello-world`, `02-binary-search`
 - Follow the number with a **kebab-case** name describing the concept
 - Use the next available number when adding a new example (`03`, `04`, …)
-- Decade series keep that two-digit folder (`10`, `20`, `30`, …). **10-code-control** children are **101–109**. **20-agent-config** children are **201–209**, and the capstone folder is `20-capstone-1`. **30-client-sdk** children are **301–309**. Other series still use two-digit children (`41`–`42`, `51`–`56`, …) until that series is renumbered the same way (`401`–`499`, and the same hundreds digit for `50` and `60`). Letter suffixes (`1a`, `1b`) stay unused. A fourth digit is not part of the scheme. Inside a renumbered series, the first language pass uses the new number. Other language entrypoints keep their previous filenames until that platform is updated. JavaScript, React, and Vue in **301–306** use the new numbers, including an About tab. The client-SDK portal still uses the old names. Listen ports for 101–107 stay **8110–8170**. AgentControl ports stay **8210–8260**, with the capstone on **8290–8293**. Client SDK ports stay **8310–8362**.
+- Decade series keep that two-digit folder (`10`, `20`, `30`, …). **10-code-control** children are **101–109**. **20-agent-config** children are **201–209**, and the capstone folder is `20-capstone-1`. **30-client-sdk** children are **301–309**. **40-dont-do-this** children are **401** and **402**. Other series still use two-digit children (`51`–`56`, …) until that series is renumbered the same way (`501`–`599`, and the same hundreds digit for `60`). Letter suffixes (`1a`, `1b`) stay unused. A fourth digit is not part of the scheme. Inside a renumbered series, the first language pass uses the new number. Other language entrypoints keep their previous filenames until that platform is updated. JavaScript, React, and Vue in **301–306** use the new numbers, including an About tab. The client-SDK portal still uses the old names. Listen ports for 101–107 stay **8110–8170**. AgentControl ports stay **8210–8260**, with the capstone on **8290–8293**. Client SDK ports stay **8310–8362**.
 - `70-model-demos` and `99-use-cases` already count children inside the folder (`01`, `02`, …). They do not consume `71`–`79` or the next decade. Leave that inner count as it is until the three-digit refactor, if it ever includes them.
 - `00-reference-code` is reserved for the reference grid navigator app and repository conventions. It does **not** include LaunchDarkly integration.
 - `02-reference-client-code` is the same navigator **in the browser** (client JavaScript). It does **not** include LaunchDarkly. Later client-SDK examples (series **30**) build on this shape.
@@ -244,9 +244,9 @@ lunch-marcoly/
 - `307-client-evaluation-details` is a stub. The browser shows `variationDetail()` next to `variation()`. Client offline mode does not own this number.
 - `308-client-secure-mode` is a stub. The server signs the context hash used by the browser SDK.
 - `309-client-context-cache` is a stub. The UI calls out the SDK local-storage cache. It is not `305-client-bootstrap`.
-- `40-dont-do-this` groups **anti-pattern** examples (loud do-not-ship). Children start at **41**.
-- `41-no-sdk-singleton` (under `40-dont-do-this/`) will demonstrate a new server SDK client per evaluation instead of one process-wide client.
-- `42-local-if-no-sdk` (under `40-dont-do-this/`) will demonstrate a local `if` / hardcoded boolean instead of `variation()` — flipping the dashboard flag does nothing.
+- `40-dont-do-this` groups **anti-pattern** examples (loud do-not-ship). Children are **401** and **402**.
+- `401-no-sdk-singleton` (under `40-dont-do-this/`) will demonstrate a new server SDK client per evaluation instead of one process-wide client.
+- `402-local-if-no-sdk` (under `40-dont-do-this/`) will demonstrate a local `if` / hardcoded boolean instead of `variation()` — flipping the dashboard flag does nothing.
 - `50-mobile` groups **mobile** client-side SDK examples (mobile key, not `LD_SDK_KEY` and not `LD_CLIENT_SIDE_ID`). Children start at **51**. There is no HTTP portal. AgentControl is out of scope.
 - `51-reference` (under `50-mobile/`) is the 2×2 tap navigator baseline. It does **not** include LaunchDarkly. Android (`android/`) and iOS (`ios/`) ship first; `react-native/` comes later.
 - `52-mobile-evaluation` (under `50-mobile/`) adds the Android / iOS mobile SDKs (`LD_MOBILE_KEY`), dedicated flag keys, variation, and flag listeners. Do not reuse 31’s browser flag keys.
