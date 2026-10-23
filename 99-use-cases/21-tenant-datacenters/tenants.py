@@ -81,7 +81,11 @@ def build_customers() -> list[dict[str, Any]]:
 
 
 def evaluation_context(customer: dict[str, Any]) -> dict[str, Any]:
-    """Context for one tenant presence. One customer in three datacenters has three.
+    """One context dict for the Contexts tab. This is not an SDK evaluation.
+
+    A customer in three datacenters produces three of these, with the same
+    key. tenant_context builds the SDK context from the same fields when
+    evaluate_floor runs tenant-border-palette and tenant-box-fill.
 
     LaunchDarkly: contexts — https://launchdarkly.com/docs/home/flags/contexts
     """
@@ -117,7 +121,14 @@ def placements(customers: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def build_layout() -> dict[str, Any]:
-    """Group each presence under DC01–DC05."""
+    """The dictionary of the whole floor, before either flag is evaluated.
+
+    This process is pretending to be every application at once, which is
+    why the dict holds all of them. datacenters groups the boxes the page
+    draws. contexts is the matching list, one dict per presence.
+    evaluate_floor walks the boxes and evaluates tenant-border-palette and
+    tenant-box-fill for each one.
+    """
     customers = build_customers()
     boxes = placements(customers)
     grouped = []

@@ -51,7 +51,7 @@ A is `L01`, size 7 version 0, drawn as `7.0`, in DC01, DC02, and DC03. B is
 
 | Flag | Variations | Off serves |
 |------|------------|------------|
-| `tenant-border-palette` | `none`, `roygbiv`, `grays`, `earth`, `ocean` | `none` |
+| `tenant-border-palette` | `none`, `roygbiv`, `contrast`, `earth`, `ocean`, `color-vision-aware` | `none` |
 | `tenant-box-fill` | true, false | false |
 
 One variation for every tenant. Size class picks the hue inside the palette,
@@ -64,12 +64,44 @@ tab does that with the same on/off and fallthrough control as the 10-series.
 It needs `LD_API_ACCESS_TOKEN`, `LD_PROJECT_KEY`, and `LD_ENVIRONMENT_KEY`
 on the server. The palette applies to every box.
 
+## Fill rollout
+
+The Flags tab links to `tenant-box-fill` in this project and environment.
+Start the progressive rollout there. The default rule runs five one-minute
+steps, then stays at full:
+
+| Minute | Tenants filled |
+|--------|----------------|
+| 0–1 | 5% |
+| 1–2 | 10% |
+| 2–3 | 25% |
+| 3–4 | 50% |
+| 4–5 | 75% |
+| After 5:00 | 100% |
+
+Use context kind `tenant`, from Empty to Fill. A tenant that fills stays
+filled, in every datacenter that name occupies. The Flags tab shows the step
+and the time left in it. Trace records flag toggles and stage changes. Reset
+turns the flag off and serves Empty, so the
+rollout can be created again. A new rollout may choose a different set of
+tenants.
+
+[Progressive rollouts](https://launchdarkly.com/docs/home/releases/progressive-rollouts)
+
 | Palette | Small | Medium | Large | Unknown |
 |---------|-------|--------|-------|---------|
 | roygbiv | blue | green | red | violet |
-| grays | light | mid | white | dim |
-| earth | moss | ochre | clay | stone |
-| ocean | cyan | teal | sky | foam |
+| contrast | cyan | gold | magenta | lime |
+| earth | moss | amber | wine | river |
+| ocean | blue | coral | seafoam | sand |
+| color-vision-aware | sky blue | orange | bluish green | reddish purple |
+
+`contrast` replaces `grays`. A gray ramp has no hue to separate. Earth and
+ocean keep a theme, with the size classes farther apart. `color-vision-aware`
+uses four [Okabe–Ito](https://jfly.uni-koeln.de/color/) hues. They stay distinct
+for typical color vision and for the common red-green deficiencies. The name
+is a reminder that one palette does not cover every type of color-vision
+deficiency.
 
 ## Segments
 

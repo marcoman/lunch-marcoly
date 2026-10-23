@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
-"""Serve the tenant datacenter lab and evaluate one context per presence."""
+"""Serve the tenant datacenter lab.
+
+This one process stands in for many applications. Each tenant presence is
+one of those applications: its own context, the same two flags. build_layout
+keeps that collection in one dict. evaluate_floor walks it and writes each
+variation back onto the box.
+
+Flags: tenant-border-palette, tenant-box-fill.
+"""
 
 from __future__ import annotations
 
@@ -21,6 +29,7 @@ WEB = Path(__file__).resolve().parent
 sys.path.insert(0, str(EXAMPLE))
 
 from flags import FLAG_BORDER, FLAG_FILL, SEGMENTS, hue  # noqa: E402
+from fill_rollout import fill_rollout_status, reset_fill_rollout  # noqa: E402
 from ld_flag_controls import apply_flag_control, list_flag_controls  # noqa: E402
 from tenants import build_layout  # noqa: E402
 
@@ -48,7 +57,12 @@ def init_launchdarkly() -> None:
 
 
 def tenant_context(box: dict[str, Any]) -> Context:
-    """Build the context for one presence.
+    """Build one tenant context. This method does not hold the collection.
+
+    The collection is the layout dict from build_layout. Its contexts list
+    has one entry per presence: 52 customers, 106 boxes. A customer in three
+    datacenters has three contexts, the same key, and a different datacenter.
+    evaluate_floor calls this once per box, then evaluates the two flags.
 
     LaunchDarkly: contexts — https://launchdarkly.com/docs/home/flags/contexts
     """
@@ -73,7 +87,10 @@ def _reason_kind(detail: Any) -> str:
 
 
 def _variation(client: LDClient, key: str, context: Context, default: Any) -> tuple[Any, str]:
-    """Evaluate one flag. The last argument is the safe default.
+    """Evaluate one flag for one context. The last argument is the safe default.
+
+    evaluate_floor calls this twice per presence: once for
+    tenant-border-palette, once for tenant-box-fill.
 
     LaunchDarkly: evaluating flags — https://launchdarkly.com/docs/sdk/features/evaluation-reasons
     """
@@ -82,7 +99,25 @@ def _variation(client: LDClient, key: str, context: Context, default: Any) -> tu
 
 
 def evaluate_floor(layout: dict[str, Any]) -> None:
-    """Evaluate both flags for every presence and paint each box from its size class."""
+    """Evaluate both flags for every presence and paint that box.
+
+    The layout dict is the whole floor: many simulated applications, one SDK
+    client. This loop is where each flag runs. It writes color and fill onto
+    the box the page draws.
+
+    tenant-border-palette is one string for every box. Size class picks the
+    hue inside that palette. The safe default is "none", which keeps the
+    hairline.
+
+    tenant-box-fill is a boolean. True tints the box with that hue. False,
+    or a palette of none, leaves the box empty. The safe default is False.
+    A progressive rollout is why two tenants can disagree. A name that fills
+    stays filled in every datacenter it occupies, because those contexts
+    share a key.
+
+    LaunchDarkly: multivariate variations — https://launchdarkly.com/docs/home/flags/variations
+    LaunchDarkly: boolean variations — https://launchdarkly.com/docs/home/flags/boolean
+    """
     boxes = [box for datacenter in layout["datacenters"] for box in datacenter["customers"]]
     client = _ld_client if _ld_client is not None and _ld_client.is_initialized() else None
     border_values: list[str] = []
@@ -94,12 +129,10 @@ def evaluate_floor(layout: dict[str, Any]) -> None:
             palette, fill = "none", False
         else:
             context = tenant_context(box)
-            # Multivariate string. One palette for the whole floor.
-            # https://launchdarkly.com/docs/home/flags/variations
+            # tenant-border-palette — one string palette for this whole pass.
             palette_raw, border_reason = _variation(client, FLAG_BORDER, context, "none")
             palette = str(palette_raw) if isinstance(palette_raw, str) else "none"
-            # Boolean fill. With no hue, the box stays empty.
-            # https://launchdarkly.com/docs/home/flags/boolean
+            # tenant-box-fill — boolean. Empty unless this context is included.
             fill_raw, fill_reason = _variation(client, FLAG_FILL, context, False)
             fill = bool(fill_raw)
         color = hue(palette, box["sizeClass"])
@@ -156,6 +189,8 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802
         path = urlparse(self.path).path
         if path == "/api/layout":
+            # Rebuild the floor dict, then run tenant-border-palette and
+            # tenant-box-fill for every presence. See evaluate_floor.
             custom = load_customization()
             logo = brand_file(custom["logo"]) or brand_file("logo.svg")
             body = build_layout()
@@ -168,6 +203,14 @@ class Handler(BaseHTTPRequestHandler):
             # LaunchDarkly: get feature flag — on/off and fallthrough
             # https://launchdarkly.com/docs/api/feature-flags/get-feature-flag
             self._json(list_flag_controls())
+            return
+        if path == "/api/fill-rollout":
+            # LaunchDarkly: progressive rollouts — read the current step
+            # https://launchdarkly.com/docs/home/releases/progressive-rollouts
+            try:
+                self._json(fill_rollout_status())
+            except Exception as exc:  # noqa: BLE001
+                self._json({"ok": False, "error": str(exc)}, 502)
             return
         if path.startswith("/brand/"):
             self._brand(unquote(path.removeprefix("/brand/")))
@@ -195,6 +238,21 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802
         path = urlparse(self.path).path
+        if path == "/api/fill-rollout":
+            # LaunchDarkly: stop the rollout by serving Empty and turning the flag off
+            # https://launchdarkly.com/docs/home/releases/progressive-rollouts
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+                raw = self.rfile.read(length) if length else b"{}"
+                data = json.loads(raw.decode() or "{}")
+                if data.get("action") != "reset":
+                    raise ValueError('Provide {"action": "reset"}')
+                self._json(reset_fill_rollout())
+            except ValueError as exc:
+                self._json({"ok": False, "error": str(exc)}, 400)
+            except Exception as exc:  # noqa: BLE001
+                self._json({"ok": False, "error": str(exc)}, 502)
+            return
         if path != "/api/flag-controls":
             self.send_error(404)
             return

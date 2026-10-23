@@ -19,8 +19,14 @@ from typing import Any
 FLAG_BORDER = "tenant-border-palette"
 FLAG_FILL = "tenant-box-fill"
 
-# Four hues per palette, one per size class. Yellow and orange are left out
-# of ROYGBIV so a tinted fill does not wash out the light tenant name.
+# Four hues per palette, one per size class. Each set stays dark enough that a
+# 45% fill still leaves the light tenant name readable.
+# ROYGBIV skips yellow and orange for that reason.
+# Contrast replaces grays: a gray ramp has no hue to separate.
+# Earth and ocean keep a theme, with the four size classes far apart on the wheel.
+# Color-vision aware uses four Okabe–Ito hues. They stay distinct for the common
+# red-green deficiencies and for typical color vision. They do not cover every type.
+# https://jfly.uni-koeln.de/color/
 PALETTES: dict[str, dict[str, str]] = {
     "roygbiv": {
         "small": "#3b82f6",
@@ -28,23 +34,29 @@ PALETTES: dict[str, dict[str, str]] = {
         "large": "#ef4444",
         "unknown": "#a78bfa",
     },
-    "grays": {
-        "small": "#d4d4d8",
-        "medium": "#a1a1aa",
-        "large": "#f4f4f5",
-        "unknown": "#71717a",
+    "contrast": {
+        "small": "#06b6d4",
+        "medium": "#eab308",
+        "large": "#db2777",
+        "unknown": "#a3e635",
     },
     "earth": {
         "small": "#84cc16",
-        "medium": "#d97706",
-        "large": "#ea580c",
-        "unknown": "#a8a29e",
+        "medium": "#f59e0b",
+        "large": "#be123c",
+        "unknown": "#0284c7",
     },
     "ocean": {
-        "small": "#22d3ee",
-        "medium": "#14b8a6",
-        "large": "#38bdf8",
-        "unknown": "#99f6e4",
+        "small": "#2563eb",
+        "medium": "#fb7185",
+        "large": "#14b8a6",
+        "unknown": "#fbbf24",
+    },
+    "color-vision-aware": {
+        "small": "#56b4e9",
+        "medium": "#e69f00",
+        "large": "#009e73",
+        "unknown": "#cc79a7",
     },
 }
 

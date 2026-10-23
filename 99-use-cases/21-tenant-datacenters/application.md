@@ -4,8 +4,9 @@ A display of many single tenants across a few datacenters. The full reference
 is thousands of tenants in more than a dozen datacenters. This example uses
 five datacenters and 52 customers so the placement rule stays visible.
 
-No flag is evaluated until `LD_SDK_KEY` is set. The drawer shows the variation
-that came back, the tenant context that was sent, and the segments.
+No flag is evaluated until `LD_SDK_KEY` is set. The drawer shows the controls,
+a trace of flag and rollout changes, the segments, and the tenant context
+that was sent.
 
 ## Placement
 
@@ -63,10 +64,12 @@ Contexts — https://launchdarkly.com/docs/home/flags/contexts
 ## Flags
 
 `tenant-border-palette` is one string for the whole floor: `none`, `roygbiv`,
-`grays`, `earth`, or `ocean`. Off serves `none`. Size class picks the hue, so
-every Small matches. `tenant-box-fill` tints the box with that hue. A fill with no palette paints
-nothing. The Flags tab turns the border flag on and sets its fallthrough.
-That one variation is what every box evaluates.
+`contrast`, `earth`, `ocean`, or `color-vision-aware`. Off serves `none`. Size class picks the hue, so
+every Small matches. `tenant-box-fill` is a progressive rollout. Five one-minute steps serve
+Fill to 5%, 10%, 25%, 50%, and 75% of tenant keys. After five minutes the
+rollout finishes at 100%. Start it in LaunchDarkly on the default rule, with
+context kind `tenant`, from Empty to Fill. Reset on the Flags tab turns the
+flag off and serves Empty.
 
 Variations — https://launchdarkly.com/docs/home/flags/variations
 

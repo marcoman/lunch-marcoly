@@ -3,9 +3,10 @@
 Creates `tenant-border-palette`, `tenant-box-fill`, and the size, datacenter,
 and footprint segments. Segment keys match [flags.py](../flags.py).
 
-The border flag is a string variation: `none`, `roygbiv`, `grays`, `earth`,
-`ocean`. Off serves `none`. Turning it on, with no other rule, serves
-`roygbiv`. The fill flag is a boolean. Off leaves the box empty.
+The border flag is a string variation: `none`, `roygbiv`, `contrast`, `earth`,
+`ocean`, `color-vision-aware`. Off serves `none`. Turning it on, with no other
+rule, serves `roygbiv`. The fill flag is a boolean. Off leaves the box empty. Its
+description includes a link to the flag in this project and environment.
 
 Segments are rules on the `tenant` context. They are not targeting rules on
 these two flags. A tenant in all five datacenters also matches multi-site.
