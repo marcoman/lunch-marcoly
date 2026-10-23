@@ -64,9 +64,9 @@ Contexts — https://launchdarkly.com/docs/home/flags/contexts
 
 `tenant-border-palette` is one string for the whole floor: `none`, `roygbiv`,
 `grays`, `earth`, or `ocean`. Off serves `none`. Size class picks the hue, so
-every Small matches. `tenant-box-fill` tints the box with that hue. A fill
-with no palette paints nothing. The tint stays light enough that the name
-still reads.
+every Small matches. `tenant-box-fill` tints the box with that hue. A fill with no palette paints
+nothing. The Flags tab turns the border flag on and sets its fallthrough.
+That one variation is what every box evaluates.
 
 Variations — https://launchdarkly.com/docs/home/flags/variations
 

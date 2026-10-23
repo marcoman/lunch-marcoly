@@ -155,6 +155,82 @@
       color: var(--muted);
       font-size: 0.88rem;
     }
+    .controls-warn {
+      margin: 0 0 0.75rem;
+      padding: 0.55rem 0.65rem;
+      border: 1px solid #8a3a3a;
+      background: #3a2222;
+      color: #ffcdd2;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+    .controls-warn[hidden] { display: none; }
+    .flag-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.75rem 0.85rem;
+      margin: 0 0 0.9rem;
+      background: #252535;
+    }
+    .flag-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .flag-card h3 { margin: 0 0 0.25rem; font-size: 0.95rem; font-weight: 650; }
+    .flag-key {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      word-break: break-all;
+    }
+    .flag-summary { margin: 0.45rem 0 0; font-size: 0.82rem; color: var(--muted); line-height: 1.4; }
+    .flag-hint {
+      margin: 0.55rem 0 0;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      padding: 0.45rem 0.55rem;
+      background: #1e1e2e;
+      border-radius: 4px;
+    }
+    .flag-vars {
+      margin-top: 0.45rem;
+      font-size: 0.78rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: var(--muted);
+    }
+    .flag-vars .hi-on { color: #81c784; }
+    .flag-vars .hi-off { color: #ef9a9a; }
+    .flag-toggle {
+      flex: 0 0 auto;
+      min-width: 3.2rem;
+      padding: 0.35rem 0.65rem;
+      font-weight: 700;
+      font-size: 0.8rem;
+      border-radius: 6px;
+    }
+    .flag-toggle.on { background: #2e5a35; border: 1px solid #81c784; color: #c8e6c9; }
+    .flag-toggle.off { background: #5c2b2b; border: 1px solid #ef9a9a; color: #ffcdd2; }
+    .flag-toggle:disabled { opacity: 0.55; cursor: wait; }
+    .flag-fallthrough-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.65rem;
+    }
+    .flag-fallthrough-row label { margin: 0; font-size: 0.8rem; color: var(--muted); }
+    .flag-fallthrough-select {
+      flex: 1 1 auto;
+      min-width: 8rem;
+      padding: 0.35rem 0.5rem;
+      background: #2d2d3d;
+      color: var(--ink);
+      border: 1px solid #666;
+      font: inherit;
+      font-size: 0.85rem;
+    }
+    .flag-fallthrough-select:disabled { opacity: 0.55; cursor: wait; }
   </style>
 </head>
 <body>
@@ -180,7 +256,11 @@
       </div>
       <div class="ld-rail-body">
         <section id="ld-section-flags" class="ld-section active">
-          <div class="block-title">Flags</div>
+          <div class="block-title">Control</div>
+          <p id="controls-meta" class="ld-about-p"></p>
+          <p id="controls-warn" class="controls-warn" hidden></p>
+          <div id="controls-list"></div>
+          <div class="block-title">Evaluated</div>
           <div id="flag-results"></div>
           <div class="block-title">Segments</div>
           <p class="ld-about-p">These match the tenant context. The color flags do not target them yet. A tenant in all five datacenters is also multi-site.</p>
@@ -212,7 +292,7 @@
           <div class="block-title">How the names are made</div>
           <p class="ld-about-p">Walk A–Z twice. Vowels are Large. Q and Z are unknown. Every other letter uses (letter number − 1) mod 3: 2 is Medium, and 0 or 1 is Small. Each size keeps its own counter. Odd and even are that counter. An odd Small is size 1 in one datacenter. An even Small is size 2 in two. An odd Medium is size 5 in one. An even Medium is size 5 in three. An odd Large is size 7 in three. An even Large is size 7 in all five. Unknown stays size 3 in one. One cursor hands out the next datacenters and wraps after DC05. The same name is drawn in each datacenter that customer occupies. The subscript is size.version, and every instance starts at 0, so a large reads 7.0.</p>
           <div class="block-title">What to look at</div>
-          <p class="ld-about-p">Read a datacenter card. Small, Medium, Large, and unknown each take one hue from the palette, so every Small matches. Open Contexts for the tenant that was evaluated. The segments are ready for a later release flag.</p>
+          <p class="ld-about-p">Read a datacenter card. The Flags tab turns the border palette on and picks the fallthrough. That one variation is evaluated for every presence. Small, Medium, Large, and unknown each take one hue, so every Small matches.</p>
           <p class="ld-about-p"><a href="https://launchdarkly.com/docs/home/flags/variations">Multivariate variations</a> · <a href="https://launchdarkly.com/docs/home/flags/segments">Segments</a> · <a href="https://launchdarkly.com/docs/home/flags/contexts">Contexts</a></p>
         </section>
       </div>
@@ -292,7 +372,7 @@
       const flagNote = document.createElement("p");
       flagNote.className = "ld-about-p";
       flagNote.textContent = data.sdkConnected
-        ? "Both flags apply to every tenant. Reload after you change a variation."
+        ? "The border control writes one variation. Every box is evaluated again after it changes."
         : "LD_SDK_KEY is not set. The border stays the hairline and the boxes stay empty.";
       flags.append(flagNote);
       for (const flag of data.flags) flags.append(flagLine(flag));
@@ -333,12 +413,114 @@
       }
     }
 
-    fetch("/api/layout")
-      .then((response) => response.json())
-      .then(render)
-      .catch(() => {
-        document.getElementById("brand-name").textContent = "Layout unavailable";
+    function loadLayout() {
+      return fetch("/api/layout")
+        .then((response) => response.json())
+        .then(render)
+        .catch(() => {
+          document.getElementById("brand-name").textContent = "Layout unavailable";
+        });
+    }
+
+    let controlsBusy = false;
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function renderControls(data) {
+      const meta = document.getElementById("controls-meta");
+      const warn = document.getElementById("controls-warn");
+      const list = document.getElementById("controls-list");
+      if (!data.configured) {
+        warn.hidden = false;
+        warn.textContent = "Controls need " + (data.missing || []).join(", ") + " on the server.";
+        meta.textContent = "";
+      } else {
+        warn.hidden = true;
+        meta.innerHTML = "Project <code>" + escapeHtml(data.projectKey) + "</code> · environment <code>" + escapeHtml(data.environmentKey) + "</code>";
+      }
+      list.replaceChildren();
+      for (const flag of data.flags || []) {
+        const card = document.createElement("div");
+        card.className = "flag-card";
+        const on = flag.on;
+        const toggleClass = "flag-toggle" + (on === true ? " on" : on === false ? " off" : "");
+        const toggleLabel = controlsBusy ? "…" : on === true ? "ON" : on === false ? "OFF" : "—";
+        const disabled = on === null || controlsBusy || !data.configured ? "disabled" : "";
+        const options = (flag.fallthroughOptions || []).map((option) => {
+          const selected = option.token === flag.fallthroughToken ? " selected" : "";
+          return `<option value="${escapeHtml(option.token)}"${selected}>${escapeHtml(option.label)}</option>`;
+        }).join("");
+        card.innerHTML =
+          `<div class="flag-card-top">` +
+          `<div><h3>${escapeHtml(flag.label || flag.key)}</h3>` +
+          `<div class="flag-key">${escapeHtml(flag.key)}</div></div>` +
+          `<button type="button" class="${toggleClass}" data-key="${escapeHtml(flag.key)}" data-on="${on === true ? "1" : "0"}" ${disabled}>${toggleLabel}</button>` +
+          `</div>` +
+          `<p class="flag-summary">${escapeHtml(flag.summary || "")}</p>` +
+          (on === null ? "" :
+            `<div class="flag-vars">off → <span class="hi-off">${escapeHtml(flag.servedWhenOff)}</span>` +
+            ` · fallthrough → <span class="hi-on">${escapeHtml(flag.servedWhenOnFallthrough)}</span></div>`) +
+          `<div class="flag-fallthrough-row"><label for="fall-${escapeHtml(flag.key)}">Palette</label>` +
+          `<select id="fall-${escapeHtml(flag.key)}" class="flag-fallthrough-select" data-key="${escapeHtml(flag.key)}" ${disabled}>${options}</select></div>` +
+          `<p class="flag-hint">${escapeHtml(flag.targetingHint || "")}</p>`;
+        list.append(card);
+      }
+      list.querySelectorAll("button.flag-toggle").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const key = btn.getAttribute("data-key");
+          const select = list.querySelector(`select.flag-fallthrough-select[data-key="${CSS.escape(key)}"]`);
+          postControl({ key, on: btn.getAttribute("data-on") !== "1", fallthrough: select ? select.value : null });
+        });
       });
+      list.querySelectorAll("select.flag-fallthrough-select").forEach((sel) => {
+        sel.addEventListener("change", () => {
+          postControl({ key: sel.getAttribute("data-key"), fallthrough: sel.value });
+        });
+      });
+    }
+
+    function refreshControls() {
+      return fetch("/api/flag-controls", { cache: "no-store" })
+        .then((response) => response.json())
+        .then(renderControls)
+        .catch((err) => {
+          const warn = document.getElementById("controls-warn");
+          warn.hidden = false;
+          warn.textContent = "Could not load the flag control: " + err;
+        });
+    }
+
+    async function postControl(body) {
+      controlsBusy = true;
+      await refreshControls();
+      try {
+        const response = await fetch("/api/flag-controls", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const data = await response.json();
+        if (!response.ok || data.ok === false) throw new Error(data.error || "HTTP " + response.status);
+        await loadLayout();
+        setTimeout(loadLayout, 1200);
+      } catch (err) {
+        const warn = document.getElementById("controls-warn");
+        warn.hidden = false;
+        warn.textContent = String(err.message || err);
+      } finally {
+        controlsBusy = false;
+        await refreshControls();
+      }
+    }
+
+    loadLayout();
+    refreshControls();
 
     (function () {
       var shell = document.getElementById("app");

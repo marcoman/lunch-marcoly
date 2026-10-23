@@ -21,6 +21,7 @@ WEB = Path(__file__).resolve().parent
 sys.path.insert(0, str(EXAMPLE))
 
 from flags import FLAG_BORDER, FLAG_FILL, SEGMENTS, hue  # noqa: E402
+from ld_flag_controls import apply_flag_control, list_flag_controls  # noqa: E402
 from tenants import build_layout  # noqa: E402
 
 PORT = int(os.environ.get("PORT", "8080"))
@@ -163,6 +164,11 @@ class Handler(BaseHTTPRequestHandler):
             body["logoUrl"] = f"/brand/{logo.name}" if logo else ""
             self._json(body)
             return
+        if path == "/api/flag-controls":
+            # LaunchDarkly: get feature flag — on/off and fallthrough
+            # https://launchdarkly.com/docs/api/feature-flags/get-feature-flag
+            self._json(list_flag_controls())
+            return
         if path.startswith("/brand/"):
             self._brand(unquote(path.removeprefix("/brand/")))
             return
@@ -187,9 +193,37 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
-    def _json(self, body: dict) -> None:
+    def do_POST(self) -> None:  # noqa: N802
+        path = urlparse(self.path).path
+        if path != "/api/flag-controls":
+            self.send_error(404)
+            return
+        # LaunchDarkly: turnFlagOn / turnFlagOff / updateFallthroughVariationOrRollout
+        # https://launchdarkly.com/docs/api/feature-flags/patch-feature-flag
+        try:
+            length = int(self.headers.get("Content-Length") or 0)
+            raw = self.rfile.read(length) if length else b"{}"
+            data = json.loads(raw.decode() or "{}")
+            key = str(data.get("key") or "").strip()
+            if not key:
+                raise ValueError('"key" is required')
+            turn_on = bool(data["on"]) if "on" in data else None
+            fallthrough = data.get("fallthrough")
+            fallthrough_value = str(fallthrough).strip() if fallthrough is not None else None
+            result = apply_flag_control(
+                key,
+                turn_on=turn_on,
+                fallthrough=fallthrough_value or None,
+            )
+            self._json(result)
+        except ValueError as exc:
+            self._json({"ok": False, "error": str(exc)}, 400)
+        except Exception as exc:  # noqa: BLE001
+            self._json({"ok": False, "error": str(exc)}, 502)
+
+    def _json(self, body: dict, status: int = 200) -> None:
         data = json.dumps(body).encode()
-        self.send_response(200)
+        self.send_response(status)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(data)))
         self.end_headers()

@@ -59,7 +59,10 @@ so every Small is the same color in every datacenter. Yellow and orange stay
 out of ROYGBIV so the light name still reads on a tinted fill. Fill with no
 palette paints nothing.
 
-Turning the border flag on, with no other rule, serves `roygbiv`.
+Turning the border flag on, with no other rule, serves `roygbiv`. The Flags
+tab does that with the same on/off and fallthrough control as the 10-series.
+It needs `LD_API_ACCESS_TOKEN`, `LD_PROJECT_KEY`, and `LD_ENVIRONMENT_KEY`
+on the server. The palette applies to every box.
 
 | Palette | Small | Medium | Large | Unknown |
 |---------|-------|--------|-------|---------|
