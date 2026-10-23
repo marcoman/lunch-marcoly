@@ -5,6 +5,9 @@
 __pycache__/
 *.py[cod]
 
+# Local company name and logo for the tenant datacenter lab
+99-use-cases/21-tenant-datacenters/customizations.json
+
 # Node
 node_modules/
 

@@ -102,7 +102,8 @@ lunch-marcoly/
 │   ├── 17-migration-flags/      # Stub
 │   ├── 18-sdk-fallbacks/
 │   ├── 19-terraform-sentinel/   # Sentinel policies for Terraform flags
-│   └── 20-multi-arm-bandit/     # Stub: bandit shifts traffic; grid, not mobile
+│   ├── 20-multi-arm-bandit/     # Stub: bandit shifts traffic; grid, not mobile
+│   └── 21-tenant-datacenters/   # Five datacenters, 52 tenants, palette and fill flags
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -201,6 +202,7 @@ Each example may include implementations in any of these languages. Every applic
 | — | [18-sdk-fallbacks](99-use-cases/18-sdk-fallbacks/) | Init failure / stream loss → default vs last-known |
 | — | [19-terraform-sentinel](99-use-cases/19-terraform-sentinel/) | Sentinel pass/fail fixtures: temporary flags and a sunset custom property |
 | — | [20-multi-arm-bandit](99-use-cases/20-multi-arm-bandit/) | **Stub:** multi-armed bandit on the grid navigator. Allocation moves with a metric |
+| — | [21-tenant-datacenters](99-use-cases/21-tenant-datacenters/) | Five datacenters, 52 tenants. Border palette, fill, and segments |
 
 ## Building code
 

@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tenant datacenters</title>
+  <style>
+    :root {
+      --ink: #e8e8ec;
+      --muted: #9a9aab;
+      --panel: #2d2d3d;
+      --line: #4a4a5c;
+      --accent: #64b5f6;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: #1e1e2e;
+      color: var(--ink);
+      font-family: system-ui, sans-serif;
+    }
+    button { font: inherit; cursor: pointer; }
+    #app {
+      height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) min(28rem, 34vw);
+    }
+    #floor {
+      min-width: 0;
+      min-height: 0;
+      overflow: auto;
+      padding: 1.25rem 1.4rem 1.6rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 1.1rem;
+    }
+    .brand img {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: var(--panel);
+    }
+    .brand h1 { margin: 0; font-size: 1.35rem; font-weight: 650; }
+    .brand p { margin: 0.15rem 0 0; color: var(--muted); font-size: 0.85rem; }
+    .dcs {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.75rem;
+      align-items: start;
+    }
+    .dc {
+      min-width: 0;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.75rem 0.7rem 0.85rem;
+    }
+    .dc h2 { margin: 0; font-size: 1rem; letter-spacing: 0.03em; }
+    .dc-count { margin: 0.15rem 0 0.7rem; color: var(--muted); font-size: 0.78rem; }
+    .tenants {
+      display: flex;
+      flex-direction: column;
+      gap: 0.28rem;
+    }
+    .tenant {
+      display: flex;
+      align-items: baseline;
+      width: 100%;
+      gap: 0.45rem;
+      padding: 0.28rem 0.45rem;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: #1a1a28;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .tenant.colored { border-width: 2px; border-color: var(--tenant-color); }
+    .tenant.filled {
+      background: color-mix(in srgb, var(--tenant-color) 22%, #1a1a28);
+    }
+    .tenant-name { font-size: 0.82rem; }
+    .tenant-icons { flex: 1 1 auto; min-width: 0.5rem; }
+    .tenant-size { font-size: 0.65rem; color: var(--muted); }
+    .ld-rail {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--panel);
+      border-left: 1px solid var(--line);
+    }
+    .ld-rail-resize {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 8px;
+      z-index: 3;
+      cursor: col-resize;
+      touch-action: none;
+    }
+    .ld-rail-resize:hover,
+    .ld-rail-resize.dragging { background: rgba(100, 181, 246, 0.35); }
+    .ld-rail-resize:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+    body.ld-rail-dragging { cursor: col-resize; user-select: none; }
+    .ld-rail-header { padding: 0.85rem 1.1rem; border-bottom: 1px solid var(--line); }
+    .ld-rail-header h2 { margin: 0; font-size: 1.05rem; }
+    .ld-tabs {
+      display: flex;
+      gap: 0.35rem;
+      padding: 0.65rem 1.1rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .ld-tab {
+      border: 0;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      background: transparent;
+      color: var(--muted);
+      padding: 0.45rem 0.55rem;
+    }
+    .ld-tab.active { color: var(--ink); border-bottom-color: var(--accent); font-weight: 650; }
+    .ld-rail-body { flex: 1; min-height: 0; overflow: auto; padding: 1rem 1.1rem 1.4rem; }
+    .ld-section { display: none; }
+    .ld-section.active { display: block; }
+    .block-title {
+      margin: 0 0 0.4rem;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .ld-about-p { margin: 0 0 0.9rem; font-size: 0.9rem; line-height: 1.5; }
+    .ld-about-p a { color: var(--accent); }
+    .flag-list { margin: 0; padding-left: 1.1rem; }
+    .flag-list li { margin: 0.35rem 0; font-size: 0.88rem; line-height: 1.4; }
+    .context-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    .context-table th, .context-table td {
+      border-bottom: 1px solid var(--line);
+      padding: 0.28rem 0.35rem;
+      text-align: left;
+    }
+    .context-table th { color: var(--muted); font-weight: 650; }
+    .context-table code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .empty {
+      padding: 0.75rem;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <main id="floor">
+      <header class="brand">
+        <img id="brand-logo" alt="" width="48" height="48">
+        <div>
+          <h1 id="brand-name">Example Hosting</h1>
+          <p>Five datacenters · 52 tenants, some in more than one</p>
+        </div>
+      </header>
+      <div id="dcs" class="dcs"></div>
+    </main>
+    <aside class="ld-rail" aria-label="LaunchDarkly lab">
+      <div class="ld-rail-resize" role="separator" aria-orientation="vertical" aria-label="Resize lab drawer" title="Drag to resize" tabindex="0"></div>
+      <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+      <div class="ld-tabs" role="tablist">
+        <button type="button" class="ld-tab active" data-tab="flags" role="tab" aria-selected="true">Flags</button>
+        <button type="button" class="ld-tab" data-tab="contexts" role="tab" aria-selected="false">Contexts</button>
+        <button type="button" class="ld-tab" data-tab="evaluations" role="tab" aria-selected="false">Evaluations</button>
+        <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
+      </div>
+      <div class="ld-rail-body">
+        <section id="ld-section-flags" class="ld-section active">
+          <div class="block-title">Flags</div>
+          <div id="flag-results"></div>
+          <div class="block-title">Segments</div>
+          <p class="ld-about-p">These match the tenant context. The color flags do not target them yet. A tenant in all five datacenters is also multi-site.</p>
+          <ul class="flag-list" id="segment-list"></ul>
+          <div class="block-title">Later</div>
+          <ul class="flag-list">
+            <li>Release version 1 through 9 with a percentage rollout, a progressive rollout, and a guarded rollout.</li>
+            <li>Set the tenant name in bold, or in italic.</li>
+            <li>Icons in the open space: database, firewall, robot, lock. Then a failure icon and an over-utilized icon.</li>
+          </ul>
+        </section>
+        <section id="ld-section-contexts" class="ld-section">
+          <div class="block-title">Contexts</div>
+          <p class="ld-about-p" id="context-note">One tenant context per presence.</p>
+          <table class="context-table">
+            <thead>
+              <tr><th>Key</th><th>Class</th><th>Size</th><th>Version</th><th>Datacenter</th><th>Span</th></tr>
+            </thead>
+            <tbody id="context-rows"></tbody>
+          </table>
+        </section>
+        <section id="ld-section-evaluations" class="ld-section">
+          <div class="block-title">Evaluations</div>
+          <div id="eval-results"></div>
+        </section>
+        <section id="ld-section-about" class="ld-section">
+          <div class="block-title">What this example is</div>
+          <p class="ld-about-p">A small stand-in for many single tenants spread across datacenters. Each presence is its own evaluation. Two flags style every box the same way: a border palette, and a fill of that same hue.</p>
+          <div class="block-title">How the names are made</div>
+          <p class="ld-about-p">Walk A–Z twice. Vowels are Large. Q and Z are unknown. Every other letter uses (letter number − 1) mod 3: 2 is Medium, and 0 or 1 is Small. Each size keeps its own counter. Odd and even are that counter. An odd Small is size 1 in one datacenter. An even Small is size 2 in two. An odd Medium is size 5 in one. An even Medium is size 5 in three. An odd Large is size 7 in three. An even Large is size 7 in all five. Unknown stays size 3 in one. One cursor hands out the next datacenters and wraps after DC05. The same name is drawn in each datacenter that customer occupies. The subscript is size.version, and every instance starts at 0, so a large reads 7.0.</p>
+          <div class="block-title">What to look at</div>
+          <p class="ld-about-p">Read a datacenter card. Small, Medium, Large, and unknown each take one hue from the palette, so every Small matches. Open Contexts for the tenant that was evaluated. The segments are ready for a later release flag.</p>
+          <p class="ld-about-p"><a href="https://launchdarkly.com/docs/home/flags/variations">Multivariate variations</a> · <a href="https://launchdarkly.com/docs/home/flags/segments">Segments</a> · <a href="https://launchdarkly.com/docs/home/flags/contexts">Contexts</a></p>
+        </section>
+      </div>
+    </aside>
+  </div>
+  <script>
+    function selectTab(tab) {
+      document.querySelectorAll(".ld-tab").forEach((btn) => {
+        const on = btn.dataset.tab === tab;
+        btn.classList.toggle("active", on);
+        btn.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      document.querySelectorAll(".ld-section").forEach((section) => {
+        section.classList.toggle("active", section.id === `ld-section-${tab}`);
+      });
+    }
+    document.querySelectorAll(".ld-tab").forEach((btn) => {
+      btn.addEventListener("click", () => selectTab(btn.dataset.tab));
+    });
+
+    function tenantBox(customer) {
+      const box = document.createElement("div");
+      box.className = "tenant";
+      if (customer.color) {
+        box.classList.add("colored");
+        box.style.setProperty("--tenant-color", customer.color);
+      }
+      if (customer.fill) box.classList.add("filled");
+      const name = document.createElement("span");
+      name.className = "tenant-name";
+      name.textContent = customer.name;
+      const icons = document.createElement("span");
+      icons.className = "tenant-icons";
+      const size = document.createElement("sub");
+      size.className = "tenant-size";
+      size.textContent = customer.size + "." + customer.version;
+      box.append(name, icons, size);
+      return box;
+    }
+
+    function flagLine(flag) {
+      const line = document.createElement("p");
+      line.className = "ld-about-p";
+      const key = document.createElement("code");
+      key.textContent = flag.key;
+      const served = flag.uniform ? String(flag.value) : flag.values.join(", ");
+      line.append(
+        key,
+        document.createTextNode(" · " + served + " · " + flag.reason + " · " + flag.evaluations + " evaluations")
+      );
+      return line;
+    }
+
+    function render(data) {
+      document.getElementById("brand-name").textContent = data.companyName;
+      const logo = document.getElementById("brand-logo");
+      logo.src = data.logoUrl;
+      logo.alt = data.companyName;
+      const floor = document.getElementById("dcs");
+      floor.replaceChildren();
+      for (const datacenter of data.datacenters) {
+        const card = document.createElement("section");
+        card.className = "dc";
+        const title = document.createElement("h2");
+        title.textContent = datacenter.name;
+        const count = document.createElement("p");
+        count.className = "dc-count";
+        count.textContent = `${datacenter.customerCount} customers`;
+        const grid = document.createElement("div");
+        grid.className = "tenants";
+        for (const customer of datacenter.customers) grid.append(tenantBox(customer));
+        card.append(title, count, grid);
+        floor.append(card);
+      }
+      const flags = document.getElementById("flag-results");
+      flags.replaceChildren();
+      const flagNote = document.createElement("p");
+      flagNote.className = "ld-about-p";
+      flagNote.textContent = data.sdkConnected
+        ? "Both flags apply to every tenant. Reload after you change a variation."
+        : "LD_SDK_KEY is not set. The border stays the hairline and the boxes stay empty.";
+      flags.append(flagNote);
+      for (const flag of data.flags) flags.append(flagLine(flag));
+      const segments = document.getElementById("segment-list");
+      segments.replaceChildren();
+      for (const segment of data.segments) {
+        const item = document.createElement("li");
+        const key = document.createElement("code");
+        key.textContent = segment.key;
+        item.append(key, document.createTextNode(" · " + segment.attribute + " is " + segment.values.join(", ")));
+        segments.append(item);
+      }
+      const evals = document.getElementById("eval-results");
+      evals.replaceChildren();
+      const evalNote = document.createElement("p");
+      evalNote.className = "ld-about-p";
+      const total = data.flags[0] ? data.flags[0].evaluations : 0;
+      evalNote.textContent = data.flags.every((flag) => flag.uniform)
+        ? total + " tenant contexts. Each flag returned one variation."
+        : total + " tenant contexts. A flag returned more than one variation.";
+      evals.append(evalNote);
+      for (const flag of data.flags) evals.append(flagLine(flag));
+      document.getElementById("context-note").textContent = data.sdkConnected
+        ? "One tenant context per presence. A customer in two datacenters has two rows, with the same key."
+        : "One tenant context per presence. Nothing was sent, because the SDK is not connected.";
+      const rows = document.getElementById("context-rows");
+      rows.replaceChildren();
+      for (const context of data.contexts) {
+        const row = document.createElement("tr");
+        for (const value of [context.key, context.sizeClass, context.size, context.version, context.datacenter, context.span]) {
+          const cell = document.createElement("td");
+          const code = document.createElement("code");
+          code.textContent = String(value);
+          cell.append(code);
+          row.append(cell);
+        }
+        rows.append(row);
+      }
+    }
+
+    fetch("/api/layout")
+      .then((response) => response.json())
+      .then(render)
+      .catch(() => {
+        document.getElementById("brand-name").textContent = "Layout unavailable";
+      });
+
+    (function () {
+      var shell = document.getElementById("app");
+      var grip = document.querySelector(".ld-rail-resize");
+      var rail = document.querySelector(".ld-rail");
+      if (!shell || !grip || !rail) return;
+      var RAIL_MIN = 280;
+      var GRID_MIN = 640;
+      var KEY = "ld-rail-width:" + location.pathname;
+      var dragging = false;
+      function limits() {
+        return { min: RAIL_MIN, max: Math.max(RAIL_MIN, window.innerWidth - GRID_MIN) };
+      }
+      function apply(px) {
+        var bound = limits();
+        var width = Math.min(Math.max(Math.round(px), bound.min), bound.max);
+        shell.style.gridTemplateColumns = "minmax(0, 1fr) " + width + "px";
+        grip.setAttribute("aria-valuemin", String(bound.min));
+        grip.setAttribute("aria-valuemax", String(bound.max));
+        grip.setAttribute("aria-valuenow", String(width));
+        return width;
+      }
+      function remember(width) {
+        try { localStorage.setItem(KEY, String(width)); } catch (err) {}
+      }
+      try {
+        var saved = Number(localStorage.getItem(KEY));
+        if (saved) apply(saved);
+      } catch (err) {}
+      window.addEventListener("resize", function () {
+        if (!shell.style.gridTemplateColumns) return;
+        apply(rail.getBoundingClientRect().width);
+      });
+      grip.addEventListener("pointerdown", function (ev) {
+        if (ev.button !== 0) return;
+        dragging = true;
+        grip.classList.add("dragging");
+        document.body.classList.add("ld-rail-dragging");
+        ev.preventDefault();
+      });
+      window.addEventListener("pointermove", function (ev) {
+        if (!dragging) return;
+        apply(window.innerWidth - ev.clientX);
+      });
+      window.addEventListener("pointerup", function () {
+        if (!dragging) return;
+        dragging = false;
+        grip.classList.remove("dragging");
+        document.body.classList.remove("ld-rail-dragging");
+        remember(Math.round(rail.getBoundingClientRect().width));
+      });
+      grip.addEventListener("dblclick", function (ev) {
+        ev.preventDefault();
+        shell.style.gridTemplateColumns = "";
+        grip.removeAttribute("aria-valuenow");
+        try { localStorage.removeItem(KEY); } catch (err) {}
+      });
+      grip.addEventListener("keydown", function (ev) {
+        var step = ev.shiftKey ? 48 : 16;
+        var width = rail.getBoundingClientRect().width;
+        if (ev.key === "ArrowLeft") width += step;
+        else if (ev.key === "ArrowRight") width -= step;
+        else return;
+        ev.preventDefault();
+        remember(apply(width));
+      });
+    })();
+  </script>
+</body>
+</html>
