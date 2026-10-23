@@ -85,7 +85,8 @@ def evaluation_context(customer: dict[str, Any]) -> dict[str, Any]:
 
     A customer in three datacenters produces three of these, with the same
     key. tenant_context builds the SDK context from the same fields when
-    evaluate_floor runs tenant-border-palette and tenant-box-fill.
+    evaluate_floor runs tenant-border-palette, tenant-box-fill, and
+    tenant-security.
 
     LaunchDarkly: contexts — https://launchdarkly.com/docs/home/flags/contexts
     """
@@ -126,8 +127,10 @@ def build_layout() -> dict[str, Any]:
     This process is pretending to be every application at once, which is
     why the dict holds all of them. datacenters groups the boxes the page
     draws. contexts is the matching list, one dict per presence.
-    evaluate_floor walks the boxes and evaluates tenant-border-palette and
-    tenant-box-fill for each one.
+    evaluate_floor walks the boxes and evaluates tenant-border-palette,
+    tenant-box-fill, tenant-security, and tenant-firewall for each one. A security wave
+    targets one name, a large presence in one datacenter, or the full
+    deployment sequence.
     """
     customers = build_customers()
     boxes = placements(customers)

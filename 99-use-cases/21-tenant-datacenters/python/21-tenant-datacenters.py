@@ -6,14 +6,16 @@ one of those applications: its own context, the same two flags. build_layout
 keeps that collection in one dict. evaluate_floor walks it and writes each
 variation back onto the box.
 
-Flags: tenant-border-palette, tenant-box-fill.
+Flags: tenant-border-palette, tenant-box-fill, tenant-security, tenant-firewall.
 """
 
 from __future__ import annotations
 
 import json
 import os
+import queue
 import sys
+import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
@@ -23,20 +25,29 @@ import ldclient
 from ldclient import Context
 from ldclient.config import Config
 from ldclient.client import LDClient
+from ldclient.interfaces import FlagChange
 
 EXAMPLE = Path(__file__).resolve().parent.parent
 WEB = Path(__file__).resolve().parent
 sys.path.insert(0, str(EXAMPLE))
 
-from flags import FLAG_BORDER, FLAG_FILL, SEGMENTS, hue  # noqa: E402
-from fill_rollout import fill_rollout_status, reset_fill_rollout  # noqa: E402
-from ld_flag_controls import apply_flag_control, list_flag_controls  # noqa: E402
+from flags import FLAG_BORDER, FLAG_FILL, FLAG_FIREWALL, FLAG_SECURITY, SEGMENTS, hue  # noqa: E402
+from fill_rollout import fill_rollout_status, flag_console_url, reset_fill_rollout  # noqa: E402
+from ld_flag_controls import api_config, apply_flag_control, list_flag_controls  # noqa: E402
+from security_waves import (  # noqa: E402
+    reset_security_wave,
+    security_status,
+    start_security_wave,
+)
 from tenants import build_layout  # noqa: E402
 
 PORT = int(os.environ.get("PORT", "8080"))
 EXAMPLE_CUSTOM = EXAMPLE / "customizations.json.example"
 LOCAL_CUSTOM = EXAMPLE / "customizations.json"
+_FLOOR_FLAGS = {FLAG_BORDER, FLAG_FILL, FLAG_SECURITY, FLAG_FIREWALL}
 _ld_client: LDClient | None = None
+_floor_queues: list[queue.Queue[str]] = []
+_floor_queues_lock = threading.Lock()
 
 
 def init_launchdarkly() -> None:
@@ -52,8 +63,41 @@ def init_launchdarkly() -> None:
         return
     ldclient.set_config(Config(sdk_key))
     _ld_client = ldclient.get()
+    # The stream delivers flag changes to this process. The browser is a
+    # separate layer, so the listener only forwards the flag key. The page
+    # fetches /api/layout and redraws the floor in place.
+    # Flag change notifications — https://launchdarkly.com/docs/sdk/features/flag-changes
+    _ld_client.flag_tracker.add_listener(_on_flag_change)
     if not _ld_client.is_initialized():
         print("Warning: LaunchDarkly SDK did not initialize — flags fall back.", flush=True)
+
+
+def _on_flag_change(change: FlagChange) -> None:
+    """Forward one streamed flag change to the open pages.
+
+    The SDK calls this on its stream thread. Keep it to a queue write.
+    Evaluating the floor happens later, on the layout request.
+    """
+    if change.key not in _FLOOR_FLAGS:
+        return
+    _publish_floor_event(change.key)
+
+
+def _publish_floor_event(key: str) -> None:
+    with _floor_queues_lock:
+        subscribers = list(_floor_queues)
+    for subscriber in subscribers:
+        try:
+            subscriber.put_nowait(key)
+        except queue.Full:
+            try:
+                subscriber.get_nowait()
+            except queue.Empty:
+                pass
+            try:
+                subscriber.put_nowait(key)
+            except queue.Full:
+                pass
 
 
 def tenant_context(box: dict[str, Any]) -> Context:
@@ -89,8 +133,8 @@ def _reason_kind(detail: Any) -> str:
 def _variation(client: LDClient, key: str, context: Context, default: Any) -> tuple[Any, str]:
     """Evaluate one flag for one context. The last argument is the safe default.
 
-    evaluate_floor calls this twice per presence: once for
-    tenant-border-palette, once for tenant-box-fill.
+    evaluate_floor calls this once per flag per presence: tenant-border-palette,
+    tenant-box-fill, and tenant-security.
 
     LaunchDarkly: evaluating flags — https://launchdarkly.com/docs/sdk/features/evaluation-reasons
     """
@@ -99,11 +143,11 @@ def _variation(client: LDClient, key: str, context: Context, default: Any) -> tu
 
 
 def evaluate_floor(layout: dict[str, Any]) -> None:
-    """Evaluate both flags for every presence and paint that box.
+    """Evaluate each flag for every presence and paint that box.
 
     The layout dict is the whole floor: many simulated applications, one SDK
-    client. This loop is where each flag runs. It writes color and fill onto
-    the box the page draws.
+    client. This loop is where each flag runs. It writes color, fill,
+    security, and the firewall icon onto the box the page draws.
 
     tenant-border-palette is one string for every box. Size class picks the
     hue inside that palette. The safe default is "none", which keeps the
@@ -115,18 +159,35 @@ def evaluate_floor(layout: dict[str, Any]) -> None:
     stays filled in every datacenter it occupies, because those contexts
     share a key.
 
+    tenant-security is a boolean. True draws the lock. By name, an individual
+    target matches the tenant key, so every datacenter for that name locks
+    together. By datacenter, a rule matches the large segment and one
+    datacenter segment, so only that presence locks. Full deployment matches
+    Small by the size attribute, Medium by datacenter, then Large by name.
+    Unknown matches none of the waves. The safe default is False.
+
+    tenant-firewall is a boolean. True draws the firewall icon. Off draws
+    nothing. The safe default is False. The release that turns it on is
+    configured in LaunchDarkly, not by this process.
+
     LaunchDarkly: multivariate variations — https://launchdarkly.com/docs/home/flags/variations
     LaunchDarkly: boolean variations — https://launchdarkly.com/docs/home/flags/boolean
+    LaunchDarkly: individual targets — https://launchdarkly.com/docs/home/flags/individual-targeting
+    LaunchDarkly: targeting rules — https://launchdarkly.com/docs/home/flags/targeting-rules
     """
     boxes = [box for datacenter in layout["datacenters"] for box in datacenter["customers"]]
     client = _ld_client if _ld_client is not None and _ld_client.is_initialized() else None
     border_values: list[str] = []
     fill_values: list[bool] = []
+    security_values: list[bool] = []
+    firewall_values: list[bool] = []
     border_reason = "fallback"
     fill_reason = "fallback"
+    security_reason = "fallback"
+    firewall_reason = "fallback"
     for box in boxes:
         if client is None:
-            palette, fill = "none", False
+            palette, fill, security, firewall = "none", False, False, False
         else:
             context = tenant_context(box)
             # tenant-border-palette — one string palette for this whole pass.
@@ -135,16 +196,33 @@ def evaluate_floor(layout: dict[str, Any]) -> None:
             # tenant-box-fill — boolean. Empty unless this context is included.
             fill_raw, fill_reason = _variation(client, FLAG_FILL, context, False)
             fill = bool(fill_raw)
+            # tenant-security — boolean. The lock follows the wave: one name,
+            # Large in one datacenter, or the full deployment step.
+            security_raw, security_reason = _variation(client, FLAG_SECURITY, context, False)
+            security = bool(security_raw)
+            # tenant-firewall — boolean. True draws the icon. A release in
+            # LaunchDarkly chooses who gets it.
+            firewall_raw, firewall_reason = _variation(client, FLAG_FIREWALL, context, False)
+            firewall = bool(firewall_raw)
         color = hue(palette, box["sizeClass"])
         box["color"] = color
         box["fill"] = bool(color) and fill
+        box["security"] = security
+        box["firewall"] = firewall
         border_values.append(palette)
         fill_values.append(fill)
+        security_values.append(security)
+        firewall_values.append(firewall)
     layout["sdkConnected"] = client is not None
+    cfg = api_config()
     layout["flags"] = [
         _flag_summary(FLAG_BORDER, "Border palette", border_values, border_reason, len(boxes)),
         _flag_summary(FLAG_FILL, "Box fill", fill_values, fill_reason, len(boxes)),
+        _flag_summary(FLAG_SECURITY, "Security", security_values, security_reason, len(boxes)),
+        _flag_summary(FLAG_FIREWALL, "Firewall", firewall_values, firewall_reason, len(boxes)),
     ]
+    for summary in layout["flags"]:
+        summary["flagUrl"] = flag_console_url(cfg.get("projectKey"), cfg.get("environmentKey"), summary["key"])
     layout["segments"] = SEGMENTS
 
 
@@ -188,6 +266,12 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:  # noqa: N802
         path = urlparse(self.path).path
+        if path == "/api/floor-events":
+            # Server-sent event. One flag key per message. The page fetches
+            # the layout. This does not reload the browser.
+            # https://launchdarkly.com/docs/sdk/features/flag-changes
+            self._floor_events()
+            return
         if path == "/api/layout":
             # Rebuild the floor dict, then run tenant-border-palette and
             # tenant-box-fill for every presence. See evaluate_floor.
@@ -212,6 +296,14 @@ class Handler(BaseHTTPRequestHandler):
             except Exception as exc:  # noqa: BLE001
                 self._json({"ok": False, "error": str(exc)}, 502)
             return
+        if path == "/api/security":
+            # tenant-security — which wave is running, and the latest step.
+            # https://launchdarkly.com/docs/home/flags/individual-targeting
+            try:
+                self._json(security_status())
+            except Exception as exc:  # noqa: BLE001
+                self._json({"ok": False, "error": str(exc)}, 502)
+            return
         if path.startswith("/brand/"):
             self._brand(unquote(path.removeprefix("/brand/")))
             return
@@ -219,6 +311,37 @@ class Handler(BaseHTTPRequestHandler):
             self._file(WEB / "index.html", "text/html; charset=utf-8")
             return
         self.send_error(404)
+
+    def _floor_events(self) -> None:
+        """Hold one browser connection until a streamed flag change arrives."""
+        subscriber: queue.Queue[str] = queue.Queue(maxsize=16)
+        with _floor_queues_lock:
+            _floor_queues.append(subscriber)
+        self.close_connection = False
+        self.send_response(200)
+        self.send_header("Content-Type", "text/event-stream; charset=utf-8")
+        self.send_header("Cache-Control", "no-cache")
+        self.send_header("Connection", "keep-alive")
+        self.end_headers()
+        try:
+            self.wfile.write(b": connected\n\n")
+            self.wfile.flush()
+            while True:
+                try:
+                    key = subscriber.get(timeout=20)
+                except queue.Empty:
+                    self.wfile.write(b": ping\n\n")
+                    self.wfile.flush()
+                    continue
+                payload = json.dumps({"key": key}).encode()
+                self.wfile.write(b"event: flag\ndata: " + payload + b"\n\n")
+                self.wfile.flush()
+        except (BrokenPipeError, ConnectionResetError, TimeoutError, OSError):
+            pass
+        finally:
+            with _floor_queues_lock:
+                if subscriber in _floor_queues:
+                    _floor_queues.remove(subscriber)
 
     def _brand(self, name: str) -> None:
         path = brand_file(name)
@@ -248,6 +371,31 @@ class Handler(BaseHTTPRequestHandler):
                 if data.get("action") != "reset":
                     raise ValueError('Provide {"action": "reset"}')
                 self._json(reset_fill_rollout())
+            except ValueError as exc:
+                self._json({"ok": False, "error": str(exc)}, 400)
+            except Exception as exc:  # noqa: BLE001
+                self._json({"ok": False, "error": str(exc)}, 502)
+            return
+        if path == "/api/security":
+            # tenant-security — By name targets S01. By datacenter rules Large in DC01.
+            # Full deployment rules Small size 1. By name waits 10 seconds.
+            # By datacenter waits 30 seconds. Full deployment waits 20 seconds.
+            # The timer writes each later step. Reset clears every wave.
+            # https://launchdarkly.com/docs/home/flags/individual-targeting
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+                raw = self.rfile.read(length) if length else b"{}"
+                data = json.loads(raw.decode() or "{}")
+                action = data.get("action")
+                if action == "start":
+                    mode = data.get("mode")
+                    if mode not in ("name", "datacenter", "full"):
+                        raise ValueError('Provide {"action": "start", "mode": "name"}, "datacenter", or "full"')
+                    self._json(start_security_wave(mode))
+                elif action == "reset":
+                    self._json(reset_security_wave())
+                else:
+                    raise ValueError('Provide {"action": "start", "mode": "name"|"datacenter"|"full"} or {"action": "reset"}')
             except ValueError as exc:
                 self._json({"ok": False, "error": str(exc)}, 400)
             except Exception as exc:  # noqa: BLE001

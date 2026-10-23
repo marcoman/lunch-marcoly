@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Create the border palette, the fill flag, and the tenant segments.
+# Create the border palette, the fill flag, the security flag, the firewall
+# flag, and the tenant segments.
 # Flag variations: https://launchdarkly.com/docs/home/flags/variations
 # Boolean flags: https://launchdarkly.com/docs/home/flags/boolean
 # Segments: https://launchdarkly.com/docs/home/flags/segments
@@ -152,6 +153,32 @@ ensure_flag "tenant-border-palette" "$(jq -n --argjson tags "${TAG}" '{
 }')"
 sync_border_variations
 
+ensure_flag "tenant-security" "$(jq -n --argjson tags "${TAG}" '{
+  key: "tenant-security",
+  name: "Tenant security",
+  description: "Enable security, shown as a lock. By name, the lab targets S01, then the next name. By datacenter, the lab targets Large in DC01, then the next datacenter. Full deployment targets Small by size, then Medium from DC01 through DC05, then L01. Unknown stays off.",
+  temporary: false,
+  tags: ($tags + ["boolean"]),
+  variations: [
+    {value: true, name: "Enabled"},
+    {value: false, name: "Off"}
+  ],
+  defaults: {onVariation: 0, offVariation: 1}
+}')"
+
+ensure_flag "tenant-firewall" "$(jq -n --argjson tags "${TAG}" '{
+  key: "tenant-firewall",
+  name: "Tenant firewall",
+  description: "Draw a firewall icon. Off draws nothing. The manual release on this flag chooses who gets the icon.",
+  temporary: false,
+  tags: ($tags + ["boolean"]),
+  variations: [
+    {value: true, name: "Enabled"},
+    {value: false, name: "Off"}
+  ],
+  defaults: {onVariation: 0, offVariation: 1}
+}')"
+
 FILL_URL="${LD_APP_HOST:-${LD_API_HOST:-https://app.launchdarkly.com}}"
 FILL_URL="${FILL_URL%/}/projects/${LD_PROJECT_KEY}/flags/tenant-box-fill?env=${LD_ENVIRONMENT_KEY}&selected-env=${LD_ENVIRONMENT_KEY}"
 FILL_DESCRIPTION="Fill every tenant box with a translucent tint of its border hue. A fill with no palette paints nothing. ${FILL_URL}"
@@ -189,4 +216,4 @@ ensure_segment tenant-footprint-single "Single-site tenants" span '[1]'
 ensure_segment tenant-footprint-multi "Multi-site tenants" span '[2, 3, 5]'
 ensure_segment tenant-footprint-all-five "Tenants in all five datacenters" span '[5]'
 
-echo "Done. Both flags are off until targeting is turned on. The border flag's on variation is roygbiv."
+echo "Done. Flags stay off until targeting is turned on. The border flag's on variation is roygbiv."

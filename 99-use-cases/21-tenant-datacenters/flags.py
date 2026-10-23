@@ -18,6 +18,8 @@ from typing import Any
 
 FLAG_BORDER = "tenant-border-palette"
 FLAG_FILL = "tenant-box-fill"
+FLAG_SECURITY = "tenant-security"
+FLAG_FIREWALL = "tenant-firewall"
 
 # Four hues per palette, one per size class. Each set stays dark enough that a
 # 45% fill still leaves the light tenant name readable.

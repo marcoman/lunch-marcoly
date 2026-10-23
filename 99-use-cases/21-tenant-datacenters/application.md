@@ -68,21 +68,36 @@ Contexts — https://launchdarkly.com/docs/home/flags/contexts
 every Small matches. `tenant-box-fill` is a progressive rollout. Five one-minute steps serve
 Fill to 5%, 10%, 25%, 50%, and 75% of tenant keys. After five minutes the
 rollout finishes at 100%. Start it in LaunchDarkly on the default rule, with
-context kind `tenant`, from Empty to Fill. Reset on the Flags tab turns the
-flag off and serves Empty.
+context kind `tenant`, from Empty to Fill. Reset on the Manual tab turns the
+flag off and serves Empty. `tenant-security` is a boolean lock. By name,
+the lab targets `S01`, then the next name, 10 seconds apart, through Small,
+Medium, and Large. By datacenter, it targets Large in `DC01`, then the next
+datacenter, 30 seconds apart. Full deployment targets Small size 1, then
+size 2, then Medium from `DC01` through `DC05`, then `L01`, 20 seconds
+apart. Unknown stays off. Click the page once. Fill plays a tone at
+the start, at each later percentage, and at the finish. Security plays at
+the start, when the size or datacenter changes, and at the end.
+`tenant-firewall` is a boolean icon on the Manual tab. True draws it. Off
+draws nothing. The release phases are in the example README.
 
 Variations — https://launchdarkly.com/docs/home/flags/variations
+Individual targets — https://launchdarkly.com/docs/home/flags/individual-targeting
+Targeting rules — https://launchdarkly.com/docs/home/flags/targeting-rules
 
 ## Segments
 
 Size class, datacenter, and footprint (`span` 1, `span` 2/3/5, and `span` 5).
-A tenant in all five also matches multi-site. The color flags do not target
-these segments.
+The datacenter wave on `tenant-security` matches large and one datacenter.
+Full deployment matches Small on the size attribute, and Medium with the
+medium segment plus one datacenter. The name wave, and Large in a full
+deployment, use individual targets. A tenant in all five also matches
+multi-site. The color flags do not target these segments.
 
 Segments — https://launchdarkly.com/docs/home/flags/segments
 
 ## Not in this phase
 
 Filled backgrounds beyond the palette tint, bold, italic, and the icons
-(database, firewall, robot, lock, failure, over-utilized) wait for a later
-flag. So do the version releases: percentage, progressive, and guarded rollouts.
+(database, robot, failure, over-utilized) wait for a later
+flag. The lock is `tenant-security`. The firewall is `tenant-firewall`.
+So do the version releases: percentage, progressive, and guarded rollouts.

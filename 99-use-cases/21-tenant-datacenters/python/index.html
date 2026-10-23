@@ -35,9 +35,34 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 0.85rem;
+      justify-content: space-between;
+      gap: 0.85rem 1.4rem;
       margin-bottom: 1.1rem;
+      flex-wrap: wrap;
     }
+    .brand-id { display: flex; align-items: center; gap: 0.85rem; min-width: 0; }
+    .size-filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem 0.85rem;
+      align-items: center;
+    }
+    .size-filter label {
+      display: flex;
+      align-items: center;
+      gap: 0.32rem;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+    .size-filter input { accent-color: var(--accent); }
+    .wave-countdown {
+      margin: 0 0 0.85rem;
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--accent);
+    }
+    .wave-countdown[hidden] { display: none; }
     .brand img {
       width: 48px;
       height: 48px;
@@ -61,6 +86,18 @@
     }
     .dc h2 { margin: 0; font-size: 1rem; letter-spacing: 0.03em; }
     .dc-count { margin: 0.15rem 0 0.7rem; color: var(--muted); font-size: 0.78rem; }
+    .floor-summary { margin-top: 1.15rem; }
+    .floor-summary h2 { margin: 0 0 0.2rem; font-size: 0.95rem; font-weight: 650; }
+    .floor-summary p { margin: 0 0 0.55rem; color: var(--muted); font-size: 0.78rem; }
+    .size-summary { width: 100%; max-width: 42rem; border-collapse: collapse; font-size: 0.85rem; }
+    .size-summary th, .size-summary td {
+      border-bottom: 1px solid var(--line);
+      padding: 0.4rem 0.65rem;
+      text-align: right;
+    }
+    .size-summary th:first-child { text-align: left; }
+    .size-summary thead th { color: var(--muted); font-weight: 650; font-size: 0.75rem; }
+    .size-summary tfoot th, .size-summary tfoot td { font-weight: 650; border-bottom: none; }
     .tenants {
       display: flex;
       flex-direction: column;
@@ -82,7 +119,16 @@
       background: color-mix(in srgb, var(--tenant-color) 45%, #1a1a28);
     }
     .tenant-name { font-size: 0.82rem; }
-    .tenant-icons { flex: 1 1 auto; min-width: 0.5rem; }
+    .tenant-icons {
+      flex: 1 1 auto;
+      min-width: 0.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.2rem;
+    }
+    .tenant-lock { color: #f5d76e; display: block; }
+    .tenant-firewall { color: #7dd3c0; display: block; }
     .tenant-size { font-size: 0.65rem; color: var(--muted); }
     .ld-rail {
       position: relative;
@@ -179,7 +225,18 @@
       justify-content: space-between;
       gap: 0.75rem;
     }
-    .flag-card h3 { margin: 0 0 0.25rem; font-size: 0.95rem; font-weight: 650; }
+    .flag-card h3 {
+      margin: 0 0 0.25rem;
+      font-size: 0.95rem;
+      font-weight: 650;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .flag-card h3 .tenant-lock,
+    .flag-card h3 .tenant-firewall,
+    .flag-card h3 .tenant-fill,
+    .flag-card h3 .tenant-border { width: 16px; height: 16px; flex: 0 0 auto; }
     .flag-key {
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 0.72rem;
@@ -242,6 +299,21 @@
       color: var(--muted);
     }
     .rollout-step.current { border-color: var(--accent); color: var(--ink); font-weight: 650; }
+    .rollout-step.active {
+      border-color: var(--accent);
+      color: var(--ink);
+      font-weight: 650;
+      animation: wave-pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes wave-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(100, 181, 246, 0.15); }
+      50% { box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.85); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .rollout-step.active { animation: none; box-shadow: 0 0 0 2px var(--accent); }
+    }
+    .wave-actions { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.75rem; }
+    .wave-actions .rollout-reset { margin-top: 0; }
     .rollout-timer {
       display: flex;
       align-items: baseline;
@@ -280,32 +352,66 @@
   <div id="app">
     <main id="floor">
       <header class="brand">
-        <img id="brand-logo" alt="" width="48" height="48">
-        <div>
-          <h1 id="brand-name">Example Hosting</h1>
-          <p>Five datacenters · 52 tenants, some in more than one</p>
+        <div class="brand-id">
+          <img id="brand-logo" alt="" width="48" height="48">
+          <div>
+            <h1 id="brand-name">Example Hosting</h1>
+            <p>Five datacenters · 52 tenants, some in more than one</p>
+          </div>
+        </div>
+        <div class="size-filter" role="group" aria-label="Show sizes">
+          <label><input type="checkbox" data-size="small" checked> Small</label>
+          <label><input type="checkbox" data-size="medium" checked> Medium</label>
+          <label><input type="checkbox" data-size="large" checked> Large</label>
+          <label><input type="checkbox" data-size="unknown" checked> Unknown</label>
         </div>
       </header>
+      <p id="wave-countdown" class="wave-countdown" hidden></p>
       <div id="dcs" class="dcs"></div>
+      <section class="floor-summary" aria-label="Counts by size">
+        <h2>By size</h2>
+        <p>Each number is a box on the floor. A name in two datacenters counts twice.</p>
+        <table class="size-summary" id="size-summary">
+          <thead>
+            <tr>
+              <th scope="col">Size</th>
+              <th scope="col">Total</th>
+              <th scope="col">Border</th>
+              <th scope="col">Fill</th>
+              <th scope="col">Security</th>
+              <th scope="col">Firewall</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot></tfoot>
+        </table>
+      </section>
     </main>
     <aside class="ld-rail" aria-label="LaunchDarkly lab">
       <div class="ld-rail-resize" role="separator" aria-orientation="vertical" aria-label="Resize lab drawer" title="Drag to resize" tabindex="0"></div>
       <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
       <div class="ld-tabs" role="tablist">
-        <button type="button" class="ld-tab active" data-tab="flags" role="tab" aria-selected="true">Flags</button>
+        <button type="button" class="ld-tab active" data-tab="automatic" role="tab" aria-selected="true">Automatic</button>
+        <button type="button" class="ld-tab" data-tab="manual" role="tab" aria-selected="false">Manual</button>
         <button type="button" class="ld-tab" data-tab="trace" role="tab" aria-selected="false">Trace</button>
         <button type="button" class="ld-tab" data-tab="model" role="tab" aria-selected="false">Model</button>
         <button type="button" class="ld-tab" data-tab="contexts" role="tab" aria-selected="false">Contexts</button>
         <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
       </div>
       <div class="ld-rail-body">
-        <section id="ld-section-flags" class="ld-section active">
+        <section id="ld-section-automatic" class="ld-section active">
           <div class="block-title">Flag toggle</div>
           <p id="controls-meta" class="ld-about-p"></p>
           <p id="controls-warn" class="controls-warn" hidden></p>
           <div id="controls-list"></div>
+          <div class="block-title">Security waves</div>
+          <div id="security-waves"></div>
+        </section>
+        <section id="ld-section-manual" class="ld-section">
           <div class="block-title">Progressive rollout</div>
           <div id="fill-rollout"></div>
+          <div class="block-title">Firewall</div>
+          <div id="firewall-flag"></div>
         </section>
         <section id="ld-section-trace" class="ld-section">
           <div class="block-title">Now</div>
@@ -315,13 +421,13 @@
         </section>
         <section id="ld-section-model" class="ld-section">
           <div class="block-title">Segments</div>
-          <p class="ld-about-p">These match the tenant context. The color flags do not target them yet. A tenant in all five datacenters is also multi-site.</p>
+          <p class="ld-about-p">These match the tenant context. The datacenter wave on <code>tenant-security</code> requires <code>tenant-size-large</code> and one <code>tenant-dc-0N</code> segment. Full deployment matches Small by the size attribute, and Medium with <code>tenant-size-medium</code> plus one datacenter segment. The name wave, and Large in a full deployment, use individual targets. Unknown is not released. A tenant in all five datacenters is also multi-site.</p>
           <ul class="flag-list" id="segment-list"></ul>
           <div class="block-title">Later</div>
           <ul class="flag-list">
             <li>Release version 1 through 9 with a percentage rollout and a guarded rollout.</li>
             <li>Set the tenant name in bold, or in italic.</li>
-            <li>Icons in the open space: database, firewall, robot, lock. Then a failure icon and an over-utilized icon.</li>
+            <li>Icons still open: database, robot. The lock is <code>tenant-security</code>. The firewall is <code>tenant-firewall</code>.</li>
           </ul>
         </section>
         <section id="ld-section-contexts" class="ld-section">
@@ -340,8 +446,8 @@
           <div class="block-title">How the names are made</div>
           <p class="ld-about-p">Walk A–Z twice. Vowels are Large. Q and Z are unknown. Every other letter uses (letter number − 1) mod 3: 2 is Medium, and 0 or 1 is Small. Each size keeps its own counter. Odd and even are that counter. An odd Small is size 1 in one datacenter. An even Small is size 2 in two. An odd Medium is size 5 in one. An even Medium is size 5 in three. An odd Large is size 7 in three. An even Large is size 7 in all five. Unknown stays size 3 in one. One cursor hands out the next datacenters and wraps after DC05. The same name is drawn in each datacenter that customer occupies. The subscript is size.version, and every instance starts at 0, so a large reads 7.0.</p>
           <div class="block-title">What to look at</div>
-          <p class="ld-about-p">Read a datacenter card. The Flags tab turns the border palette on and picks the fallthrough. The fill rollout is a progressive rollout on <code>tenant-box-fill</code>: five one-minute steps, then everyone. Start that rollout in LaunchDarkly. Reset on the Flags tab returns the flag to Empty. Trace records those changes. Model lists the segments and what comes later.</p>
-          <p class="ld-about-p"><a href="https://launchdarkly.com/docs/home/flags/variations">Multivariate variations</a> · <a href="https://launchdarkly.com/docs/home/releases/progressive-rollouts">Progressive rollouts</a> · <a href="https://launchdarkly.com/docs/home/flags/contexts">Contexts</a></p>
+          <p class="ld-about-p">Read a datacenter card. The Automatic tab turns the border palette on and picks the fallthrough. The fill rollout is a progressive rollout on <code>tenant-box-fill</code>: five one-minute steps, then everyone. Start that rollout in LaunchDarkly. Reset on the Manual tab returns the flag to Empty. Security waves release the lock on a timer. By name serves S01, then S02 every 10 seconds, through Small, Medium, and Large. By datacenter serves Large in DC01, then the next datacenter every 30 seconds. Full deployment serves Small size 1, then size 2, then Medium from DC01 through DC05, then L01, every 20 seconds. The family chip pulses while that size is still releasing. Unknown stays off. The Manual tab also has <code>tenant-firewall</code>. True draws a firewall icon. Click the page once. Fill and security then play three tones: a low note at the start, a middle pair when the percentage, size, or datacenter changes, and a high note at the end. Names inside Large stay quiet. The shape matches the tones in 107-scheduled-changes. Trace records those changes. Model lists the segments and what comes later.</p>
+          <p class="ld-about-p"><a href="https://launchdarkly.com/docs/home/flags/variations">Multivariate variations</a> · <a href="https://launchdarkly.com/docs/home/releases/progressive-rollouts">Progressive rollouts</a> · <a href="https://launchdarkly.com/docs/home/flags/individual-targeting">Individual targets</a> · <a href="https://launchdarkly.com/docs/home/flags/targeting-rules">Targeting rules</a> · <a href="https://launchdarkly.com/docs/home/flags/contexts">Contexts</a></p>
         </section>
       </div>
     </aside>
@@ -361,6 +467,61 @@
       btn.addEventListener("click", () => selectTab(btn.dataset.tab));
     });
 
+    function fillSvg() {
+      return `<svg class="tenant-fill" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3" fill="#3c6085" stroke="#64b5f6" stroke-width="2"></rect></svg>`;
+    }
+
+    function borderSvg() {
+      return `<svg class="tenant-border" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3" fill="#1a1a28" stroke="#64b5f6" stroke-width="2"></rect></svg>`;
+    }
+
+    function lockSvg() {
+      return `<svg class="tenant-lock" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"></path></svg>`;
+    }
+
+    function firewallSvg() {
+      return `<svg class="tenant-firewall" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3 7h8v4H3zm10 0h8v4h-8zM3 13h5v4H3zm6 0h6v4H9zm7 0h5v4h-5z" fill="currentColor"></path></svg>`;
+    }
+
+    function securityLock() {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("class", "tenant-lock");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("width", "14");
+      svg.setAttribute("height", "14");
+      svg.setAttribute("aria-label", "Security");
+      const body = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      body.setAttribute("x", "5");
+      body.setAttribute("y", "11");
+      body.setAttribute("width", "14");
+      body.setAttribute("height", "9");
+      body.setAttribute("rx", "1.5");
+      body.setAttribute("fill", "none");
+      body.setAttribute("stroke", "currentColor");
+      body.setAttribute("stroke-width", "2");
+      const shackle = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      shackle.setAttribute("d", "M8 11V8a4 4 0 0 1 8 0v3");
+      shackle.setAttribute("fill", "none");
+      shackle.setAttribute("stroke", "currentColor");
+      shackle.setAttribute("stroke-width", "2");
+      svg.append(body, shackle);
+      return svg;
+    }
+
+    function firewallIcon() {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("class", "tenant-firewall");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("width", "14");
+      svg.setAttribute("height", "14");
+      svg.setAttribute("aria-label", "Firewall");
+      const wall = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      wall.setAttribute("d", "M3 7h8v4H3zm10 0h8v4h-8zM3 13h5v4H3zm6 0h6v4H9zm7 0h5v4h-5z");
+      wall.setAttribute("fill", "currentColor");
+      svg.append(wall);
+      return svg;
+    }
+
     function tenantBox(customer) {
       const box = document.createElement("div");
       box.className = "tenant";
@@ -374,6 +535,8 @@
       name.textContent = customer.name;
       const icons = document.createElement("span");
       icons.className = "tenant-icons";
+      if (customer.security) icons.append(securityLock());
+      if (customer.firewall) icons.append(firewallIcon());
       const size = document.createElement("sub");
       size.className = "tenant-size";
       size.textContent = customer.size + "." + customer.version;
@@ -393,6 +556,46 @@
       );
       return line;
     }
+
+    // Same oscillator shape as 107-scheduled-changes. A click unlocks the
+    // context; later polls may then play. Start is 440 Hz. A phase change
+    // is the middle pair. The end is the high note.
+    let audioContext = null;
+
+    function unlockAudio() {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return null;
+      audioContext = audioContext || new AudioContext();
+      if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
+      return audioContext;
+    }
+
+    function playCue(kind) {
+      const context = unlockAudio();
+      if (!context) return;
+      const notes = kind === "end"
+        ? [[659, 0.14], [880, 0.32]]
+        : kind === "phase"
+          ? [[523, 0.12], [659, 0.16]]
+          : [[440, 0.16]];
+      let at = context.currentTime;
+      for (const [frequency, duration] of notes) {
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(frequency, at);
+        gain.gain.setValueAtTime(0.0001, at);
+        gain.gain.exponentialRampToValueAtTime(0.08, at + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, at + duration);
+        oscillator.connect(gain);
+        gain.connect(context.destination);
+        oscillator.start(at);
+        oscillator.stop(at + duration + 0.02);
+        at += duration + 0.04;
+      }
+    }
+
+    document.addEventListener("pointerdown", unlockAudio);
 
     const TRACE_KEY = "ld-tenant-trace:" + location.pathname;
     const TRACE_MAX = 40;
@@ -458,8 +661,11 @@
         pushTrace("tenant-box-fill off, Empty");
         return;
       }
-      if (next.status === "complete" || (next.on && next.percent >= 100 && next.status !== "active")) {
+      const finished = next.status === "complete" || (next.on && next.percent >= 100);
+      const wasFinished = prev.status === "complete" || (prev.on && prev.percent >= 100);
+      if (finished) {
         pushTrace("tenant-box-fill complete, Fill");
+        if (!wasFinished) playCue("end");
         return;
       }
       if (next.status === "active") {
@@ -467,21 +673,43 @@
         const to = next.percent == null ? "started" : next.percent + "%";
         if (from === to) return;
         pushTrace("tenant-box-fill " + from + " → " + to);
+        playCue(prev.status === "active" ? "phase" : "start");
       }
     }
 
     let fillCensus = { filled: 0, total: 0 };
+    let securityCensus = { secured: 0, total: 0 };
+    let securityMode = null;
 
     function readCensus(data) {
       const names = new Set();
       const filled = new Set();
+      const secured = new Set();
+      let securedBoxes = 0;
+      let largeBoxes = 0;
+      let waveBoxes = 0;
+      let securedWaveBoxes = 0;
       for (const datacenter of data.datacenters) {
         for (const customer of datacenter.customers) {
           names.add(customer.name);
           if (customer.fill) filled.add(customer.name);
+          if (customer.security) secured.add(customer.name);
+          if (customer.sizeClass === "large") {
+            largeBoxes += 1;
+            if (customer.security) securedBoxes += 1;
+          }
+          if (customer.sizeClass !== "unknown") {
+            waveBoxes += 1;
+            if (customer.security) securedWaveBoxes += 1;
+          }
         }
       }
       fillCensus = { filled: filled.size, total: names.size };
+      securityCensus = securityMode === "datacenter"
+        ? { secured: securedBoxes, total: largeBoxes }
+        : securityMode === "full"
+          ? { secured: securedWaveBoxes, total: waveBoxes }
+          : { secured: secured.size, total: names.size };
     }
 
     function formatShare(filled, total) {
@@ -494,6 +722,11 @@
     function paintFillShare() {
       const node = document.getElementById("rollout-count");
       if (node) node.textContent = formatShare(fillCensus.filled, fillCensus.total);
+    }
+
+    function paintSecurityShare() {
+      const node = document.getElementById("security-count");
+      if (node) node.textContent = formatShare(securityCensus.secured, securityCensus.total);
     }
 
     function renderTraceStatus(data) {
@@ -510,11 +743,89 @@
       if (data.sdkConnected) for (const flag of data.flags) host.append(flagLine(flag));
     }
 
+    const SIZE_ROWS = [
+      { key: "small", label: "Small" },
+      { key: "medium", label: "Medium" },
+      { key: "large", label: "Large" },
+      { key: "unknown", label: "Unknown" },
+    ];
+
+    function summaryRow(label, bucket) {
+      const row = document.createElement("tr");
+      const name = document.createElement("th");
+      name.scope = "row";
+      name.textContent = label;
+      row.append(name);
+      for (const key of ["total", "border", "fill", "security", "firewall"]) {
+        const cell = document.createElement("td");
+        cell.textContent = String(bucket[key]);
+        row.append(cell);
+      }
+      return row;
+    }
+
+    function renderSizeSummary(data) {
+      const counts = {};
+      for (const size of SIZE_ROWS) counts[size.key] = { total: 0, border: 0, fill: 0, security: 0, firewall: 0 };
+      for (const datacenter of data.datacenters) {
+        for (const customer of datacenter.customers) {
+          const bucket = counts[customer.sizeClass];
+          if (!bucket) continue;
+          bucket.total += 1;
+          if (customer.color) bucket.border += 1;
+          if (customer.fill) bucket.fill += 1;
+          if (customer.security) bucket.security += 1;
+          if (customer.firewall) bucket.firewall += 1;
+        }
+      }
+      const body = document.querySelector("#size-summary tbody");
+      const foot = document.querySelector("#size-summary tfoot");
+      body.replaceChildren();
+      const sum = { total: 0, border: 0, fill: 0, security: 0, firewall: 0 };
+      for (const size of SIZE_ROWS) {
+        const bucket = counts[size.key];
+        for (const key of Object.keys(sum)) sum[key] += bucket[key];
+        body.append(summaryRow(size.label, bucket));
+      }
+      foot.replaceChildren(summaryRow("Total", sum));
+    }
+
+    function renderFirewall(data) {
+      const host = document.getElementById("firewall-flag");
+      const flag = (data.flags || []).find((item) => item.key === "tenant-firewall");
+      const openFlag = flag && flag.flagUrl
+        ? `<p class="flag-summary"><a href="${escapeHtml(flag.flagUrl)}">Open tenant-firewall in LaunchDarkly</a></p>`
+        : "";
+      const served = !flag ? "—" : flag.uniform ? String(flag.value) : flag.values.join(", ");
+      host.innerHTML =
+        `<div class="flag-card">` +
+        `<div class="flag-card-top"><div><h3>${firewallSvg()} Tenant firewall</h3>` +
+        `<div class="flag-key">tenant-firewall</div></div></div>` +
+        `<p class="flag-summary">True draws a firewall icon on that box. Off draws nothing. Turn the flag on, then Release: Small, Medium in DC01, Medium in DC02 through DC05, then Large. The steps are in the README.</p>` +
+        openFlag +
+        `<p class="flag-hint">Serving ${escapeHtml(served)}.</p>` +
+        `</div>`;
+    }
+
+    let lastLayout = null;
+
+    function visibleSizes() {
+      const boxes = document.querySelectorAll(".size-filter input[data-size]");
+      if (!boxes.length) return null;
+      const selected = new Set();
+      boxes.forEach((box) => {
+        if (box.checked) selected.add(box.getAttribute("data-size"));
+      });
+      return selected;
+    }
+
     function render(data) {
+      lastLayout = data;
       document.getElementById("brand-name").textContent = data.companyName;
       const logo = document.getElementById("brand-logo");
       logo.src = data.logoUrl;
       logo.alt = data.companyName;
+      const shown = visibleSizes();
       const floor = document.getElementById("dcs");
       floor.replaceChildren();
       for (const datacenter of data.datacenters) {
@@ -522,15 +833,22 @@
         card.className = "dc";
         const title = document.createElement("h2");
         title.textContent = datacenter.name;
-        const count = document.createElement("p");
-        count.className = "dc-count";
-        count.textContent = `${datacenter.customerCount} customers`;
         const grid = document.createElement("div");
         grid.className = "tenants";
-        for (const customer of datacenter.customers) grid.append(tenantBox(customer));
+        let visible = 0;
+        for (const customer of datacenter.customers) {
+          if (shown && !shown.has(customer.sizeClass)) continue;
+          visible += 1;
+          grid.append(tenantBox(customer));
+        }
+        const count = document.createElement("p");
+        count.className = "dc-count";
+        count.textContent = `${visible} customers`;
         card.append(title, count, grid);
         floor.append(card);
       }
+      renderSizeSummary(data);
+      renderFirewall(data);
       readCensus(data);
       renderTraceStatus(data);
       const segments = document.getElementById("segment-list");
@@ -559,15 +877,67 @@
         rows.append(row);
       }
       paintFillShare();
+      paintSecurityShare();
     }
 
+    function floorMark(data) {
+      const parts = [];
+      for (const datacenter of data.datacenters || []) {
+        for (const customer of datacenter.customers) {
+          parts.push([
+            customer.name,
+            customer.datacenter,
+            customer.color || "",
+            customer.fill ? "1" : "0",
+            customer.security ? "1" : "0",
+            customer.firewall ? "1" : "0",
+          ].join(":"));
+        }
+      }
+      return parts.join("|");
+    }
+
+    let lastFloorMark = "";
+    let layoutFlight = null;
+    let layoutAgain = false;
+
     function loadLayout() {
-      return fetch("/api/layout")
+      // A burst of flag events shares one fetch. If another arrives while
+      // that fetch is open, run once more when it finishes.
+      if (layoutFlight) {
+        layoutAgain = true;
+        return layoutFlight;
+      }
+      layoutAgain = false;
+      layoutFlight = fetch("/api/layout")
         .then((response) => response.json())
-        .then(render)
+        .then((data) => {
+          const mark = floorMark(data);
+          // The flag stream asked for this fetch. Skip the redraw when the
+          // boxes are unchanged, so the checkboxes and the countdown stay.
+          if (mark !== lastFloorMark) {
+            lastFloorMark = mark;
+            render(data);
+          } else {
+            lastLayout = data;
+          }
+        })
         .catch(() => {
           document.getElementById("brand-name").textContent = "Layout unavailable";
+        })
+        .finally(() => {
+          layoutFlight = null;
+          if (layoutAgain) loadLayout();
         });
+      return layoutFlight;
+    }
+
+    function watchFloorEvents() {
+      // The server forwards flag_tracker. This fetches the layout in place.
+      // Flag change notifications — https://launchdarkly.com/docs/sdk/features/flag-changes
+      const source = new EventSource("/api/floor-events");
+      source.addEventListener("flag", () => loadLayout());
+      source.onerror = () => {};
     }
 
     let controlsBusy = false;
@@ -604,9 +974,10 @@
           const selected = option.token === flag.fallthroughToken ? " selected" : "";
           return `<option value="${escapeHtml(option.token)}"${selected}>${escapeHtml(option.label)}</option>`;
         }).join("");
+        const icon = flag.key === "tenant-border-palette" ? borderSvg() : "";
         card.innerHTML =
           `<div class="flag-card-top">` +
-          `<div><h3>${escapeHtml(flag.label || flag.key)}</h3>` +
+          `<div><h3>${icon}${escapeHtml(flag.label || flag.key)}</h3>` +
           `<div class="flag-key">${escapeHtml(flag.key)}</div></div>` +
           `<button type="button" class="${toggleClass}" data-key="${escapeHtml(flag.key)}" data-on="${on === true ? "1" : "0"}" ${disabled}>${toggleLabel}</button>` +
           `</div>` +
@@ -703,9 +1074,9 @@
         : "";
       host.innerHTML =
         `<div class="flag-card">` +
-        `<div class="flag-card-top"><div><h3>Tenant box fill</h3>` +
+        `<div class="flag-card-top"><div><h3>${fillSvg()} Tenant box fill</h3>` +
         `<div class="flag-key">${escapeHtml(data.key || "tenant-box-fill")}</div></div></div>` +
-        `<p class="flag-summary">Five one-minute steps, then 100%. Context kind is tenant, from Empty to Fill. A tenant that fills stays filled.</p>` +
+        `<p class="flag-summary">Five one-minute steps, then 100%. Context kind is tenant, from Empty to Fill. A tenant that fills stays filled. Click the page once. The start, each later step, and the finish each play a tone.</p>` +
         openFlag +
         `<div class="rollout-steps">${pills}</div>` +
         `<p class="rollout-timer"><span>${escapeHtml(timer)}</span><span class="rollout-count" id="rollout-count">${escapeHtml(formatShare(fillCensus.filled, fillCensus.total))}</span></p>` +
@@ -761,12 +1132,164 @@
       }
     }
 
+    let lastSecurityKey = "";
+
+    function waveMark(data) {
+      if (!data) return "";
+      const step = data.step || "";
+      if (data.mode === "datacenter") return step;
+      if (data.mode === "full") return step.startsWith("L") ? "large" : step;
+      if (step.startsWith("M")) return "medium";
+      if (step.startsWith("L")) return "large";
+      if (step.startsWith("S")) return "small";
+      return step;
+    }
+
+    function noteSecurity(data) {
+      const next = { status: data.status, step: data.step || "", mode: data.mode || "" };
+      const prev = traceSeen.security;
+      traceSeen.security = next;
+      if (!prev || (prev.status === next.status && prev.step === next.step && prev.mode === next.mode)) return;
+      if (next.status === "off") {
+        pushTrace("tenant-security off");
+        return;
+      }
+      if (next.status === "complete") {
+        pushTrace("tenant-security complete, " + (data.modeLabel || "done"));
+        if (prev.status !== "complete") playCue("end");
+        return;
+      }
+      if (next.step) {
+        pushTrace("tenant-security " + (data.modeLabel || "wave") + " " + next.step);
+        if (prev.status !== "running") playCue("start");
+        else if (waveMark(prev) !== waveMark(next)) playCue("phase");
+      }
+    }
+
+    function renderSecurity(data) {
+      securityMode = data.mode || null;
+      const host = document.getElementById("security-waves");
+      const pills = (data.families || []).map((family) => {
+        const cls = family.state === "done" ? " current" : family.state === "active" ? " active" : "";
+        const title = family.state === "active" ? ' title="In progress"' : "";
+        return `<span class="rollout-step${cls}"${title}>${escapeHtml(family.label)}</span>`;
+      }).join("");
+      const timer = data.status === "running" && data.remainingMs != null ? formatRemaining(data.remainingMs) : "—";
+      const openFlag = data.flagUrl
+        ? `<p class="flag-summary"><a href="${escapeHtml(data.flagUrl)}">Open ${escapeHtml(data.key || "tenant-security")} in LaunchDarkly</a></p>`
+        : "";
+      const running = data.status === "running";
+      host.innerHTML =
+        `<div class="flag-card">` +
+        `<div class="flag-card-top"><div><h3>${lockSvg()} Tenant security</h3>` +
+        `<div class="flag-key">${escapeHtml(data.key || "tenant-security")}</div></div></div>` +
+        `<p class="flag-summary">By name adds the next tenant every 10 seconds. By datacenter locks Large in DC01, then the next datacenter every 30 seconds. Full deployment locks Small by size, then Medium from DC01 through DC05, then L01, every 20 seconds. The lab writes each step. The floor counts down the last 5 seconds. Unknown stays off. A tone marks the start, the next size or datacenter, and the end.</p>` +
+        openFlag +
+        `<div class="rollout-steps">${pills}</div>` +
+        `<p class="rollout-timer"><span id="security-timer">${escapeHtml(timer)}</span><span class="rollout-count" id="security-count">${escapeHtml(formatShare(securityCensus.secured, securityCensus.total))}</span></p>` +
+        `<p class="flag-hint">${escapeHtml(data.detail || "")}</p>` +
+        `<div class="wave-actions">` +
+        `<button type="button" class="rollout-reset" id="security-start-name"${running ? " disabled" : ""}>By name</button>` +
+        `<button type="button" class="rollout-reset" id="security-start-datacenter"${running ? " disabled" : ""}>By datacenter</button>` +
+        `<button type="button" class="rollout-reset" id="security-start-full"${running ? " disabled" : ""}>Full deployment</button>` +
+        `<button type="button" class="rollout-reset" id="security-reset">Reset</button>` +
+        `</div></div>`;
+      document.getElementById("security-start-name").addEventListener("click", () => postSecurity("start", "name"));
+      document.getElementById("security-start-datacenter").addEventListener("click", () => postSecurity("start", "datacenter"));
+      document.getElementById("security-start-full").addEventListener("click", () => postSecurity("start", "full"));
+      document.getElementById("security-reset").addEventListener("click", () => postSecurity("reset"));
+      syncWaveDeadline(data);
+    }
+
+    let waveDeadline = null;
+
+    function syncWaveDeadline(data) {
+      if (data && data.status === "running" && data.remainingMs != null) {
+        waveDeadline = Date.now() + data.remainingMs;
+      } else {
+        waveDeadline = null;
+      }
+      paintWaveCountdown();
+    }
+
+    function paintWaveCountdown() {
+      const banner = document.getElementById("wave-countdown");
+      const timer = document.getElementById("security-timer");
+      if (waveDeadline == null) {
+        if (banner) banner.hidden = true;
+        return;
+      }
+      const remaining = Math.max(0, waveDeadline - Date.now());
+      if (timer) timer.textContent = formatRemaining(remaining);
+      const seconds = Math.ceil(remaining / 1000);
+      if (!banner) return;
+      if (seconds > 0 && seconds <= 5) {
+        banner.hidden = false;
+        banner.textContent = "Next step in " + seconds;
+      } else {
+        banner.hidden = true;
+      }
+    }
+
+    function refreshSecurity() {
+      return fetch("/api/security", { cache: "no-store" })
+        .then((response) => response.json())
+        .then((data) => {
+          renderSecurity(data);
+          noteSecurity(data);
+          const mark = data.status + ":" + (data.mode || "") + ":" + (data.step || "");
+          if (data.status === "running" || mark !== lastSecurityKey) {
+            lastSecurityKey = mark;
+            loadLayout();
+          }
+          return data;
+        })
+        .catch((err) => {
+          const host = document.getElementById("security-waves");
+          host.innerHTML = `<p class="controls-warn">${escapeHtml(String(err))}</p>`;
+        });
+    }
+
+    async function postSecurity(action, mode) {
+      unlockAudio();
+      const buttonId = action === "reset" ? "security-reset" : "security-start-" + (mode || "name");
+      const button = document.getElementById(buttonId);
+      if (button) button.disabled = true;
+      try {
+        const response = await fetch("/api/security", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(mode ? { action, mode } : { action }),
+        });
+        const data = await response.json();
+        if (!response.ok || data.ok === false) throw new Error(data.error || "HTTP " + response.status);
+        renderSecurity(data);
+        noteSecurity(data);
+        await loadLayout();
+      } catch (err) {
+        const host = document.getElementById("security-waves");
+        const note = document.createElement("p");
+        note.className = "controls-warn";
+        note.textContent = String(err.message || err);
+        host.append(note);
+      }
+    }
+
     loadTrace();
     renderTraceLog();
+    document.querySelectorAll(".size-filter input[data-size]").forEach((box) => {
+      box.addEventListener("change", () => {
+        if (lastLayout) render(lastLayout);
+      });
+    });
     loadLayout();
+    watchFloorEvents();
     refreshControls();
     refreshFillRollout();
     setInterval(refreshFillRollout, 2000);
+    refreshSecurity();
+    setInterval(refreshSecurity, 2000);
+    setInterval(paintWaveCountdown, 200);
 
     (function () {
       var shell = document.getElementById("app");
