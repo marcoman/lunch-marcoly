@@ -97,15 +97,58 @@
     .floor-summary { margin-top: 1.15rem; }
     .floor-summary h2 { margin: 0 0 0.2rem; font-size: 0.95rem; font-weight: 650; }
     .floor-summary p { margin: 0 0 0.55rem; color: var(--muted); font-size: 0.78rem; }
-    .size-summary { width: 100%; max-width: 42rem; border-collapse: collapse; font-size: 0.85rem; }
+    .size-summary {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
     .size-summary th, .size-summary td {
-      border-bottom: 1px solid var(--line);
-      padding: 0.4rem 0.65rem;
+      width: 16.66%;
+      border: 1px solid var(--line);
+      padding: 0.45rem 0.65rem;
       text-align: right;
     }
     .size-summary th:first-child { text-align: left; }
-    .size-summary thead th { color: var(--muted); font-weight: 650; font-size: 0.75rem; }
-    .size-summary tfoot th, .size-summary tfoot td { font-weight: 650; border-bottom: none; }
+    .size-summary thead th {
+      color: var(--muted);
+      font-weight: 650;
+      font-size: 0.75rem;
+      background: #252535;
+      border-bottom: 2px solid var(--accent);
+    }
+    .size-summary tfoot th, .size-summary tfoot td {
+      font-weight: 650;
+      border-top: 2px solid var(--accent);
+      background: #252535;
+    }
+    .size-summary .num {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-variant-numeric: tabular-nums;
+    }
+    .size-summary .pulse-up, .size-summary .pulse-down {
+      display: inline-block;
+      transform-origin: right center;
+      animation-duration: 1.1s;
+      animation-timing-function: ease-out;
+    }
+    .size-summary .pulse-up { animation-name: count-up; }
+    .size-summary .pulse-down { animation-name: count-down; }
+    @keyframes count-up {
+      0% { color: #81c784; font-weight: 750; transform: scale(1.18); }
+      70% { color: #81c784; font-weight: 650; transform: scale(1.04); }
+      100% { color: inherit; font-weight: 450; transform: scale(1); }
+    }
+    @keyframes count-down {
+      0% { color: #ef9a9a; font-weight: 750; transform: scale(1.18); }
+      70% { color: #ef9a9a; font-weight: 650; transform: scale(1.04); }
+      100% { color: inherit; font-weight: 450; transform: scale(1); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .size-summary .pulse-up, .size-summary .pulse-down { animation: none; transform: none; }
+      .size-summary .pulse-up { color: #81c784; }
+      .size-summary .pulse-down { color: #ef9a9a; }
+    }
     .tenants {
       display: flex;
       flex-direction: column;
@@ -113,7 +156,7 @@
     }
     .tenant {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       width: 100%;
       gap: 0.45rem;
       padding: 0.28rem 0.45rem;
@@ -126,14 +169,21 @@
     .tenant.filled {
       background: color-mix(in srgb, var(--tenant-color) 45%, #1a1a28);
     }
-    .tenant-name { font-size: 0.82rem; }
-    .tenant-icons {
+    .tenant-name {
+      font-size: 0.82rem;
       flex: 1 1 auto;
-      min-width: 0.5rem;
+      min-width: 0;
+    }
+    .tenant-icons {
+      flex: 0 0 auto;
       display: flex;
-      justify-content: center;
       align-items: center;
-      gap: 0.2rem;
+      gap: 0.15rem;
+    }
+    .tenant-slot {
+      width: 14px;
+      height: 14px;
+      flex: 0 0 14px;
     }
     .tenant-lock { color: #f5d76e; display: block; }
     .tenant-firewall { color: #7dd3c0; display: block; }
@@ -377,7 +427,7 @@
       <div id="dcs" class="dcs"></div>
       <section class="floor-summary" aria-label="Counts by size">
         <h2>By size</h2>
-        <p>Each number is a box on the floor. A name in two datacenters counts twice.</p>
+        <p>Each number is a box on the floor. A name in two datacenters counts twice. The share in parentheses is of that row.</p>
         <table class="size-summary" id="size-summary">
           <thead>
             <tr>
@@ -456,7 +506,7 @@
           <div class="block-title">How the names are made</div>
           <p class="ld-about-p">Walk A–Z twice. Vowels are Large. Q and Z are unknown. Every other letter uses (letter number − 1) mod 3: 2 is Medium, and 0 or 1 is Small. Each size keeps its own counter. Odd and even are that counter. An odd Small is size 1 in one datacenter. An even Small is size 2 in two. An odd Medium is size 5 in one. An even Medium is size 5 in three. An odd Large is size 7 in three. An even Large is size 7 in all five. Unknown stays size 3 in one. One cursor hands out the next datacenters and wraps after DC05. The same name is drawn in each datacenter that customer occupies. The subscript is size.version, and every instance starts at 0, so a large reads 7.0.</p>
           <div class="block-title">What to look at</div>
-          <p class="ld-about-p">Read a datacenter card. The Toggles tab turns each flag on or off. The border palette keeps its fallthrough picker. On serves the true variation, unless a rollout is already the default rule. Enable for everybody serves that true variation. The fill rollout is a progressive rollout on <code>tenant-box-fill</code>: five one-minute steps, then everyone. Start that rollout in LaunchDarkly. Reset on the Manual tab returns the flag to Empty. Security waves release the lock on a timer. By name serves S01, then S02 every 10 seconds, through Small, Medium, and Large. By datacenter serves Large in DC01, then the next datacenter every 10 seconds. Full deployment serves Small size 1, then size 2, then Medium from DC01 through DC05, then L01, every 10 seconds. The family chip pulses while that size is still releasing. Unknown stays off. The Manual tab also has <code>tenant-firewall</code>. True draws a firewall icon. Click the page once. Fill and security then play three tones: a low note at the start, a middle pair when the percentage, size, or datacenter changes, and a high note at the end. Names inside Large stay quiet. The shape matches the tones in 107-scheduled-changes. Trace records those changes. Model lists the segments and what comes later.</p>
+          <p class="ld-about-p">Read a datacenter card. The Toggles tab turns each flag on or off. The border palette keeps its fallthrough picker. On serves the true variation, unless a rollout is already the default rule. Enable for everybody serves that true variation. The fill rollout is a progressive rollout on <code>tenant-box-fill</code>: five one-minute steps, then everyone. Start that rollout in LaunchDarkly. Reset on the Manual tab returns the flag to Empty. Security waves release the lock on a timer. By name serves S01, then S02 every 10 seconds, through Small, Medium, and Large. By datacenter serves Large in DC01, then the next datacenter every 10 seconds. Full deployment serves Small size 1, then size 2, then Medium from DC01 through DC05, then L01, every 10 seconds. The family chip pulses while that size is still releasing. Unknown stays off. The Manual tab also has <code>tenant-firewall</code>. True draws a firewall icon. Click the page once. Turning any flag on plays a rising pair. Turning it off plays those notes downward. Fill and security also play three tones: a low note at the start, a middle pair when the percentage, size, or datacenter changes, and a high note at the end. Names inside Large stay quiet. The shape matches the tones in 107-scheduled-changes. Trace records those changes. Model lists the segments and what comes later.</p>
           <p class="ld-about-p"><a href="https://launchdarkly.com/docs/home/flags/variations">Multivariate variations</a> · <a href="https://launchdarkly.com/docs/home/releases/progressive-rollouts">Progressive rollouts</a> · <a href="https://launchdarkly.com/docs/home/flags/individual-targeting">Individual targets</a> · <a href="https://launchdarkly.com/docs/home/flags/targeting-rules">Targeting rules</a> · <a href="https://launchdarkly.com/docs/home/flags/contexts">Contexts</a></p>
         </section>
       </div>
@@ -532,6 +582,19 @@
       return svg;
     }
 
+    function tenantLabel(customer) {
+      const word = { small: "small", medium: "Med", large: "LARGE" }[customer.sizeClass];
+      if (!word) return customer.name;
+      return word + customer.name.slice(1);
+    }
+
+    function iconSlot(node) {
+      const slot = document.createElement("span");
+      slot.className = "tenant-slot";
+      if (node) slot.append(node);
+      return slot;
+    }
+
     function tenantBox(customer) {
       const box = document.createElement("div");
       box.className = "tenant";
@@ -542,11 +605,14 @@
       if (customer.fill) box.classList.add("filled");
       const name = document.createElement("span");
       name.className = "tenant-name";
-      name.textContent = customer.name;
+      name.textContent = tenantLabel(customer);
+      name.title = customer.name;
       const icons = document.createElement("span");
       icons.className = "tenant-icons";
-      if (customer.security) icons.append(securityLock());
-      if (customer.firewall) icons.append(firewallIcon());
+      icons.append(
+        iconSlot(customer.security ? securityLock() : null),
+        iconSlot(customer.firewall ? firewallIcon() : null)
+      );
       const size = document.createElement("sub");
       size.className = "tenant-size";
       size.textContent = customer.size + "." + customer.version;
@@ -569,8 +635,10 @@
 
     // Same oscillator shape as 107-scheduled-changes. A click unlocks the
     // context; later polls may then play. Start is 440 Hz. A phase change
-    // is the middle pair. The end is the high note.
+    // is the middle pair. Turning a flag on plays the rising pair, 659 then
+    // 880. Turning it off plays those notes downward.
     let audioContext = null;
+    const recentFlagCue = {};
 
     function unlockAudio() {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -583,11 +651,14 @@
     function playCue(kind) {
       const context = unlockAudio();
       if (!context) return;
-      const notes = kind === "end"
-        ? [[659, 0.14], [880, 0.32]]
-        : kind === "phase"
-          ? [[523, 0.12], [659, 0.16]]
-          : [[440, 0.16]];
+      const rising = [[659, 0.14], [880, 0.32]];
+      const notes = kind === "down"
+        ? [...rising].reverse()
+        : kind === "end" || kind === "up"
+          ? rising
+          : kind === "phase"
+            ? [[523, 0.12], [659, 0.16]]
+            : [[440, 0.16]];
       let at = context.currentTime;
       for (const [frequency, duration] of notes) {
         const oscillator = context.createOscillator();
@@ -603,6 +674,14 @@
         oscillator.stop(at + duration + 0.02);
         at += duration + 0.04;
       }
+    }
+
+    function playFlagCue(key, kind) {
+      const now = Date.now();
+      const prev = recentFlagCue[key];
+      if (prev && prev.kind === kind && now - prev.at < 1000) return;
+      recentFlagCue[key] = { kind, at: now };
+      playCue(kind);
     }
 
     document.addEventListener("pointerdown", unlockAudio);
@@ -657,6 +736,7 @@
       if (prev.on !== next.on) {
         const detail = next.on && next.palette ? ", " + next.palette : "";
         pushTrace(flag.key + " " + (prev.on ? "on" : "off") + " → " + (next.on ? "on" : "off") + detail);
+        playFlagCue(flag.key, next.on ? "up" : "down");
         return;
       }
       pushTrace(flag.key + " " + prev.palette + " → " + next.palette);
@@ -669,13 +749,19 @@
       if (!prev || (prev.status === next.status && prev.percent === next.percent && prev.on === next.on)) return;
       if (next.status === "off") {
         pushTrace("tenant-box-fill off, Empty");
+        if (prev.status !== "off") playFlagCue("tenant-box-fill", "down");
+        return;
+      }
+      if (next.status === "on" && prev.status !== "on") {
+        pushTrace("tenant-box-fill on, Fill");
+        playFlagCue("tenant-box-fill", "up");
         return;
       }
       const finished = next.status === "complete" || (next.on && next.percent >= 100);
       const wasFinished = prev.status === "complete" || (prev.on && prev.percent >= 100);
       if (finished) {
         pushTrace("tenant-box-fill complete, Fill");
-        if (!wasFinished) playCue("end");
+        if (!wasFinished) playFlagCue("tenant-box-fill", "up");
         return;
       }
       if (next.status === "active") {
@@ -760,15 +846,34 @@
       { key: "unknown", label: "Unknown" },
     ];
 
-    function summaryRow(label, bucket) {
+    const SUMMARY_KEYS = ["total", "border", "fill", "security", "firewall"];
+    let summarySeen = null;
+
+    function percentOf(count, total) {
+      if (!total) return 0;
+      return Math.round((count / total) * 100);
+    }
+
+    function summaryRow(label, bucket, previous) {
       const row = document.createElement("tr");
       const name = document.createElement("th");
       name.scope = "row";
       name.textContent = label;
       row.append(name);
-      for (const key of ["total", "border", "fill", "security", "firewall"]) {
+      for (const key of SUMMARY_KEYS) {
         const cell = document.createElement("td");
-        cell.textContent = String(bucket[key]);
+        cell.className = "num";
+        const count = bucket[key];
+        const text = key === "total" ? String(count) : count + " (" + percentOf(count, bucket.total) + "%)";
+        const value = document.createElement("span");
+        value.textContent = text;
+        if (previous && count !== previous[key]) {
+          value.className = count > previous[key] ? "pulse-up" : "pulse-down";
+          const clear = () => value.classList.remove("pulse-up", "pulse-down");
+          value.addEventListener("animationend", clear, { once: true });
+          setTimeout(clear, 1200);
+        }
+        cell.append(value);
         row.append(cell);
       }
       return row;
@@ -792,12 +897,14 @@
       const foot = document.querySelector("#size-summary tfoot");
       body.replaceChildren();
       const sum = { total: 0, border: 0, fill: 0, security: 0, firewall: 0 };
+      const seen = summarySeen;
       for (const size of SIZE_ROWS) {
         const bucket = counts[size.key];
-        for (const key of Object.keys(sum)) sum[key] += bucket[key];
-        body.append(summaryRow(size.label, bucket));
+        for (const key of SUMMARY_KEYS) sum[key] += bucket[key];
+        body.append(summaryRow(size.label, bucket, seen ? seen[size.key] : null));
       }
-      foot.replaceChildren(summaryRow("Total", sum));
+      foot.replaceChildren(summaryRow("Total", sum, seen ? seen.total : null));
+      summarySeen = { ...counts, total: sum };
     }
 
     function renderFirewall(data) {
@@ -836,9 +943,22 @@
       logo.src = data.logoUrl;
       logo.alt = data.companyName;
       const shown = visibleSizes();
+      const bands = SIZE_ROWS.map((size) => size.key).filter((size) => !shown || shown.has(size));
+      const grouped = data.datacenters.map((datacenter) => {
+        const bySize = {};
+        for (const size of bands) bySize[size] = [];
+        for (const customer of datacenter.customers) {
+          if (!bySize[customer.sizeClass]) continue;
+          bySize[customer.sizeClass].push(customer);
+        }
+        for (const size of bands) {
+          bySize[size].sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+        }
+        return bySize;
+      });
       const floor = document.getElementById("dcs");
       floor.replaceChildren();
-      for (const datacenter of data.datacenters) {
+      data.datacenters.forEach((datacenter, index) => {
         const card = document.createElement("section");
         card.className = "dc";
         const title = document.createElement("h2");
@@ -846,17 +966,18 @@
         const grid = document.createElement("div");
         grid.className = "tenants";
         let visible = 0;
-        for (const customer of datacenter.customers) {
-          if (shown && !shown.has(customer.sizeClass)) continue;
-          visible += 1;
-          grid.append(tenantBox(customer));
+        for (const size of bands) {
+          for (const customer of grouped[index][size]) {
+            visible += 1;
+            grid.append(tenantBox(customer));
+          }
         }
         const count = document.createElement("p");
         count.className = "dc-count";
         count.textContent = `${visible} customers`;
         card.append(title, count, grid);
         floor.append(card);
-      }
+      });
       renderSizeSummary(data);
       renderFirewall(data);
       readCensus(data);
@@ -1183,11 +1304,12 @@
       if (!prev || (prev.status === next.status && prev.step === next.step && prev.mode === next.mode)) return;
       if (next.status === "off") {
         pushTrace("tenant-security off");
+        if (prev.status !== "off") playFlagCue("tenant-security", "down");
         return;
       }
       if (next.status === "complete") {
         pushTrace("tenant-security complete, " + (data.modeLabel || "done"));
-        if (prev.status !== "complete") playCue("end");
+        if (prev.status !== "complete") playFlagCue("tenant-security", "up");
         return;
       }
       if (next.step) {

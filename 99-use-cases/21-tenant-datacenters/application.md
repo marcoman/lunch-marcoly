@@ -32,14 +32,14 @@ customer starts on the datacenter where that Large started.
 A is `L01`, size 7 version 0, in DC01, DC02, and DC03. B is `S01`, size 1, in DC04.
 The subscript on each box is size.version, so a large reads `7.0`.
 The floor has 52 names and 106 boxes. DC01 holds 22. The other four hold 21.
-Each box spans the width of its datacenter. The open middle is for later icons.
+Each box spans the width of its datacenter. The lock and the firewall sit in two columns beside the version.
 
 ## Screen
 
 The upper left shows `companyName` and `logo` from `customizations.json`, or
 from `customizations.json.example` when the local file is absent. Each
 datacenter is a card. Each customer is a full-width monospace row, with
-`size.version` as a subscript. The open middle is for later icons.
+`size.version` as a subscript. The lock and the firewall sit in two columns beside that subscript. Boxes run small, medium, large, then unknown.
 
 ## Context
 
@@ -77,7 +77,7 @@ the lab targets `S01`, then the next name, 10 seconds apart, through Small,
 Medium, and Large. By datacenter, it targets Large in `DC01`, then the next
 datacenter, 10 seconds apart. Full deployment targets Small size 1, then
 size 2, then Medium from `DC01` through `DC05`, then `L01`, 10 seconds
-apart. Unknown stays off. Click the page once. Fill plays a tone at
+apart. Unknown stays off. Click the page once. Turning a flag on plays a rising pair. Turning it off plays those notes downward. Fill plays a tone at
 the start, at each later percentage, and at the finish. Security plays at
 the start, when the size or datacenter changes, and at the end.
 `tenant-firewall` is a boolean icon on the Manual tab. True draws it. Off

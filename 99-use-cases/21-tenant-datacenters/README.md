@@ -18,6 +18,7 @@ Docs: [Variations](https://launchdarkly.com/docs/home/flags/variations) ·
 ## The floor
 
 52 names, 106 boxes. A name that spans datacenters is drawn once in each.
+Within a datacenter the boxes run small, medium, large, then unknown.
 
 | Datacenter | Boxes |
 |------------|------:|
@@ -76,7 +77,9 @@ picker. Each boolean card has On, Off, and Enable for everybody.
 On serves the true variation. If a progressive rollout is already the default
 rule, On leaves that rollout and turns the flag on. Off only turns the flag
 off. Rules, targets, and the default rule stay. Enable for everybody turns
-the flag on and serves the true variation from the default rule.
+the flag on and serves the true variation from the default rule. Turning a
+flag on plays a rising pair, 659 Hz then 880 Hz. Turning it off plays those
+notes downward. Click the page once so the browser will play them.
 
 [Boolean variations](https://launchdarkly.com/docs/home/flags/boolean) ·
 [Multivariate variations](https://launchdarkly.com/docs/home/flags/variations)
