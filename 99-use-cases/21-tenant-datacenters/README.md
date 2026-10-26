@@ -62,10 +62,24 @@ so every Small is the same color in every datacenter. Yellow and orange stay
 out of ROYGBIV so the light name still reads on a tinted fill. Fill with no
 palette paints nothing.
 
-Turning the border flag on, with no other rule, serves `roygbiv`. The Automatic
+Turning the border flag on, with no other rule, serves `roygbiv`. The Toggles
 tab does that with the same on/off and fallthrough control as the 10-series.
 It needs `LD_API_ACCESS_TOKEN`, `LD_PROJECT_KEY`, and `LD_ENVIRONMENT_KEY`
 on the server. The palette applies to every box.
+
+## Toggles
+
+The Toggles tab is first. It controls `tenant-border-palette`, `tenant-box-fill`,
+`tenant-security`, and `tenant-firewall`. The border card keeps the palette
+picker. Each boolean card has On, Off, and Enable for everybody.
+
+On serves the true variation. If a progressive rollout is already the default
+rule, On leaves that rollout and turns the flag on. Off only turns the flag
+off. Rules, targets, and the default rule stay. Enable for everybody turns
+the flag on and serves the true variation from the default rule.
+
+[Boolean variations](https://launchdarkly.com/docs/home/flags/boolean) ·
+[Multivariate variations](https://launchdarkly.com/docs/home/flags/variations)
 
 ## Fill rollout
 
@@ -96,9 +110,9 @@ tenants.
 ## Security waves
 
 `tenant-security` draws a lock. Three starts on the Automatic tab. By name waits
-10 seconds between tenants. By datacenter waits 30 seconds between
-datacenters. Full deployment waits 20 seconds between steps. The lab writes
-the next change. The floor counts down the last 5 seconds before that change.
+10 seconds between tenants. By datacenter waits 10 seconds between
+datacenters. Full deployment waits 10 seconds between steps. The lab writes
+the next change. The security panel counts down the last 5 seconds before that change.
 Unknown stays off. Reset removes the targets and the rules
 and turns the flag off. A tone marks the start, the next size or datacenter,
 and the end. Names inside one size stay quiet.
@@ -110,7 +124,7 @@ Small chip pulses while Small is still releasing. It goes solid when `S28`
 is out. Medium starts pulsing at `M01`. The line under the timer reads
 `Small · by name · S07`.
 
-By datacenter adds one rule every 30 seconds for Large only: `DC01`, then `DC02`,
+By datacenter adds one rule every 10 seconds for Large only: `DC01`, then `DC02`,
 through `DC05`. The rule matches `tenant-size-large` and `tenant-dc-01`,
 then the next datacenter segment. The same large name can show the lock in
 `DC01` and stay open in `DC02`. Small and Medium stay off. The line reads
@@ -122,7 +136,7 @@ is size 2 in two, and both lock together. Medium adds one rule per
 datacenter, `DC01` through `DC05`, matching `tenant-size-medium` and
 `tenant-dc-0N`. The same medium name can lock in one datacenter and stay
 open in another. Large then targets `L01`, then `L02`, through `L10`. A
-large name locks in every datacenter it occupies. Each step waits 20
+large name locks in every datacenter it occupies. Each step waits 10
 seconds. The line reads `Small · full deployment · size 1`, then
 `Medium · full deployment · DC01`, then `Large · full deployment · L01`.
 Seventeen steps.

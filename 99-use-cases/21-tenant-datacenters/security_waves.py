@@ -4,11 +4,11 @@ By name, add one individual target every 10 seconds: S01, then S02, through
 Small, Medium, and Large. A targeted name locks in every datacenter that
 name occupies, because those contexts share a key.
 
-By datacenter, add one targeting rule every 30 seconds for Large only. The rule
+By datacenter, add one targeting rule every 10 seconds for Large only. The rule
 matches the large segment and one datacenter segment, so only the boxes in
 that datacenter lock. Small and Medium stay off.
 
-Full deployment walks Small, then Medium, then Large, one step every 20
+Full deployment walks Small, then Medium, then Large, one step every 10
 seconds. Small is two rules on the size attribute: size 1, then size 2.
 Medium is one rule per datacenter, DC01 through DC05. Large is one individual
 target per name, L01 then L02. Unknown is in none of the waves.
@@ -36,8 +36,8 @@ from tenants import build_customers
 # By name is the fast demo. By datacenter steps through one site at a time.
 # Full deployment is the mixed walk: size, then datacenter, then name.
 NAME_STAGE_MS = 10_000
-DC_STAGE_MS = 30_000
-FULL_STAGE_MS = 20_000
+DC_STAGE_MS = 10_000
+FULL_STAGE_MS = 10_000
 FAMILIES = (
     {"segment": "small", "label": "Small"},
     {"segment": "medium", "label": "Medium"},
@@ -455,8 +455,8 @@ def _detail(
     if status == "off" or not mode:
         return (
             "Off. By name releases S01, then the next name every 10 seconds. "
-            "By datacenter releases Large in DC01, then the next datacenter every 30 seconds. "
-            "Full deployment releases Small by size, then Medium from DC01 through DC05, then L01, every 20 seconds."
+            "By datacenter releases Large in DC01, then the next datacenter every 10 seconds. "
+            "Full deployment releases Small by size, then Medium from DC01 through DC05, then L01, every 10 seconds."
         )
     mode_label = MODE_LABEL[mode]
     if status == "complete":

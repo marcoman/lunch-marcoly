@@ -379,7 +379,7 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/security":
             # tenant-security — By name targets S01. By datacenter rules Large in DC01.
             # Full deployment rules Small size 1. By name waits 10 seconds.
-            # By datacenter waits 30 seconds. Full deployment waits 20 seconds.
+            # By datacenter waits 10 seconds. Full deployment waits 10 seconds.
             # The timer writes each later step. Reset clears every wave.
             # https://launchdarkly.com/docs/home/flags/individual-targeting
             try:
@@ -415,11 +415,12 @@ class Handler(BaseHTTPRequestHandler):
                 raise ValueError('"key" is required')
             turn_on = bool(data["on"]) if "on" in data else None
             fallthrough = data.get("fallthrough")
-            fallthrough_value = str(fallthrough).strip() if fallthrough is not None else None
+            fallthrough_value = str(fallthrough).strip() if isinstance(fallthrough, str) else None
             result = apply_flag_control(
                 key,
                 turn_on=turn_on,
                 fallthrough=fallthrough_value or None,
+                everybody=data.get("everybody") is True,
             )
             self._json(result)
         except ValueError as exc:

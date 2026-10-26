@@ -63,7 +63,10 @@ Contexts — https://launchdarkly.com/docs/home/flags/contexts
 
 ## Flags
 
-`tenant-border-palette` is one string for the whole floor: `none`, `roygbiv`,
+The Toggles tab turns each flag on or off. On serves the true variation, unless
+a rollout is already the default rule. Off only turns the flag off. Enable for
+everybody serves the true variation from the default rule. The border palette
+keeps its fallthrough picker. `tenant-border-palette` is one string for the whole floor: `none`, `roygbiv`,
 `contrast`, `earth`, `ocean`, or `color-vision-aware`. Off serves `none`. Size class picks the hue, so
 every Small matches. `tenant-box-fill` is a progressive rollout. Five one-minute steps serve
 Fill to 5%, 10%, 25%, 50%, and 75% of tenant keys. After five minutes the
@@ -72,8 +75,8 @@ context kind `tenant`, from Empty to Fill. Reset on the Manual tab turns the
 flag off and serves Empty. `tenant-security` is a boolean lock. By name,
 the lab targets `S01`, then the next name, 10 seconds apart, through Small,
 Medium, and Large. By datacenter, it targets Large in `DC01`, then the next
-datacenter, 30 seconds apart. Full deployment targets Small size 1, then
-size 2, then Medium from `DC01` through `DC05`, then `L01`, 20 seconds
+datacenter, 10 seconds apart. Full deployment targets Small size 1, then
+size 2, then Medium from `DC01` through `DC05`, then `L01`, 10 seconds
 apart. Unknown stays off. Click the page once. Fill plays a tone at
 the start, at each later percentage, and at the finish. Security plays at
 the start, when the size or datacenter changes, and at the end.

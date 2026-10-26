@@ -56,13 +56,21 @@
     }
     .size-filter input { accent-color: var(--accent); }
     .wave-countdown {
-      margin: 0 0 0.85rem;
-      font-size: 1.8rem;
-      font-weight: 700;
+      font-family: system-ui, sans-serif;
+      font-size: 0.95rem;
+      font-weight: 650;
       letter-spacing: 0.02em;
       color: var(--accent);
+      animation: countdown-pulse 1s ease-in-out infinite;
     }
     .wave-countdown[hidden] { display: none; }
+    @keyframes countdown-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .wave-countdown { animation: none; }
+    }
     .brand img {
       width: 48px;
       height: 48px;
@@ -366,7 +374,6 @@
           <label><input type="checkbox" data-size="unknown" checked> Unknown</label>
         </div>
       </header>
-      <p id="wave-countdown" class="wave-countdown" hidden></p>
       <div id="dcs" class="dcs"></div>
       <section class="floor-summary" aria-label="Counts by size">
         <h2>By size</h2>
@@ -391,7 +398,8 @@
       <div class="ld-rail-resize" role="separator" aria-orientation="vertical" aria-label="Resize lab drawer" title="Drag to resize" tabindex="0"></div>
       <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
       <div class="ld-tabs" role="tablist">
-        <button type="button" class="ld-tab active" data-tab="automatic" role="tab" aria-selected="true">Automatic</button>
+        <button type="button" class="ld-tab active" data-tab="toggles" role="tab" aria-selected="true">Toggles</button>
+        <button type="button" class="ld-tab" data-tab="automatic" role="tab" aria-selected="false">Automatic</button>
         <button type="button" class="ld-tab" data-tab="manual" role="tab" aria-selected="false">Manual</button>
         <button type="button" class="ld-tab" data-tab="trace" role="tab" aria-selected="false">Trace</button>
         <button type="button" class="ld-tab" data-tab="model" role="tab" aria-selected="false">Model</button>
@@ -399,11 +407,13 @@
         <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
       </div>
       <div class="ld-rail-body">
-        <section id="ld-section-automatic" class="ld-section active">
-          <div class="block-title">Flag toggle</div>
+        <section id="ld-section-toggles" class="ld-section active">
+          <div class="block-title">Toggles</div>
           <p id="controls-meta" class="ld-about-p"></p>
           <p id="controls-warn" class="controls-warn" hidden></p>
           <div id="controls-list"></div>
+        </section>
+        <section id="ld-section-automatic" class="ld-section">
           <div class="block-title">Security waves</div>
           <div id="security-waves"></div>
         </section>
@@ -446,7 +456,7 @@
           <div class="block-title">How the names are made</div>
           <p class="ld-about-p">Walk A–Z twice. Vowels are Large. Q and Z are unknown. Every other letter uses (letter number − 1) mod 3: 2 is Medium, and 0 or 1 is Small. Each size keeps its own counter. Odd and even are that counter. An odd Small is size 1 in one datacenter. An even Small is size 2 in two. An odd Medium is size 5 in one. An even Medium is size 5 in three. An odd Large is size 7 in three. An even Large is size 7 in all five. Unknown stays size 3 in one. One cursor hands out the next datacenters and wraps after DC05. The same name is drawn in each datacenter that customer occupies. The subscript is size.version, and every instance starts at 0, so a large reads 7.0.</p>
           <div class="block-title">What to look at</div>
-          <p class="ld-about-p">Read a datacenter card. The Automatic tab turns the border palette on and picks the fallthrough. The fill rollout is a progressive rollout on <code>tenant-box-fill</code>: five one-minute steps, then everyone. Start that rollout in LaunchDarkly. Reset on the Manual tab returns the flag to Empty. Security waves release the lock on a timer. By name serves S01, then S02 every 10 seconds, through Small, Medium, and Large. By datacenter serves Large in DC01, then the next datacenter every 30 seconds. Full deployment serves Small size 1, then size 2, then Medium from DC01 through DC05, then L01, every 20 seconds. The family chip pulses while that size is still releasing. Unknown stays off. The Manual tab also has <code>tenant-firewall</code>. True draws a firewall icon. Click the page once. Fill and security then play three tones: a low note at the start, a middle pair when the percentage, size, or datacenter changes, and a high note at the end. Names inside Large stay quiet. The shape matches the tones in 107-scheduled-changes. Trace records those changes. Model lists the segments and what comes later.</p>
+          <p class="ld-about-p">Read a datacenter card. The Toggles tab turns each flag on or off. The border palette keeps its fallthrough picker. On serves the true variation, unless a rollout is already the default rule. Enable for everybody serves that true variation. The fill rollout is a progressive rollout on <code>tenant-box-fill</code>: five one-minute steps, then everyone. Start that rollout in LaunchDarkly. Reset on the Manual tab returns the flag to Empty. Security waves release the lock on a timer. By name serves S01, then S02 every 10 seconds, through Small, Medium, and Large. By datacenter serves Large in DC01, then the next datacenter every 10 seconds. Full deployment serves Small size 1, then size 2, then Medium from DC01 through DC05, then L01, every 10 seconds. The family chip pulses while that size is still releasing. Unknown stays off. The Manual tab also has <code>tenant-firewall</code>. True draws a firewall icon. Click the page once. Fill and security then play three tones: a low note at the start, a middle pair when the percentage, size, or datacenter changes, and a high note at the end. Names inside Large stay quiet. The shape matches the tones in 107-scheduled-changes. Trace records those changes. Model lists the segments and what comes later.</p>
           <p class="ld-about-p"><a href="https://launchdarkly.com/docs/home/flags/variations">Multivariate variations</a> · <a href="https://launchdarkly.com/docs/home/releases/progressive-rollouts">Progressive rollouts</a> · <a href="https://launchdarkly.com/docs/home/flags/individual-targeting">Individual targets</a> · <a href="https://launchdarkly.com/docs/home/flags/targeting-rules">Targeting rules</a> · <a href="https://launchdarkly.com/docs/home/flags/contexts">Contexts</a></p>
         </section>
       </div>
@@ -962,6 +972,12 @@
         warn.hidden = true;
         meta.innerHTML = "Project <code>" + escapeHtml(data.projectKey) + "</code> · environment <code>" + escapeHtml(data.environmentKey) + "</code>";
       }
+      const icons = {
+        "tenant-border-palette": borderSvg,
+        "tenant-box-fill": fillSvg,
+        "tenant-security": lockSvg,
+        "tenant-firewall": firewallSvg,
+      };
       list.replaceChildren();
       for (const flag of data.flags || []) {
         const card = document.createElement("div");
@@ -970,23 +986,28 @@
         const toggleClass = "flag-toggle" + (on === true ? " on" : on === false ? " off" : "");
         const toggleLabel = controlsBusy ? "…" : on === true ? "ON" : on === false ? "OFF" : "—";
         const disabled = on === null || controlsBusy || !data.configured ? "disabled" : "";
-        const options = (flag.fallthroughOptions || []).map((option) => {
-          const selected = option.token === flag.fallthroughToken ? " selected" : "";
-          return `<option value="${escapeHtml(option.token)}"${selected}>${escapeHtml(option.label)}</option>`;
-        }).join("");
-        const icon = flag.key === "tenant-border-palette" ? borderSvg() : "";
+        const icon = (icons[flag.key] || (() => ""))();
+        const vars = on === null ? "" :
+          `<div class="flag-vars">off → <span class="hi-off">${escapeHtml(flag.servedWhenOff)}</span>` +
+          ` · fallthrough → <span class="hi-on">${escapeHtml(flag.servedWhenOnFallthrough)}</span></div>`;
+        const manage = flag.variationKind === "boolean"
+          ? `<div class="wave-actions"><button type="button" class="rollout-reset" data-everybody="${escapeHtml(flag.key)}" ${disabled}>Enable for everybody</button></div>`
+          : `<div class="flag-fallthrough-row"><label for="fall-${escapeHtml(flag.key)}">Palette</label>` +
+            `<select id="fall-${escapeHtml(flag.key)}" class="flag-fallthrough-select" data-key="${escapeHtml(flag.key)}" ${disabled}>` +
+            (flag.fallthroughOptions || []).map((option) => {
+              const selected = option.token === flag.fallthroughToken ? " selected" : "";
+              return `<option value="${escapeHtml(option.token)}"${selected}>${escapeHtml(option.label)}</option>`;
+            }).join("") +
+            `</select></div>`;
         card.innerHTML =
           `<div class="flag-card-top">` +
           `<div><h3>${icon}${escapeHtml(flag.label || flag.key)}</h3>` +
           `<div class="flag-key">${escapeHtml(flag.key)}</div></div>` +
-          `<button type="button" class="${toggleClass}" data-key="${escapeHtml(flag.key)}" data-on="${on === true ? "1" : "0"}" ${disabled}>${toggleLabel}</button>` +
+          `<button type="button" class="${toggleClass}" data-key="${escapeHtml(flag.key)}" data-kind="${escapeHtml(flag.variationKind || "")}" data-on="${on === true ? "1" : "0"}" ${disabled}>${toggleLabel}</button>` +
           `</div>` +
           `<p class="flag-summary">${escapeHtml(flag.summary || "")}</p>` +
-          (on === null ? "" :
-            `<div class="flag-vars">off → <span class="hi-off">${escapeHtml(flag.servedWhenOff)}</span>` +
-            ` · fallthrough → <span class="hi-on">${escapeHtml(flag.servedWhenOnFallthrough)}</span></div>`) +
-          `<div class="flag-fallthrough-row"><label for="fall-${escapeHtml(flag.key)}">Palette</label>` +
-          `<select id="fall-${escapeHtml(flag.key)}" class="flag-fallthrough-select" data-key="${escapeHtml(flag.key)}" ${disabled}>${options}</select></div>` +
+          vars +
+          manage +
           `<p class="flag-hint">${escapeHtml(flag.targetingHint || "")}</p>`;
         list.append(card);
         noteBorder(flag);
@@ -994,8 +1015,18 @@
       list.querySelectorAll("button.flag-toggle").forEach((btn) => {
         btn.addEventListener("click", () => {
           const key = btn.getAttribute("data-key");
+          const turningOn = btn.getAttribute("data-on") !== "1";
+          if (btn.getAttribute("data-kind") === "boolean") {
+            postControl({ key, on: turningOn });
+            return;
+          }
           const select = list.querySelector(`select.flag-fallthrough-select[data-key="${CSS.escape(key)}"]`);
-          postControl({ key, on: btn.getAttribute("data-on") !== "1", fallthrough: select ? select.value : null });
+          postControl({ key, on: turningOn, fallthrough: select ? select.value : null });
+        });
+      });
+      list.querySelectorAll("button[data-everybody]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          postControl({ key: btn.getAttribute("data-everybody"), everybody: true });
         });
       });
       list.querySelectorAll("select.flag-fallthrough-select").forEach((sel) => {
@@ -1183,10 +1214,10 @@
         `<div class="flag-card">` +
         `<div class="flag-card-top"><div><h3>${lockSvg()} Tenant security</h3>` +
         `<div class="flag-key">${escapeHtml(data.key || "tenant-security")}</div></div></div>` +
-        `<p class="flag-summary">By name adds the next tenant every 10 seconds. By datacenter locks Large in DC01, then the next datacenter every 30 seconds. Full deployment locks Small by size, then Medium from DC01 through DC05, then L01, every 20 seconds. The lab writes each step. The floor counts down the last 5 seconds. Unknown stays off. A tone marks the start, the next size or datacenter, and the end.</p>` +
+        `<p class="flag-summary">By name adds the next tenant every 10 seconds. By datacenter locks Large in DC01, then the next datacenter every 10 seconds. Full deployment locks Small by size, then Medium from DC01 through DC05, then L01, every 10 seconds. The lab writes each step. This panel counts down the last 5 seconds. Unknown stays off. A tone marks the start, the next size or datacenter, and the end.</p>` +
         openFlag +
         `<div class="rollout-steps">${pills}</div>` +
-        `<p class="rollout-timer"><span id="security-timer">${escapeHtml(timer)}</span><span class="rollout-count" id="security-count">${escapeHtml(formatShare(securityCensus.secured, securityCensus.total))}</span></p>` +
+        `<p class="rollout-timer"><span id="security-timer">${escapeHtml(timer)}</span><span id="wave-countdown" class="wave-countdown" hidden></span><span class="rollout-count" id="security-count">${escapeHtml(formatShare(securityCensus.secured, securityCensus.total))}</span></p>` +
         `<p class="flag-hint">${escapeHtml(data.detail || "")}</p>` +
         `<div class="wave-actions">` +
         `<button type="button" class="rollout-reset" id="security-start-name"${running ? " disabled" : ""}>By name</button>` +
@@ -1226,6 +1257,11 @@
       if (seconds > 0 && seconds <= 5) {
         banner.hidden = false;
         banner.textContent = "Next step in " + seconds;
+        // The security card is rebuilt on each poll, so restart the pulse in phase.
+        if (!banner.dataset.pulsing) {
+          banner.style.animationDelay = `-${Date.now() % 1000}ms`;
+          banner.dataset.pulsing = "1";
+        }
       } else {
         banner.hidden = true;
       }
