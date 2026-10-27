@@ -1,4 +1,12 @@
 {
   "companyName": "Example Hosting",
-  "logo": "logo.svg"
+  "logo": "logo.svg",
+  "colors": {
+    "background": "#1e1e2e",
+    "panel": "#2d2d3d",
+    "ink": "#e8e8ec",
+    "muted": "#9a9aab",
+    "line": "#4a4a5c",
+    "accent": "#64b5f6"
+  }
 }

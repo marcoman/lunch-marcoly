@@ -25,5 +25,5 @@ The Toggles tab also needs `LD_API_ACCESS_TOKEN`, `LD_PROJECT_KEY`, and
 [../rest/create-all.sh](../rest/create-all.sh) in the same environment as the
 SDK key.
 
-Company name and logo come from `../customizations.json` when that file
-exists, and from `../customizations.json.example` otherwise.
+Company name, logo, and chrome colors come from `../customizations.json` when
+that file exists, and from `../customizations.json.example` otherwise.

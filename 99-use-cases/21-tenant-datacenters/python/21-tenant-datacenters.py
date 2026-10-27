@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import os
 import queue
+import re
 import sys
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -239,8 +240,38 @@ def _flag_summary(key: str, name: str, values: list[Any], reason: str, count: in
     }
 
 
-def load_customization() -> dict[str, str]:
-    """Read company name and logo. A missing local file uses the example."""
+# Lab chrome. customizations.json.example carries the same values.
+# A company file replaces any of these with a #RGB or #RRGGBB color.
+_DEFAULT_COLORS = {
+    "background": "#1e1e2e",
+    "panel": "#2d2d3d",
+    "ink": "#e8e8ec",
+    "muted": "#9a9aab",
+    "line": "#4a4a5c",
+    "accent": "#64b5f6",
+}
+_HEX_COLOR = re.compile(r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
+
+
+def _colors(data: dict[str, Any]) -> dict[str, str]:
+    """Keep only hex colors. A missing or invalid value stays the lab default."""
+    raw = data.get("colors")
+    chosen = raw if isinstance(raw, dict) else {}
+    colors = {}
+    for key, fallback in _DEFAULT_COLORS.items():
+        value = chosen.get(key)
+        if isinstance(value, str) and _HEX_COLOR.match(value.strip()):
+            colors[key] = value.strip()
+        else:
+            colors[key] = fallback
+    return colors
+
+
+def load_customization() -> dict[str, Any]:
+    """Read company name, logo, and chrome colors.
+
+    A missing local file uses the example. The colors object may omit a key.
+    """
     data = json.loads(EXAMPLE_CUSTOM.read_text())
     if LOCAL_CUSTOM.is_file():
         override = json.loads(LOCAL_CUSTOM.read_text())
@@ -248,7 +279,7 @@ def load_customization() -> dict[str, str]:
             data.update(override)
     name = str(data.get("companyName") or "Example Hosting").strip()
     logo = str(data.get("logo") or "logo.svg").strip()
-    return {"companyName": name, "logo": logo}
+    return {"companyName": name, "logo": logo, "colors": _colors(data)}
 
 
 def brand_file(name: str) -> Path | None:
@@ -281,6 +312,7 @@ class Handler(BaseHTTPRequestHandler):
             evaluate_floor(body)
             body["companyName"] = custom["companyName"]
             body["logoUrl"] = f"/brand/{logo.name}" if logo else ""
+            body["colors"] = custom["colors"]
             self._json(body)
             return
         if path == "/api/flag-controls":

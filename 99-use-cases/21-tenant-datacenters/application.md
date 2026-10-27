@@ -37,7 +37,9 @@ Each box spans the width of its datacenter. The lock and the firewall sit in two
 ## Screen
 
 The upper left shows `companyName` and `logo` from `customizations.json`, or
-from `customizations.json.example` when the local file is absent. Each
+from `customizations.json.example` when the local file is absent. `colors` in
+that file paints the page chrome: `background`, `panel`, `ink`, `muted`,
+`line`, and `accent`. Each value is `#RGB` or `#RRGGBB`. Each
 datacenter is a card. Each customer is a full-width monospace row, with
 `size.version` as a subscript. The lock and the firewall sit in two columns beside that subscript. Boxes run small, medium, large, then unknown.
 

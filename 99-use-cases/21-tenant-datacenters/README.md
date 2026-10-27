@@ -230,9 +230,21 @@ Create them with [rest/create-all.sh](rest/create-all.sh).
 ## Customization
 
 Copy [customizations.json.example](customizations.json.example) to
-`customizations.json` in this directory. Set `companyName` and `logo`. The
-logo is a file name in this directory, next to the example SVG. The local
-copy is gitignored. If it is missing, the page uses the example values.
+`customizations.json` in this directory. Set `companyName`, `logo`, and
+`colors`. The logo is a file name in this directory, next to the example SVG.
+`colors` is the page chrome. Each value is `#RGB` or `#RRGGBB`.
+
+| Key | Paints |
+|-----|--------|
+| `background` | Page behind the datacenters |
+| `panel` | Datacenter cards and the lab drawer |
+| `ink` | Main text |
+| `muted` | Secondary text |
+| `line` | Borders |
+| `accent` | Links, the active tab, and the countdown |
+
+The local copy is gitignored. If it is missing, the page uses the example
+values. A missing color key stays the lab default.
 
 ## Run
 
