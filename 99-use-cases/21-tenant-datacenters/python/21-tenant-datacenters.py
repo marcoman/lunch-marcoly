@@ -20,7 +20,7 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
-from urllib.parse import unquote, urlparse
+from urllib.parse import quote, unquote, urlparse
 
 import ldclient
 from ldclient import Context
@@ -283,13 +283,28 @@ def load_customization() -> dict[str, Any]:
 
 
 def brand_file(name: str) -> Path | None:
-    """Resolve a logo that sits directly in the example directory."""
-    if not name or "/" in name or "\\" in name or name.startswith("."):
+    """Resolve a logo inside this example directory.
+
+    The value may be a file name, or a path such as customizations/logo.png.
+    A leading slash, a dotfile, or .. is refused.
+    """
+    if not name:
         return None
-    path = (EXAMPLE / name).resolve()
-    if path.parent != EXAMPLE.resolve() or not path.is_file():
+    relative = name.replace("\\", "/").strip().lstrip("/")
+    parts = [part for part in relative.split("/") if part]
+    if not parts or any(part in {".", ".."} or part.startswith(".") for part in parts):
+        return None
+    path = EXAMPLE.joinpath(*parts).resolve()
+    root = EXAMPLE.resolve()
+    if root not in path.parents or not path.is_file():
         return None
     return path
+
+
+def brand_url(path: Path) -> str:
+    """URL for a logo file under the example directory."""
+    relative = path.resolve().relative_to(EXAMPLE.resolve()).as_posix()
+    return "/brand/" + quote(relative)
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -311,7 +326,7 @@ class Handler(BaseHTTPRequestHandler):
             body = build_layout()
             evaluate_floor(body)
             body["companyName"] = custom["companyName"]
-            body["logoUrl"] = f"/brand/{logo.name}" if logo else ""
+            body["logoUrl"] = brand_url(logo) if logo else ""
             body["colors"] = custom["colors"]
             self._json(body)
             return

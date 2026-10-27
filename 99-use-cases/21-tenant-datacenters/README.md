@@ -239,7 +239,8 @@ Create them with [rest/create-all.sh](rest/create-all.sh).
 
 Copy [customizations.json.example](customizations.json.example) to
 `customizations.json` in this directory. Set `companyName`, `logo`, and
-`colors`. The logo is a file name in this directory, next to the example SVG.
+`colors`. The logo is a file in this directory, or in a subfolder such as
+`customizations/logo.png`. A path that leaves this directory is ignored.
 `colors` is the page chrome. Each value is `#RGB` or `#RRGGBB`.
 
 | Key | Paints |
