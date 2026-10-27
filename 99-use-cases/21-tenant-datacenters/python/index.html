@@ -98,8 +98,88 @@
     .dc h2 { margin: 0; font-size: 1rem; letter-spacing: 0.03em; }
     .dc-count { margin: 0.15rem 0 0.7rem; color: var(--muted); font-size: 0.78rem; }
     .floor-summary { margin-top: 1.15rem; }
-    .floor-summary h2 { margin: 0 0 0.2rem; font-size: 0.95rem; font-weight: 650; }
+    .floor-summary h2, .floor-activity h2 { margin: 0 0 0.2rem; font-size: 0.95rem; font-weight: 650; }
     .floor-summary p { margin: 0 0 0.55rem; color: var(--muted); font-size: 0.78rem; }
+    .floor-activity {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+      gap: 1.1rem 1.4rem;
+      margin-top: 1.15rem;
+      align-items: stretch;
+      container-type: inline-size;
+    }
+    .floor-activity h2 { margin-bottom: 0.45rem; }
+    .floor-trace {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .trace-scroll {
+      overflow: auto;
+      min-height: 0;
+    }
+    /* Side by side, Now sets the height and the trace lines scroll inside it. */
+    @container (min-width: 46rem) {
+      .floor-trace {
+        height: 0;
+        min-height: 100%;
+      }
+      .trace-scroll { flex: 1 1 auto; }
+    }
+    .now-lead {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.45rem 0.6rem;
+      margin: 0 0 0.55rem;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+    .now-count {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-variant-numeric: tabular-nums;
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .now-note { margin: 0.45rem 0 0; font-size: 0.78rem; line-height: 1.4; }
+    .floor-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+    .floor-table th, .floor-table td {
+      border: 1px solid var(--line);
+      padding: 0.32rem 0.45rem;
+      text-align: left;
+      vertical-align: top;
+      line-height: 1.35;
+    }
+    .floor-table thead th {
+      color: var(--muted);
+      font-weight: 650;
+      font-size: 0.72rem;
+      background: var(--raised);
+      border-bottom: 2px solid var(--accent);
+    }
+    .trace-scroll thead th { position: sticky; top: 0; z-index: 1; }
+    .floor-table .num {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      white-space: nowrap;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .floor-table thead .num { color: var(--muted); font-weight: 650; }
+    .trace-table td:first-child { width: 6.8rem; }
+    .trace-table time {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .trace-table .trace-change { word-break: break-word; }
     .size-summary {
       width: 100%;
       table-layout: fixed;
@@ -393,21 +473,6 @@
       background: var(--panel);
       color: var(--ink);
     }
-    .trace-log { list-style: none; margin: 0; padding: 0; }
-    .trace-log li {
-      display: grid;
-      grid-template-columns: 6.4rem 1fr;
-      gap: 0.55rem;
-      padding: 0.4rem 0;
-      border-bottom: 1px solid var(--line);
-      font-size: 0.84rem;
-      line-height: 1.4;
-    }
-    .trace-log time {
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
   </style>
 </head>
 <body>
@@ -447,6 +512,26 @@
           <tfoot></tfoot>
         </table>
       </section>
+      <section class="floor-activity" aria-label="Evaluations and trace">
+        <div class="floor-now">
+          <h2>Now</h2>
+          <div id="trace-status"></div>
+        </div>
+        <div class="floor-trace">
+          <h2>Trace</h2>
+          <div class="trace-scroll" tabindex="0" aria-label="Trace">
+            <table class="floor-table trace-table">
+              <thead>
+                <tr>
+                  <th scope="col">Time</th>
+                  <th scope="col">Change</th>
+                </tr>
+              </thead>
+              <tbody id="trace-log"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
     </main>
     <aside class="ld-rail" aria-label="LaunchDarkly lab">
       <div class="ld-rail-resize" role="separator" aria-orientation="vertical" aria-label="Resize lab drawer" title="Drag to resize" tabindex="0"></div>
@@ -455,7 +540,6 @@
         <button type="button" class="ld-tab active" data-tab="toggles" role="tab" aria-selected="true">Toggles</button>
         <button type="button" class="ld-tab" data-tab="automatic" role="tab" aria-selected="false">Automatic</button>
         <button type="button" class="ld-tab" data-tab="manual" role="tab" aria-selected="false">Manual</button>
-        <button type="button" class="ld-tab" data-tab="trace" role="tab" aria-selected="false">Trace</button>
         <button type="button" class="ld-tab" data-tab="model" role="tab" aria-selected="false">Model</button>
         <button type="button" class="ld-tab" data-tab="contexts" role="tab" aria-selected="false">Contexts</button>
         <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
@@ -476,12 +560,6 @@
           <div id="fill-rollout"></div>
           <div class="block-title">Firewall</div>
           <div id="firewall-flag"></div>
-        </section>
-        <section id="ld-section-trace" class="ld-section">
-          <div class="block-title">Now</div>
-          <div id="trace-status"></div>
-          <div class="block-title">Trace</div>
-          <ol class="trace-log" id="trace-log"></ol>
         </section>
         <section id="ld-section-model" class="ld-section">
           <div class="block-title">Segments</div>
@@ -510,7 +588,7 @@
           <div class="block-title">How the names are made</div>
           <p class="ld-about-p">Walk A–Z twice. Vowels are Large. Q and Z are unknown. Every other letter uses (letter number − 1) mod 3: 2 is Medium, and 0 or 1 is Small. Each size keeps its own counter. Odd and even are that counter. An odd Small is size 1 in one datacenter. An even Small is size 2 in two. An odd Medium is size 5 in one. An even Medium is size 5 in three. An odd Large is size 7 in three. An even Large is size 7 in all five. Unknown stays size 3 in one. One cursor hands out the next datacenters and wraps after DC05. The same name is drawn in each datacenter that customer occupies. The subscript is size.version, and every instance starts at 0, so a large reads 7.0.</p>
           <div class="block-title">What to look at</div>
-          <p class="ld-about-p">Read a datacenter card. The Toggles tab turns each flag on or off. The border palette keeps its fallthrough picker. On serves the true variation, unless a rollout is already the default rule. Enable for everybody serves that true variation. The fill rollout is a progressive rollout on <code>tenant-box-fill</code>: five one-minute steps, then everyone. Start that rollout in LaunchDarkly. Reset on the Manual tab returns the flag to Empty. Security waves release the lock on a timer. By name serves S01, then S02 every 10 seconds, through Small, Medium, and Large. By datacenter serves Large in DC01, then the next datacenter every 10 seconds. Full deployment serves Small size 1, then size 2, then Medium from DC01 through DC05, then L01, every 10 seconds. The family chip pulses while that size is still releasing. Unknown stays off. The Manual tab also has <code>tenant-firewall</code>. True draws a firewall icon. Click the page once. Turning any flag on plays a rising pair. Turning it off plays those notes downward. Fill and security also play three tones: a low note at the start, a middle pair when the percentage, size, or datacenter changes, and a high note at the end. Names inside Large stay quiet. The shape matches the tones in 107-scheduled-changes. Trace records those changes. Model lists the segments and what comes later.</p>
+          <p class="ld-about-p">Read a datacenter card. The Toggles tab turns each flag on or off. The border palette keeps its fallthrough picker. On serves the true variation, unless a rollout is already the default rule. Enable for everybody serves that true variation. The fill rollout is a progressive rollout on <code>tenant-box-fill</code>: five one-minute steps, then everyone. Start that rollout in LaunchDarkly. Reset on the Manual tab returns the flag to Empty. Security waves release the lock on a timer. By name serves S01, then S02 every 10 seconds, through Small, Medium, and Large. By datacenter serves Large in DC01, then the next datacenter every 10 seconds. Full deployment serves Small size 1, then size 2, then Medium from DC01 through DC05, then L01, every 10 seconds. The family chip pulses while that size is still releasing. Unknown stays off. The Manual tab also has <code>tenant-firewall</code>. True draws a firewall icon. Click the page once. Turning any flag on plays a rising pair. Turning it off plays those notes downward. Fill and security also play three tones: a low note at the start, a middle pair when the percentage, size, or datacenter changes, and a high note at the end. Names inside Large stay quiet. The shape matches the tones in 107-scheduled-changes. Under the size table, Now shows the variation each flag is serving and how many boxes changed on the latest update. Trace lists each change with that count. Model lists the segments and what comes later.</p>
           <p class="ld-about-p"><a href="https://launchdarkly.com/docs/home/flags/variations">Multivariate variations</a> · <a href="https://launchdarkly.com/docs/home/releases/progressive-rollouts">Progressive rollouts</a> · <a href="https://launchdarkly.com/docs/home/flags/individual-targeting">Individual targets</a> · <a href="https://launchdarkly.com/docs/home/flags/targeting-rules">Targeting rules</a> · <a href="https://launchdarkly.com/docs/home/flags/contexts">Contexts</a></p>
         </section>
       </div>
@@ -624,19 +702,6 @@
       return box;
     }
 
-    function flagLine(flag) {
-      const line = document.createElement("p");
-      line.className = "ld-about-p";
-      const key = document.createElement("code");
-      key.textContent = flag.key;
-      const served = flag.uniform ? String(flag.value) : flag.values.join(", ");
-      line.append(
-        key,
-        document.createTextNode(" · " + served + " · " + flag.reason + " · " + flag.evaluations + " evaluations")
-      );
-      return line;
-    }
-
     // Same oscillator shape as 107-scheduled-changes. A click unlocks the
     // context; later polls may then play. Start is 440 Hz. A phase change
     // is the middle pair. Turning a flag on plays the rising pair, 659 then
@@ -692,8 +757,19 @@
 
     const TRACE_KEY = "ld-tenant-trace:" + location.pathname;
     const TRACE_MAX = 40;
+    const TRACE_FIELDS = {
+      "tenant-border-palette": "color",
+      "tenant-box-fill": "fill",
+      "tenant-security": "security",
+      "tenant-firewall": "firewall",
+    };
     let traceEvents = [];
     let traceSeen = { border: null, fill: null };
+    let paintedState = null;
+    let snapshotAt = 0;
+    let lastDiff = null;
+    let lastChanges = null;
+    let latestBoxes = null;
 
     function loadTrace() {
       try {
@@ -704,30 +780,135 @@
       }
     }
 
+    function formatChanges(count) {
+      return count + (count === 1 ? " change" : " changes");
+    }
+
+    function floorState(data) {
+      const state = {};
+      for (const datacenter of data.datacenters || []) {
+        for (const customer of datacenter.customers || []) {
+          state[customer.datacenter + "\0" + customer.name] = {
+            color: customer.color || "",
+            fill: customer.fill === true,
+            security: customer.security === true,
+            firewall: customer.firewall === true,
+          };
+        }
+      }
+      return state;
+    }
+
+    // Compare the painted floor with the previous pass. The evaluation count
+    // stays at one read per box, so the trace records boxes whose state moved.
+    function diffFloor(prev, next) {
+      const counts = {};
+      for (const flag of Object.keys(TRACE_FIELDS)) counts[flag] = 0;
+      const ids = new Set([...Object.keys(prev), ...Object.keys(next)]);
+      let boxes = 0;
+      for (const id of ids) {
+        const before = prev[id] || {};
+        const after = next[id] || {};
+        let moved = false;
+        for (const [flag, field] of Object.entries(TRACE_FIELDS)) {
+          if (before[field] !== after[field]) {
+            counts[flag] += 1;
+            moved = true;
+          }
+        }
+        if (moved) boxes += 1;
+      }
+      return { counts, boxes };
+    }
+
+    function saveTrace() {
+      sessionStorage.setItem(TRACE_KEY, JSON.stringify(traceEvents));
+    }
+
+    function noteFloorChanges(data) {
+      const next = floorState(data);
+      if (!paintedState) {
+        paintedState = next;
+        snapshotAt = Date.now();
+        return;
+      }
+      const diff = diffFloor(paintedState, next);
+      const since = snapshotAt;
+      paintedState = next;
+      snapshotAt = Date.now();
+      lastDiff = { at: snapshotAt, counts: diff.counts };
+      lastChanges = diff.counts;
+      latestBoxes = diff.boxes;
+      let stamped = false;
+      for (const event of traceEvents) {
+        if (event.changes != null || event.t < since) continue;
+        if (!Object.prototype.hasOwnProperty.call(diff.counts, event.key)) continue;
+        event.changes = diff.counts[event.key];
+        stamped = true;
+      }
+      if (stamped) saveTrace();
+    }
+
+    function noteUnchanged() {
+      // A flag edit that leaves the floor as it is. Keep the last real
+      // update on screen, and let the trace row that follows say 0 changes.
+      if (lastDiff && !lastDiff.quiet && Date.now() - lastDiff.at < 2000) return;
+      const counts = {};
+      for (const flag of Object.keys(TRACE_FIELDS)) counts[flag] = 0;
+      lastDiff = { at: Date.now(), counts, quiet: true };
+      let stamped = false;
+      for (const event of traceEvents) {
+        if (event.changes != null || Date.now() - event.t > 5000) continue;
+        if (!Object.prototype.hasOwnProperty.call(counts, event.key)) continue;
+        event.changes = 0;
+        stamped = true;
+      }
+      if (stamped) saveTrace();
+    }
+
     function renderTraceLog() {
       const list = document.getElementById("trace-log");
       list.replaceChildren();
       if (!traceEvents.length) {
-        const item = document.createElement("li");
-        item.textContent = "No changes yet. Flag toggles and rollout stages land here.";
-        list.append(item);
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 2;
+        cell.textContent = "No changes yet. Flag toggles and rollout stages land here.";
+        row.append(cell);
+        list.append(row);
         return;
       }
       for (const event of traceEvents) {
-        const item = document.createElement("li");
+        const row = document.createElement("tr");
+        const whenCell = document.createElement("td");
         const time = document.createElement("time");
         const when = new Date(event.t);
         time.dateTime = when.toISOString();
         time.textContent = when.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", second: "2-digit" });
-        item.append(time, document.createTextNode(event.text));
-        list.append(item);
+        whenCell.append(time);
+        const change = document.createElement("td");
+        change.className = "trace-change";
+        change.textContent = Number.isFinite(event.changes)
+          ? event.text + " (" + formatChanges(event.changes) + ")"
+          : event.text;
+        row.append(whenCell, change);
+        list.append(row);
       }
     }
 
-    function pushTrace(text) {
-      traceEvents.unshift({ t: Date.now(), text });
+    function pushTrace(key, text) {
+      const fresh = lastDiff && Date.now() - lastDiff.at < 2000 && lastDiff.counts;
+      const known = fresh && Object.prototype.hasOwnProperty.call(lastDiff.counts, key);
+      const changes = known && (lastDiff.quiet || lastDiff.counts[key] > 0) ? lastDiff.counts[key] : null;
+      traceEvents.unshift({ t: Date.now(), key, text, changes });
       if (traceEvents.length > TRACE_MAX) traceEvents.length = TRACE_MAX;
-      sessionStorage.setItem(TRACE_KEY, JSON.stringify(traceEvents));
+      saveTrace();
+      if (changes != null && lastDiff.quiet && lastLayout) {
+        lastChanges = { ...lastDiff.counts };
+        latestBoxes = changes;
+        renderTraceStatus(lastLayout);
+        return;
+      }
       renderTraceLog();
     }
 
@@ -739,11 +920,11 @@
       if (!prev || (prev.on === next.on && prev.palette === next.palette)) return;
       if (prev.on !== next.on) {
         const detail = next.on && next.palette ? ", " + next.palette : "";
-        pushTrace(flag.key + " " + (prev.on ? "on" : "off") + " → " + (next.on ? "on" : "off") + detail);
+        pushTrace(flag.key, flag.key + " " + (prev.on ? "on" : "off") + " → " + (next.on ? "on" : "off") + detail);
         playFlagCue(flag.key, next.on ? "up" : "down");
         return;
       }
-      pushTrace(flag.key + " " + prev.palette + " → " + next.palette);
+      pushTrace(flag.key, flag.key + " " + prev.palette + " → " + next.palette);
     }
 
     function noteFill(data) {
@@ -752,19 +933,19 @@
       traceSeen.fill = next;
       if (!prev || (prev.status === next.status && prev.percent === next.percent && prev.on === next.on)) return;
       if (next.status === "off") {
-        pushTrace("tenant-box-fill off, Empty");
+        pushTrace("tenant-box-fill", "tenant-box-fill off, Empty");
         if (prev.status !== "off") playFlagCue("tenant-box-fill", "down");
         return;
       }
       if (next.status === "on" && prev.status !== "on") {
-        pushTrace("tenant-box-fill on, Fill");
+        pushTrace("tenant-box-fill", "tenant-box-fill on, Fill");
         playFlagCue("tenant-box-fill", "up");
         return;
       }
       const finished = next.status === "complete" || (next.on && next.percent >= 100);
       const wasFinished = prev.status === "complete" || (prev.on && prev.percent >= 100);
       if (finished) {
-        pushTrace("tenant-box-fill complete, Fill");
+        pushTrace("tenant-box-fill", "tenant-box-fill complete, Fill");
         if (!wasFinished) playFlagCue("tenant-box-fill", "up");
         return;
       }
@@ -772,7 +953,7 @@
         const from = prev.status === "off" || prev.percent == null ? "Empty" : prev.percent + "%";
         const to = next.percent == null ? "started" : next.percent + "%";
         if (from === to) return;
-        pushTrace("tenant-box-fill " + from + " → " + to);
+        pushTrace("tenant-box-fill", "tenant-box-fill " + from + " → " + to);
         playCue(prev.status === "active" ? "phase" : "start");
       }
     }
@@ -829,18 +1010,81 @@
       if (node) node.textContent = formatShare(securityCensus.secured, securityCensus.total);
     }
 
+    // Changed counts boxes whose painted state moved. Every box is still read.
+    // LaunchDarkly: evaluating flags — https://launchdarkly.com/docs/sdk/features/evaluation-reasons
     function renderTraceStatus(data) {
       const host = document.getElementById("trace-status");
       host.replaceChildren();
-      const total = data.flags[0] ? data.flags[0].evaluations : 0;
-      const uniform = data.flags.every((flag) => flag.uniform);
-      const note = document.createElement("p");
-      note.className = "ld-about-p";
-      note.textContent = data.sdkConnected
-        ? total + " tenant contexts. " + (uniform ? "Each flag returned one variation." : "A flag returned more than one variation.") + " " + formatShare(fillCensus.filled, fillCensus.total) + " filled."
-        : "LD_SDK_KEY is not set. The border stays the hairline and the boxes stay empty.";
-      host.append(note);
-      if (data.sdkConnected) for (const flag of data.flags) host.append(flagLine(flag));
+      const flags = data.flags || [];
+      if (!data.sdkConnected) {
+        const note = document.createElement("p");
+        note.className = "now-lead";
+        note.textContent = "LD_SDK_KEY is not set. The border stays the hairline and the boxes stay empty.";
+        host.append(note);
+        renderTraceLog();
+        fitTrace();
+        return;
+      }
+      const lead = document.createElement("p");
+      lead.className = "now-lead";
+      if (latestBoxes == null) {
+        lead.textContent = "Each flag is read once per box. The Changed column and each trace row count the boxes whose state moved.";
+      } else {
+        const count = document.createElement("span");
+        count.className = "now-count";
+        count.textContent = String(latestBoxes);
+        lead.append(
+          count,
+          document.createTextNode(latestBoxes === 1
+            ? " box changed on the latest update."
+            : " boxes changed on the latest update.")
+        );
+      }
+      host.append(lead);
+      const table = document.createElement("table");
+      table.className = "floor-table";
+      const head = document.createElement("tr");
+      for (const label of ["Flag", "Served", "Reason", "Changed"]) {
+        const th = document.createElement("th");
+        th.scope = "col";
+        th.textContent = label;
+        if (label === "Changed") th.className = "num";
+        head.append(th);
+      }
+      const thead = document.createElement("thead");
+      thead.append(head);
+      const body = document.createElement("tbody");
+      for (const flag of flags) {
+        const row = document.createElement("tr");
+        const key = document.createElement("td");
+        const code = document.createElement("code");
+        code.textContent = flag.key;
+        key.append(code);
+        const served = document.createElement("td");
+        served.textContent = flag.uniform ? String(flag.value) : flag.values.join(", ");
+        const reason = document.createElement("td");
+        reason.textContent = flag.reason;
+        const changed = document.createElement("td");
+        const count = lastChanges && Number.isFinite(lastChanges[flag.key]) ? lastChanges[flag.key] : null;
+        if (count == null) {
+          changed.textContent = "—";
+        } else {
+          changed.className = "num";
+          changed.textContent = String(count);
+        }
+        row.append(key, served, reason, changed);
+        body.append(row);
+      }
+      table.append(thead, body);
+      host.append(table);
+      if (!flags.every((flag) => flag.uniform)) {
+        const mixed = document.createElement("p");
+        mixed.className = "now-note";
+        mixed.textContent = "A flag returned more than one variation.";
+        host.append(mixed);
+      }
+      renderTraceLog();
+      fitTrace();
     }
 
     const SIZE_ROWS = [
@@ -966,7 +1210,27 @@
     document.getElementById("brand-logo").addEventListener("load", fitBrandLogo);
     window.addEventListener("resize", fitBrandLogo);
 
-    function render(data) {
+    function fitTrace() {
+      const now = document.querySelector(".floor-now");
+      const trace = document.querySelector(".floor-trace");
+      const scroll = document.querySelector(".trace-scroll");
+      if (!now || !trace || !scroll) return;
+      const sideBySide = Math.abs(trace.getBoundingClientRect().top - now.getBoundingClientRect().top) < 2;
+      if (sideBySide) {
+        scroll.style.maxHeight = "";
+        return;
+      }
+      const heading = trace.querySelector("h2");
+      const styles = getComputedStyle(heading);
+      const used = heading.getBoundingClientRect().height
+        + parseFloat(styles.marginTop)
+        + parseFloat(styles.marginBottom);
+      scroll.style.maxHeight = Math.max(0, Math.round(now.getBoundingClientRect().height - used)) + "px";
+    }
+
+    window.addEventListener("resize", fitTrace);
+
+    function render(data, trackChanges = true) {
       lastLayout = data;
       document.getElementById("brand-name").textContent = data.companyName;
       applyColors(data.colors);
@@ -1013,6 +1277,7 @@
       renderSizeSummary(data);
       renderFirewall(data);
       readCensus(data);
+      if (trackChanges) noteFloorChanges(data);
       renderTraceStatus(data);
       const segments = document.getElementById("segment-list");
       segments.replaceChildren();
@@ -1083,6 +1348,7 @@
             render(data);
           } else {
             lastLayout = data;
+            noteUnchanged();
           }
         })
         .catch(() => {
@@ -1335,17 +1601,17 @@
       traceSeen.security = next;
       if (!prev || (prev.status === next.status && prev.step === next.step && prev.mode === next.mode)) return;
       if (next.status === "off") {
-        pushTrace("tenant-security off");
+        pushTrace("tenant-security", "tenant-security off");
         if (prev.status !== "off") playFlagCue("tenant-security", "down");
         return;
       }
       if (next.status === "complete") {
-        pushTrace("tenant-security complete, " + (data.modeLabel || "done"));
+        pushTrace("tenant-security", "tenant-security complete, " + (data.modeLabel || "done"));
         if (prev.status !== "complete") playFlagCue("tenant-security", "up");
         return;
       }
       if (next.step) {
-        pushTrace("tenant-security " + (data.modeLabel || "wave") + " " + next.step);
+        pushTrace("tenant-security", "tenant-security " + (data.modeLabel || "wave") + " " + next.step);
         if (prev.status !== "running") playCue("start");
         else if (waveMark(prev) !== waveMark(next)) playCue("phase");
       }
@@ -1469,7 +1735,7 @@
     renderTraceLog();
     document.querySelectorAll(".size-filter input[data-size]").forEach((box) => {
       box.addEventListener("change", () => {
-        if (lastLayout) render(lastLayout);
+        if (lastLayout) render(lastLayout, false);
       });
     });
     loadLayout();

@@ -49,6 +49,14 @@ customer starts where that Large started.
 A is `L01`, size 7 version 0, drawn as `7.0`, in DC01, DC02, and DC03. B is
 `S01`, size 1, in DC04.
 
+Under the size table, Now and Trace sit side by side. Now shows the variation
+each flag is serving, and how many boxes changed state on the latest update.
+Trace lists each toggle and rollout stage. The count on a row is the boxes
+whose border, fill, lock, or firewall moved. The trace pane stays the height
+of Now, and older rows scroll inside it.
+
+[Evaluating flags](https://launchdarkly.com/docs/sdk/features/evaluation-reasons)
+
 ## Flags
 
 | Flag | Variations | Off serves |
@@ -102,8 +110,8 @@ steps, then stays at full:
 Use context kind `tenant`, from Empty to Fill. A tenant that fills stays
 filled, in every datacenter that name occupies. The Manual tab shows the step
 and the time left in it. Click the page once. The start, each later
-percentage, and the finish each play a tone. Trace records flag toggles and
-stage changes. Reset
+percentage, and the finish each play a tone. Trace, under the size table,
+records those flag toggles and stage changes. Reset
 turns the flag off and serves Empty, so the
 rollout can be created again. A new rollout may choose a different set of
 tenants.

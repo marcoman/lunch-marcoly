@@ -2,7 +2,9 @@
 
 Python web lab for [21-tenant-datacenters](../README.md). Each tenant presence
 is one context. The page evaluates `tenant-border-palette`,
-`tenant-box-fill`, `tenant-security`, and `tenant-firewall` for every box. Security waves
+`tenant-box-fill`, `tenant-security`, and `tenant-firewall` for every box.
+Now, under the size table, shows how many boxes changed state on the latest
+update. Trace lists each change with that count. Security waves
 release the lock by name, by datacenter for Large, or as a full deployment.
 `tenant-firewall` draws an icon when the flag is true.
 

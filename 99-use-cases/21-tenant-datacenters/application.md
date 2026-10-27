@@ -5,8 +5,9 @@ is thousands of tenants in more than a dozen datacenters. This example uses
 five datacenters and 52 customers so the placement rule stays visible.
 
 No flag is evaluated until `LD_SDK_KEY` is set. The drawer shows the controls,
-a trace of flag and rollout changes, the segments, and the tenant context
-that was sent.
+the segments, and the tenant context that was sent. Under the size table,
+Now shows the variation each flag is serving and how many boxes changed on
+the latest update. Trace lists each change with that count.
 
 ## Placement
 
@@ -41,7 +42,7 @@ from `customizations.json.example` when the local file is absent. `colors` in
 that file paints the page chrome: `background`, `panel`, `ink`, `muted`,
 `line`, and `accent`. Each value is `#RGB` or `#RRGGBB`. Each
 datacenter is a card. Each customer is a full-width monospace row, with
-`size.version` as a subscript. The lock and the firewall sit in two columns beside that subscript. Boxes run small, medium, large, then unknown.
+`size.version` as a subscript. The lock and the firewall sit in two columns beside that subscript. Boxes run small, medium, large, then unknown. Under the size table, Now and Trace sit side by side. Now shows how many boxes changed state on the latest update. Trace keeps one row per change, with that count in parentheses.
 
 ## Context
 
