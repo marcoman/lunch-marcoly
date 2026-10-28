@@ -336,6 +336,21 @@
       text-align: left;
     }
     .context-table th { color: var(--muted); font-weight: 650; }
+    .context-table th button {
+      appearance: none;
+      background: none;
+      border: 0;
+      padding: 0;
+      color: inherit;
+      font: inherit;
+      font-weight: 650;
+      cursor: pointer;
+      text-align: left;
+    }
+    .context-table th button:hover,
+    .context-table th button:focus-visible { color: var(--ink); }
+    .context-table th[aria-sort="ascending"] button::after { content: " \2191"; }
+    .context-table th[aria-sort="descending"] button::after { content: " \2193"; }
     .context-table code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
     .empty {
       padding: 0.75rem;
@@ -574,10 +589,17 @@
         </section>
         <section id="ld-section-contexts" class="ld-section">
           <div class="block-title">Contexts</div>
-          <p class="ld-about-p" id="context-note">One tenant context per presence.</p>
+          <p class="ld-about-p" id="context-note">One tenant context per presence. Click a heading to sort.</p>
           <table class="context-table">
             <thead>
-              <tr><th>Key</th><th>Class</th><th>Size</th><th>Version</th><th>Datacenter</th><th>Span</th></tr>
+              <tr>
+                <th scope="col" aria-sort="none"><button type="button" data-sort="key">Key</button></th>
+                <th scope="col" aria-sort="none"><button type="button" data-sort="sizeClass">Class</button></th>
+                <th scope="col" aria-sort="none"><button type="button" data-sort="size">Size</button></th>
+                <th scope="col" aria-sort="none"><button type="button" data-sort="version">Version</button></th>
+                <th scope="col" aria-sort="none"><button type="button" data-sort="datacenter">Datacenter</button></th>
+                <th scope="col" aria-sort="none"><button type="button" data-sort="span">Span</button></th>
+              </tr>
             </thead>
             <tbody id="context-rows"></tbody>
           </table>
@@ -1173,6 +1195,39 @@
     }
 
     let lastLayout = null;
+    let contextSort = null;
+    const SIZE_CLASS_RANK = { small: 0, medium: 1, large: 2, unknown: 3 };
+
+    function compareContext(a, b, key) {
+      if (key === "sizeClass") return (SIZE_CLASS_RANK[a.sizeClass] ?? 9) - (SIZE_CLASS_RANK[b.sizeClass] ?? 9);
+      if (key === "size" || key === "version" || key === "span") return Number(a[key]) - Number(b[key]);
+      return String(a[key]).localeCompare(String(b[key]), undefined, { numeric: true });
+    }
+
+    // Key is alphabetical. Class is small, medium, large, unknown.
+    // Size, version, and span are numeric. Equal rows stay by key, then datacenter.
+    function sortedContexts(contexts) {
+      if (!contextSort) return contexts;
+      const { key, dir } = contextSort;
+      return contexts.slice().sort((a, b) => {
+        const primary = compareContext(a, b, key);
+        if (primary) return primary * dir;
+        const byKey = compareContext(a, b, "key");
+        if (byKey) return byKey;
+        return compareContext(a, b, "datacenter");
+      });
+    }
+
+    function applyContextSort(key) {
+      contextSort = contextSort && contextSort.key === key
+        ? { key, dir: contextSort.dir * -1 }
+        : { key, dir: 1 };
+      document.querySelectorAll(".context-table th").forEach((th) => {
+        const active = th.querySelector("button")?.getAttribute("data-sort") === key;
+        th.setAttribute("aria-sort", active ? (contextSort.dir > 0 ? "ascending" : "descending") : "none");
+      });
+      if (lastLayout) render(lastLayout, false);
+    }
 
     function visibleSizes() {
       const boxes = document.querySelectorAll(".size-filter input[data-size]");
@@ -1289,11 +1344,11 @@
         segments.append(item);
       }
       document.getElementById("context-note").textContent = data.sdkConnected
-        ? "One tenant context per presence. A customer in two datacenters has two rows, with the same key."
-        : "One tenant context per presence. Nothing was sent, because the SDK is not connected.";
+        ? "One tenant context per presence. A customer in two datacenters has two rows, with the same key. Click a heading to sort."
+        : "One tenant context per presence. Nothing was sent, because the SDK is not connected. Click a heading to sort.";
       const rows = document.getElementById("context-rows");
       rows.replaceChildren();
-      for (const context of data.contexts) {
+      for (const context of sortedContexts(data.contexts)) {
         const row = document.createElement("tr");
         for (const value of [context.key, context.sizeClass, context.size, context.version, context.datacenter, context.span]) {
           const cell = document.createElement("td");
@@ -1737,6 +1792,9 @@
       box.addEventListener("change", () => {
         if (lastLayout) render(lastLayout, false);
       });
+    });
+    document.querySelectorAll(".context-table button[data-sort]").forEach((button) => {
+      button.addEventListener("click", () => applyContextSort(button.getAttribute("data-sort")));
     });
     loadLayout();
     watchFloorEvents();
