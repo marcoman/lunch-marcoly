@@ -32,6 +32,7 @@ EXAMPLE = Path(__file__).resolve().parent.parent
 WEB = Path(__file__).resolve().parent
 sys.path.insert(0, str(EXAMPLE))
 
+from cascade import bad_cascade, cascade_status, good_cascade, reset_cascade, start_cascade  # noqa: E402
 from flags import FLAG_BORDER, FLAG_FILL, FLAG_FIREWALL, FLAG_SECURITY, SEGMENTS, hue  # noqa: E402
 from fill_rollout import fill_rollout_status, flag_console_url, reset_fill_rollout  # noqa: E402
 from ld_flag_controls import api_config, apply_flag_control, list_flag_controls  # noqa: E402
@@ -40,7 +41,7 @@ from security_waves import (  # noqa: E402
     security_status,
     start_security_wave,
 )
-from tenants import build_layout  # noqa: E402
+from tenants import build_layout, release_version  # noqa: E402
 
 PORT = int(os.environ.get("PORT", "8080"))
 EXAMPLE_CUSTOM = EXAMPLE / "customizations.json.example"
@@ -210,10 +211,17 @@ def evaluate_floor(layout: dict[str, Any]) -> None:
         box["fill"] = bool(color) and fill
         box["security"] = security
         box["firewall"] = firewall
+        # Subscript from the flags. Security is 1. Security and the firewall
+        # is 2. Fill does not change it. The context above still sent version 0.
+        box["version"] = release_version(security, firewall)
         border_values.append(palette)
         fill_values.append(fill)
         security_values.append(security)
         firewall_values.append(firewall)
+    # The contexts table shows the same release version as the subscript.
+    derived = {(box["name"], box["datacenter"]): box["version"] for box in boxes}
+    for context in layout.get("contexts") or []:
+        context["version"] = derived.get((context.get("key"), context.get("datacenter")), 0)
     layout["sdkConnected"] = client is not None
     cfg = api_config()
     layout["flags"] = [
@@ -351,6 +359,14 @@ class Handler(BaseHTTPRequestHandler):
             except Exception as exc:  # noqa: BLE001
                 self._json({"ok": False, "error": str(exc)}, 502)
             return
+        if path == "/api/cascade":
+            # Cascade — key and datacenter on one rule. The lab writes each name.
+            # https://launchdarkly.com/docs/home/flags/targeting-rules
+            try:
+                self._json(cascade_status())
+            except Exception as exc:  # noqa: BLE001
+                self._json({"ok": False, "error": str(exc)}, 502)
+            return
         if path.startswith("/brand/"):
             self._brand(unquote(path.removeprefix("/brand/")))
             return
@@ -418,6 +434,29 @@ class Handler(BaseHTTPRequestHandler):
                 if data.get("action") != "reset":
                     raise ValueError('Provide {"action": "reset"}')
                 self._json(reset_fill_rollout())
+            except ValueError as exc:
+                self._json({"ok": False, "error": str(exc)}, 400)
+            except Exception as exc:  # noqa: BLE001
+                self._json({"ok": False, "error": str(exc)}, 502)
+            return
+        if path == "/api/cascade":
+            # Cascade — start, good, bad, or reset. Each step names the key and the datacenter.
+            # https://launchdarkly.com/docs/home/flags/targeting-rules
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+                raw = self.rfile.read(length) if length else b"{}"
+                data = json.loads(raw.decode() or "{}")
+                action = data.get("action")
+                if action == "start":
+                    self._json(start_cascade())
+                elif action == "good":
+                    self._json(good_cascade())
+                elif action == "bad":
+                    self._json(bad_cascade())
+                elif action == "reset":
+                    self._json(reset_cascade())
+                else:
+                    raise ValueError('Provide {"action": "start"|"good"|"bad"|"reset"}')
             except ValueError as exc:
                 self._json({"ok": False, "error": str(exc)}, 400)
             except Exception as exc:  # noqa: BLE001

@@ -267,6 +267,35 @@ Open http://127.0.0.1:8080/. `PORT` overrides the port. `LD_SDK_KEY` is the
 server SDK key for the environment where the flags and segments live. Without
 it, the border stays the hairline and the boxes stay empty.
 
+## Cascade
+
+The Cascade tab writes the release. Start clears `tenant-box-fill`,
+`tenant-security`, and `tenant-firewall`. The border palette stays.
+
+Each step is one targeting rule. The clauses are combined with and: the
+context key is that tenant, and `datacenter` is one of the sites in this
+phase. The same name can lock in DC03 and stay open in DC05.
+
+Phase 1 is Medium in DC01 through DC04, one name every 10 seconds:
+`M02`, `M04`, `M05`, `M06`, `M07`, `M08`, `M09`, `M10`. `M01` and `M03`
+are only in DC05, so they stay at `0`. A name that also sits in DC05 does
+not lock that box. The subscript becomes `1`.
+
+The lab then waits. Good starts phase 2, the firewall, one step every 10
+seconds. Small in DC01, then Small in DC02. A Small box in another
+datacenter stays off. Those boxes have no lock, so the subscript stays `0`.
+Then Medium, still by name: `M04`, `M07`, `M10`. `M04` and `M10` also sit in
+DC03. That box keeps the lock at `1` and does not get the firewall. The five
+Medium boxes in DC01 and DC02 become `2`. Bad turns the firewall off and
+leaves the lock.
+
+Good after that turns fill on for those same five Medium boxes. Small is
+not filled. The subscript stays `2`. Bad is not offered after fill. Reset
+clears all three flags.
+
+[Targeting rules](https://launchdarkly.com/docs/home/flags/targeting-rules) ·
+[Contexts](https://launchdarkly.com/docs/home/flags/contexts)
+
 ## Later
 
 Version releases still to wire: percentage rollout, progressive rollout, and
@@ -274,3 +303,9 @@ guarded rollout, moving instances from 0 through 9. Also bold, italic, and
 icons in the open middle: database, robot, then a failure
 icon and an over-utilized icon. The lock is `tenant-security`. The firewall
 is `tenant-firewall`.
+
+Consider making `tenant-firewall` a prerequisite of `tenant-security`, so the
+firewall cannot serve true unless the lock is on. The cascade does not do
+that yet. It targets the boxes itself.
+
+[Prerequisite flags](https://launchdarkly.com/docs/home/flags/prerequisites)

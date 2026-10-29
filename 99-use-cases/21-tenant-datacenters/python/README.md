@@ -6,7 +6,9 @@ is one context. The page evaluates `tenant-border-palette`,
 Now, under the size table, shows how many boxes changed state on the latest
 update. Trace lists each change with that count. Security waves
 release the lock by name, by datacenter for Large, or as a full deployment.
-`tenant-firewall` draws an icon when the flag is true.
+`tenant-firewall` draws an icon when the flag is true. The Cascade tab
+releases Medium by a rule that names the key and the datacenter. The
+subscript is 1 when security is on, and 2 when the firewall is on too.
 
 Feature flags — multivariate variations
 https://launchdarkly.com/docs/home/flags/variations

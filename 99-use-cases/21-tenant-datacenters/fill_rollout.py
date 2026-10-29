@@ -167,19 +167,35 @@ def reset_fill_rollout() -> dict[str, Any]:
     environment = cfg["environmentKey"]
     query = urllib.parse.urlencode({"env": environment})
     flag = _request("GET", f"/flags/{project}/{FLAG_FILL}?{query}")
+    env = (flag.get("environments") or {}).get(environment) or {}
     _index, empty_id = _variation(flag, False)
     if not empty_id:
         raise RuntimeError("tenant-box-fill has no Empty variation.")
+    instructions: list[dict[str, Any]] = []
+    for rule in env.get("rules") or []:
+        rid = rule.get("_id") or rule.get("id")
+        if isinstance(rid, str):
+            instructions.append({"kind": "removeRule", "ruleId": rid})
+    for index, variation in enumerate(flag.get("variations") or []):
+        vid = variation.get("_id") or variation.get("id")
+        if not isinstance(vid, str):
+            continue
+        pools = list(env.get("contextTargets") or []) + list(env.get("targets") or [])
+        if any(pool.get("variation") == index and pool.get("values") for pool in pools):
+            instructions.append({"kind": "clearTargets", "variationId": vid})
+    instructions.extend(
+        [
+            {"kind": "updateFallthroughVariationOrRollout", "variationId": empty_id},
+            {"kind": "turnFlagOff"},
+        ]
+    )
     _request(
         "PATCH",
         f"/flags/{project}/{FLAG_FILL}",
         {
             "environmentKey": environment,
             "comment": "21-tenant-datacenters: reset fill rollout",
-            "instructions": [
-                {"kind": "updateFallthroughVariationOrRollout", "variationId": empty_id},
-                {"kind": "turnFlagOff"},
-            ],
+            "instructions": instructions,
         },
     )
     return fill_rollout_status()

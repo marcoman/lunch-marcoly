@@ -1,7 +1,8 @@
 """Generate the 52 tenant placements for the datacenter lab.
 
-Each presence is one tenant context. Version starts at 0 for every instance.
-Later release flags will move instances from 0 through 9.
+Each presence is one tenant context. The context attribute version starts at 0.
+The subscript shows a release version derived from the flags: security is 1,
+and security plus the firewall is 2. Fill does not change that number.
 
 Contexts — https://launchdarkly.com/docs/home/flags/contexts
 """
@@ -14,8 +15,21 @@ DATACENTERS = ("DC01", "DC02", "DC03", "DC04", "DC05")
 VOWELS = frozenset("AEIOU")
 UNKNOWN = frozenset("QZ")
 PREFIX = {"large": "L", "medium": "M", "small": "S", "unknown": "U"}
-# Every instance starts at version 0. Later flags release 1 through 9.
+# Sent on the context. The page replaces the displayed number after evaluation.
 VERSION = 0
+
+
+def release_version(security: bool, firewall: bool) -> int:
+    """Subscript from the flags already evaluated for this presence.
+
+    Security on is 1. Security and the firewall is 2. Fill is not part of it.
+    The context sent to the SDK still carries VERSION.
+    """
+    if security and firewall:
+        return 2
+    if security:
+        return 1
+    return 0
 
 
 def size_class(letter: str) -> str:

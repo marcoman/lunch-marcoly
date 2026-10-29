@@ -31,7 +31,7 @@ The same name is drawn in each. An even Large takes all five, so the next
 customer starts on the datacenter where that Large started.
 
 A is `L01`, size 7 version 0, in DC01, DC02, and DC03. B is `S01`, size 1, in DC04.
-The subscript on each box is size.version, so a large reads `7.0`.
+The subscript on each box is size.version. It starts at `0`. Security changes it to `1`. Security and the firewall change it to `2`. Fill does not change it. A large with the lock reads `7.1`.
 The floor has 52 names and 106 boxes. DC01 holds 22. The other four hold 21.
 Each box spans the width of its datacenter. The lock and the firewall sit in two columns beside the version.
 
@@ -47,8 +47,9 @@ datacenter is a card. Each customer is a full-width monospace row, with
 ## Context
 
 One context per presence. A tenant in three datacenters has three rows, with
-the same key and a different datacenter. `version` is 0. `span` is how many
-datacenters that customer occupies.
+the same key and a different datacenter. The context sent to the SDK keeps
+`version` at 0. The Version column shows the subscript after evaluation.
+`span` is how many datacenters that customer occupies.
 
 ```json
 {
@@ -84,7 +85,14 @@ apart. Unknown stays off. Click the page once. Turning a flag on plays a rising 
 the start, at each later percentage, and at the finish. Security plays at
 the start, when the size or datacenter changes, and at the end.
 `tenant-firewall` is a boolean icon on the Manual tab. True draws it. Off
-draws nothing. The release phases are in the example README.
+draws nothing. The release phases are in the example README. The Cascade tab
+is a second release. It writes a targeting rule for one Medium name and the
+datacenters in that phase, then waits 10 seconds. Phase 1 is DC01 through
+DC04. Good moves to the firewall: Small in DC01, Small in DC02, then Medium
+in those two datacenters. Bad clears the phase that just finished. A later
+Good turns fill on for the Medium boxes that have both icons.
+
+Targeting rules — https://launchdarkly.com/docs/home/flags/targeting-rules
 
 Variations — https://launchdarkly.com/docs/home/flags/variations
 Individual targets — https://launchdarkly.com/docs/home/flags/individual-targeting
