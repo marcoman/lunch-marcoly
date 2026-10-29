@@ -19,6 +19,7 @@ Each subdirectory demonstrates a specific product pattern (A/B testing, rollouts
 | [19-terraform-sentinel/](19-terraform-sentinel/) | Sentinel policies for Terraform flags: `temporary` and a `sunset` custom property (pass and fail fixtures, no SDK) |
 | [20-multi-arm-bandit/](20-multi-arm-bandit/) | **Stub:** multi-armed bandit on the grid. Traffic shifts toward the winning variation. Not the fixed split in `01`, and not `53-mobile-experiment` |
 | [21-tenant-datacenters/](21-tenant-datacenters/) | Five datacenters, 52 tenants. Border palette and fill flags, plus size, datacenter, and footprint segments |
+| [22-api-progressive-rollout/](22-api-progressive-rollout/) | Progressive highlight ramp started with the environment releases beta API |
 
 ## Conventions
 

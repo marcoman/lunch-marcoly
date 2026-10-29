@@ -70,7 +70,7 @@ cd python-console && python 14-progressive-rollout.py
 cd rest && ./start-progressive-rollout.sh   # 10→20→40→60→100%, 3 min each
 ```
 
-LaunchDarkly's public REST API does **not** start progressive rollouts programmatically — `progressiveRolloutConfig` is ignored on semantic patch. The monitor detects the difference: `progressive stage N` (UI) vs `simulated stage N — REST percentage`.
+The flag semantic patch ignores `progressiveRolloutConfig`. [22-api-progressive-rollout](../22-api-progressive-rollout/) starts a release with the beta API instead. This example's monitor still tells the two local paths apart: `progressive stage N` (UI) vs `simulated stage N — REST percentage`.
 
 Single evaluation without the interactive grid:
 
@@ -135,7 +135,7 @@ Both create the string flag with variations `none`, `green`, and other colors, a
 
 ## Configure progressive rollout in the LaunchDarkly UI
 
-LaunchDarkly's public REST API does **not** start progressive rollouts programmatically. Use `./configure-progressive-rollout.sh` to prepare the flag and emit targeting JSON — then finish in the UI:
+The flag semantic patch does **not** start a progressive rollout. [22-api-progressive-rollout](../22-api-progressive-rollout/) does, with the environment releases beta API. This example still prepares targeting JSON and finishes in the UI:
 
 ```bash
 cd rest && ./configure-progressive-rollout.sh

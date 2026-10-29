@@ -103,7 +103,8 @@ lunch-marcoly/
 │   ├── 18-sdk-fallbacks/
 │   ├── 19-terraform-sentinel/   # Sentinel policies for Terraform flags
 │   ├── 20-multi-arm-bandit/     # Stub: bandit shifts traffic; grid, not mobile
-│   └── 21-tenant-datacenters/   # Five datacenters, 52 tenants, palette and fill flags
+│   ├── 21-tenant-datacenters/   # Five datacenters, 52 tenants, palette and fill flags
+│   └── 22-api-progressive-rollout/ # Beta API progressive release, 10→100% highlight
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -203,6 +204,7 @@ Each example may include implementations in any of these languages. Every applic
 | — | [19-terraform-sentinel](99-use-cases/19-terraform-sentinel/) | Sentinel pass/fail fixtures: temporary flags and a sunset custom property |
 | — | [20-multi-arm-bandit](99-use-cases/20-multi-arm-bandit/) | **Stub:** multi-armed bandit on the grid navigator. Allocation moves with a metric |
 | — | [21-tenant-datacenters](99-use-cases/21-tenant-datacenters/) | Five datacenters, 52 tenants. Border palette, fill, and segments |
+| — | [22-api-progressive-rollout](99-use-cases/22-api-progressive-rollout/) | Progressive 10→100% highlight via the environment releases beta API. Python **:8780** |
 
 ## Building code
 
