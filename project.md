@@ -264,7 +264,7 @@ lunch-marcoly/
 - `19-terraform-sentinel` (under `99-use-cases/`) is Sentinel policy for Terraform-managed flags (`temporary`, `sunset` custom property). Pass and fail fixtures only — no grid app and no SDK.
 - `20-multi-arm-bandit` (under `99-use-cases/`) is a stub. A multi-armed bandit on the grid navigator: a metric shifts traffic toward the winning variation. `01-abcd-test` keeps a fixed split. `53-mobile-experiment` stays in `50-mobile`.
 - `21-tenant-datacenters` (under `99-use-cases/`) is a Python web lab on **:8080**. Five datacenters hold 52 generated tenants. Each presence evaluates `tenant-border-palette` and `tenant-box-fill`. Version starts at 0.
-- `22-api-progressive-rollout` (under `99-use-cases/`) starts a progressive environment release with the beta API. Flag `api-progressive-grid-highlight`, five steps from 10% to 100%. Python **:8780**, Node **:8781**, Java **:8782**, .NET **:8783**. Example 14 keeps the UI rollout.
+- `22-api-progressive-rollout` (under `99-use-cases/`) starts a progressive environment release with the beta API. Flag `api-progressive-grid-highlight`, five steps from 10% to 100%. Web: Python **:8780**, Node **:8781**, Java **:8782**, .NET **:8783**. Consoles re-evaluate that flag in Python, Node, Java, Go, Rust, and C++. Example 14 keeps the UI rollout.
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author
 
