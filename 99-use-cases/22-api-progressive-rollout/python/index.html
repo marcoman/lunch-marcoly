@@ -48,6 +48,7 @@
     table{width:100%;border-collapse:collapse;font-size:.82rem}
     td,th{text-align:left;padding:.25rem .4rem;border-bottom:1px solid var(--line)}
     tr.current td{color:var(--accent);font-weight:700}
+    #elapsed{font-variant-numeric:tabular-nums;margin:.2rem 0 .4rem}
   </style>
 </head>
 <body>
@@ -93,6 +94,7 @@
             <p id="schedule-note" class="muted">10% → 20% → 40% → 60% → 100%. Each step holds for 1 minute. The share of user contexts receiving green changes.</p>
             <p id="start-result" class="muted"></p>
             <div id="release-summary">Waiting…</div>
+            <p id="elapsed" class="muted" title="Starts when this page notices the step. Resets on the next step. The release poll is every 5 seconds.">Elapsed —</p>
             <table id="steps"><tbody></tbody></table>
           </div>
           <div class="block-title">Explore context keys</div>
@@ -135,7 +137,7 @@
             <li>Run <code>rest/create-flag.sh</code>. The flag is off.</li>
             <li>Start this page and log in once, so the flag has a recent user evaluation.</li>
             <li>Click <strong>Start progressive release</strong>. That POST starts the release. <code>rest/start-progressive-release.sh</code> sends the same body.</li>
-            <li>Return here. The step percent climbs. Try the next username to sample the split.</li>
+            <li>Return here. The step percent climbs. Elapsed time starts when this page notices the step and resets on the next one. The release poll is every 5 seconds, so the clock starts a little after LaunchDarkly moves. Try the next username to sample the split.</li>
             <li>Click <strong>Stop</strong> to roll the phase back to <code>none</code>. <code>rest/stop-progressive-release.sh forward</code> serves <code>green</code> now instead.</li>
             <li>Click <strong>Reset</strong> to turn the flag off. Every context receives <code>none</code> until the next start.</li>
           </ol>
@@ -263,6 +265,108 @@
       renderHistory();
     }
 
+    // Same oscillator as 21-tenant-datacenters. A click unlocks the context;
+    // later polls can then play. Start is 440 Hz. Each later step is the
+    // middle pair. Finish is the rising pair, 659 then 880.
+    let audioContext = null;
+    let heardRelease = null;
+    let releasePosting = false;
+    let stepSeenAt = null;
+    let elapsedTimer = null;
+
+    function unlockAudio() {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return null;
+      audioContext = audioContext || new AudioContext();
+      if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
+      return audioContext;
+    }
+
+    function playCue(kind) {
+      const context = unlockAudio();
+      if (!context) return;
+      const rising = [[659, 0.14], [880, 0.32]];
+      const notes = kind === "end"
+        ? rising
+        : kind === "phase"
+          ? [[523, 0.12], [659, 0.16]]
+          : [[440, 0.16]];
+      let at = context.currentTime;
+      for (const [frequency, duration] of notes) {
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(frequency, at);
+        gain.gain.setValueAtTime(0.0001, at);
+        gain.gain.exponentialRampToValueAtTime(0.08, at + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, at + duration);
+        oscillator.connect(gain);
+        gain.connect(context.destination);
+        oscillator.start(at);
+        oscillator.stop(at + duration + 0.02);
+        at += duration + 0.04;
+      }
+    }
+
+    function formatElapsed(ms) {
+      const total = Math.max(0, Math.floor(ms / 1000));
+      const minutes = Math.floor(total / 60);
+      const seconds = String(total % 60).padStart(2, "0");
+      return `${minutes}:${seconds}`;
+    }
+
+    function renderElapsed() {
+      const el = document.getElementById("elapsed");
+      if (!el) return;
+      el.textContent = stepSeenAt == null ? "Elapsed —" : `Elapsed ${formatElapsed(Date.now() - stepSeenAt)}`;
+    }
+
+    function markStepSeen() {
+      stepSeenAt = Date.now();
+      renderElapsed();
+    }
+
+    function clearElapsed() {
+      stepSeenAt = null;
+      renderElapsed();
+    }
+
+    function noteReleaseCue(data) {
+      if (!data || data.configured === false || data.error) return;
+      const active = Boolean(data.active) && data.flagOn !== false;
+      const stepIndex = Number.isInteger(data.stepIndex) ? data.stepIndex : null;
+      const status = data.status || "none";
+      const prev = heardRelease;
+      heardRelease = { active, stepIndex, status };
+      const idle = data.flagOn === false || status === "none" || status === "reverted" || data.stopped === true;
+      if (idle) {
+        clearElapsed();
+        return;
+      }
+      if (!prev) {
+        if (active) markStepSeen();
+        return;
+      }
+      if (status === "completed" && prev.status !== "completed") {
+        markStepSeen();
+        playCue("end");
+        return;
+      }
+      if (active && !prev.active) {
+        markStepSeen();
+        playCue("start");
+        return;
+      }
+      if (active && prev.stepIndex !== null && stepIndex !== null && stepIndex !== prev.stepIndex) {
+        markStepSeen();
+        playCue("phase");
+        return;
+      }
+      if (prev.active && !active) clearElapsed();
+    }
+
+    document.addEventListener("pointerdown", unlockAudio);
+
     function renderRelease(data) {
       const summary = document.getElementById("release-summary");
       const body = document.querySelector("#steps tbody");
@@ -277,6 +381,8 @@
       }
       configuredPercent = releasePercent(data);
       renderObserved();
+      noteReleaseCue(data);
+      if (!releasePosting) document.getElementById("reset-release").disabled = false;
       const active = Boolean(data.active) && data.flagOn !== false;
       document.getElementById("start-release").disabled = active;
       document.getElementById("stop-release").disabled = !active;
@@ -288,12 +394,15 @@
         summary.textContent = data.detail || "No progressive release yet.";
         return;
       }
+      const rolledBack = data.status === "reverted" || data.stopped === true;
       const step = Number.isInteger(data.stepIndex) ? data.stepIndex + 1 : "—";
       const percent = data.currentPercent == null ? "—" : `${data.currentPercent}%`;
-      summary.textContent = `${data.kind || "release"} · ${data.status || "unknown"} · step ${step} of ${data.stepCount || 0} · ${percent} · metrics ${data.metricCount ?? 0}`;
+      summary.textContent = rolledBack
+        ? `${data.kind || "release"} · reverted · rolled back to none`
+        : `${data.kind || "release"} · ${data.status || "unknown"} · step ${step} of ${data.stepCount || 0} · ${percent} · metrics ${data.metricCount ?? 0}`;
       (data.steps || []).forEach((stepRow, index) => {
         const tr = document.createElement("tr");
-        if (index === data.stepIndex) tr.className = "current";
+        if (!rolledBack && index === data.stepIndex) tr.className = "current";
         tr.innerHTML = `<td>${index + 1}</td><td>${stepRow.percent}%</td><td>${stepRow.durationSeconds}s</td>`;
         body.appendChild(tr);
       });
@@ -330,11 +439,13 @@
     function startPolling() {
       clearInterval(pollTimer);
       clearInterval(releaseTimer);
+      clearInterval(elapsedTimer);
       pollTimer = setInterval(() => {
         if (document.activeElement && document.activeElement.id === "exact-username") return;
         loadHighlight(username);
       }, 500);
       releaseTimer = setInterval(loadRelease, 5000);
+      elapsedTimer = setInterval(renderElapsed, 1000);
     }
 
     async function startGrid(name) {
@@ -377,9 +488,9 @@
     });
     async function postRelease(path, pending, success) {
       const note = document.getElementById("start-result");
+      releasePosting = true;
       document.getElementById("start-release").disabled = true;
       document.getElementById("stop-release").disabled = true;
-      document.getElementById("reset-release").disabled = true;
       note.textContent = pending;
       try {
         const response = await fetch(path, { method: "POST" });
@@ -388,7 +499,6 @@
           note.textContent = data.detail || "Request failed.";
           document.getElementById("start-release").disabled = false;
           document.getElementById("stop-release").disabled = true;
-          document.getElementById("reset-release").disabled = false;
           return;
         }
         note.textContent = success(data);
@@ -397,6 +507,8 @@
         note.textContent = String(err);
         document.getElementById("start-release").disabled = false;
         document.getElementById("stop-release").disabled = true;
+      } finally {
+        releasePosting = false;
         document.getElementById("reset-release").disabled = false;
       }
     }
@@ -444,6 +556,7 @@
         event.preventDefault();
         clearInterval(pollTimer);
         clearInterval(releaseTimer);
+        clearInterval(elapsedTimer);
         document.body.classList.remove("active");
         document.getElementById("login").classList.remove("hidden");
         document.getElementById("username").focus();

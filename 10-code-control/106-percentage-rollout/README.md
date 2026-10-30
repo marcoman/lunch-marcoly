@@ -5,7 +5,8 @@ a highlighted cell to a **fixed** share of users. Assignment is sticky on the
 username **context key**.
 
 This is **not** [14-progressive-rollout](../../99-use-cases/14-progressive-rollout/)
-(time-staged 10→100%). This is **not**
+(time-staged 10→100%). The same climb, started with the environment releases beta API, is
+[22-api-progressive-rollout](../../99-use-cases/22-api-progressive-rollout/). This is **not**
 [01-abcd-test](../../99-use-cases/01-abcd-test/) (four experiment labels).
 The AgentControl sticky split that buckets by `team` is the stub
 [29-team-rollout](../../20-agent-config/29-team-rollout/).

@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Grid Navigator — API progressive rollout</title>
+  <style>
+    :root{--ink:#e8e8ec;--muted:#a9a9b7;--panel:#2d2d3d;--line:#505064;--accent:#81c784}
+    *{box-sizing:border-box}html,body{height:100%;margin:0}
+    body{background:#1e1e2e;color:var(--ink);font-family:system-ui,sans-serif}
+    button,input{font:inherit}button{cursor:pointer;background:#3d3d52;color:var(--ink);border:1px solid #666;padding:.5rem .75rem}
+    code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.hidden{display:none!important}
+    .muted,.app-banner{color:var(--muted);font-size:.86rem}.error{color:#ef9a9a}
+    #login{max-width:480px;margin:2rem auto;padding:0 1rem}#login h1{font-size:1.3rem}
+    #username{display:block;width:100%;margin:.4rem 0 .8rem;padding:.55rem;background:#252535;color:var(--ink);border:1px solid var(--line)}
+    #shell{height:100vh;display:none;grid-template-columns:minmax(0,1fr) min(29rem,44vw)}
+    body.active #shell{display:grid}
+    main{padding:1.5rem 1.25rem;overflow:auto;outline:0}.header{line-height:1.65;margin-bottom:1.4rem}
+    .grid{display:grid;grid-template-columns:repeat(3,80px);gap:6px}
+    .cell{width:80px;height:80px;border:1px solid #555;background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+    .cell.selected{font-weight:700}.cell.selected.green{background:#43a047;border-color:#2e7d32;color:#fff}
+    #hdr-name.green{color:var(--accent)}.hint{color:var(--muted);font-size:.875rem}
+    .ld-rail{min-height:0;overflow:hidden;display:flex;flex-direction:column;background:var(--panel);border-left:1px solid var(--line)}
+    .ld-rail-header{padding:.85rem 1.1rem .35rem}.ld-rail-header h2{margin:0;font-size:1.05rem}
+    .ld-tabs{display:flex;gap:.35rem;padding:.35rem 1.1rem 0;border-bottom:1px solid var(--line)}
+    .ld-tab{border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;color:var(--muted);padding:.55rem .7rem}
+    .ld-tab.active{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+    .ld-rail-body{overflow:auto;padding:1rem 1.1rem}
+    .ld-section{display:none}.ld-section.active{display:block}
+    .ld-about-p{font-size:.86rem;line-height:1.45}
+    .ld-about-p ol{padding-left:1.15rem;margin:.4rem 0}.ld-about-p li{margin:.35rem 0}
+    .block-title{margin:1.1rem 0 .4rem;color:#90caf9;font-size:.78rem;font-weight:700;text-transform:uppercase}
+    .ld-section .block-title:first-child{margin-top:.2rem}
+    .card,pre{border:1px solid var(--line);border-radius:8px;background:#222232;padding:.75rem;line-height:1.5}
+    pre{overflow:auto;font-size:.78rem}
+    .assignment{font-size:1.15rem;font-weight:700}.assignment.green{color:var(--accent)}
+    .user-row,.release-actions,.user-actions{display:flex;gap:.45rem;flex-wrap:wrap;margin:.45rem 0}
+    .user-row input{min-width:0;flex:1;padding:.45rem;background:#191927;color:var(--ink);border:1px solid var(--line)}
+    .weight{display:flex;height:1.5rem;border-radius:5px;overflow:hidden;margin:.6rem 0}
+    .weight .green{background:#43a047}.weight .none{background:#555}
+    .labels{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted)}
+    .history{display:grid;gap:.35rem;margin-top:.7rem}
+    .history button{display:flex;align-items:center;justify-content:space-between;width:100%;text-align:left;gap:.6rem}
+    .history .value{font:700 .75rem ui-monospace,monospace}
+    .history .value.green{color:var(--accent)}.history .value.none{color:var(--muted)}
+    button:disabled{opacity:.45;cursor:default}
+    a{color:#90caf9}
+    table{width:100%;border-collapse:collapse;font-size:.82rem}
+    td,th{text-align:left;padding:.25rem .4rem;border-bottom:1px solid var(--line)}
+    tr.current td{color:var(--accent);font-weight:700}
+    #elapsed{font-variant-numeric:tabular-nums;margin:.2rem 0 .4rem}
+  </style>
+</head>
+<body>
+  <section id="login">
+    <div class="app-banner">22-api-progressive-rollout[dotnet]</div>
+    <h1>Login</h1>
+    <p class="muted">Your username is the LaunchDarkly user context key.</p>
+    <label for="username">Username</label>
+    <input id="username" autocomplete="username" autofocus>
+    <p id="login-error" class="error hidden">Username is required.</p>
+    <button id="login-btn" type="button">Continue</button>
+  </section>
+
+  <div id="shell">
+    <main id="grid-screen" tabindex="0">
+      <div class="header">
+        <div class="app-banner">22-api-progressive-rollout[dotnet]</div>
+        <div>Name: <span id="hdr-name"></span> <span id="hdr-label"></span></div>
+        <div>Current position: <span id="hdr-current"></span></div>
+        <div>Previous position: <span id="hdr-previous"></span></div>
+        <div>Flag value: <code id="hdr-flag">none</code></div>
+      </div>
+      <div id="grid" class="grid"></div>
+      <p class="hint">Arrows or WASD move. L logs out.</p>
+    </main>
+
+    <aside class="ld-rail" aria-label="LaunchDarkly lab">
+      <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+      <div class="ld-tabs" role="tablist">
+        <button type="button" class="ld-tab active" data-tab="release" role="tab" aria-selected="true">Release</button>
+        <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
+      </div>
+      <div class="ld-rail-body">
+        <section id="ld-section-release" class="ld-section active">
+          <p class="muted">The beta API advances the percentage. This tab starts the release, stops it, and resets the flag to off.</p>
+          <div class="block-title">Environment release</div>
+          <div class="card">
+            <div class="release-actions">
+              <button id="start-release" type="button">Start progressive release</button>
+              <button id="stop-release" type="button" disabled>Stop</button>
+              <button id="reset-release" type="button">Reset</button>
+            </div>
+            <p id="schedule-note" class="muted">10% → 20% → 40% → 60% → 100%. Each step holds for 1 minute. The share of user contexts receiving green changes.</p>
+            <p id="start-result" class="muted"></p>
+            <div id="release-summary">Waiting…</div>
+            <p id="elapsed" class="muted" title="Starts when this page notices the step. Resets on the next step. The release poll is every 5 seconds.">Elapsed —</p>
+            <table id="steps"><tbody></tbody></table>
+          </div>
+          <div class="block-title">Explore context keys</div>
+          <div class="card">
+            <label for="exact-username">Username to evaluate</label>
+            <div class="user-row">
+              <input id="exact-username" autocomplete="off">
+              <button id="evaluate-user" type="button">Evaluate</button>
+            </div>
+            <div class="user-actions">
+              <button id="next-user" type="button">Try next username</button>
+            </div>
+            <p class="muted">Try next increments a trailing number. marco becomes marco1. marco12 becomes marco13.</p>
+            <div id="history" class="history" aria-label="Recent username evaluations"></div>
+          </div>
+          <div class="block-title">Configured vs observed</div>
+          <div class="card">
+            <div class="weight" aria-hidden="true"><span id="bar-green" class="green"></span><span id="bar-none" class="none"></span></div>
+            <div class="labels"><span id="bar-green-label">0% green configured</span><span id="bar-none-label">100% none</span></div>
+            <p id="observed" class="muted">No unique keys yet.</p>
+          </div>
+          <div class="block-title">This context received</div>
+          <div class="card">
+            <div id="assignment" class="assignment">Waiting…</div>
+            <div id="reason" class="muted"></div>
+            <button id="refresh-user" type="button">Evaluate same key again</button>
+          </div>
+          <div class="block-title">Context</div>
+          <pre id="context">Waiting for login…</pre>
+          <div class="block-title">Why it moves once</div>
+          <p id="sticky" class="muted">LaunchDarkly buckets the user context key. As the step percentage rises, a key can move from none to green once. After it receives green, it stays green for this release.</p>
+        </section>
+        <section id="ld-section-about" class="ld-section">
+          <div class="block-title">What this teaches</div>
+          <p class="ld-about-p">One environment release moves <code>api-progressive-grid-highlight</code> from <code>none</code> to <code>green</code>. The call omits metrics, so the release kind is progressive. Five steps serve 10%, 20%, 40%, 60%, then 100%. Each step lasts one minute.</p>
+          <p class="ld-about-p">The release targets a rule. The rule's clause is context kind <code>user</code>, attribute <code>kind</code>, operator <code>in</code>, value <code>user</code>. The default rule stays <code>none</code> until the release completes, then LaunchDarkly removes the rule and serves <code>green</code> from the default rule.</p>
+          <p class="ld-about-p">The Release tab already shows the context that was sent and the variation that came back.</p>
+          <div class="block-title">Start the release</div>
+          <ol class="ld-about-p">
+            <li>Run <code>rest/create-flag.sh</code>. The flag is off.</li>
+            <li>Start this page and log in once, so the flag has a recent user evaluation.</li>
+            <li>Click <strong>Start progressive release</strong>. That POST starts the release. <code>rest/start-progressive-release.sh</code> sends the same body.</li>
+            <li>Return here. The step percent climbs. Elapsed time starts when this page notices the step and resets on the next one. The release poll is every 5 seconds, so the clock starts a little after LaunchDarkly moves. Try the next username to sample the split.</li>
+            <li>Click <strong>Stop</strong> to roll the phase back to <code>none</code>. <code>rest/stop-progressive-release.sh forward</code> serves <code>green</code> now instead.</li>
+            <li>Click <strong>Reset</strong> to turn the flag off. Every context receives <code>none</code> until the next start.</li>
+          </ol>
+          <p class="ld-about-p"><a id="flag-link" href="https://launchdarkly.com/docs/api/environment-releases" target="_blank" rel="noopener">Environment releases (beta)</a></p>
+          <p id="targeting-wrap" class="ld-about-p hidden"><a id="targeting-link" href="" target="_blank" rel="noopener">Open this flag's targeting</a></p>
+        </section>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const ROWS = ["t", "m", "b"];
+    const COLS = ["l", "m", "r"];
+    let username = "";
+    let row = 1;
+    let col = 1;
+    let previous = null;
+    let highlight = { highlightColor: "none", flagValue: "none", colorLabel: "(no-color)", reason: {}, ldContext: {} };
+    let seen = new Map();
+    let history = [];
+    let configuredPercent = 0;
+    let pollTimer = null;
+    let releaseTimer = null;
+
+    function pos(r, c) { return `${ROWS[r]}/${COLS[c]}`; }
+
+    function selectTab(tab) {
+      document.querySelectorAll(".ld-tab").forEach((btn) => {
+        const on = btn.dataset.tab === tab;
+        btn.classList.toggle("active", on);
+        btn.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      document.querySelectorAll(".ld-section").forEach((section) => {
+        section.classList.toggle("active", section.id === `ld-section-${tab}`);
+      });
+    }
+    document.querySelectorAll(".ld-tab").forEach((btn) => {
+      btn.addEventListener("click", () => selectTab(btn.dataset.tab));
+    });
+
+    function renderGrid() {
+      const green = highlight.highlightColor === "green";
+      const name = document.getElementById("hdr-name");
+      name.textContent = username;
+      name.className = green ? "green" : "";
+      document.getElementById("hdr-label").textContent = highlight.colorLabel || "";
+      document.getElementById("hdr-current").textContent = pos(row, col);
+      document.getElementById("hdr-previous").textContent = previous ? pos(previous.row, previous.col) : "—";
+      document.getElementById("hdr-flag").textContent = highlight.flagValue || "none";
+      const grid = document.getElementById("grid");
+      grid.innerHTML = "";
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          const selected = r === row && c === col;
+          const cell = document.createElement("div");
+          cell.className = `cell${selected ? " selected" : ""}${selected && green ? " green" : ""}`;
+          cell.textContent = selected ? "X" : "";
+          grid.appendChild(cell);
+        }
+      }
+      const assignment = document.getElementById("assignment");
+      assignment.textContent = green ? "GREEN · highlighted" : "NONE · X only";
+      assignment.className = `assignment${green ? " green" : ""}`;
+      const reason = highlight.reason || {};
+      const index = highlight.variationIndex == null ? "default" : highlight.variationIndex;
+      document.getElementById("reason").textContent = `reason: ${reason.kind || "UNKNOWN"} · variation index: ${index}`;
+      document.getElementById("context").textContent = JSON.stringify(highlight.ldContext || {}, null, 2);
+      const nextName = nextUsername(username);
+      document.getElementById("next-user").textContent = nextName ? `Try ${nextName}` : "Try next username";
+    }
+
+    function nextUsername(name) {
+      const match = /^(.*?)(\d+)$/.exec(String(name || ""));
+      if (!match) return name ? `${name}1` : "";
+      return match[1] + String(Number(match[2]) + 1);
+    }
+
+    function renderObserved() {
+      const greenWidth = Math.max(0, Math.min(100, Number(configuredPercent) || 0));
+      document.getElementById("bar-green").style.width = `${greenWidth}%`;
+      document.getElementById("bar-none").style.width = `${100 - greenWidth}%`;
+      document.getElementById("bar-green-label").textContent = `${greenWidth}% green configured`;
+      document.getElementById("bar-none-label").textContent = `${100 - greenWidth}% none`;
+      const total = seen.size;
+      const greenCount = [...seen.values()].filter((value) => value === "green").length;
+      const el = document.getElementById("observed");
+      if (!total) {
+        el.textContent = "No unique keys yet.";
+        return;
+      }
+      const noneCount = total - greenCount;
+      const pct = Math.round((greenCount / total) * 1000) / 10;
+      el.innerHTML = `Observed <strong>${greenCount} green</strong> / ${noneCount} none of <strong>${total}</strong> unique keys → <strong>${pct}%</strong> green (configured ${greenWidth}%). Small samples will not match ${greenWidth}%.`;
+    }
+
+    function renderHistory() {
+      const container = document.getElementById("history");
+      container.innerHTML = "";
+      for (const item of history) {
+        const button = document.createElement("button");
+        button.type = "button";
+        const name = document.createElement("span");
+        name.textContent = item.username;
+        const value = document.createElement("span");
+        value.className = `value ${item.value}`;
+        value.textContent = `${item.value} · ${item.reason}`;
+        button.append(name, value);
+        button.title = `Re-evaluate ${item.username}`;
+        button.addEventListener("click", () => { loadHighlight(item.username); });
+        container.appendChild(button);
+      }
+    }
+
+    function rememberEvaluation(name) {
+      seen.set(name, highlight.highlightColor);
+      const reason = (highlight.reason || {}).kind || "UNKNOWN";
+      const existing = history.find((item) => item.username === name);
+      if (existing && existing.value === highlight.highlightColor && existing.reason === reason) {
+        renderHistory();
+        return;
+      }
+      history = history.filter((item) => item.username !== name);
+      history.unshift({ username: name, value: highlight.highlightColor, reason });
+      history = history.slice(0, 8);
+      renderHistory();
+    }
+
+    // Same oscillator as 21-tenant-datacenters. A click unlocks the context;
+    // later polls can then play. Start is 440 Hz. Each later step is the
+    // middle pair. Finish is the rising pair, 659 then 880.
+    let audioContext = null;
+    let heardRelease = null;
+    let releasePosting = false;
+    let stepSeenAt = null;
+    let elapsedTimer = null;
+
+    function unlockAudio() {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return null;
+      audioContext = audioContext || new AudioContext();
+      if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
+      return audioContext;
+    }
+
+    function playCue(kind) {
+      const context = unlockAudio();
+      if (!context) return;
+      const rising = [[659, 0.14], [880, 0.32]];
+      const notes = kind === "end"
+        ? rising
+        : kind === "phase"
+          ? [[523, 0.12], [659, 0.16]]
+          : [[440, 0.16]];
+      let at = context.currentTime;
+      for (const [frequency, duration] of notes) {
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(frequency, at);
+        gain.gain.setValueAtTime(0.0001, at);
+        gain.gain.exponentialRampToValueAtTime(0.08, at + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, at + duration);
+        oscillator.connect(gain);
+        gain.connect(context.destination);
+        oscillator.start(at);
+        oscillator.stop(at + duration + 0.02);
+        at += duration + 0.04;
+      }
+    }
+
+    function formatElapsed(ms) {
+      const total = Math.max(0, Math.floor(ms / 1000));
+      const minutes = Math.floor(total / 60);
+      const seconds = String(total % 60).padStart(2, "0");
+      return `${minutes}:${seconds}`;
+    }
+
+    function renderElapsed() {
+      const el = document.getElementById("elapsed");
+      if (!el) return;
+      el.textContent = stepSeenAt == null ? "Elapsed —" : `Elapsed ${formatElapsed(Date.now() - stepSeenAt)}`;
+    }
+
+    function markStepSeen() {
+      stepSeenAt = Date.now();
+      renderElapsed();
+    }
+
+    function clearElapsed() {
+      stepSeenAt = null;
+      renderElapsed();
+    }
+
+    function noteReleaseCue(data) {
+      if (!data || data.configured === false || data.error) return;
+      const active = Boolean(data.active) && data.flagOn !== false;
+      const stepIndex = Number.isInteger(data.stepIndex) ? data.stepIndex : null;
+      const status = data.status || "none";
+      const prev = heardRelease;
+      heardRelease = { active, stepIndex, status };
+      const idle = data.flagOn === false || status === "none" || status === "reverted" || data.stopped === true;
+      if (idle) {
+        clearElapsed();
+        return;
+      }
+      if (!prev) {
+        if (active) markStepSeen();
+        return;
+      }
+      if (status === "completed" && prev.status !== "completed") {
+        markStepSeen();
+        playCue("end");
+        return;
+      }
+      if (active && !prev.active) {
+        markStepSeen();
+        playCue("start");
+        return;
+      }
+      if (active && prev.stepIndex !== null && stepIndex !== null && stepIndex !== prev.stepIndex) {
+        markStepSeen();
+        playCue("phase");
+        return;
+      }
+      if (prev.active && !active) clearElapsed();
+    }
+
+    document.addEventListener("pointerdown", unlockAudio);
+
+    function renderRelease(data) {
+      const summary = document.getElementById("release-summary");
+      const body = document.querySelector("#steps tbody");
+      body.innerHTML = "";
+      if (!data || data.configured === false) {
+        summary.textContent = data && data.detail ? data.detail : "Release API is not configured.";
+        return;
+      }
+      if (data.error) {
+        summary.textContent = `Release read failed (${data.http}): ${data.detail || ""}`;
+        return;
+      }
+      configuredPercent = releasePercent(data);
+      renderObserved();
+      noteReleaseCue(data);
+      if (!releasePosting) document.getElementById("reset-release").disabled = false;
+      const active = Boolean(data.active) && data.flagOn !== false;
+      document.getElementById("start-release").disabled = active;
+      document.getElementById("stop-release").disabled = !active;
+      if (data.flagOn === false) {
+        summary.textContent = "Flag is off. Every context receives none.";
+        return;
+      }
+      if (data.status === "none") {
+        summary.textContent = data.detail || "No progressive release yet.";
+        return;
+      }
+      const rolledBack = data.status === "reverted" || data.stopped === true;
+      const step = Number.isInteger(data.stepIndex) ? data.stepIndex + 1 : "—";
+      const percent = data.currentPercent == null ? "—" : `${data.currentPercent}%`;
+      summary.textContent = rolledBack
+        ? `${data.kind || "release"} · reverted · rolled back to none`
+        : `${data.kind || "release"} · ${data.status || "unknown"} · step ${step} of ${data.stepCount || 0} · ${percent} · metrics ${data.metricCount ?? 0}`;
+      (data.steps || []).forEach((stepRow, index) => {
+        const tr = document.createElement("tr");
+        if (!rolledBack && index === data.stepIndex) tr.className = "current";
+        tr.innerHTML = `<td>${index + 1}</td><td>${stepRow.percent}%</td><td>${stepRow.durationSeconds}s</td>`;
+        body.appendChild(tr);
+      });
+    }
+
+    function releasePercent(data) {
+      if (!data || data.error || data.configured === false || data.status === "none" || data.flagOn === false) return 0;
+      if (data.status === "reverted" || data.stopped) return 0;
+      if (data.status === "completed") return 100;
+      if (typeof data.currentPercent === "number") return data.currentPercent;
+      return 0;
+    }
+
+    async function loadHighlight(name) {
+      const response = await fetch(`/api/highlight?username=${encodeURIComponent(name)}`, { cache: "no-store" });
+      if (!response.ok) return;
+      highlight = await response.json();
+      username = name;
+      document.getElementById("exact-username").value = name;
+      rememberEvaluation(name);
+      renderGrid();
+      renderObserved();
+    }
+
+    async function loadRelease() {
+      try {
+        const response = await fetch("/api/release", { cache: "no-store" });
+        renderRelease(await response.json());
+      } catch (err) {
+        renderRelease({ configured: true, error: true, http: "network", detail: String(err) });
+      }
+    }
+
+    function startPolling() {
+      clearInterval(pollTimer);
+      clearInterval(releaseTimer);
+      clearInterval(elapsedTimer);
+      pollTimer = setInterval(() => {
+        if (document.activeElement && document.activeElement.id === "exact-username") return;
+        loadHighlight(username);
+      }, 500);
+      releaseTimer = setInterval(loadRelease, 5000);
+      elapsedTimer = setInterval(renderElapsed, 1000);
+    }
+
+    async function startGrid(name) {
+      username = name;
+      row = 1;
+      col = 1;
+      previous = null;
+      document.getElementById("exact-username").value = name;
+      document.getElementById("login").classList.add("hidden");
+      document.body.classList.add("active");
+      renderGrid();
+      await loadHighlight(name);
+      await loadRelease();
+      startPolling();
+      document.getElementById("grid-screen").focus();
+    }
+
+    function tryMove(dr, dc) {
+      const nextRow = row + dr;
+      const nextCol = col + dc;
+      if (nextRow < 0 || nextRow > 2 || nextCol < 0 || nextCol > 2) return;
+      previous = { row, col };
+      row = nextRow;
+      col = nextCol;
+      renderGrid();
+    }
+
+    document.getElementById("login-btn").addEventListener("click", () => {
+      const name = document.getElementById("username").value.trim();
+      const err = document.getElementById("login-error");
+      if (!name) {
+        err.classList.remove("hidden");
+        return;
+      }
+      err.classList.add("hidden");
+      startGrid(name);
+    });
+    document.getElementById("username").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") document.getElementById("login-btn").click();
+    });
+    async function postRelease(path, pending, success) {
+      const note = document.getElementById("start-result");
+      releasePosting = true;
+      document.getElementById("start-release").disabled = true;
+      document.getElementById("stop-release").disabled = true;
+      note.textContent = pending;
+      try {
+        const response = await fetch(path, { method: "POST" });
+        const data = await response.json();
+        if (data.error || data.configured === false) {
+          note.textContent = data.detail || "Request failed.";
+          document.getElementById("start-release").disabled = false;
+          document.getElementById("stop-release").disabled = true;
+          return;
+        }
+        note.textContent = success(data);
+        renderRelease(data);
+      } catch (err) {
+        note.textContent = String(err);
+        document.getElementById("start-release").disabled = false;
+        document.getElementById("stop-release").disabled = true;
+      } finally {
+        releasePosting = false;
+        document.getElementById("reset-release").disabled = false;
+      }
+    }
+    document.getElementById("start-release").addEventListener("click", () => {
+      postRelease("/api/release/start", "Starting the progressive release…", (data) => {
+        return `Started. ${data.kind || "progressive"} is ${data.status || "in progress"}.`;
+      });
+    });
+    document.getElementById("stop-release").addEventListener("click", () => {
+      postRelease("/api/release/stop", "Stopping the progressive release…", () => {
+        return "Stopped. The phase rolled back to none.";
+      });
+    });
+    document.getElementById("reset-release").addEventListener("click", () => {
+      postRelease("/api/release/reset", "Turning the flag off…", () => {
+        seen = new Map();
+        history = [];
+        configuredPercent = 0;
+        renderHistory();
+        renderObserved();
+        if (username) loadHighlight(username);
+        return "Reset. The flag is off, so every context receives none.";
+      });
+    });
+    document.getElementById("evaluate-user").addEventListener("click", () => {
+      const name = document.getElementById("exact-username").value.trim();
+      if (!name) return;
+      loadHighlight(name);
+    });
+    document.getElementById("exact-username").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") document.getElementById("evaluate-user").click();
+    });
+    document.getElementById("next-user").addEventListener("click", () => {
+      const current = document.getElementById("exact-username").value.trim() || username;
+      const candidate = nextUsername(current);
+      if (!candidate) return;
+      loadHighlight(candidate);
+    });
+    document.getElementById("refresh-user").addEventListener("click", () => {
+      if (username) loadHighlight(username);
+    });
+    document.getElementById("grid-screen").addEventListener("keydown", (event) => {
+      const key = event.key.toLowerCase();
+      if (key === "l") {
+        event.preventDefault();
+        clearInterval(pollTimer);
+        clearInterval(releaseTimer);
+        clearInterval(elapsedTimer);
+        document.body.classList.remove("active");
+        document.getElementById("login").classList.remove("hidden");
+        document.getElementById("username").focus();
+        return;
+      }
+      if (event.key === "ArrowUp" || key === "w") tryMove(-1, 0);
+      else if (event.key === "ArrowDown" || key === "s") tryMove(1, 0);
+      else if (event.key === "ArrowLeft" || key === "a") tryMove(0, -1);
+      else if (event.key === "ArrowRight" || key === "d") tryMove(0, 1);
+      else return;
+      event.preventDefault();
+    });
+
+    fetch("/api/bootstrap", { cache: "no-store" }).then((response) => response.json()).then((data) => {
+      if (Array.isArray(data.schedule) && data.schedule.length) {
+        const percents = data.schedule.map((step) => `${step.percent}%`).join(" → ");
+        const seconds = data.schedule[0].durationSeconds;
+        const minutes = seconds / 60;
+        const held = seconds % 60 === 0
+          ? `${minutes} minute${minutes === 1 ? "" : "s"}`
+          : `${seconds} seconds`;
+        document.getElementById("schedule-note").textContent =
+          `${percents}. Each step holds for ${held}. The share of user contexts receiving green changes.`;
+      }
+      if (!data.targetingUrl) return;
+      const link = document.getElementById("targeting-link");
+      link.href = data.targetingUrl;
+      document.getElementById("targeting-wrap").classList.remove("hidden");
+    }).catch(() => {});
+  </script>
+</body>
+</html>

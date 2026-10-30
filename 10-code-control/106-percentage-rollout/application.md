@@ -18,6 +18,7 @@ This is **not**:
 | Example | Difference |
 |---------|------------|
 | [14-progressive-rollout](../../99-use-cases/14-progressive-rollout/) | Time-staged 10→100% |
+| [22-api-progressive-rollout](../../99-use-cases/22-api-progressive-rollout/) | Same climb, started with the environment releases beta API |
 | [01-abcd-test](../../99-use-cases/01-abcd-test/) | Four experiment labels |
 | [101-flag-enablement](../101-flag-enablement/) | Independent on/off, no rollout |
 

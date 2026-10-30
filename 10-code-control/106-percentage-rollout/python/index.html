@@ -159,6 +159,7 @@ return {
       <section id="ld-section-about" class="ld-section">
         <div class="block-title">What this teaches</div>
         <p class="ld-about-p">A percentage rollout serves <code>green</code> to a fixed share of usernames and <code>none</code> to the rest. LaunchDarkly buckets the <code>user</code> context key. The same username keeps its variation until someone edits the default-rule weights.</p>
+        <p class="ld-about-p">The share stays fixed here. <code>99-use-cases/22-api-progressive-rollout</code> climbs from 10% to 100% and starts that release with the environment releases beta API.</p>
         <p class="ld-about-p">The Rollout tab already shows the context that was sent and the variation that came back.</p>
         <div class="block-title">Start a percentage rollout</div>
         <p class="ld-about-p">Open the flag and set the default rule to a percentage rollout. Then come back and try several usernames.</p>

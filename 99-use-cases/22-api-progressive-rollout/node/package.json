@@ -1,0 +1,13 @@
+{
+  "name": "22-api-progressive-rollout",
+  "version": "1.0.0",
+  "private": true,
+  "description": "22-api-progressive-rollout grid navigator web UI",
+  "main": "22-api-progressive-rollout.js",
+  "scripts": {
+    "start": "node 22-api-progressive-rollout.js"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0"
+  }
+}

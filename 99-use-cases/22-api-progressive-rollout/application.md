@@ -46,7 +46,9 @@ Every call sends `LD-API-Version: beta`.
 2. The page evaluates `api-progressive-grid-highlight`.
 3. The selected cell turns green when the variation is `green`.
 4. **Start progressive release** on the Release tab POSTs the environment release.
-5. The Release tab shows the context, the variation, the reason, and the release step read from the API.
+5. The Release tab shows the context, the variation, the reason, and the release step read from the API. Elapsed time counts from the moment this page notices the step, and resets on the next step.
+
+The [README](README.md) shows two running examples: step 1 at 10% with `marco` still on `none`, then a nine-key sample at 20% where two keys are `green`.
 
 ## Acceptance criteria
 
