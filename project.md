@@ -265,6 +265,7 @@ lunch-marcoly/
 - `20-multi-arm-bandit` (under `99-use-cases/`) is a stub. A multi-armed bandit on the grid navigator: a metric shifts traffic toward the winning variation. `01-abcd-test` keeps a fixed split. `53-mobile-experiment` stays in `50-mobile`.
 - `21-tenant-datacenters` (under `99-use-cases/`) is a Python web lab on **:8080**. Five datacenters hold 52 generated tenants. Each presence evaluates `tenant-border-palette` and `tenant-box-fill`. Version starts at 0.
 - `22-api-progressive-rollout` (under `99-use-cases/`) starts a progressive environment release with the beta API. Flag `api-progressive-grid-highlight`, five steps from 10% to 100%. Web: Python **:8780**, Node **:8781**, Java **:8782**, .NET **:8783**. Consoles re-evaluate that flag in Python, Node, Java, Go, Rust, and C++. Example 14 keeps the UI rollout.
+- `23-api-guarded-rollout` (under `99-use-cases/`) starts a guarded environment release with the same beta API. Flag `api-guarded-grid-highlight`, stages 10% and 20% for 2 minutes, then 30% and 50% for 1 minute. Metrics are example 15's latency, error rate, and movement. The Python web app on **:8784** uses a latency slider as the violation.
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author
 

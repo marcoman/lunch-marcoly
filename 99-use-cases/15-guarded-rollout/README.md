@@ -118,7 +118,7 @@ Both create the string flag with variations `none`, `green`, and other colors, a
 
 ## Configure guarded rollout in the LaunchDarkly UI
 
-LaunchDarkly's public REST API does **not** start guarded rollouts programmatically. Use `./configure-guarded-rollout.sh` to create metrics, prepare the flag, and emit targeting JSON — then finish in the UI:
+LaunchDarkly's public REST API does **not** start guarded rollouts programmatically. Use `./configure-guarded-rollout.sh` to create metrics, prepare the flag, and emit targeting JSON — then finish in the UI. [23-api-guarded-rollout](../23-api-guarded-rollout/) starts a guarded release on its own flag with the environment releases beta API. This example still finishes in the UI:
 
 ```bash
 cd rest && ./configure-guarded-rollout.sh

@@ -104,7 +104,8 @@ lunch-marcoly/
 │   ├── 19-terraform-sentinel/   # Sentinel policies for Terraform flags
 │   ├── 20-multi-arm-bandit/     # Stub: bandit shifts traffic; grid, not mobile
 │   ├── 21-tenant-datacenters/   # Five datacenters, 52 tenants, palette and fill flags
-│   └── 22-api-progressive-rollout/ # Beta API progressive release, 10→100% highlight
+│   ├── 22-api-progressive-rollout/ # Beta API progressive release, 10→100% highlight
+│   └── 23-api-guarded-rollout/  # Beta API guarded release, 10/20/30/50, latency slider
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -205,6 +206,7 @@ Each example may include implementations in any of these languages. Every applic
 | — | [20-multi-arm-bandit](99-use-cases/20-multi-arm-bandit/) | **Stub:** multi-armed bandit on the grid navigator. Allocation moves with a metric |
 | — | [21-tenant-datacenters](99-use-cases/21-tenant-datacenters/) | Five datacenters, 52 tenants. Border palette, fill, and segments |
 | — | [22-api-progressive-rollout](99-use-cases/22-api-progressive-rollout/) | Progressive 10→100% highlight via the environment releases beta API. Web: Python **:8780**, Node **:8781**, Java **:8782**, .NET **:8783**. Consoles: Python, Node, Java, Go, Rust, C++ |
+| — | [23-api-guarded-rollout](99-use-cases/23-api-guarded-rollout/) | Guarded 10/20/30/50 highlight via the same beta API. Latency slider is the guardrail. Python **:8784** |
 
 ## Building code
 
