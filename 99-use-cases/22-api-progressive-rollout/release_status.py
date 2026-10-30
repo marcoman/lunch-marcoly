@@ -237,6 +237,21 @@ def start_body(original_variation_id: str, target_variation_id: str) -> dict[str
     }
 
 
+def _phase_rule_ids(flag: dict) -> list[str]:
+    """Ids of targeting rules left behind by a stopped release.
+
+    Stop rolls the release back and leaves the phase rule. The next start
+    rejects a second rule with the same description.
+    """
+    environment = (flag.get("environments") or {}).get(api_config()["environment"]) or {}
+    rule_ids: list[str] = []
+    for rule in environment.get("rules") or []:
+        rule_id = rule.get("_id") or rule.get("id")
+        if isinstance(rule_id, str):
+            rule_ids.append(rule_id)
+    return rule_ids
+
+
 def start_progressive_release() -> dict[str, object]:
     """Turn the flag on at none, then POST the progressive release.
 
@@ -283,6 +298,7 @@ def start_progressive_release() -> dict[str, object]:
             "environmentKey": cfg["environment"],
             "comment": "22-api-progressive-rollout: on, default rule stays none",
             "instructions": [
+                *({"kind": "removeRule", "ruleId": rule_id} for rule_id in _phase_rule_ids(flag)),
                 {"kind": "turnFlagOn"},
                 {"kind": "updateFallthroughVariationOrRollout", "variationId": none_id},
             ],
@@ -314,7 +330,9 @@ def _releases_path() -> str:
 
 
 def stop_progressive_release() -> dict[str, object]:
-    """Roll the active release back to none and remove the phase rule.
+    """Roll the active release back to none.
+
+    The phase rule stays. The next start or reset removes it.
 
     LaunchDarkly: stop an environment release
     https://launchdarkly.com/docs/api/environment-releases-beta/stop-an-environment-release
@@ -389,13 +407,20 @@ def reset_demo() -> dict[str, object]:
     if stopped.get("error") and stopped.get("code") != "no_active_release":
         return stopped
     cfg = api_config()
+    flag_path = f"/api/v2/flags/{cfg['project']}/{FLAG_HIGHLIGHT}"
+    flag_status, flag = _request("GET", flag_path, version=FLAG_API_VERSION)
+    instructions: list[dict[str, str]] = [{"kind": "turnFlagOff"}]
+    if flag_status == 200 and isinstance(flag, dict):
+        instructions = [
+            {"kind": "removeRule", "ruleId": rule_id} for rule_id in _phase_rule_ids(flag)
+        ] + instructions
     status, payload = _request(
         "PATCH",
-        f"/api/v2/flags/{cfg['project']}/{FLAG_HIGHLIGHT}",
+        flag_path,
         {
             "environmentKey": cfg["environment"],
-            "comment": "22-api-progressive-rollout: reset, flag off",
-            "instructions": [{"kind": "turnFlagOff"}],
+            "comment": "22-api-progressive-rollout: reset, flag off, phase rule removed",
+            "instructions": instructions,
         },
         version=FLAG_API_VERSION,
         content_type="application/json; domain-model=launchdarkly.semanticpatch",
