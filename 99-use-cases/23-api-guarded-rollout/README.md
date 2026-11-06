@@ -19,9 +19,12 @@ export LD_SDK_KEY="sdk-..."
 
 ```bash
 cd python && python 23-api-guarded-rollout.py    # :8784
+cd node && npm install && npm start              # :8785
+cd java && ./mvnw -q -DskipTests package && java -jar target/23-api-guarded-rollout.jar  # :8786
+cd dotnet && dotnet run                          # :8787
 ```
 
-Open http://127.0.0.1:8784/ and log in once. That gives the flag a recent user evaluation, which the start health check looks for. **Start guarded release** creates `api-guarded-grid-highlight` and the three metrics if they are missing, then POSTs the release. **Try next** increments a trailing number (`marco`, then `marco1`) and the list keeps the latest keys with the variation and the reason. The tally under that list is how many of those keys received green. The Trace section records flag on and off, each new evaluation, percent changes, and rollbacks. The Guardrails tab holds the description of the three metrics.
+Open one of those and log in once. Python is **:8784**, Node **:8785**, Java **:8786**, .NET **:8787**. That login gives the flag a recent user evaluation, which the start health check looks for. **Start guarded release** creates `api-guarded-grid-highlight` and the three metrics if they are missing, then POSTs the release. **Try next** increments a trailing number (`marco`, then `marco1`) and the list keeps the latest keys with the variation and the reason. The tally under that list is how many of those keys received green. The Trace section records flag on and off, each new evaluation, percent changes, and rollbacks. The Guardrails tab holds the description of the three metrics.
 
 Leave the slider at 50 ms, or raise it above 200 ms and turn on **Report once per second** during the first two stages. Each report samples the logged-in user and `username-1` through `username-23`. Contexts on green send the slider. Contexts on none send 50 ms. The status line says **Monitoring**, then **Rolled back to none** if a guardrail regresses, or **Completed** when the release finishes. Either finish shows the flag targeting URL built from `LD_API_HOST`, `LD_PROJECT_KEY`, `LD_ENVIRONMENT_KEY`, and the flag key. **Stop** rolls the release back. **Reset** stays available, turns the flag off, and removes the phase rule.
 
@@ -63,4 +66,4 @@ A guarded release cannot allocate more than 50%. At 10%, LaunchDarkly serves gre
 
 | Piece | Where |
 |-------|--------|
-| Web grid | [python/](python/) **:8784** |
+| Web grid | [python/](python/) **:8784**, [node/](node/) **:8785**, [java/](java/) **:8786**, [dotnet/](dotnet/) **:8787** |

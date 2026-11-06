@@ -20,7 +20,7 @@ Each subdirectory demonstrates a specific product pattern (A/B testing, rollouts
 | [20-multi-arm-bandit/](20-multi-arm-bandit/) | **Stub:** multi-armed bandit on the grid. Traffic shifts toward the winning variation. Not the fixed split in `01`, and not `53-mobile-experiment` |
 | [21-tenant-datacenters/](21-tenant-datacenters/) | Five datacenters, 52 tenants. Border palette and fill flags, plus size, datacenter, and footprint segments |
 | [22-api-progressive-rollout/](22-api-progressive-rollout/) | Progressive highlight ramp started with the environment releases beta API |
-| [23-api-guarded-rollout/](23-api-guarded-rollout/) | Guarded highlight rollout, 10/20/30/50, started with the same beta API. Python **:8784** |
+| [23-api-guarded-rollout/](23-api-guarded-rollout/) | Guarded highlight rollout, 10/20/30/50, started with the same beta API. Python **:8784**, Node **:8785**, Java **:8786**, .NET **:8787** |
 
 ## Conventions
 
