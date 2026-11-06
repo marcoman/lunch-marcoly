@@ -206,7 +206,7 @@ Each example may include implementations in any of these languages. Every applic
 | — | [20-multi-arm-bandit](99-use-cases/20-multi-arm-bandit/) | **Stub:** multi-armed bandit on the grid navigator. Allocation moves with a metric |
 | — | [21-tenant-datacenters](99-use-cases/21-tenant-datacenters/) | Five datacenters, 52 tenants. Border palette, fill, and segments |
 | — | [22-api-progressive-rollout](99-use-cases/22-api-progressive-rollout/) | Progressive 10→100% highlight via the environment releases beta API. Web: Python **:8780**, Node **:8781**, Java **:8782**, .NET **:8783**. Consoles: Python, Node, Java, Go, Rust, C++ |
-| — | [23-api-guarded-rollout](99-use-cases/23-api-guarded-rollout/) | Guarded 10/20/30/50 highlight via the same beta API. Latency slider is the guardrail. Python **:8784**, Node **:8785**, Java **:8786**, .NET **:8787** |
+| — | [23-api-guarded-rollout](99-use-cases/23-api-guarded-rollout/) | Guarded 10/20/30/50 highlight via the same beta API. Latency slider is the guardrail. Web: Python **:8784**, Node **:8785**, Java **:8786**, .NET **:8787**. Consoles: Python, Node, Java, Go, Rust, C++ |
 
 ## Building code
 

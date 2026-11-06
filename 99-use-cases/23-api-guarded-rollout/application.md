@@ -6,7 +6,7 @@ This document defines **23-api-guarded-rollout** under [99-use-cases](../README.
 
 Start a **guarded rollout** of the grid highlight with the **environment releases** beta API. The percentages match [15-guarded-rollout](../15-guarded-rollout/): 10%, 20%, 30%, then 50%. The first two stages hold for **2 minutes**. The last two hold for **1 minute**.
 
-[15-guarded-rollout](../15-guarded-rollout/) prepares the same three guardrails and finishes in the UI. [22-api-progressive-rollout](../22-api-progressive-rollout/) uses this endpoint without metrics. This example includes the metrics, so the release kind is guarded.
+[15-guarded-rollout](../15-guarded-rollout/) prepares the same three guardrails and finishes in the UI. [23-api-guarded-rollout](../23-api-guarded-rollout/) uses this endpoint without metrics. This example includes the metrics, so the release kind is guarded.
 
 ## Flag
 
@@ -84,4 +84,4 @@ Start bypasses `metric_events_any` and `metric_events_with_context` because the 
 - [Environment releases (beta)](https://launchdarkly.com/docs/api/environment-releases)
 - [Guarded rollouts](https://launchdarkly.com/docs/home/releases/guarded-rollouts)
 - [15-guarded-rollout](../15-guarded-rollout/) — same guardrails, finished in the UI
-- [22-api-progressive-rollout](../22-api-progressive-rollout/) — same endpoint, no metrics
+- [23-api-guarded-rollout](../23-api-guarded-rollout/) — same endpoint, no metrics

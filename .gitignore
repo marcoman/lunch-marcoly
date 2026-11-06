@@ -58,6 +58,10 @@ obj/
 99-use-cases/22-api-progressive-rollout/go/22-api-progressive-rollout.exe
 99-use-cases/22-api-progressive-rollout/cpp/22-api-progressive-rollout
 99-use-cases/22-api-progressive-rollout/cpp/22-api-progressive-rollout.exe
+99-use-cases/23-api-guarded-rollout/go/23-api-guarded-rollout
+99-use-cases/23-api-guarded-rollout/go/23-api-guarded-rollout.exe
+99-use-cases/23-api-guarded-rollout/cpp/23-api-guarded-rollout
+99-use-cases/23-api-guarded-rollout/cpp/23-api-guarded-rollout.exe
 # legacy local build names (pre-rename)
 10-code-control/**/10-flag-enablement
 10-code-control/**/11-flag-variations
