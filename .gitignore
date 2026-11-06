@@ -8,7 +8,8 @@ __pycache__/
 # Local company name and logo for the tenant datacenter lab
 99-use-cases/21-tenant-datacenters/customizations.json
 99-use-cases/21-tenant-datacenters/customizations/
-99-use-cases/21-tenant-datacenters/customizations/
+99-use-cases/24-multitenant-datacenter/customizations.json
+99-use-cases/24-multitenant-datacenter/customizations/
 
 # Node
 node_modules/

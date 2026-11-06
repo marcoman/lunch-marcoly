@@ -1,0 +1,20 @@
+{
+  "sharedReplicaIcon": "icons/shared.svg",
+  "customerIcons": [
+    {"name": "ACME CORP", "customer": "ACME", "icon": "icons/acme.svg"},
+    {"name": "ENZO MEDIA", "customer": "ENZO", "icon": "icons/enzo.svg"},
+    {"name": "BHARAT RAIL", "icon": "icons/bharat.svg"},
+    {"name": "BIGCO HAUS", "customer": "BIGCO", "icon": "icons/bigco.svg"},
+    {"name": "BLEU NUAGES", "icon": "icons/bleu.svg"},
+    {"name": "DREX MELAYU", "customer": "DREX", "icon": "icons/drex.svg"},
+    {"name": "HUDSON YARD", "customer": "HUDSON", "icon": "icons/hudson.svg"},
+    {"name": "RHEIN WERK", "customer": "RHEIN", "icon": "icons/rhein.svg"},
+    {"name": "KOPI SINGA", "customer": "KOPI", "icon": "icons/kopi.svg"},
+    {"name": "PACIFIC GRID", "icon": "icons/pacific.svg"},
+    {"name": "FYRA LUFT", "icon": "icons/fyra.svg"},
+    {"name": "ORION DOCK", "icon": "icons/orion.svg"},
+    {"name": "SAFFRON MILL", "icon": "icons/saffron.svg"},
+    {"name": "SIERRA PEAK", "icon": "icons/sierra.svg"},
+    {"name": "LOTUS DELTA", "icon": "icons/lotus.svg"}
+  ]
+}

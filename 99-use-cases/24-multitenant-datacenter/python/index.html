@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multitenant datacenter</title>
+  <style>
+    :root {
+      --bg: #1e1e2e;
+      --ink: #e8e8ec;
+      --muted: #9a9aab;
+      --panel: #2d2d3d;
+      --line: #4a4a5c;
+      --accent: #64b5f6;
+      --box: #242433;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: system-ui, sans-serif;
+    }
+    button, select { font: inherit; }
+    button { cursor: pointer; }
+    #app {
+      height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) min(26rem, 34vw);
+    }
+    #floor {
+      min-width: 0;
+      min-height: 0;
+      overflow: auto;
+      padding: 1.1rem 1.3rem 1.4rem;
+    }
+    .brand-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem 1.2rem;
+    }
+    .brand h1 { margin: 0; font-size: 1.25rem; }
+    .brand p { margin: 0.35rem 0 0.9rem; color: var(--muted); font-size: 0.85rem; }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem 0.95rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+    .legend li { display: flex; align-items: center; gap: 0.3rem; }
+    .geos {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.85rem;
+    }
+    .geo h2 {
+      margin: 0 0 0.4rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .dc {
+      background: var(--panel);
+      border: 2px solid var(--line);
+      border-radius: 10px;
+      padding: 0.65rem 0.7rem 0.75rem;
+      margin-bottom: 0.55rem;
+    }
+    .dc-head { display: flex; align-items: flex-start; gap: 0.35rem; }
+    .dc-toggle {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      padding: 0.05rem 0.2rem 0 0;
+      line-height: 1.2;
+    }
+    .dc h3 { margin: 0; font-size: 0.82rem; line-height: 1.35; }
+    .dc h3 .counts { font-weight: 500; color: var(--muted); }
+    .dc .meta { margin: 0.1rem 0 0.45rem; color: var(--muted); font-size: 0.75rem; }
+    .replica {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--box);
+      padding: 0.35rem 0.45rem 0.4rem;
+      margin-top: 0.4rem;
+    }
+    .replica.filled { background: color-mix(in srgb, var(--accent) 16%, var(--box)); }
+    .replica.just-rolled { outline: 1px solid var(--accent); }
+    .replica h4 {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin: 0 0 0.25rem;
+      font-size: 0.78rem;
+      font-weight: 650;
+    }
+    .mark { width: 1.15rem; height: 1.15rem; flex: 0 0 auto; border-radius: 4px; }
+    .row {
+      display: grid;
+      grid-template-columns: 1.1rem 1fr auto;
+      gap: 0.35rem;
+      align-items: center;
+      font-family: ui-monospace, monospace;
+      font-size: 0.75rem;
+      padding: 0.12rem 0.15rem;
+      border-radius: 4px;
+    }
+    .row.selected { background: color-mix(in srgb, var(--accent) 18%, transparent); }
+    .row button {
+      border: 0;
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      text-align: left;
+    }
+    .labels { display: flex; gap: 0.4rem; align-items: center; }
+    .cap-slot { display: inline-flex; width: 14px; height: 14px; }
+    .cap-icon { display: block; width: 14px; height: 14px; color: var(--muted); }
+    .cap-icon.low { opacity: 0.32; }
+    .cap-icon.muted { filter: grayscale(1); opacity: 0.85; }
+    .cap-icon.ink.security { color: #f5d76e; filter: none; opacity: 1; }
+    .cap-icon.ink.firewall { color: #7dd3c0; filter: none; opacity: 1; }
+    .cap-icon.ink.data-sharing { color: #8ab4f8; filter: none; opacity: 1; }
+    .cap-icon.ink.marketing { color: #f0a05a; filter: none; opacity: 1; }
+    .cap-slot.pulse { animation: icon-pulse 0.65s ease-out; }
+    @keyframes icon-pulse {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.65); }
+      100% { transform: scale(1); }
+    }
+    .name-pulse { animation: name-gain 0.7s ease-out; transform-origin: left center; }
+    .name-pulse.loss { animation: name-loss 0.7s ease-out; }
+    .name-pulse.gain.loss { animation: name-both 1s ease-out; }
+    @keyframes name-gain {
+      0% { transform: scale(1); }
+      35% { transform: scale(1.08); color: #3ddc84; }
+      100% { transform: scale(1); }
+    }
+    @keyframes name-loss {
+      0% { transform: scale(1); }
+      35% { transform: scale(1.08); color: #ff5c5c; }
+      100% { transform: scale(1); }
+    }
+    @keyframes name-both {
+      0% { transform: scale(1); }
+      20% { transform: scale(1.08); color: #3ddc84; }
+      45% { transform: scale(1); }
+      70% { transform: scale(1.08); color: #ff5c5c; }
+      100% { transform: scale(1); }
+    }
+    .panel-card .cap-slot,
+    .panel-card .cap-icon { width: 21px; height: 21px; }
+    @media (prefers-reduced-motion: reduce) {
+      .cap-slot.pulse, .name-pulse { animation: none; }
+    }
+    .version { color: var(--muted); }
+    .customers { margin-top: 1rem; }
+    .customers h2, .activity h2 { margin: 0 0 0.4rem; font-size: 0.95rem; }
+    .sample { margin: 0 0 0.5rem; color: var(--muted); font-size: 0.8rem; }
+    .panel-columns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.85rem; }
+    .panel-col h3 {
+      margin: 0 0 0.4rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .panel-card {
+      margin-bottom: 0.45rem;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.55rem 0.7rem;
+    }
+    .panel-card.has-border { border-width: 2px; }
+    .panel-card.filled { background: color-mix(in srgb, var(--accent) 16%, var(--panel)); }
+    .panel-card h3 { display: flex; align-items: center; gap: 0.4rem; margin: 0; font-size: 0.9rem; }
+    .panel-card p { margin: 0.15rem 0 0.35rem; color: var(--muted); font-size: 0.75rem; }
+    .activity {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: minmax(12rem, 18rem) minmax(0, 1fr);
+      gap: 0.8rem;
+      align-items: start;
+    }
+    .now, .trace {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.6rem 0.7rem;
+    }
+    .trace-scroll { max-height: 14rem; overflow: auto; }
+    .trace-scroll table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    .trace-scroll th, .trace-scroll td {
+      text-align: left;
+      padding: 0.2rem 0.3rem;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    .trace-scroll time { color: var(--muted); white-space: nowrap; }
+    .ld-rail {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--panel);
+      border-left: 1px solid var(--line);
+    }
+    .ld-rail-resize {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 8px;
+      z-index: 3;
+      cursor: col-resize;
+      touch-action: none;
+    }
+    .ld-rail-resize:hover,
+    .ld-rail-resize.dragging { background: rgba(100, 181, 246, 0.35); }
+    .ld-rail-resize:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+    body.ld-rail-dragging { cursor: col-resize; user-select: none; }
+    .ld-rail-header { padding: 0.85rem 1.1rem 0.4rem; }
+    .ld-rail-header h2 { margin: 0; font-size: 1.05rem; }
+    .ld-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      padding: 0.45rem 1.1rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .ld-tab {
+      border: 0;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      background: transparent;
+      color: var(--muted);
+      padding: 0.45rem 0.5rem;
+    }
+    .ld-tab.active { color: var(--ink); border-bottom-color: var(--accent); font-weight: 650; }
+    .ld-rail-body { flex: 1; min-width: 0; min-height: 0; overflow: auto; padding: 0.9rem 1.1rem 1.3rem; }
+    .ld-section { display: none; }
+    .ld-section.active { display: block; }
+    .block-title {
+      margin: 0 0 0.35rem;
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .ld-about-p { margin: 0 0 0.8rem; font-size: 0.88rem; line-height: 1.45; }
+    .ld-about-p a { color: var(--accent); }
+    .volume {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 0.2rem 0.55rem;
+      margin: 0 0 0.85rem;
+      min-width: 0;
+      max-width: 100%;
+    }
+    .volume > label:first-child { font-size: 0.82rem; }
+    .volume-mute {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      justify-self: end;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .volume input[type="range"] {
+      grid-column: 1;
+      width: 100%;
+      min-width: 0;
+      margin: 0;
+      accent-color: var(--accent);
+    }
+    .volume.is-muted input[type="range"] { opacity: 0.4; }
+    .volume output {
+      grid-column: 2;
+      margin: 0;
+      min-width: 2.5rem;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .roll {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.55rem 0.65rem 0.65rem;
+      margin-bottom: 0.55rem;
+    }
+    .roll h3, .flag-card h3 {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin: 0 0 0.2rem;
+      font-size: 0.9rem;
+    }
+    .roll p { margin: 0 0 0.45rem; color: var(--muted); font-size: 0.78rem; }
+    .buttons { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .buttons button:disabled { opacity: 0.4; cursor: default; }
+    .roll-actions { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.2rem 0 0.8rem; }
+    .roll-actions button, .buttons button, .flag-head button {
+      border: 1px solid var(--line);
+      background: var(--bg);
+      color: var(--ink);
+      border-radius: 6px;
+      padding: 0.28rem 0.55rem;
+    }
+    .flag-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.55rem 0.65rem 0.65rem;
+      margin-bottom: 0.55rem;
+    }
+    .flag-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+    .flag-card h3 { margin: 0; font-size: 0.92rem; }
+    .flag-key { font-family: ui-monospace, monospace; color: var(--muted); font-size: 0.75rem; }
+    .flag-card p { margin: 0.35rem 0 0.5rem; color: var(--muted); font-size: 0.78rem; line-height: 1.4; }
+    .flag-group { border: 0; margin: 0 0 0.4rem; padding: 0; }
+    .flag-group legend {
+      padding: 0;
+      margin-bottom: 0.25rem;
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .checks { display: flex; flex-wrap: wrap; gap: 0.3rem 0.7rem; }
+    .checks label { display: flex; align-items: center; gap: 0.3rem; font-size: 0.78rem; }
+    pre.context {
+      margin: 0;
+      white-space: pre-wrap;
+      font-size: 0.75rem;
+      line-height: 1.4;
+    }
+    @media (max-width: 980px) {
+      #app { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) min(22rem, 46vh); }
+      .ld-rail { border-left: 0; border-top: 1px solid var(--line); }
+      .ld-rail-resize { top: 0; right: 0; bottom: auto; left: 0; width: auto; height: 8px; cursor: row-resize; }
+      body.ld-rail-dragging { cursor: row-resize; }
+      .geos, .activity, .panel-columns { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <main id="floor">
+      <header class="brand">
+        <div class="brand-top">
+          <h1 id="banner">24-multitenant-datacenter[python]</h1>
+          <ul id="legend" class="legend" aria-label="Icon legend"></ul>
+        </div>
+        <p>Faint is not deployed. Grey is deployed and off. Color is on.</p>
+      </header>
+      <div id="geos" class="geos"></div>
+      <section class="customers" aria-label="Customers">
+        <h2>Customers</h2>
+        <p class="sample">A representative sample, not the full count.</p>
+        <div id="panel" class="panel-columns"></div>
+      </section>
+      <section class="activity" aria-label="Now and trace">
+        <div class="now">
+          <h2>Now</h2>
+          <p id="now">No changes yet.</p>
+        </div>
+        <div class="trace">
+          <h2>Trace</h2>
+          <div class="trace-scroll" tabindex="0">
+            <table>
+              <thead>
+                <tr><th>Time</th><th>Change</th></tr>
+              </thead>
+              <tbody id="trace"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+    <aside class="ld-rail" aria-label="LaunchDarkly lab">
+      <div class="ld-rail-resize" role="separator" aria-orientation="vertical" aria-label="Resize lab drawer" title="Drag to resize" tabindex="0"></div>
+      <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+      <div class="ld-tabs" role="tablist">
+        <button type="button" class="ld-tab active" data-tab="roll" role="tab" aria-selected="true">Rolling deployments</button>
+        <button type="button" class="ld-tab" data-tab="flags" role="tab" aria-selected="false">Flags</button>
+        <button type="button" class="ld-tab" data-tab="context" role="tab" aria-selected="false">Context</button>
+        <button type="button" class="ld-tab" data-tab="about" role="tab" aria-selected="false">About</button>
+      </div>
+      <div class="ld-rail-body">
+        <section id="tab-roll" class="ld-section active"></section>
+        <section id="tab-flags" class="ld-section"></section>
+        <section id="tab-context" class="ld-section">
+          <p class="block-title">Context</p>
+          <p class="ld-about-p" id="context-lead">Click a size row. This is the multi-context that row sends.</p>
+          <pre class="context" id="context-json">No row selected.</pre>
+          <p class="block-title">Variations</p>
+          <pre class="context" id="context-variations">No row selected.</pre>
+        </section>
+        <section id="tab-about" class="ld-section">
+          <p class="block-title">About</p>
+          <p class="ld-about-p">One size row is one multi-context. The datacenter picks the border, the replica picks the fill, and the customer size picks the four icons. The rolling deployment is a separate clock. The customer panel waits for both the roll and the flag. A border palette and the service fill also show on the customers they match. With those flags on, that is every customer.</p>
+          <p class="ld-about-p">Start a deployment and watch one datacenter finish before the next. All capabilities walks each build to the end, then starts the next. Immediate deploy skips the wait and leaves the flags off. Reset on that tab returns every rollout to not deployed. On Flags, check a size and a datacenter. Large customers have one replica, and ENZO in us-west-1 keeps two. BLEU NUAGES and the other EU customers stay off for data sharing and marketing.</p>
+          <p class="ld-about-p"><a href="https://launchdarkly.com/docs/home/flags/multi-contexts">Multi-contexts</a></p>
+          <p class="block-title">Sound</p>
+          <p class="ld-about-p">A chime marks each replica that lands. A buzz marks a reset. Flag changes rise and fall on their own control.</p>
+          <div class="volume" id="deploy-volume-row">
+            <label for="deploy-volume">Deployments</label>
+            <label class="volume-mute"><input id="deploy-mute" type="checkbox"> Mute</label>
+            <input id="deploy-volume" type="range" min="0" max="100" step="1" value="25">
+            <output id="deploy-volume-readout" for="deploy-volume">25%</output>
+          </div>
+          <div class="volume" id="flag-volume-row">
+            <label for="flag-volume">Flags</label>
+            <label class="volume-mute"><input id="flag-mute" type="checkbox"> Mute</label>
+            <input id="flag-volume" type="range" min="0" max="100" step="1" value="50">
+            <output id="flag-volume-readout" for="flag-volume">50%</output>
+          </div>
+        </section>
+      </div>
+    </aside>
+  </div>
+  <script>
+    const SIZE_LETTER = { small: "S", medium: "M", large: "L" };
+    const CAP_NAME = {
+      security: "Security",
+      firewall: "Firewall",
+      "data-sharing": "Data Sharing",
+      marketing: "Marketing",
+    };
+    const SVG = "http://www.w3.org/2000/svg";
+    const PALETTE_COLOR = {
+      none: null,
+      roygbiv: "#5b8def",
+      contrast: "#e0c341",
+      earth: "#a67c52",
+      ocean: "#3d9e9e",
+      "color-vision-aware": "#0072b2",
+    };
+
+    let floor = null;
+    const progress = {};
+    const rolled = {};
+    const timers = {};
+    const justRolled = {};
+    const highlightTimer = {};
+    let parade = null;
+    const flags = { border: "none", fill: false };
+    let selected = null;
+    const collapsed = new Set();
+    const trace = [];
+    let previousStates = new Map();
+    let pulseIds = new Set();
+    let pulseGain = new Set();
+    let pulseLoss = new Set();
+    let audioContext = null;
+    const recentFlagCue = {};
+    // Full-scale peaks live in playChime, playBuzz, and playCue. These fractions scale them.
+    // Deployments start quieter because a roll chimes once per replica.
+    const SOUND_KEY = "ld-sound:" + location.pathname;
+    const sound = {
+      deploy: { volume: 25, mute: false },
+      flag: { volume: 50, mute: false },
+    };
+
+    document.addEventListener("pointerdown", unlockAudio);
+    loadSound();
+    wireVolume("deploy");
+    wireVolume("flag");
+
+    function loadSound() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SOUND_KEY) || "null");
+        if (!saved) return;
+        for (const channel of ["deploy", "flag"]) {
+          const item = saved[channel];
+          if (!item) continue;
+          const volume = Number(item.volume);
+          if (volume >= 0 && volume <= 100) sound[channel].volume = Math.round(volume);
+          sound[channel].mute = Boolean(item.mute);
+        }
+      } catch (err) { /* private mode or a bad saved value */ }
+    }
+
+    function saveSound() {
+      try { localStorage.setItem(SOUND_KEY, JSON.stringify(sound)); } catch (err) { /* private mode */ }
+    }
+
+    // Mute keeps the slider where it is. Dragging the slider unmutes, like a system volume control.
+    function wireVolume(channel) {
+      const row = document.getElementById(channel + "-volume-row");
+      const input = document.getElementById(channel + "-volume");
+      const mute = document.getElementById(channel + "-mute");
+      const readout = document.getElementById(channel + "-volume-readout");
+      const paint = () => {
+        input.value = String(sound[channel].volume);
+        mute.checked = sound[channel].mute;
+        readout.textContent = sound[channel].volume + "%";
+        row.classList.toggle("is-muted", sound[channel].mute);
+      };
+      paint();
+      input.addEventListener("input", () => {
+        sound[channel].volume = Number(input.value);
+        sound[channel].mute = false;
+        saveSound();
+        paint();
+      });
+      input.addEventListener("change", () => previewSound(channel));
+      mute.addEventListener("change", () => {
+        sound[channel].mute = mute.checked;
+        saveSound();
+        paint();
+        if (!mute.checked) previewSound(channel);
+      });
+    }
+
+    function channelGain(channel) {
+      if (sound[channel].mute) return 0;
+      return sound[channel].volume / 100;
+    }
+
+    function previewSound(channel) {
+      if (!(channelGain(channel) > 0)) return;
+      if (channel === "deploy") playChime();
+      else playCue("up");
+    }
+
+    function unlockAudio() {
+      const Audio = window.AudioContext || window.webkitAudioContext;
+      if (!Audio) return null;
+      audioContext = audioContext || new Audio();
+      if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
+      return audioContext;
+    }
+
+    function playTone(frequency, duration, type, volume, delay) {
+      const level = volume * channelGain("deploy");
+      if (!(level > 0.00012)) return;
+      const context = unlockAudio();
+      if (!context) return;
+      const at = context.currentTime + (delay || 0);
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency, at);
+      gain.gain.setValueAtTime(0.0001, at);
+      gain.gain.exponentialRampToValueAtTime(level, at + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, at + duration);
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      oscillator.start(at);
+      oscillator.stop(at + duration + 0.02);
+    }
+
+    function playChime() {
+      playTone(880, 0.34, "sine", 0.07, 0);
+      playTone(1320, 0.26, "sine", 0.04, 0);
+      playTone(1760, 0.16, "sine", 0.02, 0.02);
+    }
+
+    function playBuzz() {
+      playTone(140, 0.2, "square", 0.035, 0);
+      playTone(92, 0.16, "square", 0.028, 0.05);
+    }
+
+    // Same shape as 21-tenant-datacenters. On rises 659 then 880. Off plays that pair downward.
+    // 0.08 is full scale. The Flags slider on About scales it. Default is half.
+    function playCue(kind) {
+      const peak = 0.08 * channelGain("flag");
+      if (!(peak > 0.00012)) return;
+      const context = unlockAudio();
+      if (!context) return;
+      const rising = [[659, 0.14], [880, 0.32]];
+      const notes = kind === "down"
+        ? [...rising].reverse()
+        : kind === "phase"
+          ? [[523, 0.12], [659, 0.16]]
+          : rising;
+      let at = context.currentTime;
+      for (const [frequency, duration] of notes) {
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(frequency, at);
+        gain.gain.setValueAtTime(0.0001, at);
+        gain.gain.exponentialRampToValueAtTime(peak, at + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, at + duration);
+        oscillator.connect(gain);
+        gain.connect(context.destination);
+        oscillator.start(at);
+        oscillator.stop(at + duration + 0.02);
+        at += duration + 0.04;
+      }
+    }
+
+    // Collapse two cues from one click. The next checkbox on this flag still plays.
+    function playFlagCue(key, kind) {
+      const now = Date.now();
+      const prev = recentFlagCue[key];
+      if (prev && prev.kind === kind && now - prev.at < 50) return;
+      recentFlagCue[key] = { kind, at: now };
+      playCue(kind);
+    }
+
+    function targetingOn(capability) {
+      const flag = flags[capability];
+      if (!flag || !flag.sizes) return false;
+      const size = floor.sizes.some((item) => flag.sizes[item]);
+      const datacenter = floor.datacenters.some((item) => flag.datacenters[item.key]);
+      return size && datacenter;
+    }
+
+    // The first size and datacenter together turn the flag on. Checking another
+    // size, or another datacenter, while it stays on is another enablement.
+    function hearFlag(key, before, after, held) {
+      if (before === after) {
+        if (before && held) playFlagCue(key, held);
+        return;
+      }
+      playFlagCue(key, after ? "up" : "down");
+    }
+
+    document.querySelectorAll(".ld-tab").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".ld-tab").forEach((item) => {
+          const on = item === button;
+          item.classList.toggle("active", on);
+          item.setAttribute("aria-selected", on ? "true" : "false");
+        });
+        document.querySelectorAll(".ld-section").forEach((section) => {
+          section.classList.toggle("active", section.id === "tab-" + button.dataset.tab);
+        });
+      });
+    });
+
+    function replicaKey(datacenter, replica) {
+      return datacenter + ":" + replica;
+    }
+
+    function hasBuild(capability, datacenter, replica) {
+      return rolled[capability].has(replicaKey(datacenter, replica));
+    }
+
+    // Stub flag match. GDPR wins for data sharing and marketing.
+    // LaunchDarkly: boolean variation, local stand-in until the SDK is wired.
+    // https://launchdarkly.com/docs/home/flags/boolean
+    function flagOn(capability, sizeClass, datacenter) {
+      const dc = floor.datacenters.find((item) => item.key === datacenter);
+      if ((capability === "data-sharing" || capability === "marketing") && dc && dc.gdpr) return false;
+      const flag = flags[capability];
+      if (!flag || !flag.sizes || !flag.datacenters) return false;
+      return Boolean(flag.sizes[sizeClass] && flag.datacenters[datacenter]);
+    }
+
+    function labelState(capability, sizeClass, datacenter, replica) {
+      if (!hasBuild(capability, datacenter, replica)) return "low";
+      return flagOn(capability, sizeClass, datacenter) ? "ink" : "muted";
+    }
+
+    function versionFor(sizeClass, datacenter, replica) {
+      const security = labelState("security", sizeClass, datacenter, replica) === "ink";
+      const firewall = labelState("firewall", sizeClass, datacenter, replica) === "ink";
+      const letter = SIZE_LETTER[sizeClass];
+      if (security && firewall) return letter + ".2";
+      if (security) return letter + ".1";
+      return letter + ".0";
+    }
+
+    function servingReplicas(customer) {
+      const dc = floor.datacenters.find((item) => item.key === customer.datacenter);
+      if (customer.tenancy === "single") return dc.dedicated[customer.customer];
+      return dc.shared;
+    }
+
+    function customerState(customer, capability) {
+      const names = servingReplicas(customer);
+      const ready = names.every((name) => hasBuild(capability, customer.datacenter, name));
+      if (!ready) return "low";
+      return flagOn(capability, customer.sizeClass, customer.datacenter) ? "ink" : "muted";
+    }
+
+    function contextFor(datacenter, replica, sizeClass, tenancy, customerName) {
+      const letter = SIZE_LETTER[sizeClass];
+      const dc = floor.datacenters.find((item) => item.key === datacenter);
+      const service = {
+        key: datacenter + ":" + replica,
+        name: replica,
+        tenancy: tenancy,
+        instances: tenancy === "single" ? dc.dedicated[customerName].length : dc.instances,
+      };
+      if (tenancy === "single") service.customer = customerName;
+      const customerKey = tenancy === "single"
+        ? customerName + ":" + letter
+        : datacenter + ":" + replica + ":" + letter;
+      return {
+        kind: "multi",
+        datacenter: { key: dc.key, geo: dc.geo, gdpr: dc.gdpr },
+        service: service,
+        customer: { key: customerKey, sizeClass: sizeClass, tenancy: tenancy },
+      };
+    }
+
+    function collectStates() {
+      const states = new Map();
+      for (const dc of floor.datacenters) {
+        const boxes = dc.shared.map((name) => ({ name, tenancy: "multi", customer: null }));
+        for (const customer of dc.customers) {
+          for (const name of dc.dedicated[customer]) {
+            boxes.push({ name, tenancy: "single", customer });
+          }
+        }
+        for (const box of boxes) {
+          for (const size of floor.sizes) {
+            for (const cap of floor.capabilities) {
+              const id = replicaKey(dc.key, box.name) + ":" + size + ":" + cap.key;
+              states.set(id, labelState(cap.key, size, dc.key, box.name));
+            }
+          }
+        }
+      }
+      for (const customer of floor.panel) {
+        for (const cap of floor.capabilities) {
+          states.set("panel:" + customer.name + ":" + cap.key, customerState(customer, cap.key));
+        }
+      }
+      return states;
+    }
+
+    function note(text, changes) {
+      trace.unshift({ t: new Date(), text, changes });
+      if (trace.length > 40) trace.length = 40;
+      const body = document.getElementById("trace");
+      body.replaceChildren();
+      for (const event of trace) {
+        const row = document.createElement("tr");
+        const time = document.createElement("td");
+        const stamp = document.createElement("time");
+        stamp.dateTime = event.t.toISOString();
+        stamp.textContent = event.t.toLocaleTimeString();
+        time.append(stamp);
+        const change = document.createElement("td");
+        change.textContent = event.changes === undefined ? event.text : event.text + " (" + event.changes + ")";
+        row.append(time, change);
+        body.append(row);
+      }
+      document.getElementById("now").textContent = changes === undefined
+        ? text
+        : text + ". " + changes + (changes === 1 ? " row changed." : " rows changed.");
+    }
+
+    function commit(text) {
+      const next = collectStates();
+      pulseIds = new Set();
+      pulseGain = new Set();
+      pulseLoss = new Set();
+      next.forEach((value, key) => {
+        const previous = previousStates.get(key);
+        if (previous === value) return;
+        pulseIds.add(key);
+        if (!key.startsWith("panel:")) return;
+        const name = key.split(":")[1];
+        if (value === "ink") pulseGain.add(name);
+        else if (previous === "ink") pulseLoss.add(name);
+      });
+      const changes = pulseIds.size;
+      previousStates = next;
+      render();
+      note(text, changes);
+    }
+
+    function svgChild(name, attrs) {
+      const node = document.createElementNS(SVG, name);
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+      return node;
+    }
+
+    function capIcon(key, state) {
+      const svg = svgChild("svg", {
+        viewBox: "0 0 24 24",
+        class: "cap-icon " + state + " " + key,
+        "aria-label": CAP_NAME[key] || key,
+      });
+      if (key === "security") {
+        svg.append(
+          svgChild("rect", { x: "5", y: "11", width: "14", height: "9", rx: "1.5", fill: "none", stroke: "currentColor", "stroke-width": "2" }),
+          svgChild("path", { d: "M8 11V8a4 4 0 0 1 8 0v3", fill: "none", stroke: "currentColor", "stroke-width": "2" })
+        );
+      } else if (key === "firewall") {
+        svg.append(svgChild("path", { d: "M3 7h8v4H3zm10 0h8v4h-8zM3 13h5v4H3zm6 0h6v4H9zm7 0h5v4h-5z", fill: "currentColor" }));
+      } else if (key === "data-sharing") {
+        svg.append(svgChild("path", { d: "M8 9.2 L16 9.2 M7.2 10 L11 15.2 M16.8 10 L13 15.2", fill: "none", stroke: "currentColor", "stroke-width": "1.6" }));
+        for (const [cx, cy] of [[6, 8], [18, 8], [12, 17]]) {
+          svg.append(svgChild("circle", { cx: String(cx), cy: String(cy), r: "2.4", fill: "currentColor" }));
+        }
+      } else {
+        svg.append(
+          svgChild("path", { d: "M4 10h3.2L16 6.2v11.6L7.2 14H4z", fill: "currentColor" }),
+          svgChild("path", { d: "M7.4 14.2v2.6a1.8 1.8 0 0 0 1.8 1.8H11", fill: "none", stroke: "currentColor", "stroke-width": "1.6", "stroke-linecap": "round" }),
+          svgChild("path", { d: "M17.2 9.2a4 4 0 0 1 0 5.6", fill: "none", stroke: "currentColor", "stroke-width": "1.6", "stroke-linecap": "round" })
+        );
+      }
+      return svg;
+    }
+
+    function capMark(key, state, pulse) {
+      const slot = document.createElement("span");
+      slot.className = "cap-slot" + (pulse ? " pulse" : "");
+      const why = state === "low" ? "not deployed" : state === "ink" ? "on" : "deployed, off";
+      slot.title = (CAP_NAME[key] || key) + " · " + why;
+      slot.append(capIcon(key, state));
+      return slot;
+    }
+
+    function labelsHtml(datacenter, replica, sizeClass) {
+      const wrap = document.createElement("span");
+      wrap.className = "labels";
+      for (const cap of floor.capabilities) {
+        const state = labelState(cap.key, sizeClass, datacenter, replica);
+        const id = replicaKey(datacenter, replica) + ":" + sizeClass + ":" + cap.key;
+        wrap.append(capMark(cap.key, state, pulseIds.has(id)));
+      }
+      return wrap;
+    }
+
+    function buildLegend() {
+      const list = document.getElementById("legend");
+      list.replaceChildren();
+      for (const cap of floor.capabilities) {
+        const item = document.createElement("li");
+        item.append(capIcon(cap.key, "ink"), document.createTextNode(CAP_NAME[cap.key] || cap.key));
+        list.append(item);
+      }
+    }
+
+    function render() {
+      const geos = document.getElementById("geos");
+      geos.replaceChildren();
+      const groups = [
+        ["US", floor.datacenters.filter((dc) => dc.geo === "us")],
+        ["EU", floor.datacenters.filter((dc) => dc.geo === "eu")],
+        ["AP", floor.datacenters.filter((dc) => dc.geo === "ap")],
+      ];
+      for (const [title, dcs] of groups) {
+        const section = document.createElement("section");
+        section.className = "geo";
+        const heading = document.createElement("h2");
+        heading.textContent = title;
+        section.append(heading);
+        for (const dc of dcs) section.append(datacenterCard(dc));
+        geos.append(section);
+      }
+      const panel = document.getElementById("panel");
+      panel.replaceChildren();
+      for (const size of floor.sizes) {
+        const column = document.createElement("section");
+        column.className = "panel-col";
+        const heading = document.createElement("h3");
+        heading.textContent = size;
+        column.append(heading);
+        for (const customer of floor.panel) {
+          if (customer.sizeClass === size) column.append(customerCard(customer));
+        }
+        panel.append(column);
+      }
+      pulseIds = new Set();
+      pulseGain = new Set();
+      pulseLoss = new Set();
+    }
+
+    function mark(src, alt) {
+      const image = document.createElement("img");
+      image.className = "mark";
+      image.src = "/" + String(src).replace(/^\//, "");
+      image.alt = alt;
+      return image;
+    }
+
+    function iconFor(name) {
+      const rows = floor.customerIcons || [];
+      const match = rows.find((item) => item.customer === name || item.name === name);
+      return match ? match.icon : "";
+    }
+
+    function datacenterCard(dc) {
+      const card = document.createElement("article");
+      card.className = "dc";
+      const color = PALETTE_COLOR[flags.border];
+      if (color) card.style.borderColor = color;
+      const open = !collapsed.has(dc.key);
+      const head = document.createElement("div");
+      head.className = "dc-head";
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "dc-toggle";
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.setAttribute("aria-label", (open ? "Collapse " : "Expand ") + dc.key);
+      toggle.textContent = open ? "▾" : "▸";
+      toggle.addEventListener("click", () => {
+        if (collapsed.has(dc.key)) collapsed.delete(dc.key);
+        else collapsed.add(dc.key);
+        render();
+      });
+      const title = document.createElement("h3");
+      const counts = dc.counts;
+      title.append(document.createTextNode(dc.key + " "));
+      const count = document.createElement("span");
+      count.className = "counts";
+      count.textContent = "S(" + counts.small + ") M(" + counts.medium + ") L(" + counts.large + ") Named(" + counts.named + ")";
+      title.append(count);
+      head.append(toggle, title);
+      const meta = document.createElement("p");
+      meta.className = "meta";
+      meta.textContent = (dc.gdpr ? "GDPR · " : "") + "border " + flags.border;
+      card.append(head, meta);
+      if (!open) return card;
+      for (const name of dc.shared) card.append(replicaBox(dc, name, "multi", null));
+      for (const customer of dc.customers) {
+        for (const name of dc.dedicated[customer]) card.append(replicaBox(dc, name, "single", customer));
+      }
+      return card;
+    }
+
+    function replicaBox(dc, name, tenancy, customer) {
+      const box = document.createElement("div");
+      box.className = "replica" + (flags.fill ? " filled" : "");
+      if (Object.values(justRolled).includes(replicaKey(dc.key, name))) box.classList.add("just-rolled");
+      const title = document.createElement("h4");
+      const src = tenancy === "multi" ? floor.sharedReplicaIcon : iconFor(customer);
+      if (src) title.append(mark(src, name));
+      title.append(document.createTextNode(name));
+      box.append(title);
+      for (const size of floor.sizes) {
+        const row = document.createElement("div");
+        const id = replicaKey(dc.key, name) + ":" + size;
+        row.className = "row" + (selected && selected.id === id ? " selected" : "");
+        const sizeButton = document.createElement("button");
+        sizeButton.type = "button";
+        sizeButton.textContent = SIZE_LETTER[size];
+        sizeButton.addEventListener("click", () => {
+          selected = {
+            id,
+            text: contextFor(dc.key, name, size, tenancy, customer),
+          };
+          document.getElementById("context-lead").textContent = dc.key + " · " + name + " · " + SIZE_LETTER[size];
+          document.getElementById("context-json").textContent = JSON.stringify(selected.text, null, 2);
+          document.getElementById("context-variations").textContent = "Evaluating…";
+          render();
+          evaluateSelected();
+        });
+        const version = document.createElement("span");
+        version.className = "version";
+        version.textContent = versionFor(size, dc.key, name);
+        row.append(sizeButton, labelsHtml(dc.key, name, size), version);
+        box.append(row);
+      }
+      return box;
+    }
+
+    // Border is the datacenter palette. Fill is the service flag. Both fall through to every customer when on.
+    function borderForCustomer(customer) {
+      const dc = floor.datacenters.find((item) => item.key === customer.datacenter);
+      if (!dc) return null;
+      return PALETTE_COLOR[flags.border] || null;
+    }
+
+    function fillForCustomer(customer) {
+      const dc = floor.datacenters.find((item) => item.key === customer.datacenter);
+      return Boolean(dc && flags.fill);
+    }
+
+    function customerCard(customer) {
+      const card = document.createElement("article");
+      card.className = "panel-card";
+      const border = borderForCustomer(customer);
+      if (border) {
+        card.classList.add("has-border");
+        card.style.borderColor = border;
+      }
+      if (fillForCustomer(customer)) card.classList.add("filled");
+      const title = document.createElement("h3");
+      const src = iconFor(customer.name);
+      if (src) title.append(mark(src, customer.name));
+      title.append(document.createTextNode(customer.name));
+      if (pulseGain.has(customer.name) || pulseLoss.has(customer.name)) {
+        title.classList.add("name-pulse");
+        if (pulseGain.has(customer.name)) title.classList.add("gain");
+        if (pulseLoss.has(customer.name)) title.classList.add("loss");
+      }
+      const served = servingReplicas(customer).join(", ");
+      const detail = document.createElement("p");
+      detail.textContent = customer.datacenter + " · " + customer.tenancy + " · " + served;
+      const row = document.createElement("div");
+      row.className = "labels";
+      for (const cap of floor.capabilities) {
+        const state = customerState(customer, cap.key);
+        const id = "panel:" + customer.name + ":" + cap.key;
+        row.append(capMark(cap.key, state, pulseIds.has(id)));
+      }
+      card.append(title, detail, row);
+      return card;
+    }
+
+    function stepText(capability, step) {
+      return (CAP_NAME[capability] || capability) + " · " + step.datacenter + " · " + step.replica;
+    }
+
+    function advance(capability) {
+      const index = progress[capability];
+      if (index >= floor.steps.length) {
+        stop(capability, false);
+        return;
+      }
+      const step = floor.steps[index];
+      rolled[capability].add(replicaKey(step.datacenter, step.replica));
+      justRolled[capability] = replicaKey(step.datacenter, step.replica);
+      progress[capability] = index + 1;
+      commit(stepText(capability, step) + " · " + progress[capability] + " of " + floor.steps.length);
+      playChime();
+      paintRoll();
+      // The highlight stays for one step. The last replica has no successor, so the timer turns it off.
+      releaseHighlight(capability);
+      if (progress[capability] >= floor.steps.length) stop(capability, false);
+    }
+
+    function cancelHighlight(capability) {
+      if (!highlightTimer[capability]) return;
+      clearTimeout(highlightTimer[capability]);
+      highlightTimer[capability] = null;
+    }
+
+    function releaseHighlight(capability) {
+      cancelHighlight(capability);
+      const key = justRolled[capability];
+      if (!key) return;
+      highlightTimer[capability] = setTimeout(() => {
+        highlightTimer[capability] = null;
+        if (justRolled[capability] !== key) return;
+        delete justRolled[capability];
+        render();
+      }, floor.delayMs);
+    }
+
+    function start(capability) {
+      if (timers[capability]) return;
+      stopParade(false);
+      if (progress[capability] >= floor.steps.length) {
+        note(capability + " · already rolled");
+        return;
+      }
+      advance(capability);
+      if (progress[capability] < floor.steps.length) {
+        timers[capability] = setInterval(() => advance(capability), floor.delayMs);
+      }
+      paintRoll();
+    }
+
+    function stop(capability, announce) {
+      if (timers[capability]) {
+        clearInterval(timers[capability]);
+        timers[capability] = null;
+      }
+      if (announce) note(capability + " · stop");
+      paintRoll();
+    }
+
+    function reset(capability) {
+      stopParade(false);
+      stop(capability, false);
+      rolled[capability].clear();
+      progress[capability] = 0;
+      cancelHighlight(capability);
+      delete justRolled[capability];
+      commit((CAP_NAME[capability] || capability) + " · reset");
+      playBuzz();
+      paintRoll();
+    }
+
+    function paradeCapability() {
+      return floor.capabilities.find((cap) => progress[cap.key] < floor.steps.length) || null;
+    }
+
+    function stopParade(announce) {
+      if (!parade) {
+        if (announce) note("all capabilities · stop");
+        return;
+      }
+      clearInterval(parade);
+      parade = null;
+      if (announce) note("all capabilities · stop");
+      paintRoll();
+    }
+
+    function advanceParade() {
+      const cap = paradeCapability();
+      if (!cap) {
+        stopParade(false);
+        return;
+      }
+      advance(cap.key);
+      if (!paradeCapability()) stopParade(false);
+    }
+
+    function startParade() {
+      if (parade) return;
+      if (!paradeCapability()) {
+        note("all capabilities · already rolled");
+        return;
+      }
+      for (const cap of floor.capabilities) stop(cap.key, false);
+      advanceParade();
+      if (paradeCapability()) parade = setInterval(advanceParade, floor.delayMs);
+      paintRoll();
+    }
+
+    function resetAll() {
+      stopParade(false);
+      for (const cap of floor.capabilities) {
+        stop(cap.key, false);
+        rolled[cap.key].clear();
+        progress[cap.key] = 0;
+        cancelHighlight(cap.key);
+        delete justRolled[cap.key];
+      }
+      commit("reset all rollouts");
+      playBuzz();
+      paintRoll();
+    }
+
+    function deployAll() {
+      stopParade(false);
+      for (const cap of floor.capabilities) {
+        stop(cap.key, false);
+        for (const step of floor.steps) {
+          rolled[cap.key].add(replicaKey(step.datacenter, step.replica));
+        }
+        progress[cap.key] = floor.steps.length;
+        justRolled[cap.key] = replicaKey(floor.steps.at(-1).datacenter, floor.steps.at(-1).replica);
+      }
+      commit("immediate deploy");
+      playChime();
+      paintRoll();
+      for (const cap of floor.capabilities) releaseHighlight(cap.key);
+    }
+
+    function paintRoll() {
+      const host = document.getElementById("tab-roll");
+      const existing = host.querySelector("[data-live]");
+      if (!existing) return;
+      for (const cap of floor.capabilities) {
+        const line = host.querySelector('[data-live="' + cap.key + '"]');
+        const running = Boolean(timers[cap.key]);
+        const onParade = Boolean(parade) && paradeCapability() && paradeCapability().key === cap.key && progress[cap.key] > 0;
+        const done = progress[cap.key] >= floor.steps.length;
+        const step = floor.steps[Math.max(0, progress[cap.key] - 1)];
+        line.textContent = done
+          ? "Rolled."
+          : (running || onParade) && step
+            ? stepText(cap.key, step) + " · " + progress[cap.key] + " of " + floor.steps.length
+            : progress[cap.key] === 0
+              ? "Waiting."
+              : "Paused · " + progress[cap.key] + " of " + floor.steps.length;
+        host.querySelector('[data-start="' + cap.key + '"]').disabled = running || done || Boolean(parade);
+        host.querySelector('[data-stop="' + cap.key + '"]').disabled = !running;
+      }
+      const paradeLine = host.querySelector('[data-live="all"]');
+      if (!paradeLine) return;
+      const current = paradeCapability();
+      const done = !current;
+      paradeLine.textContent = done
+        ? "Rolled."
+        : parade
+          ? "Walking " + (CAP_NAME[current.key] || current.key) + " · " + progress[current.key] + " of " + floor.steps.length
+          : floor.capabilities.every((cap) => progress[cap.key] === 0)
+            ? "Waiting."
+            : "Paused · " + (CAP_NAME[current.key] || current.key);
+      host.querySelector('[data-start="all"]').disabled = Boolean(parade) || done;
+      host.querySelector('[data-stop="all"]').disabled = !parade;
+    }
+
+    function buildRoll() {
+      const host = document.getElementById("tab-roll");
+      host.replaceChildren();
+      const title = document.createElement("p");
+      title.className = "block-title";
+      title.textContent = "Rolling deployments";
+      const lead = document.createElement("p");
+      lead.className = "ld-about-p";
+      lead.textContent = "Independent of LaunchDarkly. One datacenter at a time, shared replicas first, then each named customer. All capabilities finishes one build, then starts the next. 1 second between replicas.";
+      const actions = document.createElement("div");
+      actions.className = "roll-actions";
+      const all = document.createElement("button");
+      all.type = "button";
+      all.textContent = "Immediate deploy";
+      all.addEventListener("click", deployAll);
+      const clear = document.createElement("button");
+      clear.type = "button";
+      clear.textContent = "Reset";
+      clear.addEventListener("click", resetAll);
+      actions.append(all, clear);
+      host.append(title, lead, actions);
+      host.append(paradeCard());
+      for (const cap of floor.capabilities) {
+        const block = document.createElement("div");
+        block.className = "roll";
+        const heading = document.createElement("h3");
+        heading.append(capIcon(cap.key, "muted"), document.createTextNode(CAP_NAME[cap.key] || cap.key));
+        const line = document.createElement("p");
+        line.dataset.live = cap.key;
+        line.textContent = "Waiting.";
+        const buttons = document.createElement("div");
+        buttons.className = "buttons";
+        for (const [action, label] of [["start", "Start"], ["stop", "Stop"], ["reset", "Reset"]]) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.textContent = label;
+          button.dataset[action] = cap.key;
+          button.addEventListener("click", () => {
+            if (action === "start") start(cap.key);
+            else if (action === "stop") stop(cap.key, true);
+            else reset(cap.key);
+          });
+          buttons.append(button);
+        }
+        block.append(heading, line, buttons);
+        host.append(block);
+      }
+      paintRoll();
+    }
+
+    function paradeCard() {
+      const block = document.createElement("div");
+      block.className = "roll";
+      const heading = document.createElement("h3");
+      for (const cap of floor.capabilities) heading.append(capIcon(cap.key, "muted"));
+      heading.append(document.createTextNode("All capabilities"));
+      const line = document.createElement("p");
+      line.dataset.live = "all";
+      line.textContent = "Waiting.";
+      const buttons = document.createElement("div");
+      buttons.className = "buttons";
+      const startButton = document.createElement("button");
+      startButton.type = "button";
+      startButton.textContent = "Start";
+      startButton.dataset.start = "all";
+      startButton.addEventListener("click", startParade);
+      const stopButton = document.createElement("button");
+      stopButton.type = "button";
+      stopButton.textContent = "Stop";
+      stopButton.dataset.stop = "all";
+      stopButton.addEventListener("click", () => stopParade(true));
+      const resetButton = document.createElement("button");
+      resetButton.type = "button";
+      resetButton.textContent = "Reset";
+      resetButton.addEventListener("click", resetAll);
+      buttons.append(startButton, stopButton, resetButton);
+      block.append(heading, line, buttons);
+      return block;
+    }
+
+    function targetState() {
+      const sizes = {};
+      for (const size of floor.sizes) sizes[size] = false;
+      const datacenters = {};
+      for (const dc of floor.datacenters) datacenters[dc.key] = false;
+      return { sizes, datacenters };
+    }
+
+    function flagCatalog() {
+      return [
+        {
+          group: "Global",
+          name: "Border palette",
+          key: "mtdc-border-palette",
+          kind: "palette",
+          narrative: "String flag on the datacenter context. The palette is the border on every replica in that datacenter.",
+        },
+        {
+          group: "Global",
+          name: "Service fill",
+          key: "mtdc-service-fill",
+          kind: "fill",
+          narrative: "Boolean flag on the service context. On fills every replica. Fill does not change the version.",
+        },
+        {
+          group: "Datacenter and size",
+          name: "Security",
+          key: "mtdc-security",
+          kind: "target",
+          capability: "security",
+          narrative: "Boolean flag on the customer context. A row matches when its size and its datacenter are both checked. On turns the lock gold.",
+        },
+        {
+          group: "Datacenter and size",
+          name: "Firewall",
+          key: "mtdc-firewall",
+          kind: "target",
+          capability: "firewall",
+          narrative: "Boolean flag on the customer context. Same size and datacenter checkboxes. On turns the wall teal. With security, the version becomes .2.",
+        },
+        {
+          group: "Datacenter and size",
+          name: "Data sharing",
+          key: "mtdc-data-sharing",
+          kind: "target",
+          capability: "data-sharing",
+          narrative: "Boolean flag on the customer context. Same checkboxes. Segment mtdc-gdpr-eu is served false first, so a checked EU datacenter stays off.",
+        },
+        {
+          group: "Datacenter and size",
+          name: "Marketing",
+          key: "mtdc-marketing",
+          kind: "target",
+          capability: "marketing",
+          narrative: "Boolean flag on the customer context. Same checkboxes, and the same EU segment stays off. Marketing does not change the version.",
+        },
+      ];
+    }
+
+    function buildFlags() {
+      const host = document.getElementById("tab-flags");
+      host.replaceChildren();
+      const title = document.createElement("p");
+      title.className = "block-title";
+      title.textContent = "Flags";
+      const lead = document.createElement("p");
+      lead.className = "ld-about-p";
+      const link = document.createElement("a");
+      link.href = "https://launchdarkly.com/docs/home/flags/targeting-rules";
+      link.textContent = "Targeting rules";
+      lead.append(
+        document.createTextNode("These controls write "),
+        link,
+        document.createTextNode(". A size and a datacenter both have to be checked. Data sharing and marketing stay off in a GDPR datacenter. ")
+      );
+      const status = document.createElement("span");
+      status.id = "flag-status";
+      lead.append(status);
+      host.append(title, lead);
+      let shown = "";
+      for (const def of flagCatalog()) {
+        if (def.group !== shown) {
+          const heading = document.createElement("p");
+          heading.className = "block-title";
+          heading.textContent = def.group;
+          host.append(heading);
+          shown = def.group;
+        }
+        if (def.kind === "target") flags[def.capability] = targetState();
+        host.append(flagCard(def));
+      }
+    }
+
+    function flagCard(def) {
+      const card = document.createElement("article");
+      card.className = "flag-card";
+      const head = document.createElement("div");
+      head.className = "flag-head";
+      const titles = document.createElement("div");
+      const heading = document.createElement("h3");
+      if (def.capability) heading.append(capIcon(def.capability, "ink"));
+      heading.append(document.createTextNode(def.name));
+      const key = document.createElement("div");
+      key.className = "flag-key";
+      key.textContent = def.key;
+      titles.append(heading, key);
+      const reset = document.createElement("button");
+      reset.type = "button";
+      reset.textContent = "Reset";
+      reset.addEventListener("click", () => resetFlag(def));
+      head.append(titles, reset);
+      const story = document.createElement("p");
+      story.textContent = def.narrative;
+      card.append(head, story);
+      if (def.kind === "palette") card.append(paletteControl());
+      else if (def.kind === "fill") card.append(fillControl());
+      else card.append(sizeChecks(def.capability), datacenterChecks(def.capability));
+      return card;
+    }
+
+    function resetFlag(def) {
+      const before = def.kind === "palette"
+        ? flags.border !== "none"
+        : def.kind === "fill"
+          ? flags.fill
+          : targetingOn(def.capability);
+      if (def.kind === "palette") {
+        flags.border = "none";
+        const control = document.querySelector('[data-flag="' + def.key + '"]');
+        if (control) control.value = "none";
+      } else if (def.kind === "fill") {
+        flags.fill = false;
+        const control = document.querySelector('[data-flag="' + def.key + '"]');
+        if (control) control.checked = false;
+      } else {
+        flags[def.capability] = targetState();
+        document.querySelectorAll('[data-cap="' + def.capability + '"]').forEach((box) => {
+          box.checked = false;
+        });
+      }
+      commit(def.key + " · reset");
+      if (before) playFlagCue(def.key, "down");
+      saveFlag(def);
+    }
+
+    function saveFlag(def) {
+      const body = { key: def.key };
+      if (def.kind === "palette") body.palette = flags.border;
+      else if (def.kind === "fill") body.on = flags.fill;
+      else {
+        const flag = flags[def.capability];
+        body.sizes = floor.sizes.filter((size) => flag.sizes[size]);
+        body.datacenters = floor.datacenters.map((dc) => dc.key).filter((key) => flag.datacenters[key]);
+      }
+      fetch("/api/flags", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })
+        .then((response) => response.json())
+        .then((result) => {
+          if (!result.ok) note(def.key + " · " + (result.error || "not saved"));
+          else if (selected) evaluateSelected();
+        })
+        .catch(() => note(def.key + " · not saved"));
+    }
+
+    function evaluateSelected() {
+      if (!selected) return;
+      const id = selected.id;
+      fetch("/api/evaluate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(selected.text),
+      })
+        .then((response) => response.json())
+        .then((body) => {
+          if (!selected || selected.id !== id) return;
+          const host = document.getElementById("context-variations");
+          if (!body.configured) {
+            host.textContent = "SDK not connected. " + (body.missing || []).join(", ");
+            return;
+          }
+          host.textContent = (body.flags || []).map((item) => item.key + "  " + JSON.stringify(item.value) + "  " + item.reason).join("\n");
+        })
+        .catch(() => {
+          if (selected && selected.id === id) {
+            document.getElementById("context-variations").textContent = "Evaluation failed.";
+          }
+        });
+    }
+
+    function applySnapshot(snapshot) {
+      const status = document.getElementById("flag-status");
+      if (status) {
+        status.textContent = snapshot && snapshot.configured
+          ? "Writing " + snapshot.projectKey + " / " + snapshot.environmentKey + "."
+          : "Not writing yet. Set " + ((snapshot && snapshot.missing) || []).join(", ") + ".";
+      }
+      if (!snapshot || !snapshot.configured) return;
+      for (const item of snapshot.flags || []) {
+        if (item.key === "mtdc-border-palette") {
+          flags.border = item.on ? (item.fallthrough || "none") : "none";
+          const control = document.querySelector('[data-flag="mtdc-border-palette"]');
+          if (control) control.value = flags.border;
+        } else if (item.key === "mtdc-service-fill") {
+          flags.fill = Boolean(item.on && item.fallthrough === true);
+          const control = document.querySelector('[data-flag="mtdc-service-fill"]');
+          if (control) control.checked = flags.fill;
+        } else {
+          const def = flagCatalog().find((entry) => entry.key === item.key);
+          if (!def) continue;
+          flags[def.capability] = targetState();
+          for (const size of item.sizes || []) flags[def.capability].sizes[size] = true;
+          for (const dc of item.datacenters || []) flags[def.capability].datacenters[dc] = true;
+          document.querySelectorAll('[data-cap="' + def.capability + '"]').forEach((box) => {
+            if (box.dataset.size) box.checked = Boolean(flags[def.capability].sizes[box.dataset.size]);
+            if (box.dataset.dc) box.checked = Boolean(flags[def.capability].datacenters[box.dataset.dc]);
+          });
+        }
+      }
+      render();
+    }
+
+    function paletteControl() {
+      const control = select(floor.palettes, flags.border, (value) => {
+        const before = flags.border !== "none";
+        const sameFamily = before && value !== "none";
+        flags.border = value;
+        commit("mtdc-border-palette · " + value);
+        if (sameFamily) playFlagCue("mtdc-border-palette", "phase");
+        else hearFlag("mtdc-border-palette", before, value !== "none");
+        saveFlag(flagCatalog()[0]);
+      });
+      control.dataset.flag = "mtdc-border-palette";
+      return control;
+    }
+
+    function fillControl() {
+      const label = document.createElement("label");
+      label.className = "checks";
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.checked = flags.fill;
+      input.dataset.flag = "mtdc-service-fill";
+      input.addEventListener("change", () => {
+        const before = flags.fill;
+        flags.fill = input.checked;
+        commit("mtdc-service-fill · " + (input.checked ? "on" : "off"));
+        hearFlag("mtdc-service-fill", before, flags.fill);
+        saveFlag(flagCatalog()[1]);
+      });
+      label.append(input, document.createTextNode("On"));
+      return label;
+    }
+
+    function checkGroup(legend, boxes) {
+      const field = document.createElement("fieldset");
+      field.className = "flag-group";
+      const caption = document.createElement("legend");
+      caption.textContent = legend;
+      const row = document.createElement("div");
+      row.className = "checks";
+      row.append(...boxes);
+      field.append(caption, row);
+      return field;
+    }
+
+    function checkLabel(text, attrs, onChange) {
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      Object.assign(input.dataset, attrs);
+      input.addEventListener("change", () => onChange(input.checked));
+      label.append(input, document.createTextNode(" " + text));
+      return label;
+    }
+
+    function sizeChecks(capability) {
+      const boxes = floor.sizes.map((size) => checkLabel(size, { cap: capability, size: size }, (checked) => {
+        const before = targetingOn(capability);
+        flags[capability].sizes[size] = checked;
+        commit(capability + " · " + size + " " + (checked ? "on" : "off"));
+        hearFlag("mtdc-" + capability, before, targetingOn(capability), checked ? "up" : "down");
+        saveFlag(flagCatalog().find((entry) => entry.capability === capability));
+      }));
+      return checkGroup("Customer size", boxes);
+    }
+
+    function datacenterChecks(capability) {
+      const boxes = floor.datacenters.map((dc) => checkLabel(dc.key, { cap: capability, dc: dc.key }, (checked) => {
+        const before = targetingOn(capability);
+        flags[capability].datacenters[dc.key] = checked;
+        commit(capability + " · " + dc.key + " " + (checked ? "on" : "off"));
+        hearFlag("mtdc-" + capability, before, targetingOn(capability), checked ? "up" : "down");
+        saveFlag(flagCatalog().find((entry) => entry.capability === capability));
+      }));
+      return checkGroup("Datacenter", boxes);
+    }
+
+    function select(values, current, onChange) {
+      const element = document.createElement("select");
+      for (const value of values) {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        option.selected = value === current;
+        element.append(option);
+      }
+      element.addEventListener("change", () => onChange(element.value));
+      return element;
+    }
+
+    (function () {
+      const shell = document.getElementById("app");
+      const grip = document.querySelector(".ld-rail-resize");
+      const rail = document.querySelector(".ld-rail");
+      if (!shell || !grip || !rail) return;
+      const widthKey = "ld-rail-width:" + location.pathname;
+      const heightKey = "ld-rail-height:" + location.pathname;
+      const stacked = () => window.innerWidth <= 980;
+      let dragging = false;
+
+      function limits() {
+        if (stacked()) return { min: 180, max: Math.max(180, Math.round(window.innerHeight * 0.8)) };
+        return { min: 280, max: Math.max(280, window.innerWidth - 640) };
+      }
+
+      function apply(px) {
+        const bound = limits();
+        const size = Math.min(Math.max(Math.round(px), bound.min), bound.max);
+        if (stacked()) {
+          shell.style.gridTemplateColumns = "";
+          shell.style.gridTemplateRows = "minmax(0, 1fr) " + size + "px";
+          grip.setAttribute("aria-orientation", "horizontal");
+        } else {
+          shell.style.gridTemplateRows = "";
+          shell.style.gridTemplateColumns = "minmax(0, 1fr) " + size + "px";
+          grip.setAttribute("aria-orientation", "vertical");
+        }
+        grip.setAttribute("aria-valuemin", String(bound.min));
+        grip.setAttribute("aria-valuemax", String(bound.max));
+        grip.setAttribute("aria-valuenow", String(size));
+        return size;
+      }
+
+      function remember(size) {
+        try { localStorage.setItem(stacked() ? heightKey : widthKey, String(size)); } catch (err) { /* private mode */ }
+      }
+
+      function restore() {
+        try {
+          const saved = Number(localStorage.getItem(stacked() ? heightKey : widthKey));
+          if (saved) apply(saved);
+        } catch (err) { /* private mode */ }
+      }
+
+      restore();
+      window.addEventListener("resize", restore);
+      grip.addEventListener("pointerdown", (ev) => {
+        if (ev.button !== 0) return;
+        dragging = true;
+        grip.classList.add("dragging");
+        document.body.classList.add("ld-rail-dragging");
+        ev.preventDefault();
+      });
+      window.addEventListener("pointermove", (ev) => {
+        if (!dragging) return;
+        apply(stacked() ? window.innerHeight - ev.clientY : window.innerWidth - ev.clientX);
+      });
+      window.addEventListener("pointerup", () => {
+        if (!dragging) return;
+        dragging = false;
+        grip.classList.remove("dragging");
+        document.body.classList.remove("ld-rail-dragging");
+        const box = rail.getBoundingClientRect();
+        remember(Math.round(stacked() ? box.height : box.width));
+      });
+      grip.addEventListener("dblclick", (ev) => {
+        ev.preventDefault();
+        try { localStorage.removeItem(stacked() ? heightKey : widthKey); } catch (err) { /* private mode */ }
+        if (stacked()) shell.style.gridTemplateRows = "";
+        else shell.style.gridTemplateColumns = "";
+        grip.removeAttribute("aria-valuenow");
+      });
+      grip.addEventListener("keydown", (ev) => {
+        const step = ev.shiftKey ? 48 : 16;
+        const box = rail.getBoundingClientRect();
+        let size = stacked() ? box.height : box.width;
+        if (stacked() && ev.key === "ArrowUp") size += step;
+        else if (stacked() && ev.key === "ArrowDown") size -= step;
+        else if (!stacked() && ev.key === "ArrowLeft") size += step;
+        else if (!stacked() && ev.key === "ArrowRight") size -= step;
+        else return;
+        ev.preventDefault();
+        remember(apply(size));
+      });
+    })();
+
+    fetch("/api/floor")
+      .then((response) => response.json())
+      .then((payload) => {
+        floor = payload;
+        document.getElementById("banner").textContent = payload.banner;
+        buildLegend();
+        for (const cap of floor.capabilities) {
+          progress[cap.key] = 0;
+          rolled[cap.key] = new Set();
+          timers[cap.key] = null;
+        }
+        buildRoll();
+        buildFlags();
+        previousStates = collectStates();
+        render();
+        fetch("/api/flags").then((response) => response.json()).then(applySnapshot).catch(() => {});
+      })
+      .catch(() => {
+        document.getElementById("now").textContent = "The floor did not load.";
+      });
+  </script>
+</body>
+</html>
