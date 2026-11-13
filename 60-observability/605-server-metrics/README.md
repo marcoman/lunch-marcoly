@@ -31,6 +31,9 @@ The error-and-log pair stays in 603.
 2. Start from the 602 plugin setup.
 3. The rail shows the metric name after each successful move.
 
+[606-observability-alerts](../606-observability-alerts/) alerts on this counter.
+Keep the threshold out of this lesson.
+
 ## Implementation
 
 | Language | Directory | Status |

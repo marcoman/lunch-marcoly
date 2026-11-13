@@ -26,6 +26,7 @@ Each subdirectory demonstrates a specific product pattern (A/B testing, rollouts
 | [26-agent-adaptive-trigger/](26-agent-adaptive-trigger/) | **Stub:** [16-adaptive-triggers](16-adaptive-triggers/) for Agent Management. A metric switches the briefing to a safer model |
 | [27-archive-flag/](27-archive-flag/) | **Stub:** selected cell blinks while a flag is on, then stops when the flag is archived. The page steps through setup, run, and archive |
 | [28-big-segment/](28-big-segment/) | **Stub:** server-side big segment. Membership is in one us-east-1 DynamoDB table. Not the browser badge in `303` |
+| [29-rollout-notifications/](29-rollout-notifications/) | **Stub:** follow the short progressive rollout. Email on a targeting change, and Slack when the app is installed |
 
 ## Conventions
 

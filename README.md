@@ -86,7 +86,8 @@ lunch-marcoly/
 │   ├── 601-reference/            # Python-owned navigator API; no LaunchDarkly
 │   ├── 602-server-traces/        # Python ObservabilityPlugin + manual move spans
 │   ├── 603-server-errors/        # Stub: one error, also a log line; 604 stays free
-│   └── 605-server-metrics/       # Stub: one custom metric
+│   ├── 605-server-metrics/       # Stub: one custom metric
+│   └── 606-observability-alerts/ # Stub: constant threshold on the 605 counter
 ├── 70-model-demos/              # Model apps; children 701–705 inside the folder
 │   ├── README.md                # 80 remains the next free decade
 │   ├── 701-image-processing/     # Stub: four cat photos
@@ -112,7 +113,8 @@ lunch-marcoly/
 │   ├── 25-prerequisite-tree/    # Stub: 1 grandparent, 2 parents, 3 children
 │   ├── 26-agent-adaptive-trigger/ # Stub: safer model when a metric trips
 │   ├── 27-archive-flag/         # Stub: cell blinks, then the flag is archived
-│   └── 28-big-segment/          # Stub: DynamoDB-backed big segment, us-east-1
+│   ├── 28-big-segment/          # Stub: DynamoDB-backed big segment, us-east-1
+│   └── 29-rollout-notifications/ # Stub: email, and Slack if the app is installed
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -199,6 +201,7 @@ Each example may include implementations in any of these languages. Every applic
 | 602 | [602-server-traces](60-observability/602-server-traces/) | Python `ObservabilityPlugin` + `grid.login` / `grid.move` spans (**:8620**) |
 | 603 | [603-server-errors](60-observability/603-server-errors/) | **Stub:** one deliberate error, visible as an error and a log line. **604** stays free |
 | 605 | [605-server-metrics](60-observability/605-server-metrics/) | **Stub:** one custom metric. 602 stays spans |
+| 606 | [606-observability-alerts](60-observability/606-observability-alerts/) | **Stub:** one constant-threshold alert on the 605 move counter. **:8660** when built. **604** stays free |
 | 70 | [70-model-demos](70-model-demos/) | Model apps. Children `701`–`705` inside the folder. `701`–`703` and `705` are stubs. `704-terraform-codegen` is Python **:8740**. **80** stays free |
 | 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (experiments, segments, rollouts, adaptive triggers, SDK fallbacks, …) |
 | — | [01-abcd-test](99-use-cases/01-abcd-test/) | A-B-C-D experiment on the navigation count label |
@@ -219,6 +222,7 @@ Each example may include implementations in any of these languages. Every applic
 | — | [26-agent-adaptive-trigger](99-use-cases/26-agent-adaptive-trigger/) | **Stub:** Agent Management version of [16-adaptive-triggers](99-use-cases/16-adaptive-triggers/). A metric switches the briefing to a safer model |
 | — | [27-archive-flag](99-use-cases/27-archive-flag/) | **Stub:** selected cell blinks while a flag is on. Archiving the flag stops the blink. The page steps through the stages |
 | — | [28-big-segment](99-use-cases/28-big-segment/) | **Stub:** server-side big segment. One DynamoDB table in us-east-1. Not [303-synced-segments](30-client-sdk/303-synced-segments/) |
+| — | [29-rollout-notifications](99-use-cases/29-rollout-notifications/) | **Stub:** follow the short progressive rollout. Email on a targeting change, and Slack when the app is installed |
 
 ## Building code
 

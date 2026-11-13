@@ -166,7 +166,8 @@ lunch-marcoly/
 │   ├── 601-reference/            # Python-owned navigator API; no LaunchDarkly :8610
 │   ├── 602-server-traces/        # ObservabilityPlugin + move spans :8620
 │   ├── 603-server-errors/        # Stub: one error, also a log line; 604 stays free
-│   └── 605-server-metrics/       # Stub: one custom metric
+│   ├── 605-server-metrics/       # Stub: one custom metric
+│   └── 606-observability-alerts/ # Stub: constant threshold on the 605 counter
 ├── 70-model-demos/              # Model apps; children 701–705 inside the folder
 │   ├── README.md                # 80 remains the next free decade
 │   ├── 701-image-processing/     # Stub: four cat photos
@@ -254,11 +255,12 @@ lunch-marcoly/
 - `504-platform-rollout` (under `50-mobile/`) turns one boolean release on for `platform=android`, then a REST script adds `ios` to that clause. Counts come from `mobile_platform_rollout_move`, not from an experiment.
 - `505-automatic-environment-attributes` is a stub. The 2×2 navigator lists environment attributes the mobile SDK attached.
 - `506-mobile-multi-environment` is a stub. Two mobile keys, two environments, and the screen names which one served the flag.
-- `60-observability` groups **server-side observability** examples. Children are **601**, **602**, **603**, and **605**. **604** stays free; Python ships first.
+- `60-observability` groups **server-side observability** examples. Children are **601**, **602**, **603**, **605**, and **606**. **604** stays free; Python ships first.
 - `601-reference` (under `60-observability/`) moves the 00 web navigator state into Python APIs without LaunchDarkly (**:8610**).
 - `602-server-traces` adds the Python `ObservabilityPlugin` and manual spans for successful login (`grid.login` with username) and successful moves (`grid.move`) (**:8620**). It evaluates no flags. It does not send errors, logs, or custom metrics.
 - `603-server-errors` is a stub. One deliberate error shows up as an Observability error and a log line. **604** stays free.
 - `605-server-metrics` is a stub. One custom metric. It does not replace the spans in `602`.
+- `606-observability-alerts` is a stub. One constant-threshold Observability alert on the 605 move counter. Error count and span duration use the same alert type later. **:8660** when built.
 - `70-model-demos` groups model apps (image check, text origin, guess the animal, and a Terraform code-generator comparison). The series owns global **70**. Children are `01`, `02`, `03`, … inside the folder and may pass ten. **80** stays the next free decade. `701-image-processing`, `702-text-origin`, and `703-guess-the-animal` are stub READMEs. `704-terraform-codegen` is the Python web app on **:8740**: two local models, one Terraform file, `terraform validate`, no apply. These apps may use an AI Config, a judge, or a tool. They are not the equity briefing and not the grid.
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive/guarded rollouts, adaptive triggers, SDK fallbacks, and a migration-flags stub).
 - `19-terraform-sentinel` (under `99-use-cases/`) is Sentinel policy for Terraform-managed flags (`temporary`, `sunset` custom property). Pass and fail fixtures only — no grid app and no SDK.
@@ -271,6 +273,7 @@ lunch-marcoly/
 - `26-agent-adaptive-trigger` (under `99-use-cases/`) is a stub. It imitates `16-adaptive-triggers` for Agent Management: a metric sends the briefing back to a safer model. The README lists candidate metrics and the open question of whether the trigger sits on a flag or on the config.
 - `27-archive-flag` (under `99-use-cases/`) is a stub. A temporary flag makes the selected cell blink. Archiving the flag stops the blink, because evaluation falls back to the SDK default. The page steps through setup, run, and archive. It is not a `10-feature-management` number. `101`–`109` are already taken.
 - `28-big-segment` (under `99-use-cases/`) is a stub. A server-side big segment stores membership in one DynamoDB table in us-east-1. The SDK reads that store during evaluation. `303-synced-segments` stays the browser version and does not use the table.
+- `29-rollout-notifications` (under `99-use-cases/`) is a stub. Follow the short progressive rollout from `22-api-progressive-rollout`. A targeting change emails the follower, and also notifies in Slack when the Slack app is installed. It is not a `10-feature-management` number. Guarded-rollout notifications stay the regression and rollback path in `15` and `23`.
 - `playgrounds` (under `20-agent-management/`) is an unnumbered stub. It runs the existing 201–206 stock-picker configs in the Agent Management playground. It does not take **210**. `705-offline-evaluations` is the dataset version, on a different product.
 - `705-offline-evaluations` (under `70-model-demos/`) is a stub. A short dataset of Terraform briefs runs through two models. Each row passes or fails. Online judges on the equity briefing stay in `204-agent-judges`.
 - Be descriptive and concise: prefer `rate-limiter` over `rl`

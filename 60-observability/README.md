@@ -16,6 +16,7 @@ OpenTelemetry span for login (with username) and for each successful grid move.
 | [602-server-traces](602-server-traces/) | Add the Python SDK observability plugin; login and successful-move spans | [http://127.0.0.1:8620](http://127.0.0.1:8620) |
 | [603-server-errors](603-server-errors/) | **Stub.** One deliberate error, visible as an error and a log line. **604** stays free | :8630 when built |
 | [605-server-metrics](605-server-metrics/) | **Stub.** One custom metric. Not the spans in 602 | :8650 when built |
+| [606-observability-alerts](606-observability-alerts/) | **Stub.** One constant-threshold alert on the 605 move counter. Error count and span duration are the same alert, later. **604** stays free | :8660 when built |
 
 Read them in order. Comparing the Python files shows exactly where
 observability enters the application.
@@ -77,4 +78,4 @@ SDK can flush and close cleanly.
 
 This first pass covers Python server-side plugin initialization and manual
 tracing. Feature flags, browser session replay, errors, logs, custom metrics,
-and other languages are later lessons.
+alerts, and other languages are later lessons. 606 is the alert.
