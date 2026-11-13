@@ -2,7 +2,7 @@
 
 This document defines **24-multitenant-datacenter** under [99-use-cases](../README.md).
 
-Status: the Python page on **:8788** is the first presentation. Rolling deployments and the four icons run in the browser. The Flags tab is a stub and does not call LaunchDarkly. Segments, real flag evaluation, and the other languages are not built yet.
+Status: the Python page on **:8788** evaluates the six flags and the Flags tab writes targeting. [rest/create-all.sh](rest/create-all.sh) creates those flags and segment `mtdc-gdpr-eu`. The other languages are not built yet.
 
 ## Goal
 
@@ -177,7 +177,7 @@ Other EU behavior is defined later. That includes keeping a single-tenant custom
 
 ## Segments
 
-Named here. Created when provisioning is written.
+`mtdc-gdpr-eu` is created by [rest/create-all.sh](rest/create-all.sh). The size, tenancy, and geo segments are named here and are not created yet.
 
 | Segment | Kind | Attribute |
 |---------|------|-----------|
@@ -212,7 +212,7 @@ Segments — https://launchdarkly.com/docs/home/flags/segments
 - Which flags and version moves use a progressive rollout, and which use a guarded rollout
 - Cascades or waves like 21
 - Further EU behavior
-- Real flag evaluation, segments, and REST or Terraform provisioning
+- Size, tenancy, and geo segments, and Terraform provisioning
 - Node, Java, and .NET pages
 
 ## Further reading

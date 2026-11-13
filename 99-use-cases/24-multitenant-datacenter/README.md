@@ -1,6 +1,6 @@
 # 24-multitenant-datacenter
 
-Status: Python presentation on **:8788**. The Flags tab is a stub. Segments and the other languages come later.
+Status: Python presentation on **:8788**. The Flags tab writes targeting and a clicked row evaluates the six flags. [rest/create-all.sh](rest/create-all.sh) creates the flags and segment `mtdc-gdpr-eu`. Other languages come later.
 
 ```bash
 cd python && python 24-multitenant-datacenter.py
@@ -71,7 +71,7 @@ The customer panel waits for both the roll and the flag. A label lights for a cu
 | `mtdc-data-sharing` | Customer size | `customer` |
 | `mtdc-marketing` | Customer size | `customer` |
 
-The first rule on `mtdc-data-sharing` and `mtdc-marketing` serves `false` to segment `mtdc-gdpr-eu`. A later rollout on the default rule leaves the EU off.
+The first rule on `mtdc-data-sharing` and `mtdc-marketing` serves `false` to segment `mtdc-gdpr-eu`. A later rollout on the default rule leaves the EU off. Create the flags with [rest/create-all.sh](rest/create-all.sh).
 
 ## About
 
@@ -89,6 +89,6 @@ The idea is one evaluation that answers at three levels, after the build has lan
 - Placing named customers in datacenters
 - Which changes use a progressive rollout and which use a guarded rollout
 - Further EU behavior
-- Port, language folders, REST, and Terraform
+- Port, language folders, and Terraform
 
 See [application.md](application.md) for the full spec.
