@@ -36,6 +36,7 @@ New stubs (README only, not built):
 - [28-big-segment](99-use-cases/28-big-segment/) — server-side big segment backed by one DynamoDB table in us-east-1. Not [303-synced-segments](30-client-sdk/303-synced-segments/).
 - [705-offline-evaluations](70-model-demos/705-offline-evaluations/) — dataset of Terraform briefs, two models, pass or fail per row. Not the 204 runtime judges.
 - [29-rollout-notifications](99-use-cases/29-rollout-notifications/) — follow the short progressive rollout. Email, and Slack when the app is installed. Not a 10-series number. Guarded-rollout mail stays the regression path in 15 and 23.
+- [30-pii](99-use-cases/30-pii/) — data-entry screen. Region is a public attribute, email is private and still targets, the child's name is never on the context. Searchable context, opaque key. Python **:8790**.
 
 ## Don't do
 

@@ -27,6 +27,7 @@ Each subdirectory demonstrates a specific product pattern (A/B testing, rollouts
 | [27-archive-flag/](27-archive-flag/) | **Stub:** selected cell blinks while a flag is on, then stops when the flag is archived. The page steps through setup, run, and archive |
 | [28-big-segment/](28-big-segment/) | **Stub:** server-side big segment. Membership is in one us-east-1 DynamoDB table. Not the browser badge in `303` |
 | [29-rollout-notifications/](29-rollout-notifications/) | **Stub:** follow the short progressive rollout. Email on a targeting change, and Slack when the app is installed |
+| [30-pii/](30-pii/) | **Stub:** region is public, email is a private attribute that still targets, the child's name is never on the context. Python **:8790** |
 
 ## Conventions
 

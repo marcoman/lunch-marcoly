@@ -114,7 +114,8 @@ lunch-marcoly/
 │   ├── 26-agent-adaptive-trigger/ # Stub: safer model when a metric trips
 │   ├── 27-archive-flag/         # Stub: cell blinks, then the flag is archived
 │   ├── 28-big-segment/          # Stub: DynamoDB-backed big segment, us-east-1
-│   └── 29-rollout-notifications/ # Stub: email, and Slack if the app is installed
+│   ├── 29-rollout-notifications/ # Stub: email, and Slack if the app is installed
+│   └── 30-pii/                  # Stub: region public, email private, name omitted
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -223,6 +224,7 @@ Each example may include implementations in any of these languages. Every applic
 | — | [27-archive-flag](99-use-cases/27-archive-flag/) | **Stub:** selected cell blinks while a flag is on. Archiving the flag stops the blink. The page steps through the stages |
 | — | [28-big-segment](99-use-cases/28-big-segment/) | **Stub:** server-side big segment. One DynamoDB table in us-east-1. Not [303-synced-segments](30-client-sdk/303-synced-segments/) |
 | — | [29-rollout-notifications](99-use-cases/29-rollout-notifications/) | **Stub:** follow the short progressive rollout. Email on a targeting change, and Slack when the app is installed |
+| — | [30-pii](99-use-cases/30-pii/) | **Stub:** region is public, email is a private attribute that still targets, the child's name is never on the context. Python **:8790** |
 
 ## Building code
 
