@@ -16,7 +16,7 @@ After validate, `terraform-codegen-judge` scores the file with Sonnet. Pass and 
 
 Screenshots of that screen are in [README.md](README.md): the comparison table, the file panels, and the Received tab.
 
-`claude-sonnet` is offered when `ANTHROPIC_API_KEY` is set. AgentControl serves the variation and substitutes the prompt. The app calls Anthropic inside `track_metrics_of`, so duration, tokens, and generation success are recorded the same way as the local models. If that variation is not served, the column errors and points at `rest/add-claude-variation.sh`. `local-8b` does the same for `rest/add-local-8b-variation.sh`.
+`claude-sonnet` is offered when `ANTHROPIC_API_KEY` is set. Agent Management serves the variation and substitutes the prompt. The app calls Anthropic inside `track_metrics_of`, so duration, tokens, and generation success are recorded the same way as the local models. If that variation is not served, the column errors and points at `rest/add-claude-variation.sh`. `local-8b` does the same for `rest/add-local-8b-variation.sh`.
 
 The header shows **Running** after Generate is pressed and **Finished** when every selected model has been written and validated.
 

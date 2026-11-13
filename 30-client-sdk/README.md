@@ -7,7 +7,7 @@ a server-side SDK key. **JavaScript** (`javascript/`) uses the JS SDK.
 **Vue** (`vue/`, 301–306) uses the [Vue SDK](https://launchdarkly.com/docs/sdk/client-side/vue).
 
 Baseline (no LaunchDarkly): [02-reference-client-code](../02-reference-client-code/).
-Server-side flags live in [10-code-control](../10-code-control/).
+Server-side flags live in [10-feature-management](../10-feature-management/).
 
 | Example | Folder | What it teaches |
 |---------|--------|-----------------|

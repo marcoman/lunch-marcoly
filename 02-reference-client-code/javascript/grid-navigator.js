@@ -1,5 +1,5 @@
 /**
- * Browser grid navigator — same rules as 00-reference-code.
+ * Browser grid navigator — same rules as 00-reference-feature.
  * The page is the application; this file is the behavior. No LaunchDarkly.
  */
 

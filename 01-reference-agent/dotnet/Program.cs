@@ -11,9 +11,9 @@
 //   3. Yahoo Finance headlines
 //   4. Bridge browser SSE → AgentCore.GenerateStreamAsync()
 //
-// This is the baseline the 20-agent-config/2x .NET ports build on. Compare this
-// file to 20-agent-config/21-agent-completion-config/dotnet/Program.cs to see
-// exactly what LaunchDarkly AgentControl adds on top (nothing here changes shape —
+// This is the baseline the 20-agent-management/2x .NET ports build on. Compare this
+// file to 20-agent-management/21-agent-completion-config/dotnet/Program.cs to see
+// exactly what LaunchDarkly Agent Management adds on top (nothing here changes shape —
 // only AgentCore.cs grows an SDK call).
 //
 // Request map

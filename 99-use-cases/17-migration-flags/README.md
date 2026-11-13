@@ -6,7 +6,7 @@ LaunchDarkly **migration flags** for a tiny dual-store cutover on the grid
 navigator. This folder is a placeholder so we remember the design locked when
 planning the 10-series.
 
-Originally proposed as `10-code-control/16-migration-flags`. We parked it here
+Originally proposed as `10-feature-management/16-migration-flags`. We parked it here
 because it is a **use case** (stages, dual write, shadow reads), not another
 core evaluation lesson like 11–15. `99-use-cases` already has
 [16-adaptive-triggers](../16-adaptive-triggers/), so this stub is **17**.
@@ -16,14 +16,14 @@ Keywords: **migration flags** · **technology migrations** · **dual write** ·
 
 Docs: [Migration flags](https://launchdarkly.com/docs/home/flags/migration)
 
-## Why it is not in 10-code-control
+## Why it is not in 10-feature-management
 
 | Series | Job |
 |--------|-----|
 | **10** | How the SDK evaluates (booleans, variations, rules, multi-context, prerequisites) |
 | **99** | Product patterns that sit on top of that (experiments, rollouts, **migrations**) |
 
-The grid should still *look* like [00-reference-code](../../00-reference-code/).
+The grid should still *look* like [00-reference-feature](../../00-reference-feature/).
 The lesson lives in the **lab rail**: current migration stage and which store
 served the read.
 
@@ -53,7 +53,7 @@ chrome changing. That is the whole demo.
 
 ## Do not
 
-- Put this under `10-code-control/` or reuse 11’s highlight/count keys as the
+- Put this under `10-feature-management/` or reuse 11’s highlight/count keys as the
   migration flag
 - Encode the stage machine in application `if` trees if the SDK exposes
   migration helpers

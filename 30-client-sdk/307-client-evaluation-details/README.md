@@ -12,7 +12,7 @@ rejected (server fallbacks already live in
 lesson.
 
 The server-side tour of four reason kinds is
-[109-evaluation-reasons](../../10-code-control/109-evaluation-reasons/). This
+[109-evaluation-reasons](../../10-feature-management/109-evaluation-reasons/). This
 lesson is the client SDK pair of calls.
 
 Keywords: **client-side SDK** · **variationDetail** · **evaluation reasons** ·

@@ -12,8 +12,8 @@ namespace ReferenceAgent;
 /// HOW TO READ THIS FILE
 /// =============================================================================
 ///
-/// This is the **baseline** the 20-agent-config/2x .NET ports build on. Everything
-/// that later becomes a LaunchDarkly AgentControl evaluation is, here, just a file
+/// This is the **baseline** the 20-agent-management/2x .NET ports build on. Everything
+/// that later becomes a LaunchDarkly Agent Management evaluation is, here, just a file
 /// read and an environment variable:
 ///
 ///   1. Data          Personas (UI labels only — no LD context needed yet)
@@ -25,9 +25,9 @@ namespace ReferenceAgent;
 ///                    "not wired" error here, matching the Node.js port
 ///
 /// Where LaunchDarkly goes next: compare this file to
-/// 20-agent-config/21-agent-completion-config/dotnet/AgentCore.cs — that port
+/// 20-agent-management/21-agent-completion-config/dotnet/AgentCore.cs — that port
 /// replaces steps 2/3 with an `LdAiClient.CompletionConfig(...)` evaluation
-/// (AgentControl). See https://launchdarkly.com/docs/home/agentcontrol for the
+/// (Agent Management). See https://launchdarkly.com/docs/home/agentcontrol for the
 /// capability this baseline is standing in for.
 ///
 /// Event contract (mirrors agentCore.js): GenerateStreamAsync yields, in order:
@@ -374,8 +374,8 @@ public static class AgentCore
     /// <summary>
     /// Run one generation and yield UI events in order (meta → token* → error? → metrics → done).
     ///
-    /// This is the seam later .NET ports (20-agent-config/2x) replace with a LaunchDarkly
-    /// AgentControl evaluation — everything above "Step 2" here becomes a config lookup there.
+    /// This is the seam later .NET ports (20-agent-management/2x) replace with a LaunchDarkly
+    /// Agent Management evaluation — everything above "Step 2" here becomes a config lookup there.
     /// </summary>
     public static async IAsyncEnumerable<Dictionary<string, object?>> GenerateStreamAsync(
         Persona persona,

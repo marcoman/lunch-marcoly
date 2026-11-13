@@ -1,6 +1,6 @@
 # 601-reference application specification
 
-This is the [00-reference-code grid navigator](../../00-reference-code/application.md)
+This is the [00-reference-feature grid navigator](../../00-reference-feature/application.md)
 with one architectural change: Python owns session state.
 
 ## Behavior
@@ -28,7 +28,7 @@ Responses are JSON. State includes `loggedIn`, `username`, `current`,
 
 ## Why this baseline exists
 
-The Python implementation of `00-reference-code` only serves static files; its
+The Python implementation of `00-reference-feature` only serves static files; its
 grid logic runs entirely in the browser. This server-owned twin creates an
 honest operation for `602-server-traces` to instrument. It contains no
 LaunchDarkly code.

@@ -63,7 +63,7 @@ from yahoo_news import (  # noqa: E402
 # Shown in the UI banner and in the server startup log.
 APP_BANNER = "01-reference-agent[python]"
 
-# Distinct from 00-reference-code (8080) so both demos can run together.
+# Distinct from 00-reference-feature (8080) so both demos can run together.
 PORT = 8090
 
 

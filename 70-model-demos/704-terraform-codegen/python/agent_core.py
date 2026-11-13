@@ -15,7 +15,7 @@ LaunchDarkly insertion (read first):
   then tracker.track_metrics_of(...)
   Docs: https://launchdarkly.com/docs/sdk/ai/python
   Docs: https://launchdarkly.com/docs/home/agentcontrol/quickstart
-  Keywords: AgentControl · completion config · track_metrics_of · runtime variables
+  Keywords: Agent Management · completion config · track_metrics_of · runtime variables
 
 {{ model_name }} and {{ variation_key }} are filled by the SDK so the
 ancestry comment can differ. The app does not apply the file.
@@ -598,7 +598,7 @@ def anthropic_chat(
 ) -> dict[str, Any]:
     """Stream one Claude completion from the served variation. The key stays in the process.
 
-    The caller wraps this in track_metrics_of so AgentControl records the run.
+    The caller wraps this in track_metrics_of so Agent Management records the run.
     """
     api_key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
     if not api_key:
@@ -818,7 +818,7 @@ def generate_one(spec: dict[str, str]) -> Iterator[dict[str, Any]]:
             "type": "error",
             "column": column,
             "message": (
-                f"AgentControl config '{config_key()}' is off for {column}. "
+                f"Agent Management config '{config_key()}' is off for {column}. "
                 "Run rest/create-config.sh."
             ),
         }
@@ -846,7 +846,7 @@ def generate_one(spec: dict[str, str]) -> Iterator[dict[str, Any]]:
                 "type": "error",
                 "column": column,
                 "message": (
-                    f"AgentControl did not serve variation '{spec['variation_key']}' "
+                    f"Agent Management did not serve variation '{spec['variation_key']}' "
                     f"(served {served_variation or 'none'}). {hint}"
                 ),
             }

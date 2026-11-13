@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# LaunchDarkly: AgentControl — one judge config, Sonnet, temperature 0
+# LaunchDarkly: Agent Management — one judge config, Sonnet, temperature 0
 # Scores a generated main.tf. The app calls Anthropic and records the score.
 # https://launchdarkly.com/docs/home/agentcontrol/judges
 # https://launchdarkly.com/docs/api/agent-control/post-ai-config

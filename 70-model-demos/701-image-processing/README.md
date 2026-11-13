@@ -12,7 +12,7 @@ decade.
 
 Keywords: **AI Config** · **model configuration** · **image**
 
-Docs: [Quickstart for AgentControl](https://launchdarkly.com/docs/home/agentcontrol/quickstart)
+Docs: [Quickstart for Agent Management](https://launchdarkly.com/docs/home/agentcontrol/quickstart)
 
 ## Intended aha
 

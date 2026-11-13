@@ -8,7 +8,7 @@ Introduce **one LaunchDarkly flag** end to end: create it, evaluate it in the gr
 
 This is the smallest use case in the repository — no segments, no percentage rollouts, no experiment utilities. The focus is understanding **flag state** (on/off) and **variation value** (highlight color).
 
-Baseline grid navigator behavior is defined in [00-reference-code/application.md](../../00-reference-code/application.md).
+Baseline grid navigator behavior is defined in [00-reference-feature/application.md](../../00-reference-feature/application.md).
 
 ## Flag
 
@@ -21,7 +21,7 @@ Single string multivariate flag for selected-cell highlight color:
 
 | Variation | Application behavior |
 |-----------|----------------------|
-| `none` | Selected cell and username match 00-reference-code (`X` only, no colors) |
+| `none` | Selected cell and username match 00-reference-feature (`X` only, no colors) |
 | `green` | Green highlight on selected cell and username |
 | `yellow` | Yellow highlight |
 | `red` | Red highlight |
@@ -30,7 +30,7 @@ Single string multivariate flag for selected-cell highlight color:
 
 Variations match the string highlight flag used in [02-segments-by-name](../02-segments-by-name/application.md). This use case does **not** add segment targeting — all users receive the **fallthrough** variation when the flag is on.
 
-> **Note:** [10-code-control/101-flag-enablement](../../10-code-control/101-flag-enablement/) uses the same key as a **boolean** flag. Use a dedicated environment if you run multiple examples in one project.
+> **Note:** [10-feature-management/101-flag-enablement](../../10-feature-management/101-flag-enablement/) uses the same key as a **boolean** flag. Use a dedicated environment if you run multiple examples in one project.
 
 ### Provisioning default
 
@@ -48,7 +48,7 @@ When **on**, the fallthrough rule serves one color variation to every user conte
 2. Application evaluates `enable-grid-selection-highlight` for that user
 3. Header shows **`Name: {username} ({color-label})`** — label is `(no-color)` when variation is `none`
 4. Selected grid cell uses the same highlight color (colored `X` outline in console)
-5. Standard 00-reference-code navigation, logout (`L`), quit (`Q`)
+5. Standard 00-reference-feature navigation, logout (`L`), quit (`Q`)
 6. Re-evaluates the flag periodically so UI changes appear without restarting the app
 
 ### Single-evaluation mode
@@ -73,7 +73,7 @@ Toggling the flag or changing fallthrough in LaunchDarkly (UI or REST) updates w
 - [ ] Console app runs with `LD_SDK_KEY` and shows no highlight when flag is off
 - [ ] Turning flag **on** with fallthrough `green` colors the selected cell and username green
 - [ ] `./set-highlight-color.sh red` changes highlight to red without restarting the app
-- [ ] Turning flag **off** returns to 00-reference-code styling (`none`)
+- [ ] Turning flag **off** returns to 00-reference-feature styling (`none`)
 - [ ] `--evaluate-once` prints the resolved variation as JSON
 - [ ] Language implementations in [python-console/](python-console/), [python/](python/), [node-console/](node-console/), [node/](node/), [java-console/](java-console/), [java/](java/), [go/](go/), [rust/](rust/), [cpp/](cpp/) behave consistently
 
@@ -81,4 +81,4 @@ Toggling the flag or changing fallthrough in LaunchDarkly (UI or REST) updates w
 
 - [README.md](README.md) — step-by-step UI and curl toggle walkthrough
 - [02-segments-by-name/application.md](../02-segments-by-name/application.md) — same flag key with segment targeting
-- [10-code-control/101-flag-enablement/application.md](../../10-code-control/101-flag-enablement/application.md) — boolean highlight flag reference
+- [10-feature-management/101-flag-enablement/application.md](../../10-feature-management/101-flag-enablement/application.md) — boolean highlight flag reference

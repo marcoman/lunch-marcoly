@@ -6,19 +6,19 @@ Every model, including Claude, uses `completion_config`, which substitutes `{{ m
 
 After validate, `judge_config` on `terraform-codegen-judge` serves the Sonnet prompt. The app calls Anthropic, then `track_judge_result` records the score. Pass and fail files are both scored. Threshold 0.65.
 
-Keywords: **AgentControl** · **judges** · **judge config** · **track_judge_result**
+Keywords: **Agent Management** · **judges** · **judge config** · **track_judge_result**
 
 | Topic | Docs |
 |-------|------|
 | Judges | [Judges](https://launchdarkly.com/docs/home/agentcontrol/judges) |
 
-Keywords: **AgentControl** · **completion config** · **track_metrics_of**
+Keywords: **Agent Management** · **completion config** · **track_metrics_of**
 
 | Topic | Docs |
 |-------|------|
 | Python AI SDK | [Python AI SDK](https://launchdarkly.com/docs/sdk/ai/python) |
 | Model config price | [List AI model configs](https://launchdarkly.com/docs/api/agent-control/list-model-configs) |
-| Quickstart | [AgentControl quickstart](https://launchdarkly.com/docs/home/agentcontrol/quickstart) |
+| Quickstart | [Agent Management quickstart](https://launchdarkly.com/docs/home/agentcontrol/quickstart) |
 
 ## Run
 

@@ -9,5 +9,5 @@ api:
   host: https://app.launchdarkly.com
   # Feature flags + metrics
   version: "20240415"
-  # AgentControl / AI Configs require the beta API version
+  # Agent Management / AI Configs require the beta API version
   agent_control_version: beta

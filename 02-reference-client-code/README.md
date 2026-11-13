@@ -1,6 +1,6 @@
 # 02-reference-client-code
 
-Browser-side reference for **lunch-marcoly**: the same 3×3 grid navigator as [00-reference-code](../00-reference-code/), running **in the page**. No LaunchDarkly.
+Browser-side reference for **lunch-marcoly**: the same 3×3 grid navigator as [00-reference-feature](../00-reference-feature/), running **in the page**. No LaunchDarkly.
 
 ## What this demonstrates
 
@@ -31,5 +31,5 @@ Open the language README for **Build**, **Run**, and **What to expect**.
 ## Further reading
 
 - [application.md](application.md) — grid behavior (matches 00 in the browser)
-- [00-reference-code](../00-reference-code/) — server and console twins
+- [00-reference-feature](../00-reference-feature/) — server and console twins
 - [project.md](../project.md) — repository conventions

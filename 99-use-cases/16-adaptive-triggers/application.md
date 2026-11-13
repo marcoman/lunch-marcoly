@@ -10,7 +10,7 @@ This is **not** a progressive or guarded rollout. Traffic is not ramped. LaunchD
 
 > Lab default: live variation **`green`**, safe variation **`none`**, custom metric **`adaptive-grid-nav-latency`**, constant threshold **Above 200 ms**, alert window **1 minute** (or the shortest window the product allows).
 
-Baseline grid navigator behavior is defined in [00-reference-code/application.md](../../00-reference-code/application.md).
+Baseline grid navigator behavior is defined in [00-reference-feature/application.md](../../00-reference-feature/application.md).
 
 Keywords: **adaptive triggers** · **custom metrics** · **track** · **threshold** · **alert window** · **switch variation**
 
@@ -26,7 +26,7 @@ Docs: [Adaptive triggers](https://launchdarkly.com/docs/home/flags/triggers) ·
 | [Flag triggers](https://launchdarkly.com/docs/home/releases/triggers) (webhook URL, turn flag on/off) | Different product. 16 uses **adaptive** triggers on the flag **Targeting** tab. |
 | [14-progressive-rollout](../14-progressive-rollout/) | Time-based percentage stages. No metric switch. |
 | [15-guarded-rollout](../15-guarded-rollout/) | Percentage ramp + statistical regression vs control. Different metrics and event keys. |
-| AgentControl Adaptive Triggers | Later series. This lab is a **feature flag** trigger, not a model/provider failover. |
+| Agent Management Adaptive Triggers | Later series. This lab is a **feature flag** trigger, not a model/provider failover. |
 | Observability / session / error **sources** | Out of scope. Those need the observability SDK. 16 uses a **LaunchDarkly hosted custom metric**. |
 
 Adaptive triggers are **plan-gated**, **environment-specific**, and **do not run** on a flag that has an **active experiment**. They **bypass approvals** when they fire.
@@ -193,7 +193,7 @@ Same pattern as other 99-use-cases hosts.
 - [99-use-cases](../README.md)
 - [14-progressive-rollout](../14-progressive-rollout/) — time-based ramp, no metric switch
 - [15-guarded-rollout](../15-guarded-rollout/) — ramp + regression guardrails (different events)
-- [00-reference-code/application.md](../../00-reference-code/application.md)
+- [00-reference-feature/application.md](../../00-reference-feature/application.md)
 - [Adaptive triggers](https://launchdarkly.com/docs/home/flags/triggers)
 - [Custom numeric metrics](https://launchdarkly.com/docs/home/observability/custom-numeric)
 - [Sending custom events](https://launchdarkly.com/docs/sdk/features/events)

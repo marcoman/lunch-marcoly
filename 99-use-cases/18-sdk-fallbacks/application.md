@@ -114,7 +114,7 @@ flag data arrived moments ago or came from the SDK's in-memory store.
 - [Node implementation](node/)
 - [Java implementation](java/)
 - [.NET implementation](dotnet/)
-- [00-reference-code](../../00-reference-code/)
-- [101-flag-enablement](../../10-code-control/101-flag-enablement/)
+- [00-reference-feature](../../00-reference-feature/)
+- [101-flag-enablement](../../10-feature-management/101-flag-enablement/)
 - [402-local-if-no-sdk](../../40-dont-do-this/402-local-if-no-sdk/) — the
   opposite anti-pattern: skipping SDK evaluation entirely

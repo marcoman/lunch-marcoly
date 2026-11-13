@@ -2,7 +2,7 @@
 
 LaunchDarkly **mobile SDK** examples. This series uses a **new application**: a
 2×2 tap navigator for phones. It is **not** the 3×3 WASD grid from
-[00-reference-code](../00-reference-code/) or
+[00-reference-feature](../00-reference-feature/) or
 [02-reference-client-code](../02-reference-client-code/).
 
 The device evaluates flags with the **Android / iOS (and later React Native)
@@ -11,7 +11,7 @@ SDK in [30-client-sdk](../30-client-sdk/). Credential is a **mobile key**
 (`LD_MOBILE_KEY`, typically `mob-…`), never `LD_SDK_KEY` and never the
 client-side ID.
 
-AgentControl ([20-agent-config](../20-agent-config/)) is **out of scope** for
+Agent Management ([20-agent-management](../20-agent-management/)) is **out of scope** for
 this series.
 
 | Example | Folder | What it teaches |

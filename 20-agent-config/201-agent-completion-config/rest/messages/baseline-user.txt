@@ -1,3 +1,0 @@
-Using only the recent headlines below, write a short market briefing that compares the two tickers. Cite story titles where helpful. Do not invent facts beyond what the headlines imply.
-
-{{ stories }}

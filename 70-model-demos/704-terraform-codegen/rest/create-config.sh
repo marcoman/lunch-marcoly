@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# LaunchDarkly: AgentControl — one completion config, three variations
+# LaunchDarkly: Agent Management — one completion config, three variations
 #   local-3b → llama3.2:3b (fallthrough, unchecked on the screen)
 #   local-1b → llama3.2:1b (user key codegen-1b)
 #   local-8b → llama3.1:8b (user key codegen-8b)

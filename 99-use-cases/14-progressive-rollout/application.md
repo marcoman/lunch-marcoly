@@ -8,7 +8,7 @@ Release a **grid selection highlight** to production gradually using a **progres
 
 > In this example, we have a progressive rollout over **15 minutes** in **five equal stages**: **10%**, **20%**, **40%**, **60%**, and **100%** of users receive the green highlight. Each stage lasts **3 minutes**.
 
-Baseline grid navigator behavior is defined in [00-reference-code/application.md](../../00-reference-code/application.md).
+Baseline grid navigator behavior is defined in [00-reference-feature/application.md](../../00-reference-feature/application.md).
 
 ## Flag
 
@@ -18,7 +18,7 @@ Baseline grid navigator behavior is defined in [00-reference-code/application.md
 | Off variation | `none` — no highlight |
 | Rollout target | `green` — green highlight on selected cell and username |
 
-This use case uses only the **`none`** and **`green`** variations for the rollout. Other color variations exist on the flag for consistency with [10-code-control/102-flag-variations](../../10-code-control/102-flag-variations/) but are not part of the rollout schedule.
+This use case uses only the **`none`** and **`green`** variations for the rollout. Other color variations exist on the flag for consistency with [10-feature-management/102-flag-variations](../../10-feature-management/102-flag-variations/) but are not part of the rollout schedule.
 
 ### Rollout schedule
 

@@ -9,7 +9,7 @@ Human-oriented setup: [README.md](README.md) and the language READMEs under `pyt
 
 This reference uses **files and environment variables only**. It does **not** call LaunchDarkly.
 
-That is intentional: you can learn the product flow (news → prompt → model → UI) before layering LaunchDarkly. [21-agent-completion-config](../20-agent-config/21-agent-completion-config/) swaps *where* the system prompt, user prompt, and model choice come from via **AgentControl** (completion config)—not the overall screen layout.
+That is intentional: you can learn the product flow (news → prompt → model → UI) before layering LaunchDarkly. [21-agent-completion-config](../20-agent-management/21-agent-completion-config/) swaps *where* the system prompt, user prompt, and model choice come from via **Agent Management** (completion config)—not the overall screen layout.
 
 ## Overview
 
@@ -208,11 +208,11 @@ Yahoo Finance search JSON needs no key and is the last live source. Headlines ar
 ## Out of scope (this reference)
 
 - Login / multi-screen flows
-- LaunchDarkly AgentControl / AI Config — see [20-agent-config](../20-agent-config/) / [21-agent-completion-config](../20-agent-config/21-agent-completion-config/)
+- LaunchDarkly Agent Management / AI Config — see [20-agent-management](../20-agent-management/) / [21-agent-completion-config](../20-agent-management/21-agent-completion-config/)
 
 ## Language matrix
 
-Same conventions as [00-reference-code](../00-reference-code/):
+Same conventions as [00-reference-feature](../00-reference-feature/):
 
 | Language | Planned |
 |----------|---------|
@@ -240,5 +240,5 @@ Same conventions as [00-reference-code](../00-reference-code/):
 
 ## Related
 
-- [00-reference-code/application.md](../00-reference-code/application.md) — grid navigator reference (no LLM)
-- [21-agent-completion-config](../20-agent-config/21-agent-completion-config/) — AgentControl completion config (model + system/user prompts)
+- [00-reference-feature/application.md](../00-reference-feature/application.md) — grid navigator reference (no LLM)
+- [21-agent-completion-config](../20-agent-management/21-agent-completion-config/) — Agent Management completion config (model + system/user prompts)

@@ -1,6 +1,6 @@
 # Reference Client Application Specification
 
-This document defines the behavior of the **02-reference-client-code** application — the browser-side twin of [00-reference-code](../00-reference-code/application.md).
+This document defines the behavior of the **02-reference-client-code** application — the browser-side twin of [00-reference-feature](../00-reference-feature/application.md).
 
 Navigation, login, and selection rules are **the same as 00**. The difference is *where the program runs*: the grid lives in the page. A local HTTP server only delivers static files.
 
@@ -157,6 +157,6 @@ An implementation is correct when:
 
 ## Further reading
 
-- [00-reference-code/application.md](../00-reference-code/application.md) — same navigator on the server / console
+- [00-reference-feature/application.md](../00-reference-feature/application.md) — same navigator on the server / console
 - [project.md](../project.md) — repository layout and conventions
 - [README.md](README.md) — example overview

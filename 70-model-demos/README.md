@@ -1,6 +1,6 @@
 # 70-model-demos
 
-Fun apps and model comparisons. Each child is one product. LaunchDarkly chooses the model and, later, a judge or a tool. These apps are not the equity briefing in [20-agent-config](../20-agent-config/) and not the grid in [99-use-cases](../99-use-cases/).
+Fun apps and model comparisons. Each child is one product. LaunchDarkly chooses the model and, later, a judge or a tool. These apps are not the equity briefing in [20-agent-management](../20-agent-management/) and not the grid in [99-use-cases](../99-use-cases/).
 
 The series owns global number **70**. Children are `701`–`709` inside this folder, the same three-digit pattern as the other decade series. Nothing uses `71`–`79`. **80** stays the next free decade.
 

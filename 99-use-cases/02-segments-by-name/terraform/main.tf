@@ -176,7 +176,7 @@ resource "launchdarkly_feature_flag" "enable_grid_selection_highlight" {
   variations {
     value       = "none"
     name        = "No highlight"
-    description = "X only — matches 00-reference-code"
+    description = "X only — matches 00-reference-feature"
   }
 
   variations {

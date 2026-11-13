@@ -17,7 +17,7 @@ Docs: [Evaluating flags](https://launchdarkly.com/docs/sdk/features/evaluating)
 | **10** | How a healthy SDK evaluates (booleans, variations, rules, multi-context, prerequisites) |
 | **99** | What happens when the control plane is **unavailable** |
 
-The grid should still *look* like [00-reference-code](../../00-reference-code/).
+The grid should still *look* like [00-reference-feature](../../00-reference-feature/).
 The lesson lives in the **lab rail**: `source: DEFAULT` vs `LAST_KNOWN` vs
 `STREAM`. Without that label it just looks broken.
 

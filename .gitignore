@@ -32,29 +32,29 @@ obj/
 **/*.tfstate.*
 
 # C++ / Go native executables (example-named binaries, no file extension)
-00-reference-code/**/00-reference-code
-00-reference-code/**/00-reference-code.exe
+00-reference-feature/**/00-reference-feature
+00-reference-feature/**/00-reference-feature.exe
 01-reference-agent/go/01-reference-agent
 01-reference-agent/go/01-reference-agent.exe
 01-reference-agent/cpp/01-reference-agent
 01-reference-agent/cpp/01-reference-agent.exe
 01-reference-agent/cpp/third_party/
-10-code-control/101-flag-enablement/**/101-flag-enablement
-10-code-control/101-flag-enablement/**/11-flag-enablement.exe
-10-code-control/102-flag-variations/**/102-flag-variations
-10-code-control/102-flag-variations/**/12-flag-variations.exe
-10-code-control/103-flag-targeting-rules/**/103-flag-targeting-rules
-10-code-control/103-flag-targeting-rules/**/13-flag-targeting-rules.exe
-10-code-control/104-multi-context-targeting/**/104-multi-context-targeting
-10-code-control/104-multi-context-targeting/**/14-multi-context-targeting.exe
-10-code-control/105-prerequisite-flags/**/105-prerequisite-flags
-10-code-control/105-prerequisite-flags/**/15-prerequisite-flags.exe
-10-code-control/106-percentage-rollout/**/106-percentage-rollout
-10-code-control/106-percentage-rollout/**/16-percentage-rollout.exe
-10-code-control/107-scheduled-changes/**/107-scheduled-changes
-10-code-control/107-scheduled-changes/**/17-scheduled-changes.exe
-10-code-control/107-scheduled-changes/go/scheduled-changes
-10-code-control/107-scheduled-changes/go/scheduled-changes.exe
+10-feature-management/101-flag-enablement/**/101-flag-enablement
+10-feature-management/101-flag-enablement/**/11-flag-enablement.exe
+10-feature-management/102-flag-variations/**/102-flag-variations
+10-feature-management/102-flag-variations/**/12-flag-variations.exe
+10-feature-management/103-flag-targeting-rules/**/103-flag-targeting-rules
+10-feature-management/103-flag-targeting-rules/**/13-flag-targeting-rules.exe
+10-feature-management/104-multi-context-targeting/**/104-multi-context-targeting
+10-feature-management/104-multi-context-targeting/**/14-multi-context-targeting.exe
+10-feature-management/105-prerequisite-flags/**/105-prerequisite-flags
+10-feature-management/105-prerequisite-flags/**/15-prerequisite-flags.exe
+10-feature-management/106-percentage-rollout/**/106-percentage-rollout
+10-feature-management/106-percentage-rollout/**/16-percentage-rollout.exe
+10-feature-management/107-scheduled-changes/**/107-scheduled-changes
+10-feature-management/107-scheduled-changes/**/17-scheduled-changes.exe
+10-feature-management/107-scheduled-changes/go/scheduled-changes
+10-feature-management/107-scheduled-changes/go/scheduled-changes.exe
 99-use-cases/22-api-progressive-rollout/go/22-api-progressive-rollout
 99-use-cases/22-api-progressive-rollout/go/22-api-progressive-rollout.exe
 99-use-cases/22-api-progressive-rollout/cpp/22-api-progressive-rollout
@@ -64,16 +64,16 @@ obj/
 99-use-cases/23-api-guarded-rollout/cpp/23-api-guarded-rollout
 99-use-cases/23-api-guarded-rollout/cpp/23-api-guarded-rollout.exe
 # legacy local build names (pre-rename)
-10-code-control/**/10-flag-enablement
-10-code-control/**/11-flag-variations
-10-code-control/**/flag-enablement
-10-code-control/**/flag-variations
-20-agent-config/21-agent-completion-config/go/21-agent-completion-config
-20-agent-config/21-agent-completion-config/go/21-agent-completion-config.exe
-20-agent-config/22-config-outside-code/go/22-config-outside-code
-20-agent-config/22-config-outside-code/go/22-config-outside-code.exe
-20-agent-config/23-agent-tools/go/23-agent-tools
-20-agent-config/23-agent-tools/go/23-agent-tools.exe
+10-feature-management/**/10-flag-enablement
+10-feature-management/**/11-flag-variations
+10-feature-management/**/flag-enablement
+10-feature-management/**/flag-variations
+20-agent-management/21-agent-completion-config/go/21-agent-completion-config
+20-agent-management/21-agent-completion-config/go/21-agent-completion-config.exe
+20-agent-management/22-config-outside-code/go/22-config-outside-code
+20-agent-management/22-config-outside-code/go/22-config-outside-code.exe
+20-agent-management/23-agent-tools/go/23-agent-tools
+20-agent-management/23-agent-tools/go/23-agent-tools.exe
 
 # Rust build output
 **/rust/target/

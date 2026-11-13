@@ -12,7 +12,7 @@ lunch-marcoly/
 ├── .nvmrc                   # Node.js version for nvm (repository-wide)
 ├── .venv/                   # Python virtual environment (local)
 ├── .launchdarkly/           # LD inventory + visibility CLI (see README there)
-├── 00-reference-code/
+├── 00-reference-feature/
 │   ├── README.md
 │   ├── python/              # web application
 │   ├── python-console/
@@ -30,7 +30,7 @@ lunch-marcoly/
 │   ├── README.md
 │   ├── application.md
 │   └── javascript/          # browser grid (static files, no LaunchDarkly)
-├── 10-code-control/             # Feature-flag series
+├── 10-feature-management/             # Feature-flag series
 │   ├── README.md
 │   ├── portal/                   # Python :8100 · Node :8101 · Java :8102 · .NET :8103
 │   ├── 101-flag-enablement/
@@ -43,7 +43,7 @@ lunch-marcoly/
 │   ├── 108-flag-approvals/        # Stub: approval to enable move count
 │   ├── 109-evaluation-reasons/    # Stub: four evaluation reason kinds
 │   └── segment-targeting/        # Stub: included targets; still unnumbered
-├── 20-agent-config/             # AgentControl series (shared setup)
+├── 20-agent-management/             # Agent Management series (shared setup)
 │   ├── README.md
 │   ├── portal/                   # Python :8200 · Node :8201 · Java :8202 · .NET :8203
 │   ├── stories/                  # Shared Yahoo headlines cache
@@ -53,7 +53,7 @@ lunch-marcoly/
 │   ├── 203-agent-tools/
 │   ├── 204-agent-judges/
 │   ├── 205-agent-graph/          # assess → specialist → finalize
-│   ├── 206-flags-vs-agent-control/ # Python :8260 · Node :8261 · Java :8262 · .NET :8263
+│   ├── 206-flags-vs-agent-management/ # Python :8260 · Node :8261 · Java :8262 · .NET :8263
 │   ├── 207-agent-mode/           # Stub: agent mode only; not the capstone
 │   ├── 208-context-attributes/   # Stub: region + audience select a variation
 │   └── 209-team-rollout/         # Stub: sticky % rollout bucketed by team
@@ -114,7 +114,7 @@ lunch-marcoly/
 └── ...
 ```
 
-Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control sort order. **10-code-control** children are **101–109**, **20-agent-config** children are **201–209** (capstone folder `20-capstone-1`), and **30-client-sdk** children are **301–309**. **40-dont-do-this** children are **401** and **402**. **60-observability** children are **601**, **602**, **603**, and **605**. **604** stays free. Other series still use two-digit children (such as `99-use-cases`) until that series is renumbered. Letter suffixes stay unused. A fourth digit is not part of the scheme.
+Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control sort order. **10-feature-management** children are **101–109**, **20-agent-management** children are **201–209** (capstone folder `20-capstone-1`), and **30-client-sdk** children are **301–309**. **40-dont-do-this** children are **401** and **402**. **60-observability** children are **601**, **602**, **603**, and **605**. **604** stays free. Other series still use two-digit children (such as `99-use-cases`) until that series is renumbered. Letter suffixes stay unused. A fourth digit is not part of the scheme.
 
 ## Languages
 
@@ -143,31 +143,31 @@ Each example may include implementations in any of these languages. Every applic
 
 | # | Directory | Description |
 |---|-----------|-------------|
-| 00 | [00-reference-code](00-reference-code/) | Grid navigator reference app (all languages, no LaunchDarkly) |
+| 00 | [00-reference-feature](00-reference-feature/) | Grid navigator reference app (all languages, no LaunchDarkly) |
 | 01 | [01-reference-agent](01-reference-agent/) | News headlines → AI equity briefing (Python / Node / Java / .NET web + consoles; LaunchDarkly comes in later examples) |
 | 02 | [02-reference-client-code](02-reference-client-code/) | Browser grid navigator (JavaScript in the page, no LaunchDarkly) |
-| 10 | [10-code-control](10-code-control/) | Feature-flag series (101–107 built; 108, 109, and segment-targeting are stubs) |
-| 101 | [101-flag-enablement](10-code-control/101-flag-enablement/) | Grid navigator with LaunchDarkly boolean flags (all languages, Terraform + REST) |
-| 102 | [102-flag-variations](10-code-control/102-flag-variations/) | Grid navigator with string, number, JSON, and anonymous flags (all languages) |
-| 103 | [103-flag-targeting-rules](10-code-control/103-flag-targeting-rules/) | Targeting rules on a public `team` context attribute |
-| 104 | [104-multi-context-targeting](10-code-control/104-multi-context-targeting/) | User + organization multi-context targeting |
-| 105 | [105-prerequisite-flags](10-code-control/105-prerequisite-flags/) | Flag prerequisites: highlight must serve `green` before move count can evaluate |
-| 106 | [106-percentage-rollout](10-code-control/106-percentage-rollout/) | Static 30/70 percentage rollout, sticky context key (web **:8160–:8163** + Python / Node / Java / Go / Rust / C++ consoles) |
-| 107 | [107-scheduled-changes](10-code-control/107-scheduled-changes/) | Replaceable scheduled flag turn-on with elapsed timer (web **:8170–:8173** + Python / Node / Java / Go / Rust / C++ consoles + REST/Terraform) |
-| 108 | [108-flag-approvals](10-code-control/108-flag-approvals/) | **Stub:** approval to turn the move-count flag on |
-| 109 | [109-evaluation-reasons](10-code-control/109-evaluation-reasons/) | **Stub:** on-screen `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, `ERROR` |
-| — | [segment-targeting](10-code-control/segment-targeting/) | **Stub:** included-targets segment. Unnumbered so it does not take 20. Read before 303 |
-| 20 | [20-agent-config](20-agent-config/) | AgentControl series (shared LLM / AWS / LD setup); [portal](20-agent-config/portal/) Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
-| — | [20-capstone-1](20-agent-config/20-capstone-1/) | **Python :8290 · Node :8291 · Java :8292 · .NET :8293, not in the portal.** Composes `201`–`205`. Checked tools run before finalize. Judges and feedback stay on the draft. English and Spanish live here |
-| 201 | [201-agent-completion-config](20-agent-config/201-agent-completion-config/) | Completion config: model + system/user prompts (web + Go console) |
-| 202 | [202-config-outside-code](20-agent-config/202-config-outside-code/) | Tracked completion: metrics + thumbs feedback (web + Go console) |
-| 203 | [203-agent-tools](20-agent-config/203-agent-tools/) | Library tools + tool loop + `track_tool_call` (web + Go console) |
-| 204 | [204-agent-judges](20-agent-config/204-agent-judges/) | Judges runtime gate + rewrite (Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console) |
-| 205 | [205-agent-graph](20-agent-config/205-agent-graph/) | Agent graph: assess → specialist → finalize (Python **8250** · Node **8251** · Java **8252** · .NET **8253**) |
-| 206 | [206-flags-vs-agent-control](20-agent-config/206-flags-vs-agent-control/) | Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**. AgentControl, four flags, or one JSON flag. Guardrail scores pass/fail |
-| 207 | [207-agent-mode](20-agent-config/207-agent-mode/) | **Stub:** agent mode only, one instructions value. Does not roll into the capstone |
-| 208 | [208-context-attributes](20-agent-config/208-context-attributes/) | **Stub:** North America / South America and an audience select the variation |
-| 209 | [209-team-rollout](20-agent-config/209-team-rollout/) | **Stub:** sticky percentage rollout bucketed by `team`. Not ports :8290–:8293 |
+| 10 | [10-feature-management](10-feature-management/) | Feature-flag series (101–107 built; 108, 109, and segment-targeting are stubs) |
+| 101 | [101-flag-enablement](10-feature-management/101-flag-enablement/) | Grid navigator with LaunchDarkly boolean flags (all languages, Terraform + REST) |
+| 102 | [102-flag-variations](10-feature-management/102-flag-variations/) | Grid navigator with string, number, JSON, and anonymous flags (all languages) |
+| 103 | [103-flag-targeting-rules](10-feature-management/103-flag-targeting-rules/) | Targeting rules on a public `team` context attribute |
+| 104 | [104-multi-context-targeting](10-feature-management/104-multi-context-targeting/) | User + organization multi-context targeting |
+| 105 | [105-prerequisite-flags](10-feature-management/105-prerequisite-flags/) | Flag prerequisites: highlight must serve `green` before move count can evaluate |
+| 106 | [106-percentage-rollout](10-feature-management/106-percentage-rollout/) | Static 30/70 percentage rollout, sticky context key (web **:8160–:8163** + Python / Node / Java / Go / Rust / C++ consoles) |
+| 107 | [107-scheduled-changes](10-feature-management/107-scheduled-changes/) | Replaceable scheduled flag turn-on with elapsed timer (web **:8170–:8173** + Python / Node / Java / Go / Rust / C++ consoles + REST/Terraform) |
+| 108 | [108-flag-approvals](10-feature-management/108-flag-approvals/) | **Stub:** approval to turn the move-count flag on |
+| 109 | [109-evaluation-reasons](10-feature-management/109-evaluation-reasons/) | **Stub:** on-screen `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, `ERROR` |
+| — | [segment-targeting](10-feature-management/segment-targeting/) | **Stub:** included-targets segment. Unnumbered so it does not take 20. Read before 303 |
+| 20 | [20-agent-management](20-agent-management/) | Agent Management series (shared LLM / AWS / LD setup); [portal](20-agent-management/portal/) Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
+| — | [20-capstone-1](20-agent-management/20-capstone-1/) | **Python :8290 · Node :8291 · Java :8292 · .NET :8293, not in the portal.** Composes `201`–`205`. Checked tools run before finalize. Judges and feedback stay on the draft. English and Spanish live here |
+| 201 | [201-agent-completion-config](20-agent-management/201-agent-completion-config/) | Completion config: model + system/user prompts (web + Go console) |
+| 202 | [202-config-outside-code](20-agent-management/202-config-outside-code/) | Tracked completion: metrics + thumbs feedback (web + Go console) |
+| 203 | [203-agent-tools](20-agent-management/203-agent-tools/) | Library tools + tool loop + `track_tool_call` (web + Go console) |
+| 204 | [204-agent-judges](20-agent-management/204-agent-judges/) | Judges runtime gate + rewrite (Python **8240** · Node **8241** · Java **8242** · .NET **8243**; Go console) |
+| 205 | [205-agent-graph](20-agent-management/205-agent-graph/) | Agent graph: assess → specialist → finalize (Python **8250** · Node **8251** · Java **8252** · .NET **8253**) |
+| 206 | [206-flags-vs-agent-management](20-agent-management/206-flags-vs-agent-management/) | Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**. Agent Management, four flags, or one JSON flag. Guardrail scores pass/fail |
+| 207 | [207-agent-mode](20-agent-management/207-agent-mode/) | **Stub:** agent mode only, one instructions value. Does not roll into the capstone |
+| 208 | [208-context-attributes](20-agent-management/208-context-attributes/) | **Stub:** North America / South America and an audience select the variation |
+| 209 | [209-team-rollout](20-agent-management/209-team-rollout/) | **Stub:** sticky percentage rollout bucketed by `team`. Not ports :8290–:8293 |
 | 30 | [30-client-sdk](30-client-sdk/) | Browser client-side SDK series (client-side ID); [portal](30-client-sdk/portal/) JS **:8300** · React **:8301** · Vue **:8302** (301–306; portal paths still old) |
 | 301 | [301-client-evaluation](30-client-sdk/301-client-evaluation/) | Initialize, client-side availability, `variation`, `change:` (**JS :8310** · **React :8311** · **Vue :8312**) |
 | 302 | [302-client-identify](30-client-sdk/302-client-identify/) | `identify()` context switch without reload (**JS :8320** · **React :8321** · **Vue :8322**) |
@@ -212,7 +212,7 @@ Each example may include implementations in any of these languages. Every applic
 
 ## Building code
 
-Each implementation **builds locally** in its language folder. Runnable artifacts are named after the **example directory** (e.g. `00-reference-code.py`, `./00-reference-code`, `target/00-reference-code.jar`).
+Each implementation **builds locally** in its language folder. Runnable artifacts are named after the **example directory** (e.g. `00-reference-feature.py`, `./00-reference-feature`, `target/00-reference-feature.jar`).
 
 Full conventions are in [project.md](project.md#building-and-running). Summary:
 
@@ -261,7 +261,7 @@ Run `nvm use` whenever you open a new shell before working on Node examples.
 | Java     | [adoptium.net](https://adoptium.net/) 21+ (Maven Wrapper included per project) |
 | .NET     | [dotnet.microsoft.com](https://dotnet.microsoft.com/download) SDK **10+** (often `/usr/local/share/dotnet` on macOS) |
 | C++      | C++20 compiler and Make |
-| Go       | [go.dev](https://go.dev/dl/) **1.22+** (AgentControl `go/` modules may require **1.24** — see each `go.mod`) |
+| Go       | [go.dev](https://go.dev/dl/) **1.22+** (Agent Management `go/` modules may require **1.24** — see each `go.mod`) |
 | Rust     | [rustup.rs](https://rustup.rs/) 1.75+ |
 | Android  | [Android Studio](https://developer.android.com/studio) (JDK 17+, SDK; Gradle Wrapper in each `android/`) |
 | iOS      | [Xcode](https://developer.apple.com/xcode/) 15+ (macOS) |
@@ -270,16 +270,16 @@ Run `nvm use` whenever you open a new shell before working on Node examples.
 
 | Language | Build | Run (artifact name varies by example) |
 |----------|-------|---------------------------------------|
-| Python | *(no compile step)* | `python 00-reference-code.py` |
-| Node.js | `npm install` *(when deps exist)* | `node 00-reference-code.js` |
+| Python | *(no compile step)* | `python 00-reference-feature.py` |
+| Node.js | `npm install` *(when deps exist)* | `node 00-reference-feature.js` |
 | JavaScript | `npm install` *(when deps exist)* | `npm start` (static server) |
 | React Web | `npm install` | `npm start` (Vite; 31 is **:8311**) |
 | Vue | `npm install` | `npm start` (Vite; 31 is **:8312**) |
-| Java | `./mvnw clean install` | `java -jar target/00-reference-code.jar` |
+| Java | `./mvnw clean install` | `java -jar target/00-reference-feature.jar` |
 | .NET | `export PATH="/usr/local/share/dotnet:$PATH"` · `dotnet restore` · `dotnet build` | `dotnet run` (TFM **net10.0**) |
-| C++ | `make clean && make all` | `./00-reference-code` |
+| C++ | `make clean && make all` | `./00-reference-feature` |
 | Go | `go mod tidy` · `go build -o <example-name> .` | `./<example-name>` |
-| Rust | `cargo build --release` | `./target/release/00-reference-code` |
+| Rust | `cargo build --release` | `./target/release/00-reference-feature` |
 | Android | `./gradlew assembleDebug` | Android Studio → Run, or install the debug APK |
 | iOS | Open `*.xcodeproj` | Xcode → Run on Simulator |
 
@@ -289,7 +289,7 @@ Each language folder's `README.md` lists the exact **Build** and **Run** command
 
 1. Clone the repository.
 2. Set up Python with [pyenv](#python-and-pyenv) and other toolchains as needed (see [Building code](#building-code)).
-3. Open an example (e.g. [00-reference-code](00-reference-code/)).
+3. Open an example (e.g. [00-reference-feature](00-reference-feature/)).
 4. Open a language subdirectory and follow its `README.md`.
 
 ## Project Conventions

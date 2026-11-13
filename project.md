@@ -2,7 +2,7 @@
 
 This document defines the structure, conventions, and standards for **lunch-marcoly** — a collection of small, self-contained programming examples, each implemented across multiple languages.
 
-For the reference grid navigator application behavior, see [00-reference-code/application.md](00-reference-code/application.md). For the browser-side twin, see [02-reference-client-code/application.md](02-reference-client-code/application.md). For the reference agent UI, see [01-reference-agent/application.md](01-reference-agent/application.md). For the mobile 2×2 tap navigator, see [50-mobile/501-reference/application.md](50-mobile/501-reference/application.md).
+For the reference grid navigator application behavior, see [00-reference-feature/application.md](00-reference-feature/application.md). For the browser-side twin, see [02-reference-client-code/application.md](02-reference-client-code/application.md). For the reference agent UI, see [01-reference-agent/application.md](01-reference-agent/application.md). For the mobile 2×2 tap navigator, see [50-mobile/501-reference/application.md](50-mobile/501-reference/application.md).
 
 ## Purpose
 
@@ -65,16 +65,16 @@ lunch-marcoly/
 ├── .python-version            # Python version for pyenv (repository-wide)
 ├── .nvmrc                     # Node.js version for nvm (repository-wide)
 ├── .venv/                     # Python virtual environment (local, not committed)
-├── 00-reference-code/              # Reference grid navigator — no LaunchDarkly
+├── 00-reference-feature/              # Reference grid navigator — no LaunchDarkly
 │   ├── README.md
-│   ├── application.md         # Grid navigator behavior spec (00-reference-code only)
+│   ├── application.md         # Grid navigator behavior spec (00-reference-feature only)
 │   ├── python/
 │   ├── python-console/
 │   ├── node/
 │   ├── node-console/
 │   ├── java/
 │   ├── java-console/
-│   ├── cpp/                   # Makefile → ./00-reference-code
+│   ├── cpp/                   # Makefile → ./00-reference-feature
 │   ├── go/
 │   └── rust/
 ├── 01-reference-agent/             # Reference agent UI — web + console (config/env LLM)
@@ -87,7 +87,7 @@ lunch-marcoly/
 │   ├── README.md
 │   ├── application.md         # Same navigator; logic runs in the page
 │   └── javascript/            # Static files + optional Node file server :8020
-├── 10-code-control/             # Feature-flag series (shared portal)
+├── 10-feature-management/             # Feature-flag series (shared portal)
 │   ├── README.md
 │   ├── portal/                  # Series shell: Python :8100 · Node :8101 · Java :8102 · .NET :8103
 │   ├── 101-flag-enablement/      # Boolean flags, contexts, private hostOs
@@ -104,7 +104,7 @@ lunch-marcoly/
 │   ├── 108-flag-approvals/       # Stub: approval to enable move count
 │   ├── 109-evaluation-reasons/   # Stub: four evaluation reason kinds
 │   └── segment-targeting/       # Stub: included targets; still unnumbered
-├── 20-agent-config/             # AgentControl series (shared setup README)
+├── 20-agent-management/             # Agent Management series (shared setup README)
 │   ├── README.md                # Ollama, AWS SSO, LD env — landing page
 │   ├── portal/                  # Series shell: Python :8200 · Node :8201 · Java :8202 · .NET :8203
 │   ├── stories/                 # Shared Yahoo headlines cache (all examples)
@@ -125,7 +125,7 @@ lunch-marcoly/
 │   ├── 205-agent-graph/              # Agent graph: assess → specialist → finalize
 │   │   ├── README.md · application.md · rest/
 │   │   └── python/ · node/ · java/ · dotnet/  # Web :8250–:8253
-│   ├── 206-flags-vs-agent-control/   # Python :8260 · Node :8261 · Java :8262 · .NET :8263
+│   ├── 206-flags-vs-agent-management/   # Python :8260 · Node :8261 · Java :8262 · .NET :8263
 │   │   └── README.md · application.md   # Web only
 │   ├── 207-agent-mode/           # Stub: agent mode only; not the capstone
 │   ├── 208-context-attributes/   # Stub: region + audience select a variation
@@ -155,7 +155,7 @@ lunch-marcoly/
 │   ├── 401-no-sdk-singleton/    # Stub: new LDClient per evaluation
 │   └── 402-local-if-no-sdk/     # Stub: local if / no variation()
 ├── 50-mobile/                   # Mobile SDK series (2×2 tap navigator)
-│   ├── README.md                # Mobile key, simulators, no AgentControl
+│   ├── README.md                # Mobile key, simulators, no Agent Management
 │   ├── 501-reference/            # No LaunchDarkly — android/ · ios/
 │   ├── 502-mobile-evaluation/    # Mobile SDK init / variation / listeners
 │   ├── 503-mobile-experiment/    # One Android+iOS experiment; platform analysis
@@ -203,37 +203,37 @@ lunch-marcoly/
 
 ### Example directories (top level)
 
-- Prefix with a **two-digit number**: `00-reference-code`, `01-hello-world`, `02-binary-search`
+- Prefix with a **two-digit number**: `00-reference-feature`, `01-hello-world`, `02-binary-search`
 - Follow the number with a **kebab-case** name describing the concept
 - Use the next available number when adding a new example (`03`, `04`, …)
-- Decade series keep that two-digit folder (`10`, `20`, `30`, …). **10-code-control** children are **101–109**. **20-agent-config** children are **201–209**, and the capstone folder is `20-capstone-1`. **30-client-sdk** children are **301–309**. **40-dont-do-this** children are **401** and **402**. **60-observability** children are **601**, **602**, **603**, and **605**. **604** stays free. Other series still use two-digit children (such as `99-use-cases`) until that series is renumbered the same way (`501`–`599`). Letter suffixes (`1a`, `1b`) stay unused. A fourth digit is not part of the scheme. Inside a renumbered series, the first language pass uses the new number. Other language entrypoints keep their previous filenames until that platform is updated. JavaScript, React, and Vue in **301–306** use the new numbers, including an About tab. The client-SDK portal still uses the old names. Listen ports for 101–107 stay **8110–8170**. AgentControl ports stay **8210–8260**, with the capstone on **8290–8293**. Client SDK ports stay **8310–8362**.
+- Decade series keep that two-digit folder (`10`, `20`, `30`, …). **10-feature-management** children are **101–109**. **20-agent-management** children are **201–209**, and the capstone folder is `20-capstone-1`. **30-client-sdk** children are **301–309**. **40-dont-do-this** children are **401** and **402**. **60-observability** children are **601**, **602**, **603**, and **605**. **604** stays free. Other series still use two-digit children (such as `99-use-cases`) until that series is renumbered the same way (`501`–`599`). Letter suffixes (`1a`, `1b`) stay unused. A fourth digit is not part of the scheme. Inside a renumbered series, the first language pass uses the new number. Other language entrypoints keep their previous filenames until that platform is updated. JavaScript, React, and Vue in **301–306** use the new numbers, including an About tab. The client-SDK portal still uses the old names. Listen ports for 101–107 stay **8110–8170**. Agent Management ports stay **8210–8260**, with the capstone on **8290–8293**. Client SDK ports stay **8310–8362**.
 - `70-model-demos` children are `701`–`709` (three-digit, renumbered). `99-use-cases` still counts children inside the folder (`01`, `02`, …). Neither consumes `71`–`79` or the next decade.
-- `00-reference-code` is reserved for the reference grid navigator app and repository conventions. It does **not** include LaunchDarkly integration.
+- `00-reference-feature` is reserved for the reference grid navigator app and repository conventions. It does **not** include LaunchDarkly integration.
 - `02-reference-client-code` is the same navigator **in the browser** (client JavaScript). It does **not** include LaunchDarkly. Later client-SDK examples (series **30**) build on this shape.
 - `01-reference-agent` is the baseline news → prompt → LLM agent UI (config/env and a prompt file only).
-- `20-agent-config` groups LaunchDarkly **AgentControl** examples; shared LLM/AWS/LD setup lives in its README.
-- `20-capstone-1` (under `20-agent-config/`) sits outside **201–209**. Python **8290**, Node **8291**, Java **8292**, and .NET **8293** are built and are not portal tabs. It composes `201`–`205`: assess → specialist → finalize, with Pig Latin, ROT13, and a joke tagline forced after the draft and before finalize. Judges and feedback stay on the draft. Those lessons stay as they are. Later `207`, `208`, and `209` keep their own numbers and do not roll into this app. English and Spanish belong here. Java uses `jsonValueVariationDetail` because there is no Java AI SDK.
-- `201-agent-completion-config` (under `20-agent-config/`) adds a **completion config**: runtime **model**, **system prompt**, and **user prompt** on the agent shape from `01`.
+- `20-agent-management` groups LaunchDarkly **Agent Management** examples; shared LLM/AWS/LD setup lives in its README.
+- `20-capstone-1` (under `20-agent-management/`) sits outside **201–209**. Python **8290**, Node **8291**, Java **8292**, and .NET **8293** are built and are not portal tabs. It composes `201`–`205`: assess → specialist → finalize, with Pig Latin, ROT13, and a joke tagline forced after the draft and before finalize. Judges and feedback stay on the draft. Those lessons stay as they are. Later `207`, `208`, and `209` keep their own numbers and do not roll into this app. English and Spanish belong here. Java uses `jsonValueVariationDetail` because there is no Java AI SDK.
+- `201-agent-completion-config` (under `20-agent-management/`) adds a **completion config**: runtime **model**, **system prompt**, and **user prompt** on the agent shape from `01`.
 - `202-config-outside-code` adds **tracked completion** (`TrackMetricsOf` / feedback) on that same config shape.
 - `203-agent-tools` adds **Library tools**, a tool loop, and `TrackToolCall`.
 - `204-agent-judges` adds **custom Judges** as a runtime quality gate (draft → scores → one Charlie rewrite).
-- `205-agent-graph` (under `20-agent-config/`) adds an **agent graph** (assess → specialist → finalize; Python **8250** · Node **8251** · Java **8252** · .NET **8253**).
-- `206-flags-vs-agent-control` (under `20-agent-config/`) compares an AgentControl completion config, four feature flags, and one JSON flag. Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**. Series portal tab **Flag compare**. The screen shows Toby. A failed guardrail on AgentControl can run `reduce-briefing-uncertainty`. `201` keeps `equity-briefing-completion`.
+- `205-agent-graph` (under `20-agent-management/`) adds an **agent graph** (assess → specialist → finalize; Python **8250** · Node **8251** · Java **8252** · .NET **8253**).
+- `206-flags-vs-agent-management` (under `20-agent-management/`) compares an Agent Management completion config, four feature flags, and one JSON flag. Python **:8260**, Node **:8261**, Java **:8262**, .NET **:8263**. Series portal tab **Flag compare**. The screen shows Toby. A failed guardrail on Agent Management can run `reduce-briefing-uncertainty`. `201` keeps `equity-briefing-completion`.
 - `207-agent-mode` is a stub. Agent mode only, one instructions value, no graph, tools, or judges. It does not roll into `20-capstone-1`. Intended ports **:8270–:8273**.
-- `208-context-attributes` is a stub. North America or South America, plus an audience, select an AgentControl variation. The page shows the context it built. This is not `{{ }}` prompt substitution. Intended ports **:8280–:8283**.
+- `208-context-attributes` is a stub. North America or South America, plus an audience, select an Agent Management variation. The page shows the context it built. This is not `{{ }}` prompt substitution. Intended ports **:8280–:8283**.
 - `209-team-rollout` is a stub. A fixed percentage rollout buckets by the public `team` attribute, so everyone on that team shares one variation. Not `16`'s username bucket and not `14-progressive-rollout`. Do not use ports **:8290–:8293**.
-- AgentControl **web** ports: Python / Node / Java / .NET. **Go** is console-only under this series (raw-terminal TUI).
-- `10-code-control` groups grid-navigator **feature flag** examples; shared portal lives in its `portal/`.
-- `101-flag-enablement` (under `10-code-control/`) demonstrates feature flag naming, provisioning, and boolean enablement.
-- `102-flag-variations` (under `10-code-control/`) demonstrates string, number, JSON, and anonymous-context flag variation types.
+- Agent Management **web** ports: Python / Node / Java / .NET. **Go** is console-only under this series (raw-terminal TUI).
+- `10-feature-management` groups grid-navigator **feature flag** examples; shared portal lives in its `portal/`.
+- `101-flag-enablement` (under `10-feature-management/`) demonstrates feature flag naming, provisioning, and boolean enablement.
+- `102-flag-variations` (under `10-feature-management/`) demonstrates string, number, JSON, and anonymous-context flag variation types.
 - `103-flag-targeting-rules` demonstrates targeting rules on a public `team` context attribute.
 - `104-multi-context-targeting` demonstrates one evaluation containing separate `user` and `organization` contexts.
 - `105-prerequisite-flags` demonstrates a child flag that evaluates only when the parent serves `green`.
-- `106-percentage-rollout` (under `10-code-control/`) demonstrates a **static** percentage rollout with sticky context-key assignment (not progressive); Python / Node / Java / .NET web, consoles (Python / Node / Java / Go / Rust / C++), plus REST/Terraform.
-- `107-scheduled-changes` (under `10-code-control/`) demonstrates a replaceable scheduled `turnFlagOn` change with an elapsed timer (Python / Node / Java / .NET web **:8170–:8173**, consoles Python / Node / Java / Go / Rust / C++, REST/Terraform).
-- `108-flag-approvals` (under `10-code-control/`) is a stub. An approval request turns the move-count flag on. Intended ports **:8180–:8183**.
-- `109-evaluation-reasons` (under `10-code-control/`) is a stub. The screen shows `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, and `ERROR`. Intended ports **:8190–:8193**.
-- `segment-targeting` (under `10-code-control/`) is an unnumbered stub. One included-targets segment on the server SDK, read before `303-synced-segments`. **18** and **19** fill the decade, so this folder does not take **20**.
+- `106-percentage-rollout` (under `10-feature-management/`) demonstrates a **static** percentage rollout with sticky context-key assignment (not progressive); Python / Node / Java / .NET web, consoles (Python / Node / Java / Go / Rust / C++), plus REST/Terraform.
+- `107-scheduled-changes` (under `10-feature-management/`) demonstrates a replaceable scheduled `turnFlagOn` change with an elapsed timer (Python / Node / Java / .NET web **:8170–:8173**, consoles Python / Node / Java / Go / Rust / C++, REST/Terraform).
+- `108-flag-approvals` (under `10-feature-management/`) is a stub. An approval request turns the move-count flag on. Intended ports **:8180–:8183**.
+- `109-evaluation-reasons` (under `10-feature-management/`) is a stub. The screen shows `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, and `ERROR`. Intended ports **:8190–:8193**.
+- `segment-targeting` (under `10-feature-management/`) is an unnumbered stub. One included-targets segment on the server SDK, read before `303-synced-segments`. **18** and **19** fill the decade, so this folder does not take **20**.
 - `30-client-sdk` groups **browser** client-side SDK examples (client-side ID, not `LD_SDK_KEY`); series portals live in its `portal/` (JavaScript **:8300** · React **:8301** · Vue **:8302**). The portal still launches the old `31-…` through `36-…` paths.
 - `301-client-evaluation` (under `30-client-sdk/`) demonstrates initialize, client-side availability, variation, and `change:` (JavaScript **:8310**, React Web **:8311**, Vue **:8312**). Each has an Evaluation tab and an About tab. The JavaScript entrypoint is `301-client-evaluation.js`.
 - `302-client-identify` (under `30-client-sdk/`) demonstrates `identify()` (switch user without reload; JavaScript **:8320**, React Web **:8321**, Vue **:8322**).
@@ -247,7 +247,7 @@ lunch-marcoly/
 - `40-dont-do-this` groups **anti-pattern** examples (loud do-not-ship). Children are **401** and **402**.
 - `401-no-sdk-singleton` (under `40-dont-do-this/`) will demonstrate a new server SDK client per evaluation instead of one process-wide client.
 - `402-local-if-no-sdk` (under `40-dont-do-this/`) will demonstrate a local `if` / hardcoded boolean instead of `variation()` — flipping the dashboard flag does nothing.
-- `50-mobile` groups **mobile** client-side SDK examples (mobile key, not `LD_SDK_KEY` and not `LD_CLIENT_SIDE_ID`). Children start at **501**. There is no HTTP portal. AgentControl is out of scope.
+- `50-mobile` groups **mobile** client-side SDK examples (mobile key, not `LD_SDK_KEY` and not `LD_CLIENT_SIDE_ID`). Children start at **501**. There is no HTTP portal. Agent Management is out of scope.
 - `501-reference` (under `50-mobile/`) is the 2×2 tap navigator baseline. It does **not** include LaunchDarkly. Android (`android/`) and iOS (`ios/`) ship first; `react-native/` comes later.
 - `502-mobile-evaluation` (under `50-mobile/`) adds the Android / iOS mobile SDKs (`LD_MOBILE_KEY`), dedicated flag keys, variation, and flag listeners. Do not reuse 31’s browser flag keys.
 - `503-mobile-experiment` (under `50-mobile/`) runs one boolean control/treatment experiment across Android and iOS. `platform` and `app-version` are context attributes for result analysis, never application-side assignment logic. The optional synthetic simulator uses a server SDK key only on the host.
@@ -286,21 +286,21 @@ Follow the idiomatic naming style of each language:
 
 | Language | Directory | File naming              | Example              |
 |----------|-----------|--------------------------|----------------------|
-| Python   | `python/`, `python-console/` | `{example-name}.py` | `00-reference-code.py` |
-| Node.js  | `node/`, `node-console/` | `{example-name}.js` | `00-reference-code.js` |
+| Python   | `python/`, `python-console/` | `{example-name}.py` | `00-reference-feature.py` |
+| Node.js  | `node/`, `node-console/` | `{example-name}.js` | `00-reference-feature.js` |
 | JavaScript | `javascript/` | `{example-name}.js` (static server) + `index.html` | `02-reference-client-code.js` |
 | React Web | `react/` | Vite `index.html` + `src/` | `301-client-evaluation/react` |
 | Vue       | `vue/`   | Vite `index.html` + `src/` | `301-client-evaluation/vue` |
 | Java     | `java/`, `java-console/` | PascalCase (classes) | `WebServer.java` |
 | .NET     | `dotnet/` | `{example-name}.csproj` + PascalCase classes | `01-reference-agent.csproj`, `Program.cs`, `AgentCore.cs` |
-| C++      | `cpp/`    | `main.cpp` + Makefile | binary `00-reference-code` |
-| Go       | `go/`     | `main.go` | binary `00-reference-code` |
-| Rust     | `rust/`   | `src/main.rs` | binary `00-reference-code` |
+| C++      | `cpp/`    | `main.cpp` + Makefile | binary `00-reference-feature` |
+| Go       | `go/`     | `main.go` | binary `00-reference-feature` |
+| Rust     | `rust/`   | `src/main.rs` | binary `00-reference-feature` |
 | Android  | `android/` | Gradle `app/` (Kotlin / Compose) | `501-reference` APK / Studio run |
 | iOS      | `ios/`    | Xcode app (`*.xcodeproj`) | `501-reference` on Simulator |
 | React Native | `react-native/` | *(later)* | — |
 
-The **runnable artifact name** matches the **example directory name** (e.g. `00-reference-code`, `01-hello-world`). Language READMEs document the exact build and run commands for that folder.
+The **runnable artifact name** matches the **example directory name** (e.g. `00-reference-feature`, `01-hello-world`). Language READMEs document the exact build and run commands for that folder.
 
 ### README files
 
@@ -316,7 +316,7 @@ Each language subdirectory **must** include its own `README.md` with:
 1. **Prerequisites** — language version, tools, dependencies (see [Requirements](#language-and-tooling))
 2. **Environment variables** — which `LD_*` variables the implementation needs
 3. **Build** — exact commands to compile or prepare the application in that folder (see [Building and running](#building-and-running))
-4. **Run** — exact command to start the application, citing the executable or script name (e.g. `./00-reference-code`, `python3 00-reference-code.py`)
+4. **Run** — exact command to start the application, citing the executable or script name (e.g. `./00-reference-feature`, `python3 00-reference-feature.py`)
 5. **What to expect** — output or behavior description (terminal output for console apps; UI behavior and URL for web apps)
 
 Each `rest/` and `terraform/` folder **must** include a `README.md` with:
@@ -339,7 +339,7 @@ A minimal example with one web implementation:
 │   └── README.md
 └── python/                   # Web application
     ├── README.md
-    └── 00-reference-code.py
+    └── 00-reference-feature.py
 ```
 
 A fuller example with web, console, and native implementations:
@@ -354,14 +354,14 @@ A fuller example with web, console, and native implementations:
 │   └── main.tf
 ├── python/                   # Web application
 │   ├── README.md
-│   └── 00-reference-code.py
+│   └── 00-reference-feature.py
 ├── python-console/           # Console alternative
 │   ├── README.md
-│   └── 00-reference-code.py
+│   └── 00-reference-feature.py
 ├── node/
 │   ├── README.md
 │   ├── package.json
-│   └── 00-reference-code.js
+│   └── 00-reference-feature.js
 └── rust/                     # Console application
     ├── README.md
     ├── Cargo.toml
@@ -419,7 +419,7 @@ The runnable artifact uses the **example directory name**:
 
 | Example folder | Python script | Node script | C++ / Go binary | Rust binary | Java JAR | .NET project |
 |----------------|---------------|-------------|-----------------|-------------|----------|--------------|
-| `00-reference-code` | `00-reference-code.py` | `00-reference-code.js` | `./00-reference-code` | `./target/release/00-reference-code` | `target/00-reference-code.jar` | `00-reference-code.csproj` |
+| `00-reference-feature` | `00-reference-feature.py` | `00-reference-feature.js` | `./00-reference-feature` | `./target/release/00-reference-feature` | `target/00-reference-feature.jar` | `00-reference-feature.csproj` |
 | `01-hello-world` | `01-hello-world.py` | `01-hello-world.js` | `./01-hello-world` | `./target/release/01-hello-world` | `target/01-hello-world.jar` | `01-hello-world.csproj` |
 
 Java **console** folders may use a `-console` JAR suffix when the web twin already owns `{example}.jar` (e.g. `01-reference-agent/java-console` → `target/01-reference-agent-console.jar`). Language READMEs document the exact name.
@@ -444,7 +444,7 @@ pip install -r requirements.txt
 - **Run:** from the language folder, with pyenv and the virtual environment active:
 
 ```bash
-python 00-reference-code.py
+python 00-reference-feature.py
 ```
 
 Language READMEs cite the exact script name.
@@ -470,7 +470,7 @@ npm install
 - **Run:**
 
 ```bash
-node 00-reference-code.js
+node 00-reference-feature.js
 # or
 npm start
 ```
@@ -532,7 +532,7 @@ Default URL for 301: [http://127.0.0.1:8312/](http://127.0.0.1:8312/). `PORT` ov
 - **Run:** JAR name matches the example directory:
 
 ```bash
-java -jar target/00-reference-code.jar
+java -jar target/00-reference-feature.jar
 ```
 
 Prefer `./mvnw` over a system-wide `mvn` install for consistency.
@@ -556,7 +556,7 @@ dotnet run
 
 Project file name matches the example directory (e.g. `01-reference-agent.csproj`).
 
-- **AgentControl gotcha:** examples under `20-agent-config/` use [`LaunchDarkly.ServerSdk.Ai`](https://launchdarkly.com/docs/sdk/ai/dotnet) (**pre-1.0**). The baseline `01-reference-agent/dotnet` has **no** LaunchDarkly packages.
+- **Agent Management gotcha:** examples under `20-agent-management/` use [`LaunchDarkly.ServerSdk.Ai`](https://launchdarkly.com/docs/sdk/ai/dotnet) (**pre-1.0**). The baseline `01-reference-agent/dotnet` has **no** LaunchDarkly packages.
 
 ### C++
 
@@ -570,7 +570,7 @@ make all
 - **Run:** binary name matches the example directory:
 
 ```bash
-./00-reference-code
+./00-reference-feature
 ```
 
 ### Go
@@ -579,17 +579,17 @@ make all
 
 ```bash
 go mod tidy
-go build -o 00-reference-code .
+go build -o 00-reference-feature .
 ```
 
 - **Run:**
 
 ```bash
-./00-reference-code
+./00-reference-feature
 ```
 
-- **Version:** baseline is **Go 1.22+**. AgentControl consoles under `20-agent-config/*/go/` often pin **`go 1.24`** in `go.mod` — follow that folder's README.
-- **AI SDK gotcha:** AgentControl examples import the separate module [`github.com/launchdarkly/go-server-sdk-ai`](https://launchdarkly.com/docs/sdk/ai/go) (`ldai.CompletionConfig`), **not** the older `ldai` subpackage bundled inside `go-server-sdk/v7`. `TrackMetricsOf` is a **package function**, not a tracker method — see each `go/README.md` under 21–23.
+- **Version:** baseline is **Go 1.22+**. Agent Management consoles under `20-agent-management/*/go/` often pin **`go 1.24`** in `go.mod` — follow that folder's README.
+- **AI SDK gotcha:** Agent Management examples import the separate module [`github.com/launchdarkly/go-server-sdk-ai`](https://launchdarkly.com/docs/sdk/ai/go) (`ldai.CompletionConfig`), **not** the older `ldai` subpackage bundled inside `go-server-sdk/v7`. `TrackMetricsOf` is a **package function**, not a tracker method — see each `go/README.md` under 21–23.
 
 ### Rust
 
@@ -602,7 +602,7 @@ cargo build --release
 - **Run:**
 
 ```bash
-./target/release/00-reference-code
+./target/release/00-reference-feature
 ```
 
 The Cargo `[bin]` name matches the example directory.
@@ -695,7 +695,7 @@ Install only what you need for the language and provisioning approach you are wo
 | Java            | 21+             | Maven Wrapper (`./mvnw`) in each Java folder |
 | .NET            | SDK 10+         | `dotnet` CLI (`dotnet restore` / `dotnet build`) in each `dotnet/` folder |
 | C++             | C++20           | Make and a C++20-capable compiler |
-| Go              | 1.22+           | go modules; AgentControl `go/` ports may require **1.24** (see `go.mod`) |
+| Go              | 1.22+           | go modules; Agent Management `go/` ports may require **1.24** (see `go.mod`) |
 | Rust            | 1.75+           | 2021 edition |
 | Android         | API 26+ / JDK 17+ | Android Studio; Gradle Wrapper in each `android/` folder |
 | iOS             | Xcode 15+       | macOS; SwiftUI app in each `ios/` folder |

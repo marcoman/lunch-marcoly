@@ -1,8 +1,8 @@
 # REST
 
-Creates the AgentControl completion config `terraform-codegen-compare`.
+Creates the Agent Management completion config `terraform-codegen-compare`.
 
-Keywords: **AgentControl** · **completion config** · **model config** · **targeting**
+Keywords: **Agent Management** · **completion config** · **model config** · **targeting**
 
 | Topic | Docs |
 |-------|------|

@@ -1,6 +1,6 @@
 # .NET (web)
 
-Web application version of the [01-reference-agent](../application.md) equity briefing demo. **No LaunchDarkly** — this is the baseline the [20-agent-config](../../20-agent-config/) .NET ports (21 / 22 / 23) build on.
+Web application version of the [01-reference-agent](../application.md) equity briefing demo. **No LaunchDarkly** — this is the baseline the [20-agent-management](../../20-agent-management/) .NET ports (21 / 22 / 23) build on.
 
 Behavior matches the Python / Node / Java web apps: Finnhub → Massive → Yahoo headlines → shared system prompt → streamed report (`stub` / `ollama`). Port **8090** (same as the other `01-reference-agent` web languages — run one at a time).
 
@@ -107,11 +107,11 @@ AGENT_LLM_MODE=ollama dotnet run
 
 ## Where LaunchDarkly goes next
 
-This baseline has **no LaunchDarkly SDK, no context, no flag evaluation** — the system prompt is a file and the model provider is `AGENT_LLM_MODE`. Compare `AgentCore.cs` here to [`20-agent-config/21-agent-completion-config/dotnet/AgentCore.cs`](../../20-agent-config/21-agent-completion-config/dotnet/AgentCore.cs): that port replaces the file read + env var with an `LdAiClient.CompletionConfig(...)` evaluation (LaunchDarkly **AgentControl**), same event contract, same UI.
+This baseline has **no LaunchDarkly SDK, no context, no flag evaluation** — the system prompt is a file and the model provider is `AGENT_LLM_MODE`. Compare `AgentCore.cs` here to [`20-agent-management/21-agent-completion-config/dotnet/AgentCore.cs`](../../20-agent-management/21-agent-completion-config/dotnet/AgentCore.cs): that port replaces the file read + env var with an `LdAiClient.CompletionConfig(...)` evaluation (LaunchDarkly **Agent Management**), same event contract, same UI.
 
 ## Related
 
 - [Parent README](../README.md) — overview, architecture diagram, and OS requirements (includes WSL)
 - [application.md](../application.md) — full behavior spec
 - [python/README.md](../python/README.md) · [node/README.md](../node/README.md) · [java/README.md](../java/README.md) — other web twins
-- [20-agent-config/21-agent-completion-config/dotnet/README.md](../../20-agent-config/21-agent-completion-config/dotnet/README.md) — first .NET port that adds LaunchDarkly
+- [20-agent-management/21-agent-completion-config/dotnet/README.md](../../20-agent-management/21-agent-completion-config/dotnet/README.md) — first .NET port that adds LaunchDarkly

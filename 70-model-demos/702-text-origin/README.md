@@ -10,7 +10,7 @@ the grid. **80** stays the next free decade.
 
 Keywords: **AI Config** · **model configuration** · **text**
 
-Docs: [Quickstart for AgentControl](https://launchdarkly.com/docs/home/agentcontrol/quickstart)
+Docs: [Quickstart for Agent Management](https://launchdarkly.com/docs/home/agentcontrol/quickstart)
 
 ## Intended aha
 

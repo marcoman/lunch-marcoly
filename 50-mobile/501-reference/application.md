@@ -3,10 +3,10 @@
 This document defines the behavior of **501-reference** — a phone-sized grid
 navigator for the [50-mobile](../README.md) series.
 
-It is **not** a port of [00-reference-code](../../00-reference-code/application.md)
+It is **not** a port of [00-reference-feature](../../00-reference-feature/application.md)
 or [02-reference-client-code](../../02-reference-client-code/application.md).
 Those apps are a 3×3 keyboard navigator. This app is a **2×2 tap** navigator
-with a **lab drawer**. There is no WASD, no quit, and no AgentControl.
+with a **lab drawer**. There is no WASD, no quit, and no Agent Management.
 
 Repository layout is in [project.md](../../project.md). LaunchDarkly arrives in
 a later **502** example. **501 has no LaunchDarkly.**

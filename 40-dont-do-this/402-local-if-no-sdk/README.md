@@ -8,7 +8,7 @@ hardcoded boolean instead of `variation()`. Changing the flag in LaunchDarkly
 does nothing.
 
 Parent series: [40-dont-do-this](../README.md). Correct pattern:
-[101-flag-enablement](../../10-code-control/101-flag-enablement/) (evaluate the
+[101-flag-enablement](../../10-feature-management/101-flag-enablement/) (evaluate the
 flag; the variation is the source of truth).
 
 Keywords: **feature flags** · **boolean variation** · **server SDK** ·

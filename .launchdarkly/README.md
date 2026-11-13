@@ -2,7 +2,7 @@
 
 Repo-root contract for **what LaunchDarkly resources this collection expects**, and a thin CLI to compare that inventory to live LaunchDarkly state and to the codebase.
 
-This phase is **inventory + visibility + declare helpers**. Create, delete, toggle, Terraform apply, and GitHub Actions provisioning are deferred. Example [`rest/`](../10-code-control/101-flag-enablement/rest/) and [`terraform/`](../10-code-control/101-flag-enablement/terraform/) folders remain the customer-facing provisioners.
+This phase is **inventory + visibility + declare helpers**. Create, delete, toggle, Terraform apply, and GitHub Actions provisioning are deferred. Example [`rest/`](../10-feature-management/101-flag-enablement/rest/) and [`terraform/`](../10-feature-management/101-flag-enablement/terraform/) folders remain the customer-facing provisioners.
 
 ## Declare loop
 
@@ -218,7 +218,7 @@ Aligned with [`project.md`](../project.md):
 
 - Feature flags · boolean / multivariate variations · contexts  
   https://docs.launchdarkly.com/home/flags  
-- AgentControl · AI Configs  
+- Agent Management · AI Configs  
   https://docs.launchdarkly.com/home/ai-configs  
 - REST API  
   https://launchdarkly.com/docs/guides/api/rest-api  

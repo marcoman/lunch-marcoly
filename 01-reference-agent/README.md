@@ -2,7 +2,7 @@
 
 A **single-screen demo** that turns recent stock headlines into a short AI equity briefing.
 
-You do **not** need a LaunchDarkly account to run this example. It is the **baseline** agent UI: news in → prompt + model → streamed report out. [21-agent-completion-config](../20-agent-config/21-agent-completion-config/) (under [20-agent-config](../20-agent-config/)) adds LaunchDarkly **AgentControl** so model and prompts come from a completion config at runtime.
+You do **not** need a LaunchDarkly account to run this example. It is the **baseline** agent UI: news in → prompt + model → streamed report out. [21-agent-completion-config](../20-agent-management/21-agent-completion-config/) (under [20-agent-management](../20-agent-management/)) adds LaunchDarkly **Agent Management** so model and prompts come from a completion config at runtime.
 
 | Doc | Purpose |
 |-----|---------|
@@ -20,8 +20,8 @@ You do **not** need a LaunchDarkly account to run this example. It is the **base
 | [application.md](application.md) | Full behavior specification |
 | [prompts/system_prompt.txt](prompts/system_prompt.txt) | The system prompt sent to the LLM |
 | [stories/](stories/) | Shared headline cache (`stories_cache.json`, gitignored) |
-| [20-agent-config](../20-agent-config/) | AgentControl series landing (Ollama, AWS, LD setup) |
-| [21-agent-completion-config](../20-agent-config/21-agent-completion-config/) | Next: completion config (model + prompts from LaunchDarkly) |
+| [20-agent-management](../20-agent-management/) | Agent Management series landing (Ollama, AWS, LD setup) |
+| [21-agent-completion-config](../20-agent-management/21-agent-completion-config/) | Next: completion config (model + prompts from LaunchDarkly) |
 
 ## What you will see
 
@@ -40,9 +40,9 @@ In later examples, LaunchDarkly can replace those fixed choices with **remotely 
 ```text
 Today (this example)          Next (21-agent-completion-config)
 ─────────────────────         ─────────────────────────────────
-system_prompt.txt      →      AgentControl system message
-AGENT_LLM_MODE=ollama  →      AgentControl model on the variation
-in-code user prompt    →      AgentControl user message
+system_prompt.txt      →      Agent Management system message
+AGENT_LLM_MODE=ollama  →      Agent Management model on the variation
+in-code user prompt    →      Agent Management user message
 ```
 
 ## Architecture — news to app to LLM

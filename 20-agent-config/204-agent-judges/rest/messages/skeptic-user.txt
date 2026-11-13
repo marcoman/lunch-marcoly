@@ -1,3 +1,0 @@
-Compare these tickers using only the headlines. Prefer uncertainty over speculation.
-
-{{ stories }}

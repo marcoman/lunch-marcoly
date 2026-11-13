@@ -36,7 +36,7 @@ Until `ready`, the grid renders the bootstrap map even if a hook would still
 return the code default. The lab then keeps that paint for 8 seconds. A
 separate line counts down and says this simulates a startup delay. That line
 is larger, bold, and highlighted. Each second plays the short tone from
-[107-scheduled-changes](../../10-code-control/107-scheduled-changes/); the
+[107-scheduled-changes](../../10-feature-management/107-scheduled-changes/); the
 higher tone marks 0. The client still initializes immediately, and the log
 records `ready` when it finishes. At 0, the grid renders `variation`. Logout
 cancels the countdown.

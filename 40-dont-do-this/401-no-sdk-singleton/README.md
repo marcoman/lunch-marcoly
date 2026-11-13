@@ -7,7 +7,7 @@
 **singleton** / process-wide client LaunchDarkly documents.
 
 Parent series: [40-dont-do-this](../README.md). Correct pattern:
-[101-flag-enablement](../../10-code-control/101-flag-enablement/) (one client,
+[101-flag-enablement](../../10-feature-management/101-flag-enablement/) (one client,
 init at startup, `variation()` many times, close on shutdown).
 
 Keywords: **singleton** · **LDClient** · **server SDK** · **initialization**

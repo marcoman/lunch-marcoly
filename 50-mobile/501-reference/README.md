@@ -6,7 +6,7 @@ The **mobile** reference app for [50-mobile](../README.md): username login, a
 See [application.md](application.md) for behavior and acceptance criteria.
 Selection is **`X` only** — no highlight colors. **No LaunchDarkly.**
 
-This is not [00-reference-code](../../00-reference-code/) (3×3, WASD).
+This is not [00-reference-feature](../../00-reference-feature/) (3×3, WASD).
 
 ## Prerequisites
 

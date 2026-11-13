@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Shared helpers for the terraform-codegen AgentControl config.
-# LaunchDarkly: AgentControl configs · AI model configs · semantic patch targeting
+# Shared helpers for the terraform-codegen Agent Management config.
+# LaunchDarkly: Agent Management configs · AI model configs · semantic patch targeting
 # https://launchdarkly.com/docs/api/agent-control
 # https://launchdarkly.com/docs/guides/api/rest-api
 
 set -euo pipefail
 
 : "${LD_API_HOST:=https://app.launchdarkly.com}"
-# AgentControl endpoints are under the beta API version.
+# Agent Management endpoints are under the beta API version.
 : "${LD_API_VERSION:=beta}"
 
 : "${LD_CONFIG_KEY:=terraform-codegen-compare}"

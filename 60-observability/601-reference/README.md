@@ -2,7 +2,7 @@
 
 Python web baseline for the observability series.
 
-It preserves the [00-reference-code behavior](../../00-reference-code/application.md),
+It preserves the [00-reference-feature behavior](../../00-reference-feature/application.md),
 but moves login, navigation, and logout state from browser JavaScript into
 Python HTTP endpoints. This gives `602-server-traces` meaningful server
 operations to trace without mixing an architecture rewrite into the

@@ -17,7 +17,7 @@ Docs: [synced segments](https://launchdarkly.com/docs/home/flags/synced-segments
 Baseline: [302-client-identify](../302-client-identify/) ·
 [301-client-evaluation](../301-client-evaluation/).
 Small included-targets segment, server SDK, before this lesson:
-[segment-targeting](../../10-code-control/segment-targeting/).
+[segment-targeting](../../10-feature-management/segment-targeting/).
 Spec: [application.md](application.md).
 
 ## What this demonstrates

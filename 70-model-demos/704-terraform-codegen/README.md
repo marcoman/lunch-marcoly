@@ -2,7 +2,7 @@
 
 **Status: Python :8740.** Selected models write the same LaunchDarkly Terraform file. The app saves each `main.tf`, runs `terraform validate`, then a Sonnet judge scores the file. It does not apply and it does not rewrite. No series portal.
 
-One completion config, one click. The runs are sequential. Checkboxes choose which models run. AgentControl serves each variation, and `track_metrics_of` records the call. The judge is a separate config.
+One completion config, one click. The runs are sequential. Checkboxes choose which models run. Agent Management serves each variation, and `track_metrics_of` records the call. The judge is a separate config.
 
 `ANTHROPIC_API_KEY` is required for the hosted models and for the judge. Without it, Haiku and Sonnet stay off the model list, and a local file is still validated but not scored. The key stays in the server process. It is never sent to the browser.
 
@@ -19,7 +19,7 @@ One completion config, one click. The runs are sequential. Checkboxes choose whi
 
 The first line of each file is an ancestry comment. That line is supposed to differ. Descriptions are written from the resource name. Keys stay fixed.
 
-Keywords: **AgentControl** · **completion config** · **runtime variables** · **track_metrics_of**
+Keywords: **Agent Management** · **completion config** · **runtime variables** · **track_metrics_of**
 
 | Topic | Docs |
 |-------|------|

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# LaunchDarkly: AgentControl — create an AI model config (custom / Ollama)
+# LaunchDarkly: Agent Management — create an AI model config (custom / Ollama)
 # https://launchdarkly.com/docs/api/agent-control/post-model-config
 # https://launchdarkly.com/docs/home/agentcontrol/create-model-config
 #

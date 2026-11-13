@@ -266,8 +266,8 @@ def merge_inventory_from_hits(inv: Inventory, hits: list[Hit]) -> list[str]:
         agents_path,
         agents_doc,
         header=(
-            "# Desired AgentControl (AI Config) inventory.\n"
-            "# LaunchDarkly: AgentControl · AI Configs\n"
+            "# Desired Agent Management (AI Config) inventory.\n"
+            "# LaunchDarkly: Agent Management · AI Configs\n"
             "# https://docs.launchdarkly.com/home/ai-configs\n"
             "# sources: filled by ldctl instrument --write."
         ),

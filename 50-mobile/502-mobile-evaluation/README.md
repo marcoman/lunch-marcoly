@@ -23,7 +23,7 @@ Docs: [Android SDK](https://launchdarkly.com/docs/sdk/client-side/android) ·
 | `show-mobile-move-count` | Count hidden | `Count: N` in the header |
 
 **Not in 502:** browser client-side ID, in-app REST Controls, `identify()`
-without logout, AgentControl.
+without logout, Agent Management.
 
 ## Prerequisites
 

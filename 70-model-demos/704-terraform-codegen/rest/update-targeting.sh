@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# LaunchDarkly: AgentControl targeting for the generators
+# LaunchDarkly: Agent Management targeting for the generators
 # user key codegen-1b → local-1b
 # user key codegen-8b → local-8b, when that variation exists
 # user key codegen-haiku → claude-haiku, when that variation exists
