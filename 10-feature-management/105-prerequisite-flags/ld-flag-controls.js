@@ -1,24 +1,30 @@
-/** REST controls for the two flags in 105-prerequisite-flags.
+/** REST controls for the three flags in 105-prerequisite-flags.
  *
  * Controls may change on/off and the parent's fallthrough color. They never
  * edit the prerequisite relationship.
  * https://launchdarkly.com/docs/api/feature-flags/patch-feature-flag
  */
 
-const { FLAG_COUNT, FLAG_HIGHLIGHT, VALID_COLORS } = require("./prerequisite");
+const { FLAG_COUNT, FLAG_EMOJI, FLAG_HIGHLIGHT, VALID_COLORS } = require("./prerequisite");
 
 const CONTROLLED_FLAGS = [
   {
     key: FLAG_HIGHLIGHT,
     label: "Parent · grid selection highlight",
     summary:
-      "105-prerequisite-flags parent (cites 101's enable-grid-selection-highlight). Must be on and serving green to satisfy the prerequisite.",
+      "105-prerequisite-flags parent (cites 101's enable-grid-selection-highlight). Must be on and serving green before either child evaluates.",
   },
   {
     key: FLAG_COUNT,
     label: "Child · navigation move count",
     summary:
       "105-prerequisite-flags child (cites 101's show-navigation-move-count). Unmet prerequisite serves its off variation.",
+  },
+  {
+    key: FLAG_EMOJI,
+    label: "Child · anonymous host emoji",
+    summary:
+      "105-prerequisite-flags second child (cites 102's show-anonymous-host-os-emoji). Same parent prerequisite. Evaluated on the user context.",
   },
 ];
 const ALLOWED = new Set(CONTROLLED_FLAGS.map((item) => item.key));
@@ -92,10 +98,10 @@ function summarize(flag, environmentKey, meta) {
     servedWhenOnFallthrough: variationValue(flag, fallthroughIndex),
     prerequisite,
     prerequisiteConfigured:
-      meta.key !== FLAG_COUNT || Boolean(prerequisite && prerequisite.key === FLAG_HIGHLIGHT),
+      meta.key === FLAG_HIGHLIGHT || Boolean(prerequisite && prerequisite.key === FLAG_HIGHLIGHT),
     targetingHint:
       meta.key === FLAG_HIGHLIGHT
-        ? "Required by child: parent must be ON and serve green."
+        ? "Required by both children: parent must be ON and serve green."
         : prerequisite
           ? "Prerequisite configured; lab controls leave it unchanged."
           : "Missing prerequisite — run this example's provisioning.",

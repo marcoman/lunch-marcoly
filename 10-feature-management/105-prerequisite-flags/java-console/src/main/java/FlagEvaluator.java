@@ -19,6 +19,7 @@ public final class FlagEvaluator {
     // https://app.launchdarkly.com/projects/lunch-marcoly/features/show-navigation-move-count-prereq
 
     static final String FLAG_COUNT = "show-navigation-move-count-prereq";
+    static final String FLAG_EMOJI = "show-anonymous-host-os-emoji-prereq";
     private static final Set<String> VALID_COLORS = Set.of(
             "green", "yellow", "red", "blue", "purple", "pink");
     private static LDClient client;
@@ -65,12 +66,38 @@ public final class FlagEvaluator {
         EvaluationDetail<Boolean> childDetail = client == null
                 ? null
                 : client.boolVariationDetail(FLAG_COUNT, context, false);
+        EvaluationDetail<Boolean> emojiDetail = client == null
+                ? null
+                : client.boolVariationDetail(FLAG_EMOJI, context, false);
         String parentValue = parentDetail == null ? "none" : parentDetail.getValue();
         boolean childValue = childDetail != null && Boolean.TRUE.equals(childDetail.getValue());
+        boolean emojiValue = emojiDetail != null && Boolean.TRUE.equals(emojiDetail.getValue());
         String parentReason = parentDetail == null ? "OFFLINE" : formatReason(parentDetail.getReason());
         String childReason = childDetail == null ? "OFFLINE" : formatReason(childDetail.getReason());
+        String emojiReason = emojiDetail == null ? "OFFLINE" : formatReason(emojiDetail.getReason());
         String color = VALID_COLORS.contains(parentValue) ? parentValue : "none";
-        return new FlagValues(username, color, childValue, parentValue, parentReason, childValue, childReason);
+        String hostOs = detectHostOs();
+        String hostEmoji = emojiValue ? hostEmoji(hostOs) : "";
+        return new FlagValues(
+                username, color, childValue, parentValue, parentReason,
+                childValue, childReason, emojiValue, emojiReason, hostEmoji);
+    }
+
+    private static String detectHostOs() {
+        String name = System.getProperty("os.name", "").toLowerCase();
+        if (name.contains("mac")) return "macos";
+        if (name.contains("win")) return "windows";
+        if (name.contains("linux")) return "linux";
+        return "other";
+    }
+
+    private static String hostEmoji(String hostOs) {
+        return switch (hostOs) {
+            case "linux" -> "🐧";
+            case "macos" -> "🍎";
+            case "windows" -> "🪟";
+            default -> "😊";
+        };
     }
 
     private static String formatReason(EvaluationReason reason) {
@@ -89,10 +116,14 @@ public final class FlagEvaluator {
             Object parentValue,
             String parentReason,
             boolean childValue,
-            String childReason
+            String childReason,
+            boolean emojiValue,
+            String emojiReason,
+            String hostEmoji
     ) {
         static FlagValues offline(String username) {
-            return new FlagValues(username, "none", false, "none", "OFFLINE", false, "OFFLINE");
+            return new FlagValues(
+                    username, "none", false, "none", "OFFLINE", false, "OFFLINE", false, "OFFLINE", "");
         }
     }
 }

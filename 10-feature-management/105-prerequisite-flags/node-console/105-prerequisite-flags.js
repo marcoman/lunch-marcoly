@@ -69,13 +69,15 @@ function render(username, row, col, previous, moveCount, flags) {
   process.stdout.write(`${BG}\x1b[2J\x1b[H`);
   console.log(APP_BANNER);
   const prevText = previous ? formatPos(previous.row, previous.col) : "—";
-  console.log(`Name: ${colorize(username, flags.highlightColor)}${RESET}${BG}`);
+  const emoji = flags.hostEmoji ? `${flags.hostEmoji} ` : "";
+  console.log(`Name: ${emoji}${colorize(username, flags.highlightColor)}${RESET}${BG}`);
   console.log(`Current position: ${formatPos(row, col)}`);
   console.log(`Previous position: ${prevText}`);
   if (flags.showMoveCount) console.log(`Count: ${moveCount}`);
   console.log("");
   console.log(`Parent: ${flags.parent.value}  ${formatReason(flags.parent)}`);
-  console.log(`Child:  ${flags.child.value}  ${formatReason(flags.child)}`);
+  console.log(`Count:  ${flags.child.value}  ${formatReason(flags.child)}`);
+  console.log(`Emoji:  ${flags.emoji.value}  ${formatReason(flags.emoji)}`);
   console.log("\nUse arrow keys or WASD to move (L to logout, Q to quit).\n");
 
   for (let r = 0; r < 3; r++) {

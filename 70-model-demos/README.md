@@ -12,5 +12,6 @@ The series owns global number **70**. Children are `701`–`709` inside this fol
 | [702-text-origin/](702-text-origin/) | Two reports or essays on one public-domain book. Human versus AI. | Stub README. Intended port **:8720** |
 | [703-guess-the-animal/](703-guess-the-animal/) | Yes/no questions until the model names the animal. | Stub README. Intended port **:8730** |
 | [704-terraform-codegen/](704-terraform-codegen/) | Two local models write one LaunchDarkly Terraform file. Python **:8740**. Validate, no apply. | Python web |
+| [705-offline-evaluations/](705-offline-evaluations/) | Dataset of Terraform briefs. Two models. Each row passes or fails. Intended port **:8750**. | Stub README |
 
-`701`–`703` have READMEs and no language folders yet. `704` is Python only.
+`701`–`703` and `705` have READMEs and no language folders yet. `704` is Python only.

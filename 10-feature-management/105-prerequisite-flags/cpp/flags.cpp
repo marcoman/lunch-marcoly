@@ -107,6 +107,10 @@ FlagValues evaluate_via_python(const std::string& username) {
     FlagValues values;
     values.showMoveCount = json_bool(output, "showMoveCount");
     values.childValue = values.showMoveCount;
+    values.showHostEmoji = json_bool(output, "showHostEmoji");
+    values.emojiValue = values.showHostEmoji;
+    values.hostEmoji = json_string(output, "hostEmoji");
+    values.emojiReason = json_string(output, "emojiReason");
     values.highlightColor = json_string(output, "highlightColor");
     values.parentValue = json_string(output, "parentValue");
     values.parentReason = json_string(output, "parentReason");
@@ -122,6 +126,9 @@ FlagValues evaluate_via_python(const std::string& username) {
     }
     if (values.childReason.empty()) {
         values.childReason = "UNKNOWN";
+    }
+    if (values.emojiReason.empty()) {
+        values.emojiReason = "UNKNOWN";
     }
     const std::string prerequisite_key = json_string(output, "prerequisiteKey");
     if (!prerequisite_key.empty()) {

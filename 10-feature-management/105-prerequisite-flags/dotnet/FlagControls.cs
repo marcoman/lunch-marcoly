@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 
 /// <summary>
-/// REST controls for the two 105-prerequisite-flags keys.
+/// REST controls for the three 105-prerequisite-flags keys.
 /// Never edits the prerequisite relationship.
 /// https://launchdarkly.com/docs/api/feature-flags/patch-feature-flag
 /// </summary>
@@ -14,12 +14,17 @@ sealed class FlagControls
         (
             Prerequisite.FlagHighlight,
             "Parent · grid selection highlight",
-            "105-prerequisite-flags parent (cites 101's enable-grid-selection-highlight). Must be on and serving green to satisfy the prerequisite."
+            "105-prerequisite-flags parent (cites 101's enable-grid-selection-highlight). Must be on and serving green before either child evaluates."
         ),
         (
             Prerequisite.FlagCount,
             "Child · navigation move count",
             "105-prerequisite-flags child (cites 101's show-navigation-move-count). Unmet prerequisite serves its off variation."
+        ),
+        (
+            Prerequisite.FlagEmoji,
+            "Child · anonymous host emoji",
+            "105-prerequisite-flags second child (cites 102's show-anonymous-host-os-emoji). Same parent prerequisite."
         ),
     ];
     private readonly HttpClient _http = new() { Timeout = TimeSpan.FromSeconds(30) };
@@ -160,10 +165,10 @@ sealed class FlagControls
             servedWhenOff = VariationValue(variations, offIndex),
             servedWhenOnFallthrough = VariationValue(variations, fallIndex),
             prerequisite,
-            prerequisiteConfigured = meta.Key != Prerequisite.FlagCount
+            prerequisiteConfigured = meta.Key == Prerequisite.FlagHighlight
                 || prerequisiteKey == Prerequisite.FlagHighlight,
             targetingHint = meta.Key == Prerequisite.FlagHighlight
-                ? "Required by child: parent must be ON and serve green."
+                ? "Required by both children: parent must be ON and serve green."
                 : prerequisite is null
                     ? "Missing prerequisite — run this example's provisioning."
                     : "Prerequisite configured; lab controls leave it unchanged.",

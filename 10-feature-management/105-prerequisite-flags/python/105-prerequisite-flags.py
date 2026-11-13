@@ -33,7 +33,7 @@ _ld_client: LDClient | None = None
 
 
 def init_launchdarkly() -> None:
-    """Start the server SDK. Both flags are evaluated in this process.
+    """Start the server SDK. All three flags are evaluated in this process.
 
     LaunchDarkly: server-side Python SDK · flag prerequisites
     https://launchdarkly.com/docs/sdk/server-side/python

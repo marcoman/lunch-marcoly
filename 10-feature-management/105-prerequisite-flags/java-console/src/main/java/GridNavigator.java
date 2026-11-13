@@ -164,7 +164,8 @@ public class GridNavigator {
         System.out.flush();
         writeLine(APP_BANNER);
         String prevText = previous == null ? "—" : formatPos(previous.row, previous.col);
-        writeLine("Name: " + colorize(username, flags.highlightColor()) + RESET + BG);
+        String emoji = flags.hostEmoji().isEmpty() ? "" : flags.hostEmoji() + " ";
+        writeLine("Name: " + emoji + colorize(username, flags.highlightColor()) + RESET + BG);
         writeLine("Current position: " + formatPos(row, col));
         writeLine("Previous position: " + prevText);
         if (flags.showMoveCount()) {
@@ -172,7 +173,8 @@ public class GridNavigator {
         }
         writeLine("");
         writeLine("Parent: " + flags.parentValue() + "  " + flags.parentReason());
-        writeLine("Child:  " + flags.childValue() + "  " + flags.childReason());
+        writeLine("Count:  " + flags.childValue() + "  " + flags.childReason());
+        writeLine("Emoji:  " + flags.emojiValue() + "  " + flags.emojiReason());
         writeLine("");
         writeLine("Use arrow keys or WASD to move (L to logout, Q to quit).");
         writeLine("");

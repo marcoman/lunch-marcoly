@@ -2,10 +2,12 @@
 
 LaunchDarkly **flag prerequisites** for the lunch-marcoly grid navigator.
 
-The dependent `show-navigation-move-count-prereq` flag evaluates normally only
-when its parent `enable-grid-selection-highlight-prereq` flag is **on** and
-serving **`green`**. Otherwise, the child serves its off variation and reports
-`PREREQUISITE_FAILED`.
+Two dependents, `show-navigation-move-count-prereq` and
+`show-anonymous-host-os-emoji-prereq`, evaluate normally only when their parent
+`enable-grid-selection-highlight-prereq` flag is **on** and serving
+**`green`**. Otherwise each child serves its off variation and reports
+`PREREQUISITE_FAILED`. Turning the parent off hides both the count and the
+host emoji. That is the point: one parent, two children.
 
 The four-reason tour (`PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`,
 `ERROR`) is the stub [109-evaluation-reasons](../109-evaluation-reasons/).
@@ -23,7 +25,7 @@ Docs: [Flag prerequisites](https://launchdarkly.com/docs/home/flags/prereqs)
 The web apps explain this on the **About** tab in the right drawer. The
 **Prerequisite** tab shows both variations, the context, and the controls.
 **Code Example**, immediately before About, shows that the application always
-evaluates both the parent and child flags and lets LaunchDarkly enforce the
+evaluates the parent and both child flags and lets LaunchDarkly enforce each
 prerequisite.
 
 ## The dependency
@@ -31,19 +33,23 @@ prerequisite.
 ```text
 enable-grid-selection-highlight-prereq = green
                     │
-                    ▼ prerequisite met
-       show-navigation-move-count-prereq = true
+          ┌─────────┴──────────┐
+          ▼                    ▼
+show-navigation-move-count   show-anonymous-host-os-emoji
+         = true                       = true
 ```
 
-| Parent | Child | Result |
-|--------|-------|--------|
-| On → `green` | On → `true` | Green highlight + Count |
-| Off → `none` | On → `true` | No highlight; no Count |
-| On → `yellow` | On → `true` | Yellow highlight; no Count |
-| On → `green` | Off → `false` | Green highlight; no Count |
+| Parent | Count child | Emoji child | Result |
+|--------|-------------|-------------|--------|
+| On → `green` | On → `true` | On → `true` | Green highlight, Count, and host emoji |
+| Off → `none` | On → `true` | On → `true` | No highlight, no Count, no emoji |
+| On → `yellow` | On → `true` | On → `true` | Yellow highlight, no Count, no emoji |
+| On → `green` | Off → `false` | On → `true` | Green highlight and emoji, no Count |
 
-The application always asks the SDK for both variations. It does not implement
-the dependency with application branching.
+The application always asks the SDK for all three variations. It does not
+implement either dependency with application branching. The emoji flag cites
+[102-flag-variations](../102-flag-variations/) `show-anonymous-host-os-emoji`.
+This lab evaluates it on the same user context. Anonymous context stays in 102.
 
 ## Implementation
 
@@ -92,8 +98,10 @@ cd python && python 105-prerequisite-flags.py
 # or: cd dotnet && dotnet run --project 105-prerequisite-flags.csproj
 ```
 
-Provisioning: [REST](rest/) creates the two `-prereq` flags and attaches
-the child prerequisite. In-app Controls still cannot edit that relationship.
+Provisioning: [REST](rest/) creates the three `-prereq` flags and attaches
+the same parent prerequisite to both children. In-app Controls still cannot
+edit that relationship. Re-run `create-flags.sh` on an existing project to add
+the emoji child.
 
 ## Run
 
@@ -108,5 +116,6 @@ Open http://127.0.0.1:8080/. Set `PORT` to override.
 
 | Role | 105 key | Cites 101 key |
 |------|--------|----------------|
-| Parent | `enable-grid-selection-highlight-prereq` | `enable-grid-selection-highlight` |
-| Child | `show-navigation-move-count-prereq` | `show-navigation-move-count` |
+| Parent | `enable-grid-selection-highlight-prereq` | `enable-grid-selection-highlight` (101) |
+| Child | `show-navigation-move-count-prereq` | `show-navigation-move-count` (101) |
+| Child | `show-anonymous-host-os-emoji-prereq` | `show-anonymous-host-os-emoji` (102) |

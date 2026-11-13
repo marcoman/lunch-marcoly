@@ -29,3 +29,4 @@ api_status() {
 
 PARENT_KEY="enable-grid-selection-highlight-prereq"
 CHILD_KEY="show-navigation-move-count-prereq"
+CHILD_EMOJI_KEY="show-anonymous-host-os-emoji-prereq"

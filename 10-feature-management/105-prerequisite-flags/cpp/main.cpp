@@ -132,7 +132,8 @@ void render(const std::string& username, int row, int col,
     const std::string prev_text =
         previous ? format_pos(previous->row, previous->col) : "—";
     write_line(kAppBanner);
-    write_line("Name: " + colorize(username, flags.highlightColor) + kReset + kBg);
+    const std::string emoji = flags.hostEmoji.empty() ? "" : flags.hostEmoji + " ";
+    write_line("Name: " + emoji + colorize(username, flags.highlightColor) + kReset + kBg);
     write_line("Current position: " + format_pos(row, col));
     write_line("Previous position: " + prev_text);
     if (flags.showMoveCount) {
@@ -140,8 +141,10 @@ void render(const std::string& username, int row, int col,
     }
     write_line("");
     write_line("Parent: " + flags.parentValue + "  " + flags.parentReason);
-    write_line("Child:  " + std::string(flags.childValue ? "true" : "false") + "  " +
+    write_line("Count:  " + std::string(flags.childValue ? "true" : "false") + "  " +
                flags.childReason);
+    write_line("Emoji:  " + std::string(flags.emojiValue ? "true" : "false") + "  " +
+               flags.emojiReason);
     write_line("");
     write_line("Use arrow keys or WASD to move (L to logout, Q to quit).");
     write_line("");

@@ -114,8 +114,12 @@ def draw_screen(
     line = 0
     stdscr.addstr(line, 0, APP_BANNER)
     line += 1
+    emoji = flags.get("hostEmoji") or ""
     stdscr.addstr(line, 0, "Name: ")
-    stdscr.addstr(username, cell_attr(color) if color != "none" else curses.A_NORMAL)
+    stdscr.addstr(
+        (f"{emoji} " if emoji else "") + username,
+        cell_attr(color) if color != "none" else curses.A_NORMAL,
+    )
     line += 1
     stdscr.addstr(line, 0, f"Current position: {format_pos(row, col)}")
     line += 1
@@ -126,9 +130,12 @@ def draw_screen(
     line += 2
     parent = flags["parent"]
     child = flags["child"]
+    emoji_flag = flags["emoji"]
     stdscr.addstr(line, 0, f"Parent: {parent['value']}  {format_reason(parent)}")
     line += 1
-    stdscr.addstr(line, 0, f"Child:  {child['value']}  {format_reason(child)}")
+    stdscr.addstr(line, 0, f"Count:  {child['value']}  {format_reason(child)}")
+    line += 1
+    stdscr.addstr(line, 0, f"Emoji:  {emoji_flag['value']}  {format_reason(emoji_flag)}")
     line += 2
     stdscr.addstr(line, 0, "Use arrow keys or WASD to move (L to logout, Q to quit).")
 

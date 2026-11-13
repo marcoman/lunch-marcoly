@@ -13,7 +13,7 @@ numbered children and an optional [portal](portal/) to run them side by side.
 | **102** | [102-flag-variations/](102-flag-variations/) | String, number, JSON, anonymous context |
 | **103** | [103-flag-targeting-rules/](103-flag-targeting-rules/) | Web plus Python / Node / Java consoles: targeting rules on public `team` context attribute |
 | **104** | [104-multi-context-targeting/](104-multi-context-targeting/) | Web plus Python / Node / Java / C++ / Go / Rust consoles: **multi-context** (user + organization) partner-badge 2×2 |
-| **105** | [105-prerequisite-flags/](105-prerequisite-flags/) | Web (Python / Node / Java / .NET) plus consoles: highlight must serve `green` before move count can evaluate |
+| **105** | [105-prerequisite-flags/](105-prerequisite-flags/) | Web (Python / Node / Java / .NET) plus consoles: highlight must serve `green` before the count child and the host-emoji child can evaluate |
 | **106** | [106-percentage-rollout/](106-percentage-rollout/) | Web (Python / Node / Java / .NET) + consoles (Python / Node / Java / Go / Rust / C++) + REST/Terraform: static percentage rollout; sticky context key (not progressive) |
 | **107** | [107-scheduled-changes/](107-scheduled-changes/) | Web (Python / Node / Java / .NET **:8170–:8173**) + consoles (Python / Node / Java / Go / Rust / C++) + REST/Terraform: replaceable scheduled highlight, elapsed timer |
 | **108** | [108-flag-approvals/](108-flag-approvals/) | **Stub.** Approval to turn the move-count flag on. Intended ports **:8180–:8183**. Not in the portal yet |

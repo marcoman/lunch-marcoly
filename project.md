@@ -167,7 +167,7 @@ lunch-marcoly/
 │   ├── 602-server-traces/        # ObservabilityPlugin + move spans :8620
 │   ├── 603-server-errors/        # Stub: one error, also a log line; 604 stays free
 │   └── 605-server-metrics/       # Stub: one custom metric
-├── 70-model-demos/              # Model apps; children 701–704 inside the folder
+├── 70-model-demos/              # Model apps; children 701–705 inside the folder
 │   ├── README.md                # 80 remains the next free decade
 │   ├── 701-image-processing/     # Stub: four cat photos
 │   ├── 702-text-origin/          # Stub: human vs AI essay
@@ -267,6 +267,12 @@ lunch-marcoly/
 - `22-api-progressive-rollout` (under `99-use-cases/`) starts a progressive environment release with the beta API. Flag `api-progressive-grid-highlight`, five steps from 10% to 100%. Web: Python **:8780**, Node **:8781**, Java **:8782**, .NET **:8783**. Consoles re-evaluate that flag in Python, Node, Java, Go, Rust, and C++. Example 14 keeps the UI rollout.
 - `23-api-guarded-rollout` (under `99-use-cases/`) starts a guarded environment release with the same beta API. Flag `api-guarded-grid-highlight`, stages 10% and 20% for 2 minutes, then 30% and 50% for 1 minute. Metrics are example 15's latency, error rate, and movement. The latency slider is the violation. Web: Python **:8784**, Node **:8785**, Java **:8786**, .NET **:8787**. Consoles re-evaluate that flag in Python, Node, Java, Go, Rust, and C++.
 - `24-multitenant-datacenter` (under `99-use-cases/`) is a Python presentation on **:8788**. Six datacenters named after AWS regions run shared replicas named for the region (`usw1-1`, `use1-1`), and `us-east-1` also runs `use1-3`. A stand-in set of named customers is ENZO, ACME, BIGCO, DREX, HUDSON, RHEIN, and KOPI. Large customers have one replica. ENZO in us-west-1 keeps two. Each replica has S, M, and L rows. A rolling deployment walks one datacenter at a time, 1 second between replicas. The customer panel waits for both the roll and the flag. Flag controls are stubs. `eu-central-1` and `eu-west-1` keep data sharing and marketing off.
+- `25-prerequisite-tree` (under `99-use-cases/`) is a stub. Six prerequisite flags: one grandparent, two parents, and three children (one under the first parent, two under the second). The drawer tree is what changes when a flag toggles. It extends `105-prerequisite-flags`, which stops at one parent and two children.
+- `26-agent-adaptive-trigger` (under `99-use-cases/`) is a stub. It imitates `16-adaptive-triggers` for Agent Management: a metric sends the briefing back to a safer model. The README lists candidate metrics and the open question of whether the trigger sits on a flag or on the config.
+- `27-archive-flag` (under `99-use-cases/`) is a stub. A temporary flag makes the selected cell blink. Archiving the flag stops the blink, because evaluation falls back to the SDK default. The page steps through setup, run, and archive. It is not a `10-feature-management` number. `101`–`109` are already taken.
+- `28-big-segment` (under `99-use-cases/`) is a stub. A server-side big segment stores membership in one DynamoDB table in us-east-1. The SDK reads that store during evaluation. `303-synced-segments` stays the browser version and does not use the table.
+- `playgrounds` (under `20-agent-management/`) is an unnumbered stub. It runs the existing 201–206 stock-picker configs in the Agent Management playground. It does not take **210**. `705-offline-evaluations` is the dataset version, on a different product.
+- `705-offline-evaluations` (under `70-model-demos/`) is a stub. A short dataset of Terraform briefs runs through two models. Each row passes or fails. Online judges on the equity briefing stay in `204-agent-judges`.
 - Be descriptive and concise: prefer `rate-limiter` over `rl`
 - Name after the concept being demonstrated, not a language or author
 

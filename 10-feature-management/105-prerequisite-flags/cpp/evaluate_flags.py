@@ -21,9 +21,12 @@ def main() -> None:
                 {
                     "highlightColor": "none",
                     "showMoveCount": False,
+                    "showHostEmoji": False,
+                    "hostEmoji": "",
                     "parentValue": "none",
                     "parentReason": "OFFLINE",
                     "childReason": "OFFLINE",
+                    "emojiReason": "OFFLINE",
                     "prerequisiteKey": "",
                 }
             )
@@ -39,14 +42,18 @@ def main() -> None:
     payload = evaluate_prerequisite_flags(client, username)
     parent_reason = payload["parent"]["reason"]
     child_reason = payload["child"]["reason"]
+    emoji_reason = payload["emoji"]["reason"]
     print(
         json.dumps(
             {
                 "highlightColor": payload["highlightColor"],
                 "showMoveCount": payload["showMoveCount"],
+                "showHostEmoji": payload["showHostEmoji"],
+                "hostEmoji": payload["hostEmoji"],
                 "parentValue": payload["parent"]["value"],
                 "parentReason": parent_reason.get("kind", "UNKNOWN"),
                 "childReason": child_reason.get("kind", "UNKNOWN"),
+                "emojiReason": emoji_reason.get("kind", "UNKNOWN"),
                 "prerequisiteKey": child_reason.get("prerequisiteKey") or "",
             },
             ensure_ascii=False,

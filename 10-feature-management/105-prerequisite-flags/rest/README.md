@@ -1,8 +1,9 @@
 # REST API provisioning
 
-Create dedicated **15** flags and attach a [flag prerequisite](https://launchdarkly.com/docs/home/flags/prereqs):
-child `show-navigation-move-count-prereq` requires parent
-`enable-grid-selection-highlight-prereq` **on** and serving **`green`**.
+Create dedicated **105** flags and attach a [flag prerequisite](https://launchdarkly.com/docs/home/flags/prereqs):
+both children require parent `enable-grid-selection-highlight-prereq` **on** and
+serving **`green`**. The children are `show-navigation-move-count-prereq` and
+`show-anonymous-host-os-emoji-prereq`.
 
 These keys **cite** [101-flag-enablement](../../101-flag-enablement/) and do **not**
 patch 11's inventory.
@@ -28,21 +29,22 @@ chmod +x *.sh
 The create script:
 
 1. Creates the parent string flag if missing (`none` / colors)
-2. Creates the child boolean flag if missing (`true` / `false`)
+2. Creates both child boolean flags if missing (`true` / `false`)
 3. `turnFlagOn` parent; off → `none`; fallthrough → `green`
-4. `turnFlagOn` child; off → `false`; fallthrough → `true`
-5. `addPrerequisite` (or `updatePrerequisite` if already present): parent key,
-   variation **green**
+4. `turnFlagOn` each child; off → `false`; fallthrough → `true`
+5. `addPrerequisite` (or `updatePrerequisite` if already present) on each child:
+   parent key, variation **green**
 
 ## Other examples
 
 ```bash
 ./get-flag.sh
 ./get-flag.sh enable-grid-selection-highlight-prereq
-./update-flag.sh off parent    # aha: child still on, Count hidden
+./update-flag.sh off parent    # aha: both children still on, Count and emoji hidden
 ./update-flag.sh on parent
 ./update-flag.sh off child
-./delete-flag.sh               # child first, then parent
+./update-flag.sh off emoji
+./delete-flag.sh               # both children first, then parent
 ```
 
 Do **not** use these scripts against 11's keys

@@ -22,6 +22,10 @@ Each subdirectory demonstrates a specific product pattern (A/B testing, rollouts
 | [22-api-progressive-rollout/](22-api-progressive-rollout/) | Progressive highlight ramp started with the environment releases beta API |
 | [23-api-guarded-rollout/](23-api-guarded-rollout/) | Guarded highlight rollout, 10/20/30/50, started with the same beta API. Web: Python **:8784**, Node **:8785**, Java **:8786**, .NET **:8787**. Consoles read the flag |
 | [24-multitenant-datacenter/](24-multitenant-datacenter/) | Six AWS-region datacenters, shared and single-tenant replicas, S/M/L rows. Rolling deployments in the page. Python **:8788**. Flags are stubs |
+| [25-prerequisite-tree/](25-prerequisite-tree/) | **Stub:** six flags. One grandparent, two parents (one child and two children). The tree in the drawer changes as flags toggle |
+| [26-agent-adaptive-trigger/](26-agent-adaptive-trigger/) | **Stub:** [16-adaptive-triggers](16-adaptive-triggers/) for Agent Management. A metric switches the briefing to a safer model |
+| [27-archive-flag/](27-archive-flag/) | **Stub:** selected cell blinks while a flag is on, then stops when the flag is archived. The page steps through setup, run, and archive |
+| [28-big-segment/](28-big-segment/) | **Stub:** server-side big segment. Membership is in one us-east-1 DynamoDB table. Not the browser badge in `303` |
 
 ## Conventions
 

@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Evaluate the parent and dependent flags. LaunchDarkly enforces the prerequisite.
+ * Evaluate the parent and both dependent flags. LaunchDarkly enforces each prerequisite.
  * https://launchdarkly.com/docs/home/flags/prereqs
  */
 final class Prerequisite {
@@ -21,6 +21,7 @@ final class Prerequisite {
     // https://app.launchdarkly.com/projects/lunch-marcoly/features/show-navigation-move-count-prereq
 
     static final String FLAG_COUNT = "show-navigation-move-count-prereq";
+    static final String FLAG_EMOJI = "show-anonymous-host-os-emoji-prereq";
     static final Set<String> VALID_COLORS = Set.of(
             "green", "yellow", "red", "blue", "purple", "pink");
     private static LDClient client;
@@ -68,38 +69,74 @@ final class Prerequisite {
         EvaluationDetail<Boolean> childDetail = client == null
                 ? null
                 : client.boolVariationDetail(FLAG_COUNT, context, false);
+        EvaluationDetail<Boolean> emojiDetail = client == null
+                ? null
+                : client.boolVariationDetail(FLAG_EMOJI, context, false);
 
         Object parentValue = parentDetail == null ? "none" : parentDetail.getValue();
         boolean childValue = childDetail != null && Boolean.TRUE.equals(childDetail.getValue());
+        boolean emojiValue = emojiDetail != null && Boolean.TRUE.equals(emojiDetail.getValue());
         Map<String, Object> parentReason = parentDetail == null
                 ? Map.of("kind", "OFFLINE")
                 : reasonPayload(parentDetail.getReason());
         Map<String, Object> childReason = childDetail == null
                 ? Map.of("kind", "OFFLINE")
                 : reasonPayload(childDetail.getReason());
-        boolean prerequisiteFailed = "PREREQUISITE_FAILED".equals(childReason.get("kind"));
-
-        Map<String, Object> parent = new LinkedHashMap<>();
-        parent.put("key", FLAG_HIGHLIGHT);
-        parent.put("value", parentValue);
-        parent.put("variationIndex", variationIndex(parentDetail));
-        parent.put("reason", parentReason);
-
-        Map<String, Object> child = new LinkedHashMap<>();
-        child.put("key", FLAG_COUNT);
-        child.put("value", childValue);
-        child.put("variationIndex", variationIndex(childDetail));
-        child.put("reason", childReason);
+        Map<String, Object> emojiReason = emojiDetail == null
+                ? Map.of("kind", "OFFLINE")
+                : reasonPayload(emojiDetail.getReason());
+        boolean prerequisiteMet = client != null
+                && "green".equals(parentValue)
+                && !"PREREQUISITE_FAILED".equals(childReason.get("kind"))
+                && !"PREREQUISITE_FAILED".equals(emojiReason.get("kind"));
+        String hostOs = detectHostOs();
 
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("username", username);
         result.put("highlightColor", highlightColor(parentValue));
         result.put("showMoveCount", childValue);
-        result.put("prerequisiteMet", client != null && "green".equals(parentValue) && !prerequisiteFailed);
+        result.put("showHostEmoji", emojiValue);
+        result.put("hostOs", hostOs);
+        result.put("hostEmoji", emojiValue ? hostEmoji(hostOs) : "");
+        result.put("prerequisiteMet", prerequisiteMet);
         result.put("ldContext", Map.of("kind", "user", "key", username));
-        result.put("parent", parent);
-        result.put("child", child);
+        result.put("parent", detail(FLAG_HIGHLIGHT, parentValue, variationIndex(parentDetail), parentReason));
+        result.put("child", detail(FLAG_COUNT, childValue, variationIndex(childDetail), childReason));
+        result.put("emoji", detail(FLAG_EMOJI, emojiValue, variationIndex(emojiDetail), emojiReason));
         return result;
+    }
+
+    private static Map<String, Object> detail(
+            String key, Object value, Integer variationIndex, Map<String, Object> reason) {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("key", key);
+        payload.put("value", value);
+        payload.put("variationIndex", variationIndex);
+        payload.put("reason", reason);
+        return payload;
+    }
+
+    static String detectHostOs() {
+        String name = System.getProperty("os.name", "").toLowerCase();
+        if (name.contains("mac")) {
+            return "macos";
+        }
+        if (name.contains("win")) {
+            return "windows";
+        }
+        if (name.contains("linux")) {
+            return "linux";
+        }
+        return "other";
+    }
+
+    private static String hostEmoji(String hostOs) {
+        return switch (hostOs) {
+            case "linux" -> "🐧";
+            case "macos" -> "🍎";
+            case "windows" -> "🪟";
+            default -> "😊";
+        };
     }
 
     private static Integer variationIndex(EvaluationDetail<?> detail) {

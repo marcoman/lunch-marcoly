@@ -56,7 +56,8 @@ lunch-marcoly/
 │   ├── 206-flags-vs-agent-management/ # Python :8260 · Node :8261 · Java :8262 · .NET :8263
 │   ├── 207-agent-mode/           # Stub: agent mode only; not the capstone
 │   ├── 208-context-attributes/   # Stub: region + audience select a variation
-│   └── 209-team-rollout/         # Stub: sticky % rollout bucketed by team
+│   ├── 209-team-rollout/         # Stub: sticky % rollout bucketed by team
+│   └── playgrounds/              # Stub: unnumbered sandbox over 201–206
 ├── 30-client-sdk/               # Browser JavaScript SDK
 │   ├── README.md
 │   ├── portal/                  # JS :8300 · React :8301 · Vue :8302 (301–306; portal paths still old)
@@ -86,12 +87,13 @@ lunch-marcoly/
 │   ├── 602-server-traces/        # Python ObservabilityPlugin + manual move spans
 │   ├── 603-server-errors/        # Stub: one error, also a log line; 604 stays free
 │   └── 605-server-metrics/       # Stub: one custom metric
-├── 70-model-demos/              # Model apps; children 701–704 inside the folder
+├── 70-model-demos/              # Model apps; children 701–705 inside the folder
 │   ├── README.md                # 80 remains the next free decade
 │   ├── 701-image-processing/     # Stub: four cat photos
 │   ├── 702-text-origin/          # Stub: human vs AI essay
 │   ├── 703-guess-the-animal/     # Stub: yes/no until the model names it
-│   └── 704-terraform-codegen/    # Two models, one Terraform file; Python :8740
+│   ├── 704-terraform-codegen/    # Two models, one Terraform file; Python :8740
+│   └── 705-offline-evaluations/  # Stub: dataset of briefs, pass or fail per row
 ├── 99-use-cases/                # Product patterns on the grid navigator
 │   ├── 01-abcd-test/
 │   ├── 02-segments-by-name/
@@ -106,7 +108,11 @@ lunch-marcoly/
 │   ├── 21-tenant-datacenters/   # Five datacenters, 52 tenants, palette and fill flags
 │   ├── 22-api-progressive-rollout/ # Beta API progressive release, 10→100% highlight
 │   ├── 23-api-guarded-rollout/  # Beta API guarded release, 10/20/30/50, latency slider
-│   └── 24-multitenant-datacenter/ # Six regions, rolling replicas, Python :8788. Flags stubbed
+│   ├── 24-multitenant-datacenter/ # Six regions, rolling replicas, Python :8788. Flags stubbed
+│   ├── 25-prerequisite-tree/    # Stub: 1 grandparent, 2 parents, 3 children
+│   ├── 26-agent-adaptive-trigger/ # Stub: safer model when a metric trips
+│   ├── 27-archive-flag/         # Stub: cell blinks, then the flag is archived
+│   └── 28-big-segment/          # Stub: DynamoDB-backed big segment, us-east-1
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
@@ -193,7 +199,7 @@ Each example may include implementations in any of these languages. Every applic
 | 602 | [602-server-traces](60-observability/602-server-traces/) | Python `ObservabilityPlugin` + `grid.login` / `grid.move` spans (**:8620**) |
 | 603 | [603-server-errors](60-observability/603-server-errors/) | **Stub:** one deliberate error, visible as an error and a log line. **604** stays free |
 | 605 | [605-server-metrics](60-observability/605-server-metrics/) | **Stub:** one custom metric. 602 stays spans |
-| 70 | [70-model-demos](70-model-demos/) | Model apps. Children `701`–`704` inside the folder. `701`–`703` are stubs. `704-terraform-codegen` is Python **:8740**. **80** stays free |
+| 70 | [70-model-demos](70-model-demos/) | Model apps. Children `701`–`705` inside the folder. `701`–`703` and `705` are stubs. `704-terraform-codegen` is Python **:8740**. **80** stays free |
 | 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (experiments, segments, rollouts, adaptive triggers, SDK fallbacks, …) |
 | — | [01-abcd-test](99-use-cases/01-abcd-test/) | A-B-C-D experiment on the navigation count label |
 | — | [02-segments-by-name](99-use-cases/02-segments-by-name/) | Segment targeting from username-derived context |
@@ -209,6 +215,10 @@ Each example may include implementations in any of these languages. Every applic
 | — | [22-api-progressive-rollout](99-use-cases/22-api-progressive-rollout/) | Progressive 10→100% highlight via the environment releases beta API. Web: Python **:8780**, Node **:8781**, Java **:8782**, .NET **:8783**. Consoles: Python, Node, Java, Go, Rust, C++ |
 | — | [23-api-guarded-rollout](99-use-cases/23-api-guarded-rollout/) | Guarded 10/20/30/50 highlight via the same beta API. Latency slider is the guardrail. Web: Python **:8784**, Node **:8785**, Java **:8786**, .NET **:8787**. Consoles: Python, Node, Java, Go, Rust, C++ |
 | — | [24-multitenant-datacenter](99-use-cases/24-multitenant-datacenter/) | Six AWS-region datacenters. Rolling deployments walk replicas 1 second apart. Python **:8788**. Flag controls are stubs |
+| — | [25-prerequisite-tree](99-use-cases/25-prerequisite-tree/) | **Stub:** six-flag prerequisite tree. One grandparent, two parents, three children. The drawer tree changes as flags toggle |
+| — | [26-agent-adaptive-trigger](99-use-cases/26-agent-adaptive-trigger/) | **Stub:** Agent Management version of [16-adaptive-triggers](99-use-cases/16-adaptive-triggers/). A metric switches the briefing to a safer model |
+| — | [27-archive-flag](99-use-cases/27-archive-flag/) | **Stub:** selected cell blinks while a flag is on. Archiving the flag stops the blink. The page steps through the stages |
+| — | [28-big-segment](99-use-cases/28-big-segment/) | **Stub:** server-side big segment. One DynamoDB table in us-east-1. Not [303-synced-segments](30-client-sdk/303-synced-segments/) |
 
 ## Building code
 

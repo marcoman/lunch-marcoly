@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Retrieve a 105-prerequisite-flags flag, including environment targeting.
-# Default: both parent and child.
+# Default: parent and both children.
 # https://launchdarkly.com/docs/api/feature-flags/get-feature-flag
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -31,3 +31,4 @@ fi
 
 summarize "$PARENT_KEY"
 summarize "$CHILD_KEY"
+summarize "$CHILD_EMOJI_KEY"

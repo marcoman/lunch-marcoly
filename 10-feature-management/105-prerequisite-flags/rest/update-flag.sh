@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Toggle parent and/or child on/off. Does not edit the prerequisite.
+# Toggle parent and/or children on/off. Does not edit the prerequisite.
 # https://launchdarkly.com/docs/api/feature-flags/patch-feature-flag
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -16,15 +16,16 @@ TARGET="${2:-all}"
 case "$ACTION" in
   on) kind="turnFlagOn" ;;
   off) kind="turnFlagOff" ;;
-  *) echo "usage: $0 [on|off] [parent|child|all]" >&2; exit 1 ;;
+  *) echo "usage: $0 [on|off] [parent|child|emoji|all]" >&2; exit 1 ;;
 esac
 
 keys=()
 case "$TARGET" in
   parent) keys=("$PARENT_KEY") ;;
   child) keys=("$CHILD_KEY") ;;
-  all) keys=("$PARENT_KEY" "$CHILD_KEY") ;;
-  *) echo "usage: $0 [on|off] [parent|child|all]" >&2; exit 1 ;;
+  emoji) keys=("$CHILD_EMOJI_KEY") ;;
+  all) keys=("$PARENT_KEY" "$CHILD_KEY" "$CHILD_EMOJI_KEY") ;;
+  *) echo "usage: $0 [on|off] [parent|child|emoji|all]" >&2; exit 1 ;;
 esac
 
 for key in "${keys[@]}"; do

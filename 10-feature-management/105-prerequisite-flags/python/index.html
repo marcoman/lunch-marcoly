@@ -41,9 +41,12 @@
     .ld-section .block-title:first-child{margin-top:.2rem}
     .code-example-source{margin:0 0 .55rem;color:var(--muted);font-size:.78rem;line-height:1.4}
     .code-example{margin:0;padding:.75rem .85rem;overflow:auto;border:1px solid var(--line);border-radius:8px;background:#1a1a28;color:var(--ink);font:.75rem/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;tab-size:4;white-space:pre}
-    .dependency{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.5rem}
+    .dependency{display:flex;flex-direction:column;gap:.45rem}
+    .fork{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+    .branch{display:flex;flex-direction:column;align-items:stretch;gap:.2rem}
     .node,.status,.context,.trace{border:1px solid var(--line);border-radius:8px;background:#1f1f2d;padding:.7rem}
-    .node strong{display:block}.node code{font-size:.7rem;color:var(--muted);word-break:break-all}.arrow{font-size:1.4rem;color:var(--accent)}
+    .node strong{display:block}.node code{font-size:.7rem;color:var(--muted);word-break:break-all}
+    .arrow{text-align:center;font-size:1.1rem;line-height:1;color:var(--accent)}
     .node.met{border-color:#43a047}.node.failed{border-color:#c45c5c}.status,.context{font-size:.82rem;line-height:1.45}
     .context{white-space:pre-wrap;color:#c5e1f7}.trace{height:8rem;overflow:auto;font:.76rem/1.45 ui-monospace,monospace}
     .trace div{margin:.2rem 0}.ok{color:#81c784}.bad{color:#ef9a9a}.eval{color:#64b5f6}
@@ -87,7 +90,7 @@
     <main id="grid-screen" tabindex="0">
       <div class="header">
         <div class="app-banner">105-prerequisite-flags[python]</div>
-        <div>Name: <span id="hdr-name"></span></div>
+        <div>Name: <span id="hdr-emoji"></span><span id="hdr-name"></span></div>
         <div>Current position: <span id="hdr-current"></span></div>
         <div>Previous position: <span id="hdr-previous"></span></div>
         <div id="count-row" class="hidden">Count: <span id="hdr-count">0</span></div>
@@ -106,13 +109,21 @@
       </div>
       <div class="ld-rail-body">
       <section id="ld-section-prerequisite" class="ld-section active">
-      <p class="muted">Parent must be <strong>ON</strong> and serve <strong>green</strong> before the child evaluates normally.</p>
+      <p class="muted">Parent must be <strong>ON</strong> and serve <strong>green</strong> before either child evaluates normally. One parent, two children.</p>
 
       <div class="block-title">Live dependency</div>
       <div class="dependency">
         <div id="parent-node" class="node"><strong>Parent</strong><code>enable-grid-selection-highlight-prereq</code><div id="parent-value">waiting…</div></div>
-        <div class="arrow">→</div>
-        <div id="child-node" class="node"><strong>Child</strong><code>show-navigation-move-count-prereq</code><div id="child-value">waiting…</div></div>
+        <div class="fork">
+          <div class="branch">
+            <div class="arrow" aria-hidden="true">↓</div>
+            <div id="child-node" class="node"><strong>Child · count</strong><code>show-navigation-move-count-prereq</code><div id="child-value">waiting…</div></div>
+          </div>
+          <div class="branch">
+            <div class="arrow" aria-hidden="true">↓</div>
+            <div id="emoji-node" class="node"><strong>Child · emoji</strong><code>show-anonymous-host-os-emoji-prereq</code><div id="emoji-value">waiting…</div></div>
+          </div>
+        </div>
       </div>
 
       <div class="block-title">Current result</div>
@@ -133,47 +144,52 @@
 
       </section>
       <section id="ld-section-code" class="ld-section">
-        <div class="block-title">Context → parent + child → response</div>
-        <p class="ld-about-p">Build one user context, evaluate the parent string flag and the child boolean flag independently, then return both values and reasons. LaunchDarkly enforces the prerequisite.</p>
+        <div class="block-title">Context → parent + two children → response</div>
+        <p class="ld-about-p">Build one user context, evaluate the parent string flag and both child boolean flags independently, then return all three values and reasons. LaunchDarkly enforces each prerequisite.</p>
         <p class="code-example-source">Trimmed from <code>prerequisite.py</code>, served by <code>python/105-prerequisite-flags.py</code>.</p>
-        <pre class="code-example"><code># Context: one user context feeds both evaluations.
+        <pre class="code-example"><code># Context: one user context feeds all three evaluations.
 context = Context.builder(user_key).kind("user").build()
 
-# Evaluate parent (string) and child (boolean); the child is never skipped.
+# Evaluate parent (string) and both children (boolean). Neither child is skipped.
 parent_detail = client.variation_detail(FLAG_HIGHLIGHT, context, "none")
 child_detail = client.variation_detail(FLAG_COUNT, context, False)
+emoji_detail = client.variation_detail(FLAG_EMOJI, context, False)
 parent_value = parent_detail.value
 child_value = bool(child_detail.value)
 parent_reason = _reason_payload(parent_detail.reason)
 child_reason = _reason_payload(child_detail.reason)
+emoji_reason = _reason_payload(emoji_detail.reason)
 
-# Response: both values, the dependency result, and each reason.
-prerequisite_failed = child_reason.get("kind") == "PREREQUISITE_FAILED"
+# Response: all three values, the dependency result, and each reason.
+count_failed = child_reason.get("kind") == "PREREQUISITE_FAILED"
+emoji_failed = emoji_reason.get("kind") == "PREREQUISITE_FAILED"
 return {
-    "username": user_key,
-    "highlightColor": _highlight_color(parent_value),
     "showMoveCount": child_value,
-    "prerequisiteMet": parent_value == "green" and not prerequisite_failed,
+    "showHostEmoji": bool(emoji_detail.value),
+    "prerequisiteMet": parent_value == "green" and not count_failed and not emoji_failed,
     "parent": {"key": FLAG_HIGHLIGHT, "value": parent_value, "reason": parent_reason},
     "child": {"key": FLAG_COUNT, "value": child_value, "reason": child_reason},
+    "emoji": {"key": FLAG_EMOJI, "value": bool(emoji_detail.value), "reason": emoji_reason},
 }</code></pre>
       </section>
       <section id="ld-section-about" class="ld-section">
         <div class="block-title">What this teaches</div>
-        <p class="ld-about-p">The child flag <code>show-navigation-move-count-prereq</code> evaluates normally only when the parent <code>enable-grid-selection-highlight-prereq</code> is on and serving <code>green</code>. Otherwise the child serves its off variation and the reason is <code>PREREQUISITE_FAILED</code>. The app asks the SDK for both variations. The dependency lives in LaunchDarkly.</p>
-        <p class="ld-about-p">The Prerequisite tab shows both values, the context that was sent, and the controls.</p>
+        <p class="ld-about-p">Two children, <code>show-navigation-move-count-prereq</code> and <code>show-anonymous-host-os-emoji-prereq</code>, evaluate normally only when the parent <code>enable-grid-selection-highlight-prereq</code> is on and serving <code>green</code>. Otherwise each child serves its off variation and the reason is <code>PREREQUISITE_FAILED</code>. The app asks the SDK for all three variations. The dependencies live in LaunchDarkly.</p>
+        <p class="ld-about-p">The emoji cites <code>show-anonymous-host-os-emoji</code> from 102. This lab evaluates it on the same user context. Anonymous context stays in 102.</p>
+        <p class="ld-about-p">The Prerequisite tab shows the parent and both children, the context that was sent, and the controls.</p>
         <div class="block-title">How to see it</div>
         <ol class="ld-about-p">
-          <li>Leave the child <strong>on</strong>.</li>
-          <li>Turn the parent <strong>on</strong> and set fallthrough to <code>green</code>. Count appears.</li>
-          <li>Turn the parent <strong>off</strong>. Count disappears. The child reason is <code>PREREQUISITE_FAILED</code>.</li>
-          <li>Turn the parent on and set fallthrough to <code>yellow</code>. The highlight changes. Count stays hidden.</li>
+          <li>Leave both children <strong>on</strong>.</li>
+          <li>Turn the parent <strong>on</strong> and set fallthrough to <code>green</code>. Count and the host emoji appear.</li>
+          <li>Turn the parent <strong>off</strong>. Both disappear. Each child reason is <code>PREREQUISITE_FAILED</code>.</li>
+          <li>Turn the parent on and set fallthrough to <code>yellow</code>. The highlight changes. Count and the emoji stay hidden.</li>
         </ol>
         <table class="matrix">
-          <tr><th>Parent</th><th>Child</th><th>Result</th></tr>
-          <tr><td>On → green</td><td>On</td><td>Green highlight and Count</td></tr>
-          <tr><td>Off</td><td>On</td><td>No highlight, no Count</td></tr>
-          <tr><td>On → yellow</td><td>On</td><td>Yellow highlight, no Count</td></tr>
+          <tr><th>Parent</th><th>Count</th><th>Emoji</th><th>Result</th></tr>
+          <tr><td>On → green</td><td>On</td><td>On</td><td>Green highlight, Count, and host emoji</td></tr>
+          <tr><td>Off</td><td>On</td><td>On</td><td>No highlight, no Count, no emoji</td></tr>
+          <tr><td>On → yellow</td><td>On</td><td>On</td><td>Yellow highlight, no Count, no emoji</td></tr>
+          <tr><td>On → green</td><td>Off</td><td>On</td><td>Green highlight and emoji, no Count</td></tr>
         </table>
         <p class="ld-about-p"><a href="https://launchdarkly.com/docs/home/flags/prereqs" target="_blank" rel="noopener">Flag prerequisites</a></p>
       </section>
@@ -184,7 +200,7 @@ return {
   <script>
     const ROWS=["t","m","b"],COLS=["l","m","r"];
     let username="",row=1,col=1,previous=null,moves=0,timer=null,lastSnapshot="",busy="";
-    let flags={highlightColor:"none",showMoveCount:false,prerequisiteMet:false,parent:{reason:{}},child:{reason:{}}};
+    let flags={highlightColor:"none",showMoveCount:false,showHostEmoji:false,hostEmoji:"",prerequisiteMet:false,parent:{reason:{}},child:{reason:{}},emoji:{reason:{}}};
     const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
     const pos=(r,c)=>`${ROWS[r]}/${COLS[c]}`;
 
@@ -209,15 +225,19 @@ return {
         cell.className="cell"+(selected?` selected${color!=="none"?` highlight-${color}`:""}`:"");
         cell.textContent=selected?"X":"";grid.appendChild(cell);
       }
+      document.getElementById("hdr-emoji").textContent=flags.hostEmoji?flags.hostEmoji+" ":"";
       document.getElementById("parent-value").textContent=`${JSON.stringify(flags.parent.value)} · ${reason(flags.parent)}`;
       document.getElementById("child-value").textContent=`${JSON.stringify(flags.child.value)} · ${reason(flags.child)}`;
+      document.getElementById("emoji-value").textContent=`${JSON.stringify(flags.emoji&&flags.emoji.value)} · ${reason(flags.emoji)}`;
       document.getElementById("parent-node").classList.toggle("met",flags.prerequisiteMet);
       document.getElementById("parent-node").classList.toggle("failed",!flags.prerequisiteMet);
-      document.getElementById("child-node").classList.toggle("met",flags.showMoveCount);
+      document.getElementById("child-node").classList.toggle("met",!!flags.showMoveCount);
       document.getElementById("child-node").classList.toggle("failed",!flags.showMoveCount);
+      document.getElementById("emoji-node").classList.toggle("met",!!flags.showHostEmoji);
+      document.getElementById("emoji-node").classList.toggle("failed",!flags.showHostEmoji);
       document.getElementById("status").innerHTML=flags.prerequisiteMet
-        ? `<strong class="ok">Prerequisite met.</strong> Parent serves <code>${esc(color)}</code>; child evaluates <code>${flags.showMoveCount}</code>.`
-        : `<strong class="bad">Prerequisite not met.</strong> Child serves its off variation. Reason: <code>${esc(reason(flags.child))}</code>.`;
+        ? `<strong class="ok">Prerequisite met.</strong> Parent serves <code>${esc(color)}</code>. Count <code>${!!flags.showMoveCount}</code>. Emoji <code>${!!flags.showHostEmoji}</code>.`
+        : `<strong class="bad">Prerequisite not met.</strong> Both children serve their off variation. Count reason: <code>${esc(reason(flags.child))}</code>. Emoji reason: <code>${esc(reason(flags.emoji))}</code>.`;
       document.getElementById("context").textContent=JSON.stringify(flags.ldContext||{kind:"user",key:username},null,2);
     }
     async function refreshFlags(){
@@ -226,10 +246,10 @@ return {
         const response=await fetch(`/api/flags?username=${encodeURIComponent(username)}`,{cache:"no-store"});
         if(!response.ok)throw new Error(`HTTP ${response.status}`);
         flags=await response.json();
-        const snapshot=JSON.stringify({p:flags.parent,c:flags.child});
+        const snapshot=JSON.stringify({p:flags.parent,c:flags.child,e:flags.emoji});
         if(snapshot!==lastSnapshot){
           lastSnapshot=snapshot;
-          trace(flags.prerequisiteMet?"ok":"eval",`parent=${JSON.stringify(flags.parent.value)} (${reason(flags.parent)}); child=${flags.child.value} (${reason(flags.child)})`);
+          trace(flags.prerequisiteMet?"ok":"eval",`parent=${JSON.stringify(flags.parent.value)} (${reason(flags.parent)}); count=${flags.child.value} (${reason(flags.child)}); emoji=${flags.emoji&&flags.emoji.value} (${reason(flags.emoji)})`);
         }
         render();
       }catch(error){trace("bad",`Evaluation failed: ${error}`)}

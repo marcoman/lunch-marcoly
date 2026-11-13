@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
 	"time"
 
@@ -19,6 +20,7 @@ import (
 const (
 	flagHighlight = "enable-grid-selection-highlight-prereq"
 	flagCount     = "show-navigation-move-count-prereq"
+	flagEmoji     = "show-anonymous-host-os-emoji-prereq"
 	appBanner     = "105-prerequisite-flags[go]"
 	bgANSI        = "\033[48;5;236m"
 	resetANSI     = "\033[0m"
@@ -34,10 +36,14 @@ type flagValues struct {
 	username       string
 	highlightColor string
 	showMoveCount  bool
+	showHostEmoji  bool
+	hostEmoji      string
 	parentValue    string
 	parentReason   string
 	childValue     bool
 	childReason    string
+	emojiValue     bool
+	emojiReason    string
 }
 
 type position struct {
@@ -105,19 +111,55 @@ func evaluateFlags(username string) flagValues {
 			parentValue:    "none",
 			parentReason:   "OFFLINE",
 			childReason:    "OFFLINE",
+			emojiReason:    "OFFLINE",
 		}
 	}
 	ctx := ldcontext.NewBuilder(userKey).Kind("user").Build()
 	parentValue, parentDetail, _ := ldClient.StringVariationDetail(flagHighlight, ctx, "none")
 	childValue, childDetail, _ := ldClient.BoolVariationDetail(flagCount, ctx, false)
+	emojiValue, emojiDetail, _ := ldClient.BoolVariationDetail(flagEmoji, ctx, false)
+	glyph := ""
+	if emojiValue {
+		glyph = hostEmoji(detectHostOS())
+	}
 	return flagValues{
 		username:       userKey,
 		highlightColor: highlightColor(parentValue),
 		showMoveCount:  childValue,
+		showHostEmoji:  emojiValue,
+		hostEmoji:      glyph,
 		parentValue:    parentValue,
 		parentReason:   formatReason(parentDetail.Reason),
 		childValue:     childValue,
 		childReason:    formatReason(childDetail.Reason),
+		emojiValue:     emojiValue,
+		emojiReason:    formatReason(emojiDetail.Reason),
+	}
+}
+
+func detectHostOS() string {
+	switch runtime.GOOS {
+	case "darwin":
+		return "macos"
+	case "windows":
+		return "windows"
+	case "linux":
+		return "linux"
+	default:
+		return "other"
+	}
+}
+
+func hostEmoji(hostOS string) string {
+	switch hostOS {
+	case "linux":
+		return "🐧"
+	case "macos":
+		return "🍎"
+	case "windows":
+		return "🪟"
+	default:
+		return "😊"
 	}
 }
 
@@ -264,7 +306,11 @@ func render(username string, row, col int, previous *position, moveCount int, fl
 		previousText = formatPos(previous.row, previous.col)
 	}
 	writeLine(&out, appBanner)
-	writeLine(&out, "Name: "+colorize(username, flags.highlightColor))
+	name := username
+	if flags.hostEmoji != "" {
+		name = flags.hostEmoji + " " + username
+	}
+	writeLine(&out, "Name: "+colorize(name, flags.highlightColor))
 	writeLine(&out, "Current position: "+formatPos(row, col))
 	writeLine(&out, "Previous position: "+previousText)
 	if flags.showMoveCount {
@@ -272,7 +318,8 @@ func render(username string, row, col int, previous *position, moveCount int, fl
 	}
 	writeLine(&out, "")
 	writeLine(&out, fmt.Sprintf("Parent: %v  %s", flags.parentValue, flags.parentReason))
-	writeLine(&out, fmt.Sprintf("Child:  %v  %s", flags.childValue, flags.childReason))
+	writeLine(&out, fmt.Sprintf("Count:  %v  %s", flags.childValue, flags.childReason))
+	writeLine(&out, fmt.Sprintf("Emoji:  %v  %s", flags.emojiValue, flags.emojiReason))
 	writeLine(&out, "")
 	writeLine(&out, "Use arrow keys or WASD to move (L to logout, Q to quit).")
 	writeLine(&out, "")

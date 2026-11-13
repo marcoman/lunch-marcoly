@@ -36,6 +36,7 @@ Shared headline cache: [stories/](stories/) (`20-agent-management/stories/storie
 | 207 | [207-agent-mode](207-agent-mode/) | **Stub.** Agent mode only, one instructions value. Not the capstone. Intended ports **:8270–:8273** |
 | 208 | [208-context-attributes](208-context-attributes/) | **Stub.** Region and audience attributes select a variation. Intended ports **:8280–:8283** |
 | 209 | [209-team-rollout](209-team-rollout/) | **Stub.** Sticky percentage rollout bucketed by `team`. Do not use **:8290–:8293** (capstone) |
+| — | [playgrounds](playgrounds/) | **Stub.** Unnumbered. Playground over the 201–206 stock-picker configs. Runs do not change the live config. Not **210** |
 
 More Agent Management patterns can land as further `2NN-…` siblings under this folder. [20-capstone-1](20-capstone-1/) stays outside **201–209** so it does not take **207**. It composes `201`–`205`. **207**, **208**, and **209** keep their own folders and do not roll into the capstone.
 

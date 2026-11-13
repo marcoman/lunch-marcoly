@@ -2,13 +2,14 @@ using LaunchDarkly.Sdk;
 using LaunchDarkly.Sdk.Server;
 
 /// <summary>
-/// Evaluate the parent and dependent flags. LaunchDarkly enforces the prerequisite.
+/// Evaluate the parent and both dependent flags. LaunchDarkly enforces each prerequisite.
 /// https://launchdarkly.com/docs/home/flags/prereqs
 /// </summary>
 sealed class Prerequisite : IDisposable
 {
     public const string FlagHighlight = "enable-grid-selection-highlight-prereq";
     public const string FlagCount = "show-navigation-move-count-prereq";
+    public const string FlagEmoji = "show-anonymous-host-os-emoji-prereq";
     public static readonly HashSet<string> ValidColors =
         ["green", "yellow", "red", "blue", "purple", "pink"];
     private readonly LdClient? _client;
@@ -33,23 +34,35 @@ sealed class Prerequisite : IDisposable
         var context = Context.Builder(username).Kind("user").Build();
         var parentDetail = _client?.StringVariationDetail(FlagHighlight, context, "none");
         var childDetail = _client?.BoolVariationDetail(FlagCount, context, false);
+        var emojiDetail = _client?.BoolVariationDetail(FlagEmoji, context, false);
 
         object parentValue = parentDetail?.Value ?? "none";
         var childValue = childDetail?.Value ?? false;
+        var emojiValue = emojiDetail?.Value ?? false;
         var parentReason = parentDetail is null
             ? new Dictionary<string, object?> { ["kind"] = "OFFLINE" }
             : ReasonPayload(parentDetail.Value.Reason);
         var childReason = childDetail is null
             ? new Dictionary<string, object?> { ["kind"] = "OFFLINE" }
             : ReasonPayload(childDetail.Value.Reason);
-        var prerequisiteFailed = Equals(childReason["kind"], "PREREQUISITE_FAILED");
+        var emojiReason = emojiDetail is null
+            ? new Dictionary<string, object?> { ["kind"] = "OFFLINE" }
+            : ReasonPayload(emojiDetail.Value.Reason);
+        var hostOs = DetectHostOs();
+        var prerequisiteMet = _client is not null
+            && Equals(parentValue, "green")
+            && !Equals(childReason["kind"], "PREREQUISITE_FAILED")
+            && !Equals(emojiReason["kind"], "PREREQUISITE_FAILED");
 
         return new
         {
             username,
             highlightColor = HighlightColor(parentValue),
             showMoveCount = childValue,
-            prerequisiteMet = _client is not null && Equals(parentValue, "green") && !prerequisiteFailed,
+            showHostEmoji = emojiValue,
+            hostOs,
+            hostEmoji = emojiValue ? HostEmoji(hostOs) : "",
+            prerequisiteMet,
             ldContext = new { kind = "user", key = username },
             parent = new
             {
@@ -65,8 +78,31 @@ sealed class Prerequisite : IDisposable
                 variationIndex = VariationIndex(childDetail),
                 reason = childReason,
             },
+            emoji = new
+            {
+                key = FlagEmoji,
+                value = emojiValue,
+                variationIndex = VariationIndex(emojiDetail),
+                reason = emojiReason,
+            },
         };
     }
+
+    private static string DetectHostOs()
+    {
+        if (OperatingSystem.IsMacOS()) return "macos";
+        if (OperatingSystem.IsWindows()) return "windows";
+        if (OperatingSystem.IsLinux()) return "linux";
+        return "other";
+    }
+
+    private static string HostEmoji(string hostOs) => hostOs switch
+    {
+        "linux" => "🐧",
+        "macos" => "🍎",
+        "windows" => "🪟",
+        _ => "😊",
+    };
 
     public static string NormalizeUsername(string? raw)
     {

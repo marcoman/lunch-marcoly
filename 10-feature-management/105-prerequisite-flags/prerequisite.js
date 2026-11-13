@@ -13,7 +13,21 @@ const FLAG_HIGHLIGHT = "enable-grid-selection-highlight-prereq";
 // https://app.launchdarkly.com/projects/lunch-marcoly/features/show-navigation-move-count-prereq
 
 const FLAG_COUNT = "show-navigation-move-count-prereq";
+const FLAG_EMOJI = "show-anonymous-host-os-emoji-prereq";
 const VALID_COLORS = new Set(["green", "yellow", "red", "blue", "purple", "pink"]);
+const OS_EMOJI = { linux: "🐧", macos: "🍎", windows: "🪟", other: "😊" };
+
+function detectHostOs() {
+  if (process.platform === "darwin") return "macos";
+  if (process.platform === "win32") return "windows";
+  if (process.platform === "linux") return "linux";
+  return "other";
+}
+
+function hostEmoji(show, hostOs) {
+  if (!show) return "";
+  return OS_EMOJI[hostOs] || OS_EMOJI.other;
+}
 
 function normalizeUsername(username) {
   const value = String(username || "").trim().toLowerCase();
@@ -40,32 +54,46 @@ function highlightColor(value) {
   return VALID_COLORS.has(candidate) ? candidate : "none";
 }
 
-/** Evaluate parent and child independently; LaunchDarkly enforces dependency. */
+/** Evaluate the parent and both children; LaunchDarkly enforces each dependency. */
 async function evaluatePrerequisiteFlags(client, username) {
   const userKey = normalizeUsername(username);
   const context = { kind: "user", key: userKey };
+  const hostOs = detectHostOs();
   let parentDetail = null;
   let childDetail = null;
+  let emojiDetail = null;
   let parentValue = "none";
   let childValue = false;
+  let emojiValue = false;
   let parentReason = { kind: "OFFLINE" };
   let childReason = { kind: "OFFLINE" };
+  let emojiReason = { kind: "OFFLINE" };
 
   if (client) {
     parentDetail = await client.variationDetail(FLAG_HIGHLIGHT, context, "none");
     childDetail = await client.variationDetail(FLAG_COUNT, context, false);
+    emojiDetail = await client.variationDetail(FLAG_EMOJI, context, false);
     parentValue = parentDetail.value;
     childValue = Boolean(childDetail.value);
+    emojiValue = Boolean(emojiDetail.value);
     parentReason = reasonPayload(parentDetail.reason);
     childReason = reasonPayload(childDetail.reason);
+    emojiReason = reasonPayload(emojiDetail.reason);
   }
 
-  const prerequisiteFailed = childReason.kind === "PREREQUISITE_FAILED";
+  const prerequisiteMet =
+    Boolean(client) &&
+    parentValue === "green" &&
+    childReason.kind !== "PREREQUISITE_FAILED" &&
+    emojiReason.kind !== "PREREQUISITE_FAILED";
   return {
     username: userKey,
     highlightColor: highlightColor(parentValue),
     showMoveCount: childValue,
-    prerequisiteMet: Boolean(client) && parentValue === "green" && !prerequisiteFailed,
+    showHostEmoji: emojiValue,
+    hostOs,
+    hostEmoji: hostEmoji(emojiValue, hostOs),
+    prerequisiteMet,
     ldContext: { kind: "user", key: userKey },
     parent: {
       key: FLAG_HIGHLIGHT,
@@ -79,12 +107,19 @@ async function evaluatePrerequisiteFlags(client, username) {
       variationIndex: childDetail?.variationIndex ?? null,
       reason: childReason,
     },
+    emoji: {
+      key: FLAG_EMOJI,
+      value: emojiValue,
+      variationIndex: emojiDetail?.variationIndex ?? null,
+      reason: emojiReason,
+    },
   };
 }
 
 module.exports = {
   FLAG_HIGHLIGHT,
   FLAG_COUNT,
+  FLAG_EMOJI,
   VALID_COLORS,
   normalizeUsername,
   evaluatePrerequisiteFlags,

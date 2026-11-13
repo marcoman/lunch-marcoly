@@ -1,4 +1,4 @@
-"""REST controls for the two flags in 105-prerequisite-flags.
+"""REST controls for the three flags in 105-prerequisite-flags.
 
 Controls may change on/off and the parent's fallthrough color. They never edit
 the prerequisite relationship configured on the dependent flag.
@@ -14,7 +14,7 @@ import urllib.parse
 import urllib.request
 from typing import Any
 
-from prerequisite import FLAG_COUNT, FLAG_HIGHLIGHT, VALID_COLORS
+from prerequisite import FLAG_COUNT, FLAG_EMOJI, FLAG_HIGHLIGHT, VALID_COLORS
 
 CONTROLLED_FLAGS = (
     {
@@ -22,7 +22,7 @@ CONTROLLED_FLAGS = (
         "label": "Parent · grid selection highlight",
         "summary": (
             "105-prerequisite-flags parent (cites 101's enable-grid-selection-highlight). "
-            "Must be on and serving green to satisfy the prerequisite."
+            "Must be on and serving green before either child evaluates."
         ),
     },
     {
@@ -31,6 +31,14 @@ CONTROLLED_FLAGS = (
         "summary": (
             "105-prerequisite-flags child (cites 101's show-navigation-move-count). "
             "Unmet prerequisite serves its off variation."
+        ),
+    },
+    {
+        "key": FLAG_EMOJI,
+        "label": "Child · anonymous host emoji",
+        "summary": (
+            "105-prerequisite-flags second child (cites 102's show-anonymous-host-os-emoji). "
+            "Same parent prerequisite. Evaluated on the user context, not an anonymous one."
         ),
     },
 )
@@ -136,14 +144,14 @@ def _summarize(
         "servedWhenOnFallthrough": _variation_value(flag, fallthrough_index),
         "prerequisite": prerequisite,
         "prerequisiteConfigured": (
-            meta["key"] != FLAG_COUNT
+            meta["key"] == FLAG_HIGHLIGHT
             or bool(
                 prerequisite
                 and prerequisite.get("key") == FLAG_HIGHLIGHT
             )
         ),
         "targetingHint": (
-            "Required by child: parent must be ON and serve green."
+            "Required by both children: parent must be ON and serve green."
             if meta["key"] == FLAG_HIGHLIGHT
             else (
                 "Prerequisite configured; lab controls leave it unchanged."
@@ -155,7 +163,7 @@ def _summarize(
 
 
 def list_flag_controls() -> dict[str, Any]:
-    """Read both flags, including the child's prerequisite, for the Controls tab.
+    """Read all three flags, including each child's prerequisite, for the Controls tab.
 
     LaunchDarkly: get feature flag · flag prerequisites
     https://launchdarkly.com/docs/api/feature-flags/get-feature-flag

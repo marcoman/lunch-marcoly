@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Permanently delete a 105-prerequisite-flags flag.
-# Default: child first, then parent (parent cannot be deleted while it is a prerequisite).
+# Default: both children first, then parent (parent cannot be deleted while it is a prerequisite).
 # https://launchdarkly.com/docs/api/feature-flags/delete-feature-flag
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -19,5 +19,6 @@ if [[ $# -gt 0 ]]; then
 fi
 
 delete_one "$CHILD_KEY"
+delete_one "$CHILD_EMOJI_KEY"
 delete_one "$PARENT_KEY"
 echo "Done."

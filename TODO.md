@@ -28,6 +28,12 @@ New stubs (README only, not built):
 - [603-server-errors](60-observability/603-server-errors/) — one deliberate error, visible as an error and a log line. **604** stays free.
 - [605-server-metrics](60-observability/605-server-metrics/) — custom metric. [602-server-traces](60-observability/602-server-traces/) is spans only.
 - [701-image-processing](70-model-demos/701-image-processing/), [702-text-origin](70-model-demos/702-text-origin/), [703-guess-the-animal](70-model-demos/703-guess-the-animal/) — plan these next to [704-terraform-codegen](70-model-demos/704-terraform-codegen/). Not a new decade.
+- [25-prerequisite-tree](99-use-cases/25-prerequisite-tree/) — six flags: one grandparent, two parents, three children. The drawer tree is the lesson. Extends [105-prerequisite-flags](10-feature-management/105-prerequisite-flags/).
+- [26-agent-adaptive-trigger](99-use-cases/26-agent-adaptive-trigger/) — Agent Management stand-in for [16-adaptive-triggers](99-use-cases/16-adaptive-triggers/). A metric switches the briefing to a safer model. Placeholder only.
+- [27-archive-flag](99-use-cases/27-archive-flag/) — selected cell blinks while the flag is on, then stops when the flag is archived. The page steps through setup, run, and archive. Not a 10-series number.
+- [playgrounds](20-agent-management/playgrounds/) — unnumbered. Sandbox Toby against Charlie on the existing stock-picker configs. Not a 70 app, and not **210**.
+- [28-big-segment](99-use-cases/28-big-segment/) — server-side big segment backed by one DynamoDB table in us-east-1. Not [303-synced-segments](30-client-sdk/303-synced-segments/).
+- [705-offline-evaluations](70-model-demos/705-offline-evaluations/) — dataset of Terraform briefs, two models, pass or fail per row. Not the 204 runtime judges.
 
 ## Don't do
 

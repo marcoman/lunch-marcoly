@@ -16,6 +16,7 @@ use std::time::Duration;
 // https://launchdarkly.com/docs/home/flags/prereqs
 const FLAG_HIGHLIGHT: &str = "enable-grid-selection-highlight-prereq";
 const FLAG_COUNT: &str = "show-navigation-move-count-prereq";
+const FLAG_EMOJI: &str = "show-anonymous-host-os-emoji-prereq";
 const APP_BANNER: &str = "105-prerequisite-flags[rust]";
 const BG: &str = "\x1b[48;5;236m";
 const RESET: &str = "\x1b[0m";
@@ -43,10 +44,13 @@ struct FlagValues {
     username: String,
     highlight_color: String,
     show_move_count: bool,
+    host_emoji: String,
     parent_value: String,
     parent_reason: String,
     child_value: bool,
     child_reason: String,
+    emoji_value: bool,
+    emoji_reason: String,
 }
 
 struct App {
@@ -104,10 +108,13 @@ impl App {
                 username: user_key,
                 highlight_color: "none".to_string(),
                 show_move_count: false,
+                host_emoji: String::new(),
                 parent_value: "none".to_string(),
                 parent_reason: "OFFLINE".to_string(),
                 child_value: false,
                 child_reason: "OFFLINE".to_string(),
+                emoji_value: false,
+                emoji_reason: "OFFLINE".to_string(),
             };
         };
         let context = ContextBuilder::new(&user_key)
@@ -116,17 +123,45 @@ impl App {
             .unwrap_or_else(|_| ContextBuilder::new("anonymous").build().unwrap());
         let parent = client.str_variation_detail(&context, FLAG_HIGHLIGHT, "none".to_string());
         let child = client.bool_variation_detail(&context, FLAG_COUNT, false);
+        let emoji = client.bool_variation_detail(&context, FLAG_EMOJI, false);
         let parent_value = parent.value.unwrap_or_else(|| "none".to_string());
         let child_value = child.value.unwrap_or(false);
+        let emoji_value = emoji.value.unwrap_or(false);
+        let host_emoji = if emoji_value {
+            host_glyph(detect_host_os()).to_string()
+        } else {
+            String::new()
+        };
         FlagValues {
             username: user_key,
             highlight_color: highlight_color(&parent_value),
             show_move_count: child_value,
+            host_emoji,
             parent_value,
             parent_reason: format_reason(&parent.reason),
             child_value,
             child_reason: format_reason(&child.reason),
+            emoji_value,
+            emoji_reason: format_reason(&emoji.reason),
         }
+    }
+}
+
+fn detect_host_os() -> &'static str {
+    match std::env::consts::OS {
+        "macos" => "macos",
+        "windows" => "windows",
+        "linux" => "linux",
+        _ => "other",
+    }
+}
+
+fn host_glyph(host_os: &str) -> &'static str {
+    match host_os {
+        "linux" => "🐧",
+        "macos" => "🍎",
+        "windows" => "🪟",
+        _ => "😊",
     }
 }
 
@@ -238,7 +273,12 @@ fn render(
     let mut y = 0u16;
     print_line(out, y, APP_BANNER)?;
     y += 1;
-    print_line(out, y, &format!("Name: {}", colorize(username, &flags.highlight_color)))?;
+    let name = if flags.host_emoji.is_empty() {
+        username.to_string()
+    } else {
+        format!("{} {}", flags.host_emoji, username)
+    };
+    print_line(out, y, &format!("Name: {}", colorize(&name, &flags.highlight_color)))?;
     y += 1;
     print_line(out, y, &format!("Current position: {}", format_pos(row, col)))?;
     y += 1;
@@ -257,7 +297,13 @@ fn render(
     print_line(
         out,
         y,
-        &format!("Child:  {}  {}", flags.child_value, flags.child_reason),
+        &format!("Count:  {}  {}", flags.child_value, flags.child_reason),
+    )?;
+    y += 1;
+    print_line(
+        out,
+        y,
+        &format!("Emoji:  {}  {}", flags.emoji_value, flags.emoji_reason),
     )?;
     y += 2;
     print_line(out, y, "Use arrow keys or WASD to move (L to logout, Q to quit).")?;

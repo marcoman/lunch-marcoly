@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * REST controls for the two 105-prerequisite-flags keys.
+ * REST controls for the three 105-prerequisite-flags keys.
  * Never edits the prerequisite relationship.
  * https://launchdarkly.com/docs/api/feature-flags/patch-feature-flag
  */
@@ -26,13 +26,17 @@ final class FlagControls {
             metadata(
                     Prerequisite.FLAG_HIGHLIGHT,
                     "Parent · grid selection highlight",
-                    "105-prerequisite-flags parent (cites 101's enable-grid-selection-highlight). Must be on and serving green."),
+                    "105-prerequisite-flags parent (cites 101's enable-grid-selection-highlight). Must be on and serving green before either child evaluates."),
             metadata(
                     Prerequisite.FLAG_COUNT,
                     "Child · navigation move count",
-                    "105-prerequisite-flags child (cites 101's show-navigation-move-count). Unmet prerequisite serves its off variation."));
+                    "105-prerequisite-flags child (cites 101's show-navigation-move-count). Unmet prerequisite serves its off variation."),
+            metadata(
+                    Prerequisite.FLAG_EMOJI,
+                    "Child · anonymous host emoji",
+                    "105-prerequisite-flags second child (cites 102's show-anonymous-host-os-emoji). Same parent prerequisite."));
     private static final Set<String> ALLOWED = Set.of(
-            Prerequisite.FLAG_HIGHLIGHT, Prerequisite.FLAG_COUNT);
+            Prerequisite.FLAG_HIGHLIGHT, Prerequisite.FLAG_COUNT, Prerequisite.FLAG_EMOJI);
 
     private FlagControls() {
     }
@@ -210,13 +214,13 @@ final class FlagControls {
         result.put("prerequisite", prerequisite);
         result.put(
                 "prerequisiteConfigured",
-                !metadata.get("key").equals(Prerequisite.FLAG_COUNT)
+                metadata.get("key").equals(Prerequisite.FLAG_HIGHLIGHT)
                         || (prerequisite != null
                                 && Prerequisite.FLAG_HIGHLIGHT.equals(prerequisite.get("key"))));
         result.put(
                 "targetingHint",
                 metadata.get("key").equals(Prerequisite.FLAG_HIGHLIGHT)
-                        ? "Required by child: parent must be ON and serve green."
+                        ? "Required by both children: parent must be ON and serve green."
                         : (prerequisite == null
                                 ? "Missing prerequisite — run this example's provisioning."
                                 : "Prerequisite configured; lab controls leave it unchanged."));
