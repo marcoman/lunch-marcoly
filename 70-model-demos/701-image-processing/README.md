@@ -1,4 +1,4 @@
-# 01-image-processing
+# 701-image-processing
 
 **Status: stub — not implemented yet.**
 
@@ -21,7 +21,7 @@ by side, including the source label and the one-sentence reason.
 
 ## Direction
 
-- Python web first when built. Intended port **:8710** (`04` already uses
+- Python web first when built. Intended port **:8710** (`704` already uses
   **:8740**).
 - No language folders yet.
 

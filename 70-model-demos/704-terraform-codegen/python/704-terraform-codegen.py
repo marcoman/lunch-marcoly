@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-04-terraform-codegen.py — HTTP adapter for the Terraform codegen screen.
+704-terraform-codegen.py — HTTP adapter for the Terraform codegen screen.
 
 GET  /              → index.html
 GET  /api/bootstrap → config key and the models the process can run
@@ -29,7 +29,7 @@ from agent_core import (  # noqa: E402
     judge_key,
 )
 
-APP_BANNER = "04-terraform-codegen[python]"
+APP_BANNER = "704-terraform-codegen[python]"
 PORT = 8740
 
 

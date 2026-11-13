@@ -86,12 +86,12 @@ lunch-marcoly/
 │   ├── 602-server-traces/        # Python ObservabilityPlugin + manual move spans
 │   ├── 603-server-errors/        # Stub: one error, also a log line; 604 stays free
 │   └── 605-server-metrics/       # Stub: one custom metric
-├── 70-model-demos/              # Model apps; children 01–04 inside the folder
+├── 70-model-demos/              # Model apps; children 701–704 inside the folder
 │   ├── README.md                # 80 remains the next free decade
-│   ├── 01-image-processing/     # Stub: four cat photos
-│   ├── 02-text-origin/          # Stub: human vs AI essay
-│   ├── 03-guess-the-animal/     # Stub: yes/no until the model names it
-│   └── 04-terraform-codegen/    # Two models, one Terraform file; Python :8740
+│   ├── 701-image-processing/     # Stub: four cat photos
+│   ├── 702-text-origin/          # Stub: human vs AI essay
+│   ├── 703-guess-the-animal/     # Stub: yes/no until the model names it
+│   └── 704-terraform-codegen/    # Two models, one Terraform file; Python :8740
 ├── 99-use-cases/                # Product patterns on the grid navigator
 │   ├── 01-abcd-test/
 │   ├── 02-segments-by-name/
@@ -114,7 +114,7 @@ lunch-marcoly/
 └── ...
 ```
 
-Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control sort order. **10-code-control** children are **101–109**, **20-agent-config** children are **201–209** (capstone folder `20-capstone-1`), and **30-client-sdk** children are **301–309**. **40-dont-do-this** children are **401** and **402**. **60-observability** children are **601**, **602**, **603**, and **605**. **604** stays free. Other decade series still use two-digit children (`501`–`506`, …) until that series is renumbered. Letter suffixes stay unused. A fourth digit is not part of the scheme.
+Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control sort order. **10-code-control** children are **101–109**, **20-agent-config** children are **201–209** (capstone folder `20-capstone-1`), and **30-client-sdk** children are **301–309**. **40-dont-do-this** children are **401** and **402**. **60-observability** children are **601**, **602**, **603**, and **605**. **604** stays free. Other series still use two-digit children (such as `99-use-cases`) until that series is renumbered. Letter suffixes stay unused. A fourth digit is not part of the scheme.
 
 ## Languages
 
@@ -193,7 +193,7 @@ Each example may include implementations in any of these languages. Every applic
 | 602 | [602-server-traces](60-observability/602-server-traces/) | Python `ObservabilityPlugin` + `grid.login` / `grid.move` spans (**:8620**) |
 | 603 | [603-server-errors](60-observability/603-server-errors/) | **Stub:** one deliberate error, visible as an error and a log line. **604** stays free |
 | 605 | [605-server-metrics](60-observability/605-server-metrics/) | **Stub:** one custom metric. 602 stays spans |
-| 70 | [70-model-demos](70-model-demos/) | Model apps. Children `01`–`04` inside the folder. `01`–`03` are stubs. `04-terraform-codegen` is Python **:8740**. **80** stays free |
+| 70 | [70-model-demos](70-model-demos/) | Model apps. Children `701`–`704` inside the folder. `701`–`703` are stubs. `704-terraform-codegen` is Python **:8740**. **80** stays free |
 | 99 | [99-use-cases](99-use-cases/) | Focused LaunchDarkly use cases (experiments, segments, rollouts, adaptive triggers, SDK fallbacks, …) |
 | — | [01-abcd-test](99-use-cases/01-abcd-test/) | A-B-C-D experiment on the navigation count label |
 | — | [02-segments-by-name](99-use-cases/02-segments-by-name/) | Segment targeting from username-derived context |

@@ -1,4 +1,4 @@
-# 03-guess-the-animal
+# 703-guess-the-animal
 
 **Status: stub — not implemented yet.**
 

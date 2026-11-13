@@ -1,4 +1,4 @@
-# 04-terraform-codegen
+# 704-terraform-codegen
 
 **Status: Python :8740.** Selected models write the same LaunchDarkly Terraform file. The app saves each `main.tf`, runs `terraform validate`, then a Sonnet judge scores the file. It does not apply and it does not rewrite. No series portal.
 
@@ -36,7 +36,7 @@ Outline: [application.md](application.md).
 export LD_API_ACCESS_TOKEN="api-..."
 export LD_PROJECT_KEY="lunch-marcoly"
 export LD_ENVIRONMENT_KEY="test"
-cd 70-model-demos/04-terraform-codegen/rest
+cd 70-model-demos/704-terraform-codegen/rest
 ./create-config.sh
 
 ollama pull llama3.2:1b
@@ -52,8 +52,8 @@ export LD_SDK_KEY="sdk-..."
 export LD_API_ACCESS_TOKEN="api-..."
 export LD_PROJECT_KEY="lunch-marcoly"
 export ANTHROPIC_API_KEY="sk-ant-..."
-cd 70-model-demos/04-terraform-codegen/python
-python 04-terraform-codegen.py
+cd 70-model-demos/704-terraform-codegen/python
+python 704-terraform-codegen.py
 ```
 
 Open **http://127.0.0.1:8740/**. Use the repo virtualenv if `python` cannot import `ldai`. `terraform` must be on `PATH` for validate. The first click downloads the provider into `output/.plugin-cache`.

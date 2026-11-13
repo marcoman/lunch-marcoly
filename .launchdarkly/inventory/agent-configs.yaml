@@ -287,5 +287,5 @@ agent_configs:
   examples:
   - path: 70-model-demos
   sources:
-  - path: 70-model-demos/04-terraform-codegen/python/agent_core.py
+  - path: 70-model-demos/704-terraform-codegen/python/agent_core.py
     role: evaluation
