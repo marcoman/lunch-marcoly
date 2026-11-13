@@ -2,36 +2,49 @@
 
 Two maps of where the examples in this repository fit into real work.
 
-| File | What it maps |
-|------|--------------|
-| [cicd-pipeline.html](cicd-pipeline.html) | **Anatomy of a CI/CD Pipeline** — five stages, from a pull request to a retired flag |
-| [llm-workflow.html](llm-workflow.html) | **Anatomy of an LLM Workflow** — six steps, from an incoming request to a checked answer |
+## Anatomy of a CI/CD Pipeline
+
+Five stages, from a pull request to a retired flag. The figure is 1904px wide, so it
+arrives here as a thumbnail — click it for full size.
+
+[![Five CI/CD stages — Code, Build and Test, Deploy, Release, Monitor — each over a second box naming the examples in this repository that demonstrate that stage](cicd-pipeline.svg)](cicd-pipeline.svg)
+
+## Anatomy of an LLM Workflow
+
+Six steps, from an incoming request to a checked answer.
+
+[![Six LLM workflow steps — Input, Assemble, Generate, Act, Check, Output — each over a second box naming the examples in this repository that demonstrate that step](llm-workflow.svg)](llm-workflow.svg)
+
+| File | What it is |
+|------|------------|
+| [cicd-pipeline.html](cicd-pipeline.html) · [cicd-pipeline.svg](cicd-pipeline.svg) | The pipeline, as a page and as an image |
+| [llm-workflow.html](llm-workflow.html) · [llm-workflow.svg](llm-workflow.svg) | The LLM workflow, as a page and as an image |
 
 Each diagram has two layers. The top layer is the workflow itself: a stage, the
 choice it hides, and the LaunchDarkly capability that owns that choice. The second
 layer, directly beneath each stage, names the examples here that demonstrate it.
 **Every citation is a link to its folder.**
 
-## Seeing the rendered page
+## Why each diagram exists twice
 
-GitHub shows a committed `.html` file as source rather than rendering it. Three ways
-to see the page itself:
+GitHub shows a committed `.html` file as source rather than rendering it, so each
+figure is also written as a flattened `.svg`, which GitHub does render — above, and
+in its own file view. That is why this folder has four files and no web server.
 
-- **GitHub Pages**, the durable one. *Settings → Pages → Deploy from a branch →
-  `main` / `(root)`*. The pages are then at
-  `https://marcoman.github.io/lunch-marcoly/diagrams/cicd-pipeline.html`. Pages serves
-  every file on the branch, so it is a publishing decision about the whole repository,
-  not just this folder.
-- **A raw-file viewer**, with nothing to enable:
-  `https://raw.githack.com/marcoman/lunch-marcoly/main/diagrams/cicd-pipeline.html`.
-  Good for a link in chat; it depends on a third-party service staying up.
-- **A clone.** `open diagrams/cicd-pipeline.html`. No build step and no external
-  files, so a browser is enough.
+The `.svg` is rendered **as an image**, which costs it three things the page keeps:
+the citations are not clickable, the typefaces fall back to whatever the reader has,
+and there is no dark variant, so the figure carries its own light background. For
+the clickable version, open the page from a clone:
 
-Citations link to `github.com` rather than to a sibling folder, so they work from all
-three. A relative folder link would 404 on Pages, which serves a directory only when
-it holds an `index.html`; these folders hold a `README.md`. Run `build.py --local` for
-relative links instead, for reading offline.
+```bash
+open diagrams/cicd-pipeline.html
+```
+
+Citations link to `github.com` rather than to a sibling folder, so they survive being
+opened from anywhere — including from a web server later, where a relative folder
+link would 404, since a static host serves a directory only when it holds an
+`index.html` and these folders hold a `README.md`. Run `build.py --local` for
+relative links instead, for reading a clone offline.
 
 ## Reading a citation
 
@@ -54,8 +67,9 @@ no LaunchDarkly in them, and the diagrams name them in a footnote instead.
 ## Regenerating
 
 ```bash
-python3 diagrams/build.py            # rewrite both .html files
+python3 diagrams/build.py            # rewrite both pages and both images
 python3 diagrams/build.py --check    # report unmapped examples, write nothing
+python3 diagrams/build.py --local    # cite with relative links, for offline reading
 ```
 
 `build.py` reads the example folders on every run, so the list of examples and
@@ -68,4 +82,4 @@ Add an example to the repository and `--check` names it as unmapped until it has
 `PLACEMENT` entry. Rename or remove one and `--check` reports it as a ghost. Run
 the check before a release so the diagrams do not quietly fall behind the code.
 
-Both files are generated. Edit `build.py`, not the HTML.
+All four files are generated. Edit `build.py`, not the HTML and not the SVG.
