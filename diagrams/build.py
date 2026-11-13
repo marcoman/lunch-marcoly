@@ -3,6 +3,7 @@
 
     python3 diagrams/build.py            # writes the two .html files
     python3 diagrams/build.py --check    # reports unmapped examples, writes nothing
+    python3 diagrams/build.py --local    # cite with relative links, for offline reading
 
 Each diagram is a spine of stages with a second layer of boxes beneath it holding
 the examples that belong to each stage. Citations use the repository's shorthand:
@@ -14,6 +15,9 @@ disk on every run, so the diagrams follow the repository. WHERE an example lands
 is editorial and lives in PLACEMENT below — one entry per numbered example. Add an
 example to the repository and `--check` will name it as unmapped until it is placed.
 
+Each diagram is written twice: an .html page, and a flattened .svg of the same figure
+for GitHub to render in place of it. See `standalone()` for what the .svg gives up.
+
 No external files: fonts degrade to system faces, and every mark is drawn inline.
 """
 
@@ -23,6 +27,13 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.dirname(os.path.abspath(__file__))
+
+# Citations link here by default. A relative link to a folder works when the page is
+# opened from a clone, but 404s on GitHub Pages, which serves a directory only when it
+# holds an index.html — these folders hold a README.md. Absolute links work everywhere:
+# from Pages, from a clone, and from any raw-file viewer. `--local` switches them back.
+REPO = "https://github.com/marcoman/lunch-marcoly"
+BRANCH = "main"
 
 # Series that hold numbered examples, in the order they appear in the citations.
 SERIES = {
@@ -265,7 +276,13 @@ def citations(stages, which, examples):
     return out
 
 
-def figure(which, stages, examples, lede):
+def href_for(series_n, folder, local):
+    if local:
+        return "../%s/%s/" % (SERIES_DIR[series_n], folder)
+    return "%s/tree/%s/%s/%s" % (REPO, BRANCH, SERIES_DIR[series_n], folder)
+
+
+def figure(which, stages, examples, lede, local=False):
     """Return the <svg> for one diagram."""
     n = len(stages)
     pitch = 370 if n == 5 else 308
@@ -386,7 +403,7 @@ def figure(which, stages, examples, lede):
             tx = x + 14 + 24
             for num, stub, series_n, folder in hits:
                 cls = "s-cite-stub" if stub else "s-cite-num"
-                href = "../%s/%s/" % (SERIES_DIR[series_n], folder)
+                href = href_for(series_n, folder, local)
                 add('<a href="%s"><title>%s/%s &#183; %s%s</title>'
                     '<text class="%s" x="%d" y="%d">%s</text></a>'
                     % (href, SERIES_DIR[series_n], folder, series_n + "/" + num,
@@ -404,6 +421,78 @@ def figure(which, stages, examples, lede):
         'this workflow</text>' % (foot_y, len(counted), len(examples)))
     add('</svg>')
     return "\n".join(s), height
+
+
+# ---------------------------------------------------------- the standalone .svg
+#
+# GitHub renders a committed .svg, which is the only way to see these figures on
+# github.com without turning on Pages. It renders them AS AN IMAGE, so: no external
+# font loads, no dark-mode query, and the links are inert. The HTML keeps those.
+# Styling therefore goes in presentation attributes rather than a <style> block or
+# var() colors, the marks are inlined instead of referenced through <use>, and the
+# figure carries its own light background so it stays legible on a dark theme.
+
+MONO = "JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, monospace"
+SANS = "Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif"
+DISPLAY = "Sora, Trebuchet MS, Helvetica, Arial, sans-serif"
+
+SVG_ATTRS = {
+    # text
+    "s-num": 'font-family="%s" font-size="11" fill="#6D6E71"' % MONO,
+    "s-title": 'font-family="%s" font-size="15" font-weight="700" fill="#191919"' % DISPLAY,
+    "s-desc": 'font-family="%s" font-size="11" fill="#414042"' % SANS,
+    "s-eyebrow": 'font-family="%s" font-size="8.5" letter-spacing="0.85" fill="#6D6E71"' % MONO,
+    "s-eyebrow-lg": 'font-family="%s" font-size="10" letter-spacing="1" fill="#6D6E71"' % MONO,
+    "s-choice": 'font-family="%s" font-size="9.5" fill="#414042"' % MONO,
+    "s-cap": 'font-family="%s" font-size="9.5" font-weight="500" fill="#2A3BA6"' % MONO,
+    "s-lane-label": 'font-family="%s" font-size="10" letter-spacing="1.2" fill="#6D6E71"' % MONO,
+    "s-claim": 'font-family="%s" font-size="10" fill="#414042"' % MONO,
+    "s-pill-name": 'font-family="%s" font-size="15" font-weight="700" fill="#191919"' % DISPLAY,
+    "s-pill-gloss": 'font-family="%s" font-size="9.5" fill="#6D6E71"' % MONO,
+    "s-note": 'font-family="%s" font-size="10" fill="#6D6E71"' % MONO,
+    "s-cite-series": 'font-family="%s" font-size="9.5" font-weight="500" fill="#6D6E71"' % MONO,
+    "s-cite-num": 'font-family="%s" font-size="9.5" font-weight="500" fill="#2A3BA6"' % MONO,
+    "s-cite-stub": 'font-family="%s" font-size="9.5" fill="#6D6E71"' % MONO,
+    # shapes, with every translucent fill flattened onto the background it sits on
+    "s-box": 'fill="#FFFFFF" stroke="#D1D6D9" stroke-width="1.25"',
+    "s-ctrl": 'fill="#F4F5FF" stroke="none"',
+    "s-lane": 'fill="#F2F2F2" stroke="#D1D6D9" stroke-width="1.25" stroke-dasharray="5 4"',
+    "s-pill": 'fill="#F1F2F7" stroke="#D1D6D9" stroke-width="1"',
+    "s-cite-box": 'fill="#EBF6F8" stroke="#9AE7F6" stroke-width="1"',
+    "s-rule": 'stroke="#D1D6D9" stroke-width="1" fill="none"',
+    "s-flow": 'stroke="#191919" stroke-width="1.5" fill="none"',
+    "s-feed": 'stroke="#6D6E71" stroke-width="1.25" fill="none" stroke-dasharray="4 4"',
+    "s-cite-stem": 'stroke="#3DD6F5" stroke-width="1.25" fill="none"',
+    "mark": ('stroke="#414042" stroke-width="1.3" fill="none" stroke-linecap="round"'
+             ' stroke-linejoin="round"'),
+    "ah-ink": 'fill="#191919"', "ah-mute": 'fill="#6D6E71"', "ah-cyan": 'fill="#3DD6F5"',
+}
+
+
+def standalone(svg, height):
+    """Turn the page's <svg> into a self-contained file GitHub can render."""
+    def glyph(m):
+        name, x, y, w = m.group(1), float(m.group(2)), float(m.group(3)), float(m.group(4))
+        scale = w / 12.0
+        return ('<g transform="translate(%g, %g) scale(%g)" stroke="#414042"'
+                ' stroke-width="%.2f" fill="none" stroke-linecap="round"'
+                ' stroke-linejoin="round">%s</g>'
+                % (x, y, scale, 1.3 / scale, GLYPHS[name]))
+
+    svg = re.sub(r'<use href="#g-(\w+)" class="mark" x="([\d.]+)" y="([\d.]+)"'
+                 r' width="([\d.]+)" height="[\d.]+"/>', glyph, svg)
+    svg = re.sub(r'<symbol id="g-\w+".*?</symbol>', "", svg)
+    for name, attrs in SVG_ATTRS.items():
+        svg = svg.replace('class="%s"' % name, attrs)
+    assert 'class="' not in svg, "a class survived the attribute pass"
+    svg = svg.replace(
+        "<svg viewBox=",
+        '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"'
+        ' width="1904" height="%d" viewBox=' % height, 1)
+    svg = svg.replace(
+        ">\n<defs>",
+        '>\n<rect x="0" y="0" width="1904" height="%d" fill="#F8F8F8"/>\n<defs>' % height, 1)
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' + svg + "\n"
 
 
 PAGE = """<!doctype html>
@@ -524,6 +613,7 @@ PAGES = {
 
 def main():
     check_only = "--check" in sys.argv
+    local = "--local" in sys.argv
     examples = scan()
 
     unmapped = sorted(e for e in examples if e not in PLACEMENT)
@@ -543,11 +633,14 @@ def main():
         return 1 if (unmapped or ghosts) else 0
 
     for name, spec in PAGES.items():
-        svg, height = figure(spec["which"], spec["stages"], examples, spec["lede"])
+        svg, height = figure(spec["which"], spec["stages"], examples, spec["lede"], local)
         page = PAGE % dict(title=spec["title"], lede=spec["lede"], caption=spec["caption"],
                            palette=PALETTE, svg=svg)
         open(os.path.join(OUT, name), "w", encoding="utf-8").write(page)
-        print("wrote diagrams/%s  (1904 x %d)" % (name, height))
+        flat = name.replace(".html", ".svg")
+        open(os.path.join(OUT, flat), "w", encoding="utf-8").write(standalone(svg, height))
+        print("wrote diagrams/%s and diagrams/%s  (1904 x %d, %s links)"
+              % (name, flat, height, "relative" if local else "github.com"))
     return 1 if (unmapped or ghosts) else 0
 
 

@@ -12,9 +12,26 @@ choice it hides, and the LaunchDarkly capability that owns that choice. The seco
 layer, directly beneath each stage, names the examples here that demonstrate it.
 **Every citation is a link to its folder.**
 
-Open either file from a clone — they are plain HTML with no build step and no
-external files, so a browser is enough. GitHub shows `.html` as source rather than
-rendering it.
+## Seeing the rendered page
+
+GitHub shows a committed `.html` file as source rather than rendering it. Three ways
+to see the page itself:
+
+- **GitHub Pages**, the durable one. *Settings → Pages → Deploy from a branch →
+  `main` / `(root)`*. The pages are then at
+  `https://marcoman.github.io/lunch-marcoly/diagrams/cicd-pipeline.html`. Pages serves
+  every file on the branch, so it is a publishing decision about the whole repository,
+  not just this folder.
+- **A raw-file viewer**, with nothing to enable:
+  `https://raw.githack.com/marcoman/lunch-marcoly/main/diagrams/cicd-pipeline.html`.
+  Good for a link in chat; it depends on a third-party service staying up.
+- **A clone.** `open diagrams/cicd-pipeline.html`. No build step and no external
+  files, so a browser is enough.
+
+Citations link to `github.com` rather than to a sibling folder, so they work from all
+three. A relative folder link would 404 on Pages, which serves a directory only when
+it holds an `index.html`; these folders hold a `README.md`. Run `build.py --local` for
+relative links instead, for reading offline.
 
 ## Reading a citation
 
