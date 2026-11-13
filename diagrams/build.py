@@ -15,8 +15,11 @@ disk on every run, so the diagrams follow the repository. WHERE an example lands
 is editorial and lives in PLACEMENT below — one entry per numbered example. Add an
 example to the repository and `--check` will name it as unmapped until it is placed.
 
-Each diagram is written twice: an .html page, and a flattened .svg of the same figure
-for GitHub to render in place of it. See `standalone()` for what the .svg gives up.
+Each diagram is written twice. The .html page lays the stages out left to right, which
+is the shape to present from. The .svg stacks them vertically, because that is the shape
+a fit-to-box viewer such as GitHub's file preview can show at a readable size. Same
+stages, same citations, same geometry inside each box. See `standalone()` for what the
+.svg gives up and `portrait()` for why it is stacked.
 
 No external files: fonts degrade to system faces, and every mark is drawn inline.
 """
@@ -423,6 +426,181 @@ def figure(which, stages, examples, lede, local=False):
     return "\n".join(s), height
 
 
+# ------------------------------------------------------------- the portrait .svg
+#
+# The landscape figure is a 2.5:1 ribbon, which any fit-to-box viewer shrinks until the
+# type is unreadable: GitHub's file preview lands it near a third of full size. Stacked
+# vertically it renders at the container's full width instead, and it reads on a phone.
+# Same stages, same citations, same geometry inside each box, turned ninety degrees.
+
+P_W = 1120                 # canvas
+P_MARGIN = 40
+P_STAGE_W = 520            # the stage box, keeping the landscape box's internal offsets
+P_CITE_W = 480
+P_CITE_X = 600
+P_BOX_H = 220
+P_ROW_PITCH = 276          # box plus the gap the flow arrow lives in
+
+
+def portrait(which, stages, examples, lede, local=False):
+    """Return the <svg> for the stacked variant, plus its width and height."""
+    cites = citations(stages, which, examples)
+    s = []
+    add = s.append
+
+    top = 76
+    if which == "cicd":
+        band_h = 220
+        spine_y = top + band_h + 40
+    else:
+        band_h = 296
+        spine_y = top + band_h + 40
+    spine_h = len(stages) * P_ROW_PITCH - (P_ROW_PITCH - P_BOX_H)
+    foot_y = spine_y + spine_h + 48
+    height = foot_y + 76
+
+    add('<svg viewBox="0 0 %d %d" role="img" aria-label="%s">' % (P_W, height, esc(lede)))
+    add('<defs>')
+    add('<marker id="ar-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6"'
+        ' markerHeight="6" orient="auto-start-reverse">'
+        '<path d="M 0 0 L 10 5 L 0 10 z" class="ah-ink"/></marker>')
+    add('<marker id="ar-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5"'
+        ' markerHeight="5" orient="auto-start-reverse">'
+        '<path d="M 0 0 L 10 5 L 0 10 z" class="ah-cyan"/></marker>')
+    add('</defs>')
+
+    # key
+    add('<text class="s-eyebrow-lg" x="%d" y="32">A CELL READS SERIES / EXAMPLE, '
+        'SO 10/105 IS 10-FEATURE-MANAGEMENT/105-PREREQUISITE-FLAGS</text>' % P_MARGIN)
+    kx = P_W - P_MARGIN
+    used = {g for _, _, _, choices in stages for _, g, _ in choices}
+    for name in [g for g in ["people", "flask", "chart", "agent", "flag"] if g in used]:
+        label = FAMILY[name]
+        kx -= len(label) * 6
+        add('<text class="s-note" x="%d" y="56">%s</text>' % (kx, esc(label)))
+        kx -= 15
+        add('<use href="#g-%s" class="mark" x="%d" y="46" width="11" height="11"/>'
+            % (name, kx))
+        kx -= 22
+
+    inner = P_W - 2 * P_MARGIN
+    if which == "cicd":
+        add('<rect class="s-lane" x="%d" y="%d" width="%d" height="%d" rx="12"/>'
+            % (P_MARGIN, top, inner, band_h))
+        add('<text class="s-lane-label" x="%d" y="%d">ONE ARTIFACT, THREE ENVIRONMENTS</text>'
+            % (P_MARGIN + 16, top + 24))
+        for i, line in enumerate(["same binary everywhere",
+                                  "different flag state per environment",
+                                  "different people allowed to change it"]):
+            add('<text class="s-claim" x="%d" y="%d">%s</text>'
+                % (P_MARGIN + 16, top + 48 + i * 18, line))
+        pw, gap = 310, 27
+        for i, (name, gloss) in enumerate([("dev", "flag on for everyone"),
+                                           ("test", "both variations exercised"),
+                                           ("prod", "off until released")]):
+            px = P_MARGIN + 16 + i * (pw + gap)
+            add('<rect class="s-pill" x="%d" y="%d" width="%d" height="72" rx="8"/>'
+                % (px, top + 118, pw))
+            add('<text class="s-pill-name" x="%d" y="%d">%s</text>' % (px + 16, top + 144, name))
+            add('<text class="s-pill-gloss" x="%d" y="%d">%s</text>'
+                % (px + 16, top + 166, gloss))
+            if i < 2:
+                add('<line class="s-flow" x1="%d" y1="%d" x2="%d" y2="%d"'
+                    ' marker-end="url(#ar-ink)"/>'
+                    % (px + pw + 4, top + 154, px + pw + gap - 4, top + 154))
+        add('<text class="s-note" x="%d" y="%d">the same flag keys in each &#183; '
+            'released per environment</text>' % (P_MARGIN + 16, top + 206))
+    else:
+        for k, (label, pills) in enumerate([
+                ("WHAT GOES INTO THE PROMPT",
+                 [("Instructions", "the standing rules"), ("Prompts", "versioned in LD"),
+                  ("Memory", "what carries over"), ("Retrieval", "fetched facts")]),
+                ("WHAT THE MODEL CAN REACH",
+                 [("Tools", "functions it calls"), ("MCP servers", "tools over a wire"),
+                  ("Subagents", "a pipeline as a tool"), ("Data and APIs", "systems of record")]),
+        ]):
+            ly = top + k * 156
+            add('<rect class="s-lane" x="%d" y="%d" width="%d" height="140" rx="12"/>'
+                % (P_MARGIN, ly, inner))
+            add('<text class="s-lane-label" x="%d" y="%d">%s</text>'
+                % (P_MARGIN + 16, ly + 24, label))
+            pw = (inner - 32 - 3 * 16) // 4
+            for i, (name, gloss) in enumerate(pills):
+                px = P_MARGIN + 16 + i * (pw + 16)
+                add('<rect class="s-pill" x="%d" y="%d" width="%d" height="72" rx="8"/>'
+                    % (px, ly + 46, pw))
+                add('<text class="s-pill-name" x="%d" y="%d">%s</text>' % (px + 12, ly + 72, name))
+                add('<text class="s-pill-gloss" x="%d" y="%d">%s</text>'
+                    % (px + 12, ly + 94, gloss))
+
+    # the spine, one row per stage
+    for i, (key, title, desc, choices) in enumerate(stages):
+        y = spine_y + i * P_ROW_PITCH
+        add('<rect class="s-box" x="%d" y="%d" width="%d" height="%d" rx="10"/>'
+            % (P_MARGIN, y, P_STAGE_W, P_BOX_H))
+        add('<rect class="s-ctrl" x="%d" y="%d" width="%d" height="129"/>'
+            % (P_MARGIN + 1, y + 90, P_STAGE_W - 2))
+        add('<text class="s-num" x="%d" y="%d">%s:</text>' % (P_MARGIN + 14, y + 30, key))
+        add('<text class="s-title" x="%d" y="%d">%s</text>' % (P_MARGIN + 38, y + 30, title))
+        for j, line in enumerate(desc):
+            add('<text class="s-desc" x="%d" y="%d">%s</text>'
+                % (P_MARGIN + 14, y + 54 + j * 15, esc(line)))
+        add('<line class="s-rule" x1="%d" y1="%d" x2="%d" y2="%d"/>'
+            % (P_MARGIN + 14, y + 84, P_MARGIN + P_STAGE_W - 14, y + 84))
+        add('<text class="s-eyebrow" x="%d" y="%d">CHOICE / CONTROLLED BY</text>'
+            % (P_MARGIN + 14, y + 106))
+        for j, (choice, glyph, cap) in enumerate(choices):
+            cy = y + 122 + j * 34
+            add('<text class="s-choice" x="%d" y="%d">%s</text>'
+                % (P_MARGIN + 14, cy, esc(choice)))
+            add('<use href="#g-%s" class="mark" x="%d" y="%d" width="12" height="12"/>'
+                % (glyph, P_MARGIN + 16, cy + 5))
+            add('<text class="s-cap" x="%d" y="%d">%s</text>' % (P_MARGIN + 31, cy + 14, esc(cap)))
+
+        # citations, beside the stage rather than beneath it, sized to what they hold
+        rows = cites[key]
+        cite_h = max(96, 30 + len(rows) * 17 + 16)
+        add('<line class="s-cite-stem" x1="%d" y1="%d" x2="%d" y2="%d"'
+            ' marker-end="url(#ar-cyan)"/>'
+            % (P_MARGIN + P_STAGE_W + 4, y + cite_h // 2, P_CITE_X - 6, y + cite_h // 2))
+        add('<rect class="s-cite-box" x="%d" y="%d" width="%d" height="%d" rx="10"/>'
+            % (P_CITE_X, y, P_CITE_W, cite_h))
+        total = sum(len(h) for _, h in rows)
+        add('<text class="s-eyebrow" x="%d" y="%d">%d EXAMPLE%s IN THIS REPOSITORY</text>'
+            % (P_CITE_X + 14, y + 28, total, "" if total == 1 else "S"))
+        for j, (series, hits) in enumerate(rows):
+            ry = y + 52 + j * 17
+            add('<text class="s-cite-series" x="%d" y="%d">%s/</text>'
+                % (P_CITE_X + 14, ry, series))
+            tx = P_CITE_X + 14 + 24
+            for num, stub, series_n, folder in hits:
+                cls = "s-cite-stub" if stub else "s-cite-num"
+                href = href_for(series_n, folder, local)
+                add('<a href="%s"><title>%s/%s &#183; %s%s</title>'
+                    '<text class="%s" x="%d" y="%d">%s</text></a>'
+                    % (href, SERIES_DIR[series_n], folder, series_n + "/" + num,
+                       " (stub)" if stub else "", cls, tx, ry, num))
+                tx += len(num) * 5.7 + 6
+        if i < len(stages) - 1:
+            ax = P_MARGIN + P_STAGE_W // 2
+            add('<line class="s-flow" x1="%d" y1="%d" x2="%d" y2="%d"'
+                ' marker-end="url(#ar-ink)"/>'
+                % (ax, y + P_BOX_H + 6, ax, y + P_ROW_PITCH - 6))
+
+    add('<line class="s-rule" x1="%d" y1="%d" x2="%d" y2="%d"/>'
+        % (P_MARGIN, foot_y - 24, P_W - P_MARGIN, foot_y - 24))
+    add('<text class="s-note" x="%d" y="%d">Muted numbers are stubs: the folder exists, '
+        'the example is not built yet.</text>' % (P_MARGIN, foot_y))
+    add('<text class="s-note" x="%d" y="%d">Baselines with no LaunchDarkly in them: %s.</text>'
+        % (P_MARGIN, foot_y + 20, " \u00b7 ".join(BASELINES)))
+    counted = sorted({e for e, (c, l) in PLACEMENT.items()
+                      if (c if which == "cicd" else l) and e in examples})
+    add('<text class="s-note" x="%d" y="%d">%d of %d examples placed on this workflow</text>'
+        % (P_MARGIN, foot_y + 40, len(counted), len(examples)))
+    add('</svg>')
+    return "\n".join(s), P_W, height
+
+
 # ---------------------------------------------------------- the standalone .svg
 #
 # GitHub renders a committed .svg, which is the only way to see these figures on
@@ -469,8 +647,8 @@ SVG_ATTRS = {
 }
 
 
-def standalone(svg, height):
-    """Turn the page's <svg> into a self-contained file GitHub can render."""
+def standalone(svg, width, height):
+    """Turn a generated <svg> into a self-contained file GitHub can render."""
     def glyph(m):
         name, x, y, w = m.group(1), float(m.group(2)), float(m.group(3)), float(m.group(4))
         scale = w / 12.0
@@ -488,10 +666,11 @@ def standalone(svg, height):
     svg = svg.replace(
         "<svg viewBox=",
         '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"'
-        ' width="1904" height="%d" viewBox=' % height, 1)
+        ' width="%d" height="%d" viewBox=' % (width, height), 1)
     svg = svg.replace(
         ">\n<defs>",
-        '>\n<rect x="0" y="0" width="1904" height="%d" fill="#F8F8F8"/>\n<defs>' % height, 1)
+        '>\n<rect x="0" y="0" width="%d" height="%d" fill="#F8F8F8"/>\n<defs>'
+        % (width, height), 1)
     return '<?xml version="1.0" encoding="UTF-8"?>\n' + svg + "\n"
 
 
@@ -637,10 +816,12 @@ def main():
         page = PAGE % dict(title=spec["title"], lede=spec["lede"], caption=spec["caption"],
                            palette=PALETTE, svg=svg)
         open(os.path.join(OUT, name), "w", encoding="utf-8").write(page)
+        tall, pw, ph = portrait(spec["which"], spec["stages"], examples, spec["lede"], local)
         flat = name.replace(".html", ".svg")
-        open(os.path.join(OUT, flat), "w", encoding="utf-8").write(standalone(svg, height))
-        print("wrote diagrams/%s and diagrams/%s  (1904 x %d, %s links)"
-              % (name, flat, height, "relative" if local else "github.com"))
+        open(os.path.join(OUT, flat), "w", encoding="utf-8").write(standalone(tall, pw, ph))
+        print("wrote diagrams/%s (1904 x %d, landscape) and diagrams/%s (%d x %d, portrait)"
+              " · %s links" % (name, height, flat, pw, ph,
+                               "relative" if local else "github.com"))
     return 1 if (unmapped or ghosts) else 0
 
 

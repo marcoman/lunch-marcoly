@@ -4,41 +4,51 @@ Two maps of where the examples in this repository fit into real work.
 
 ## Anatomy of a CI/CD Pipeline
 
-Five stages, from a pull request to a retired flag. The figure is 1904px wide, so it
-arrives here as a thumbnail — click it for full size.
+Five stages, from a pull request to a retired flag. Click through for full size.
 
 [![Five CI/CD stages — Code, Build and Test, Deploy, Release, Monitor — each over a second box naming the examples in this repository that demonstrate that stage](cicd-pipeline.svg)](cicd-pipeline.svg)
 
 ## Anatomy of an LLM Workflow
 
-Six steps, from an incoming request to a checked answer.
+Six steps, from an incoming request to a checked answer. Click through for full size.
 
 [![Six LLM workflow steps — Input, Assemble, Generate, Act, Check, Output — each over a second box naming the examples in this repository that demonstrate that step](llm-workflow.svg)](llm-workflow.svg)
 
-| File | What it is |
-|------|------------|
-| [cicd-pipeline.html](cicd-pipeline.html) · [cicd-pipeline.svg](cicd-pipeline.svg) | The pipeline, as a page and as an image |
-| [llm-workflow.html](llm-workflow.html) · [llm-workflow.svg](llm-workflow.svg) | The LLM workflow, as a page and as an image |
+| Workflow | To present from | To read on GitHub |
+|----------|-----------------|-------------------|
+| CI/CD pipeline | [cicd-pipeline.html](cicd-pipeline.html) · 1904 × 750 | [cicd-pipeline.svg](cicd-pipeline.svg) · 1120 × 1784 |
+| LLM workflow | [llm-workflow.html](llm-workflow.html) · 1904 × 750 | [llm-workflow.svg](llm-workflow.svg) · 1120 × 2136 |
 
 Each diagram has two layers. The top layer is the workflow itself: a stage, the
 choice it hides, and the LaunchDarkly capability that owns that choice. The second
 layer, directly beneath each stage, names the examples here that demonstrate it.
 **Every citation is a link to its folder.**
 
-## Why each diagram exists twice
+## Why each diagram exists twice, in two shapes
 
 GitHub shows a committed `.html` file as source rather than rendering it, so each
-figure is also written as a flattened `.svg`, which GitHub does render — above, and
-in its own file view. That is why this folder has four files and no web server.
+figure is also written as a flattened `.svg`, which GitHub does render — above, and in
+its own file view. That is why this folder has four files and no web server.
 
-The `.svg` is rendered **as an image**, which costs it three things the page keeps:
-the citations are not clickable, the typefaces fall back to whatever the reader has,
-and there is no dark variant, so the figure carries its own light background. For
-the clickable version, open the page from a clone:
+**The two differ in shape, on purpose.** The page runs the stages left to right, which
+is how you present them and how the workflow is drawn everywhere else. The image stacks
+them vertically, each stage paired with its citations, because the landscape figure is a
+2.5:1 ribbon and any viewer that fits a file into a box — GitHub's preview included —
+shrinks a ribbon until the type disappears. Stacked, it renders at the container's full
+width, and it reads on a phone. Same stages, same citations, same geometry inside each
+box.
+
+Being rendered **as an image** costs the `.svg` three more things the page keeps: the
+citations are not clickable, the typefaces fall back to whatever the reader has, and
+there is no dark variant, so the figure carries its own light background. For the
+clickable version, open the page from a clone:
 
 ```bash
 open diagrams/cicd-pipeline.html
 ```
+
+For the image at full size without a clone, the raw host serves it as an image:
+`https://raw.githubusercontent.com/marcoman/lunch-marcoly/main/diagrams/cicd-pipeline.svg`
 
 Citations link to `github.com` rather than to a sibling folder, so they survive being
 opened from anywhere — including from a web server later, where a relative folder
@@ -82,4 +92,6 @@ Add an example to the repository and `--check` names it as unmapped until it has
 `PLACEMENT` entry. Rename or remove one and `--check` reports it as a ghost. Run
 the check before a release so the diagrams do not quietly fall behind the code.
 
-All four files are generated. Edit `build.py`, not the HTML and not the SVG.
+All four files are generated — `figure()` draws the landscape page, `portrait()` the
+stacked image, and both share the stages, the placement table and the citation logic.
+Edit `build.py`, not the HTML and not the SVG.
