@@ -1,0 +1,39 @@
+# Rust
+
+Console application version of the [102-flag-variations grid navigator](../application.md).
+
+## Prerequisites
+
+- Rust **1.75+**
+- LaunchDarkly flags provisioned and `LD_SDK_KEY` set
+
+## Environment variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `LD_SDK_KEY` | Yes | Server-side SDK key for flag evaluation |
+
+## Flags
+
+- `show-anonymous-host-os-emoji` — **Boolean**, evaluated with an anonymous context and private `hostOs`; gates the OS emoji.
+- `configure-navigation-count-label` — **String**; supplies the always-visible move counter label.
+- `configure-lucky-number` — **Number**; supplies `Lucky Number is: N`.
+- `configure-max-navigation-moves` — **JSON** (`{"maxMoves": N}`); caps successful moves per session.
+
+This is a console app; it evaluates flags but does not include the web lab or REST Controls UI.
+
+## Build
+
+```bash
+cargo build --release
+```
+
+## Run
+
+```bash
+./target/release/102-flag-variations
+```
+
+## What to expect
+
+Same flag behavior as [python-console/102-flag-variations.py](../python-console/102-flag-variations.py). Press `L` to log out or `Q` to quit.

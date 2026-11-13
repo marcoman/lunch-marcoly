@@ -1,0 +1,17 @@
+{
+  "name": "205-agent-graph",
+  "version": "1.0.0",
+  "private": true,
+  "description": "205-agent-graph — Agent Management Agent Graphs demo (Node web)",
+  "main": "205-agent-graph.js",
+  "scripts": {
+    "start": "node 205-agent-graph.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0",
+    "@launchdarkly/server-sdk-ai": "^2.0.0"
+  }
+}

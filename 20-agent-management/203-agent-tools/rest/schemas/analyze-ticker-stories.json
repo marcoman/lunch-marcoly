@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "properties": {
+    "ticker": {
+      "type": "string",
+      "description": "Stock ticker symbol to analyze (e.g. NVDA)."
+    },
+    "stories": {
+      "type": "array",
+      "description": "News headlines for this ticker only. Do not invent stories.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string", "description": "Headline title" },
+          "publisher": { "type": "string", "description": "Optional publisher name" }
+        },
+        "required": ["title"]
+      }
+    }
+  },
+  "required": ["ticker", "stories"]
+}

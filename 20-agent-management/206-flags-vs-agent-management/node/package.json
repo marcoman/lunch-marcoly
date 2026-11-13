@@ -1,0 +1,17 @@
+{
+  "name": "206-flags-vs-agent-management",
+  "version": "1.0.0",
+  "private": true,
+  "description": "206-flags-vs-agent-management — Agent Management vs flags (Node web)",
+  "main": "206-flags-vs-agent-management.js",
+  "scripts": {
+    "start": "node 206-flags-vs-agent-management.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0",
+    "@launchdarkly/server-sdk-ai": "^2.0.0"
+  }
+}

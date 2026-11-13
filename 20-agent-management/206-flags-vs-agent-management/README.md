@@ -1,0 +1,103 @@
+# 206-flags-vs-agent-management
+
+**Status: Python :8260, Node :8261, Java :8262, .NET :8263.** Agent Management, Separate flags, and JSON flag run side by side. In the series portal as **Flag compare**.
+
+The [21](../201-agent-completion-config/) briefing, with a source control. The same four settings come from an Agent Management completion config, from four feature flags, or from one JSON flag.
+
+Settings: **model**, **system prompt**, **user prompt**, and **whether a judge scores the draft**. The judge reports a pass or fail on the screen. It does not rewrite the draft. That rewrite stays in [24](../204-agent-judges/).
+
+Two personas: **Conservative Charlie** and **Thoughtless Toby**, switchable with Previous/Next User. One targeting rule plus a fallthrough. The flag sources repeat that rule. The completion config holds it once.
+
+A **Model override** above the Persona panel can force every source to call `llama3.2:1b`, `llama3.2:3b`, or Claude Sonnet (requires `ANTHROPIC_API_KEY`) for one Generate, regardless of what each source served. It shows model diversity (text, latency, tokens, cost shape); the pass/fail pair still comes from the persona, since Toby's prompt fails under any model.
+
+Outline: [application.md](application.md).
+
+Web only. Python, Node, Java, and .NET. Series portal tab **Flag compare**.
+
+## Setup
+
+Do this once before Generate. Series SDK key, Ollama, and news keys: [20-agent-management README](../README.md).
+
+**Agent Management.** [`rest/create-original.sh`](rest/create-original.sh) creates the completion config and the judge. The Python app calls these two. It does not create feature flags.
+
+| Resource | Key |
+|----------|-----|
+| Completion config | `equity-briefing-flag-compare` |
+| Judge | `equity-briefing-flag-compare-judge` |
+
+Charlie’s name rule serves `concise-skeptic` (`llama3.2:3b`). Toby is the fallthrough, `reckless-hype` (`llama3.2:1b`). Both are on screen; Previous/Next User switches between them. [`attach-repair-tool.sh`](rest/attach-repair-tool.sh) attaches `reduce-briefing-uncertainty` to `reckless-hype` only. The app runs that tool after a failed judge. The flag sources have no tool to run.
+
+```bash
+export LD_API_ACCESS_TOKEN="api-..."
+export LD_PROJECT_KEY="lunch-marcoly"
+export LD_ENVIRONMENT_KEY="test"
+cd 20-agent-management/206-flags-vs-agent-management/rest
+./create-original.sh
+./attach-repair-tool.sh
+
+ollama pull llama3.2:3b
+ollama pull llama3.2:1b
+```
+
+Optional, for the **Model override**'s Claude Sonnet choice: `export ANTHROPIC_API_KEY="sk-ant-..."` before starting the app. The key stays in the server process; without it, Sonnet is left off the override list and the other two choices still work.
+
+Details, including delete: [rest/README.md](rest/README.md).
+
+**Flags.** [`rest/create-flags.sh`](rest/create-flags.sh) creates the four separate flags and the JSON flag. Charlie’s name rule and Toby’s fallthrough are copied onto each one. `enable-briefing-judge` is on for both personas; turn that variation off in LaunchDarkly to leave the draft undecorated.
+
+```bash
+export LD_API_ACCESS_TOKEN="api-..."
+export LD_PROJECT_KEY="lunch-marcoly"
+export LD_ENVIRONMENT_KEY="test"
+cd 20-agent-management/206-flags-vs-agent-management/rest
+./create-flags.sh
+```
+
+| Source | Keys |
+|--------|------|
+| Separate flags | `configure-briefing-model`, `configure-briefing-system-prompt`, `configure-briefing-user-prompt`, `enable-briefing-judge` |
+| JSON flag | `configure-briefing-json` |
+
+Restart the Python app after either script so it picks up the new code. The server does not reload files on its own.
+
+**Run the app** after the script succeeds and `LD_SDK_KEY` is set for that same environment:
+
+```bash
+cd 20-agent-management/206-flags-vs-agent-management/python
+python 206-flags-vs-agent-management.py
+```
+
+Open **http://127.0.0.1:8260/**. Use the repo virtualenv (`../../.venv/bin/python`) if `python` cannot import `ldai`.
+
+Node **:8261**, Java **:8262**, and .NET **:8263** serve the same screen. See [node/README.md](node/README.md), [java/README.md](java/README.md), and [dotnet/README.md](dotnet/README.md).
+
+Keywords: **feature flags** · **JSON variations** · **Agent Management** · **completion config** · **judges**
+
+| Topic | Docs |
+|-------|------|
+| Flag types | [Flag types](https://launchdarkly.com/docs/sdk/features/flag-types) |
+| Agent Management | [Agent Management](https://launchdarkly.com/docs/home/agentcontrol) |
+| Judges | [Judges](https://launchdarkly.com/docs/home/agentcontrol/judges) |
+| Library tools | [Tools](https://launchdarkly.com/docs/home/agentcontrol/tools) |
+| AI SDK | [AI SDKs](https://launchdarkly.com/docs/sdk/ai) |
+
+## What you will see
+
+One **Generate AI Report** runs all three sources on the same headlines and the same user. The drafts stay side by side. **LD details** on a column opens that evaluation; the drawer switches among the three without another run.
+
+| Source | LaunchDarkly calls inside that column |
+|--------|--------------------------------------|
+| Agent Management | One completion config (model + both prompts), one judge config, and on a guardrail fail the repair tool |
+| Separate flags | Four flags: model, system prompt, user prompt, judge on/off. No tool |
+| JSON flag | One JSON body with those four fields. No tool |
+
+Toby’s draft should fail the guardrail. Agent Management then shows the tool output under the draft. The other two columns stay on the failed draft. Previous/Next User switches to Charlie, whose draft should pass. The **Model override** above the persona panel forces every source to call the same model (local small, local best, or Sonnet) for one Generate, to compare models within either outcome.
+
+## Implementation
+
+| Language | Directory | Status |
+|----------|-----------|--------|
+| Python web | [python/](python/) | **:8260**. Agent Management, Separate flags, and JSON flag |
+| Node web | [node/](node/) | **:8261**. `completionConfig`, `variationDetail`, `judgeConfig` |
+| Java web | [java/](java/) | **:8262**. Server SDK JSON evaluation. No Java AI SDK |
+| .NET web | [dotnet/](dotnet/) | **:8263**. `CompletionConfig`, `JsonVariationDetail`, `JudgeConfig` |

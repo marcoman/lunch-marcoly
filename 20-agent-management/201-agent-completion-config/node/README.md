@@ -1,0 +1,84 @@
+# Node web — Agent Management completion config
+
+Same UI as [01-reference-agent](../../../01-reference-agent/node/), but **Generate AI Report** loads **model**, **system**, and **user** messages from LaunchDarkly Agent Management.
+
+Keywords: **Agent Management** · **completion config** · **AI SDK** · **message variables** (`{{ stories }}`)
+
+| Topic | Docs |
+|-------|------|
+| Node AI SDK | [Node.js AI SDK reference](https://launchdarkly.com/docs/sdk/ai/node-js) |
+| Customize configs | [Customizing Agent Management configs](https://launchdarkly.com/docs/sdk/features/agentcontrol-config) |
+| Provision this config | [../rest/README.md](../rest/README.md) |
+
+## Prerequisites
+
+1. Node.js 20 LTS+ (see repo root `.nvmrc`)
+2. `npm install` in this folder (`@launchdarkly/node-server-sdk`, `@launchdarkly/server-sdk-ai`)
+3. Provisioned config: `cd ../rest && ./create-config.sh`
+4. `LD_SDK_KEY` for the **same environment** as `LD_ENVIRONMENT_KEY` used in targeting
+5. **Required:** all three Ollama tags pulled ([parent README](../README.md#required-ollama-models))
+
+Local models let anyone complete the demo without a cloud LLM account. Cloud (Bedrock) remains optional for enhanced results later.
+
+```bash
+export LD_SDK_KEY="sdk-..."
+# optional: export LD_AGENT_CONFIG_KEY="equity-briefing-completion"
+ollama pull llama3.2:3b    # required — Charlie (best)
+ollama pull gemma2:2b      # required — Nancy / Amelia (default)
+ollama pull llama3.2:1b    # required — Toby (simple)
+ollama list
+```
+
+## Run
+
+```bash
+cd 20-agent-management/201-agent-completion-config/node
+npm install
+npm start
+# or: node 201-agent-completion-config.js
+```
+
+Open **http://127.0.0.1:8211/** (Python twin uses 8210; 01 uses 8090).
+
+## What to try
+
+1. **Get Stories** → headline panels fill
+2. **Generate AI Report** → User Prompt shows the LD user message (with `{{ stories }}` filled); Response streams from Ollama
+3. Provider/model should match the served variation (`gemma2:2b` for Nancy; `llama3.2:3b` for Charlie; `llama3.2:1b` for Toby)
+4. Switch users: **Charlie** → `concise-skeptic`; **Nancy** → `baseline-analyst`; **Toby** → `reckless-hype`; **Anonymous Amelia** → fallthrough `baseline-analyst` (anonymous context)
+5. Or flip fallthrough only: `../rest/update-targeting.sh concise-skeptic` → regenerate → flip back
+
+## Architecture
+
+| File | Role |
+|------|------|
+| `201-agent-completion-config.js` | HTTP + SSE |
+| `agentCore.js` | **LD insertion:** `completionConfig` → Ollama stream |
+| `yahooNews.js` | News waterfall (Finnhub → Massive → Yahoo) + `../stories/` cache |
+| `index.html` | Browser UI |
+
+## Environment
+
+| Variable | Required | Notes |
+|----------|----------|-------|
+| `LD_SDK_KEY` | Yes | Server-side SDK key |
+| `LD_AGENT_CONFIG_KEY` | No | Default `equity-briefing-completion` |
+| `OLLAMA_HOST` | No | Default `http://127.0.0.1:11434` |
+| `OLLAMA_MODEL` | No | Default `llama3.2:3b` (code baseline) |
+
+## Fallback (config off)
+
+If you **disable** the Agent Management config in LaunchDarkly, the SDK returns `enabled=false` (the disabled variation)—not your SDK default. This app then uses the **in-code baseline-analyst** prompts from [`../rest/messages/baseline-*.txt`](../rest/messages/) plus local Ollama (`OLLAMA_MODEL`, default `llama3.2:3b`).
+
+Provider/model shows `ollama / llama3.2:3b (code baseline)`.
+
+## Troubleshooting
+
+| Symptom | Fix |
+|---------|-----|
+| Want LD variations again | Turn the config **on** and confirm fallthrough → `baseline-analyst` |
+| Missing `LD_SDK_KEY` | Export SDK key for the targeted environment |
+| Ollama errors | Daemon up; model id on variation matches `ollama list` |
+| Wrong voice after targeting change | Wait a few seconds for stream refresh, then Generate again |
+
+Parent: [../README.md](../README.md) · Spec: [../application.md](../application.md) · Python twin: [../python/README.md](../python/README.md)

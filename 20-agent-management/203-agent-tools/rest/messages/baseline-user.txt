@@ -1,0 +1,3 @@
+Write a short equity briefing from these headlines only:
+
+{{ stories }}

@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "properties": {
+    "question": {
+      "type": "string",
+      "description": "One analyst follow-up question to score."
+    },
+    "headlines": {
+      "type": "string",
+      "description": "Headline text the question is scored against."
+    }
+  },
+  "required": ["question", "headlines"]
+}

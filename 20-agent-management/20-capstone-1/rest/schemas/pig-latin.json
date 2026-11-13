@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "text": {
+      "type": "string",
+      "description": "Specialist draft to convert to Pig Latin."
+    }
+  },
+  "required": ["text"]
+}

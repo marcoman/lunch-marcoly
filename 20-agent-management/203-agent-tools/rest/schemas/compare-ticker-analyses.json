@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "properties": {
+    "analysis_a": {
+      "type": "object",
+      "description": "Structured analysis returned by analyze-ticker-stories for the first ticker."
+    },
+    "analysis_b": {
+      "type": "object",
+      "description": "Structured analysis returned by analyze-ticker-stories for the second ticker."
+    }
+  },
+  "required": ["analysis_a", "analysis_b"]
+}

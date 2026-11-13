@@ -1,0 +1,4 @@
+Using only the following news stories, write a short equity briefing for Best Betty's desk.
+
+Stories:
+{{ stories }}

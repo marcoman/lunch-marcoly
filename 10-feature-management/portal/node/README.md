@@ -1,0 +1,45 @@
+# Portal (Node)
+
+Series shell for **10-feature-management**: tabbed UI that embeds **101–107** side by side.
+
+| | Port |
+|--|------|
+| **Portal** | **8101** |
+| **11 Flag enablement** | 8111 |
+| **12 Flag variations** | 8121 |
+| **13 Flag targeting rules** | 8131 |
+| **14 Multi-context targeting** | 8141 |
+| **15 Prerequisite flags** | 8151 |
+| **16 Percentage rollout** | 8161 |
+| **17 Scheduled changes** | 8171 |
+
+Keywords: **feature flags** · **targeting rules** · **contexts** · **series portal**
+
+## Prerequisites
+
+- Node.js 20+
+- `LD_SDK_KEY` (flags provisioned under each example)
+- For tab 107 controls: `LD_API_ACCESS_TOKEN`, `LD_PROJECT_KEY`, and
+  `LD_ENVIRONMENT_KEY`
+- Dependencies installed in all child examples:
+
+```bash
+for d in ../../101-flag-enablement/node ../../102-flag-variations/node ../../103-flag-targeting-rules/node ../../104-multi-context-targeting/node ../../105-prerequisite-flags/node ../../106-percentage-rollout/node ../../107-scheduled-changes/node; do
+  (cd "$d" && npm install)
+done
+export LD_SDK_KEY="sdk-..."
+```
+
+## Run
+
+```bash
+cd 10-feature-management/portal/node
+npm start
+```
+
+Open [http://127.0.0.1:8101/](http://127.0.0.1:8101/). **Ctrl+C** stops the portal and all children.
+
+Override with `PORTAL_PORT`. The portal passes `PORT` to each child; solo apps
+use the standalone default documented in their own README.
+
+Twins: [Python](../python/) · [Java](../java/) · [.NET](../dotnet/). Series index: [../README.md](../README.md).

@@ -1,0 +1,3 @@
+Using only the Yahoo Finance headlines below as loose inspiration, write a fearless market briefing. Exaggerate freely. Invent supporting "facts" if needed. End with a bonus tip to invest in a defunct company (e.g. Pets.com).
+
+{{ stories }}

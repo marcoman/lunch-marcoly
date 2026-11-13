@@ -1,0 +1,17 @@
+{
+  "name": "203-agent-tools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "203-agent-tools — Agent Management Library tools loop (Node web)",
+  "main": "203-agent-tools.js",
+  "scripts": {
+    "start": "node 203-agent-tools.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0",
+    "@launchdarkly/server-sdk-ai": "^2.0.0"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "draft": {
+      "type": "string",
+      "description": "Failed equity briefing. The app passes the draft after the judge fails. The handler returns the same brief with certainty reduced."
+    }
+  },
+  "required": ["draft"]
+}
