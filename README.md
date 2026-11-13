@@ -116,6 +116,10 @@ lunch-marcoly/
 │   ├── 28-big-segment/          # Stub: DynamoDB-backed big segment, us-east-1
 │   ├── 29-rollout-notifications/ # Stub: email, and Slack if the app is installed
 │   └── 30-pii/                  # Stub: region public, email private, name omitted
+├── diagrams/                    # Two workflow maps; every example cited where it fits
+│   ├── build.py                 # Regenerates both from the folders on disk
+│   ├── cicd-pipeline.html       # Pull request to retired flag, in five stages
+│   └── llm-workflow.html        # Request to checked answer, in six steps
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── python/
