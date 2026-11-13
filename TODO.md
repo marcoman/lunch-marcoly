@@ -9,7 +9,7 @@ Work queue for new lunch-marcoly examples. Ship in this order.
 - [401-no-sdk-singleton](40-dont-do-this/401-no-sdk-singleton/)
 - [402-local-if-no-sdk](40-dont-do-this/402-local-if-no-sdk/)
 - [99-use-cases/17-migration-flags](99-use-cases/17-migration-flags/)
-- [99-use-cases/20-multi-arm-bandit](99-use-cases/20-multi-arm-bandit/) — grid bandit; not `53-mobile-experiment`
+- [99-use-cases/20-multi-arm-bandit](99-use-cases/20-multi-arm-bandit/) — grid bandit; not `503-mobile-experiment`
 - [20-agent-config/20-capstone-1](20-agent-config/20-capstone-1/) — outside **201–209**. Python **:8290**, Node **:8291**, Java **:8292**, .NET **:8293** built, not in the portal. Graph is assess → specialist → finalize. Checked tools (Pig Latin, ROT13, joke tagline) run after the draft and before finalize. Judges and feedback stay on the draft. `201`–`205` stay as they are. English and Spanish live here. Later lessons keep their own numbers and do not roll into the capstone.
 
 New stubs (README only, not built):
@@ -23,8 +23,8 @@ New stubs (README only, not built):
 - [307-client-evaluation-details](30-client-sdk/307-client-evaluation-details/) — client `variationDetail()` next to `variation()`.
 - [308-client-secure-mode](30-client-sdk/308-client-secure-mode/)
 - [309-client-context-cache](30-client-sdk/309-client-context-cache/) — local storage cache, called out in the UI. Not [305-client-bootstrap](30-client-sdk/305-client-bootstrap/).
-- [55-automatic-environment-attributes](50-mobile/55-automatic-environment-attributes/)
-- [56-mobile-multi-environment](50-mobile/56-mobile-multi-environment/)
+- [505-automatic-environment-attributes](50-mobile/505-automatic-environment-attributes/)
+- [506-mobile-multi-environment](50-mobile/506-mobile-multi-environment/)
 - [603-server-errors](60-observability/603-server-errors/) — one deliberate error, visible as an error and a log line. **604** stays free.
 - [605-server-metrics](60-observability/605-server-metrics/) — custom metric. [602-server-traces](60-observability/602-server-traces/) is spans only.
 - [01-image-processing](70-model-demos/01-image-processing/), [02-text-origin](70-model-demos/02-text-origin/), [03-guess-the-animal](70-model-demos/03-guess-the-animal/) — plan these next to [04-terraform-codegen](70-model-demos/04-terraform-codegen/). Not a new decade.

@@ -75,12 +75,12 @@ lunch-marcoly/
 │   └── 402-local-if-no-sdk/     # Stub: local if / no variation()
 ├── 50-mobile/                   # Mobile SDK series (2×2 tap navigator)
 │   ├── README.md
-│   ├── 51-reference/            # android/ · ios/ (no LaunchDarkly)
-│   ├── 52-mobile-evaluation/    # android/ · ios/ (mobile key)
-│   ├── 53-mobile-experiment/    # one experiment; platform is analysis dimension
-│   ├── 54-platform-rollout/     # Android first, then iOS, one targeting rule
-│   ├── 55-automatic-environment-attributes/  # Stub: SDK-supplied attributes
-│   └── 56-mobile-multi-environment/          # Stub: two mobile keys
+│   ├── 501-reference/            # android/ · ios/ (no LaunchDarkly)
+│   ├── 502-mobile-evaluation/    # android/ · ios/ (mobile key)
+│   ├── 503-mobile-experiment/    # one experiment; platform is analysis dimension
+│   ├── 504-platform-rollout/     # Android first, then iOS, one targeting rule
+│   ├── 505-automatic-environment-attributes/  # Stub: SDK-supplied attributes
+│   └── 506-mobile-multi-environment/          # Stub: two mobile keys
 ├── 60-observability/            # Server-side observability series
 │   ├── 601-reference/            # Python-owned navigator API; no LaunchDarkly
 │   ├── 602-server-traces/        # Python ObservabilityPlugin + manual move spans
@@ -114,7 +114,7 @@ lunch-marcoly/
 └── ...
 ```
 
-Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control sort order. **10-code-control** children are **101–109**, **20-agent-config** children are **201–209** (capstone folder `20-capstone-1`), and **30-client-sdk** children are **301–309**. **40-dont-do-this** children are **401** and **402**. **60-observability** children are **601**, **602**, **603**, and **605**. **604** stays free. Other decade series still use two-digit children (`51`–`56`, …) until that series is renumbered. Letter suffixes stay unused. A fourth digit is not part of the scheme.
+Examples are prefixed with a two-digit number (`00`, `01`, `02`, …) to control sort order. **10-code-control** children are **101–109**, **20-agent-config** children are **201–209** (capstone folder `20-capstone-1`), and **30-client-sdk** children are **301–309**. **40-dont-do-this** children are **401** and **402**. **60-observability** children are **601**, **602**, **603**, and **605**. **604** stays free. Other decade series still use two-digit children (`501`–`506`, …) until that series is renumbered. Letter suffixes stay unused. A fourth digit is not part of the scheme.
 
 ## Languages
 
@@ -182,12 +182,12 @@ Each example may include implementations in any of these languages. Every applic
 | 401 | [401-no-sdk-singleton](40-dont-do-this/401-no-sdk-singleton/) | **Stub:** new server SDK client per evaluation |
 | 402 | [402-local-if-no-sdk](40-dont-do-this/402-local-if-no-sdk/) | **Stub:** local `if` / hardcoded boolean, never `variation()` |
 | 50 | [50-mobile](50-mobile/) | Mobile SDK series (2×2 tap navigator; mobile key, not browser client-side ID) |
-| 51 | [51-reference](50-mobile/51-reference/) | Mobile reference app — login, 2×2 tap grid, drawer; Android + iOS; no LaunchDarkly |
-| 52 | [52-mobile-evaluation](50-mobile/52-mobile-evaluation/) | Mobile SDK: init, variation, listeners (`LD_MOBILE_KEY`; dedicated flag keys) |
-| 53 | [53-mobile-experiment](50-mobile/53-mobile-experiment/) | Android+iOS Experimentation: one flag, exposure→conversion, results by platform, synthetic traffic |
-| 54 | [54-platform-rollout](50-mobile/54-platform-rollout/) | Staggered release by platform: Android first, then add iOS to the same rule |
-| 55 | [55-automatic-environment-attributes](50-mobile/55-automatic-environment-attributes/) | **Stub:** automatic environment attributes on Android and iOS |
-| 56 | [56-mobile-multi-environment](50-mobile/56-mobile-multi-environment/) | **Stub:** two environments, two mobile keys |
+| 501 | [501-reference](50-mobile/501-reference/) | Mobile reference app — login, 2×2 tap grid, drawer; Android + iOS; no LaunchDarkly |
+| 502 | [502-mobile-evaluation](50-mobile/502-mobile-evaluation/) | Mobile SDK: init, variation, listeners (`LD_MOBILE_KEY`; dedicated flag keys) |
+| 503 | [503-mobile-experiment](50-mobile/503-mobile-experiment/) | Android+iOS Experimentation: one flag, exposure→conversion, results by platform, synthetic traffic |
+| 504 | [504-platform-rollout](50-mobile/504-platform-rollout/) | Staggered release by platform: Android first, then add iOS to the same rule |
+| 505 | [505-automatic-environment-attributes](50-mobile/505-automatic-environment-attributes/) | **Stub:** automatic environment attributes on Android and iOS |
+| 506 | [506-mobile-multi-environment](50-mobile/506-mobile-multi-environment/) | **Stub:** two environments, two mobile keys |
 | 60 | [60-observability](60-observability/) | Observability series: Python server-side telemetry on the grid navigator |
 | 601 | [601-reference](60-observability/601-reference/) | Server-owned Python navigator baseline (**:8610**; no LaunchDarkly) |
 | 602 | [602-server-traces](60-observability/602-server-traces/) | Python `ObservabilityPlugin` + `grid.login` / `grid.move` spans (**:8620**) |

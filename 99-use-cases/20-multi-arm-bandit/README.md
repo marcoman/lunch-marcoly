@@ -8,7 +8,7 @@ The difference is the split. `01` sets percentages and leaves them. A bandit
 watches a metric and shifts traffic toward the variation that is winning,
 while still sending some traffic to the others.
 
-[53-mobile-experiment](../../50-mobile/53-mobile-experiment/) stays in
+[503-mobile-experiment](../../50-mobile/503-mobile-experiment/) stays in
 `50-mobile`. That lesson is two phone platforms. This one is the grid.
 
 Keywords: **Experimentation** · **multi-armed bandit** · **Thompson Sampling** ·

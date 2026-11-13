@@ -2,7 +2,7 @@
 
 This document defines the structure, conventions, and standards for **lunch-marcoly** — a collection of small, self-contained programming examples, each implemented across multiple languages.
 
-For the reference grid navigator application behavior, see [00-reference-code/application.md](00-reference-code/application.md). For the browser-side twin, see [02-reference-client-code/application.md](02-reference-client-code/application.md). For the reference agent UI, see [01-reference-agent/application.md](01-reference-agent/application.md). For the mobile 2×2 tap navigator, see [50-mobile/51-reference/application.md](50-mobile/51-reference/application.md).
+For the reference grid navigator application behavior, see [00-reference-code/application.md](00-reference-code/application.md). For the browser-side twin, see [02-reference-client-code/application.md](02-reference-client-code/application.md). For the reference agent UI, see [01-reference-agent/application.md](01-reference-agent/application.md). For the mobile 2×2 tap navigator, see [50-mobile/501-reference/application.md](50-mobile/501-reference/application.md).
 
 ## Purpose
 
@@ -29,7 +29,7 @@ Supported languages and application types:
 | Vue       | `vue/`   | Browser application (Vite + Vue SDK) | nvm + npm |
 | Android  | `android/` | Mobile application (Kotlin / Compose) | Gradle Wrapper + Android SDK |
 | iOS      | `ios/` | Mobile application (Swift / SwiftUI) | Xcode |
-| React Native | `react-native/` | Mobile application (later) | nvm + Metro; not in 51 |
+| React Native | `react-native/` | Mobile application (later) | nvm + Metro; not in 501 |
 
 **Web applications** (`python/`, `node/`, `java/`, `dotnet/`) include a graphical component served in the browser. Each README should document how to start the local server and which URL to open.
 
@@ -44,7 +44,7 @@ and [30-client-sdk](30-client-sdk/).
 **Mobile applications** (`android/`, `ios/`, later `react-native/`) run on a
 device or emulator. Evaluation (when present) uses a **mobile key**
 (`LD_MOBILE_KEY`), not a server SDK key and not the browser client-side ID.
-Used by [50-mobile](50-mobile/). Do not wrap the 00/02 WASD grid; 51 defines a
+Used by [50-mobile](50-mobile/). Do not wrap the 00/02 WASD grid; 501 defines a
 2×2 tap navigator.
 
 **Console applications** (`python-console/`, `node-console/`, `java-console/`, `go/`, `cpp/`, `rust/`) run in the terminal with text-based input and output.
@@ -156,12 +156,12 @@ lunch-marcoly/
 │   └── 402-local-if-no-sdk/     # Stub: local if / no variation()
 ├── 50-mobile/                   # Mobile SDK series (2×2 tap navigator)
 │   ├── README.md                # Mobile key, simulators, no AgentControl
-│   ├── 51-reference/            # No LaunchDarkly — android/ · ios/
-│   ├── 52-mobile-evaluation/    # Mobile SDK init / variation / listeners
-│   ├── 53-mobile-experiment/    # One Android+iOS experiment; platform analysis
-│   ├── 54-platform-rollout/     # Android first, then iOS; one targeting rule
-│   ├── 55-automatic-environment-attributes/  # Stub: SDK-supplied attributes
-│   └── 56-mobile-multi-environment/          # Stub: two mobile keys
+│   ├── 501-reference/            # No LaunchDarkly — android/ · ios/
+│   ├── 502-mobile-evaluation/    # Mobile SDK init / variation / listeners
+│   ├── 503-mobile-experiment/    # One Android+iOS experiment; platform analysis
+│   ├── 504-platform-rollout/     # Android first, then iOS; one targeting rule
+│   ├── 505-automatic-environment-attributes/  # Stub: SDK-supplied attributes
+│   └── 506-mobile-multi-environment/          # Stub: two mobile keys
 ├── 60-observability/            # Server-side observability series
 │   ├── 601-reference/            # Python-owned navigator API; no LaunchDarkly :8610
 │   ├── 602-server-traces/        # ObservabilityPlugin + move spans :8620
@@ -184,7 +184,7 @@ lunch-marcoly/
 │   ├── 17-migration-flags/    # Stub: migration flag dual-store cutover
 │   ├── 18-sdk-fallbacks/      # SDK defaults vs last-known (web apps)
 │   ├── 19-terraform-sentinel/ # Sentinel policies for Terraform flags (no SDK)
-│   └── 20-multi-arm-bandit/   # Stub: bandit on the grid; not 53-mobile-experiment
+│   └── 20-multi-arm-bandit/   # Stub: bandit on the grid; not 503-mobile-experiment
 ├── 01-hello-world/
 │   ├── README.md
 │   ├── rest/
@@ -206,7 +206,7 @@ lunch-marcoly/
 - Prefix with a **two-digit number**: `00-reference-code`, `01-hello-world`, `02-binary-search`
 - Follow the number with a **kebab-case** name describing the concept
 - Use the next available number when adding a new example (`03`, `04`, …)
-- Decade series keep that two-digit folder (`10`, `20`, `30`, …). **10-code-control** children are **101–109**. **20-agent-config** children are **201–209**, and the capstone folder is `20-capstone-1`. **30-client-sdk** children are **301–309**. **40-dont-do-this** children are **401** and **402**. **60-observability** children are **601**, **602**, **603**, and **605**. **604** stays free. Other series still use two-digit children (`51`–`56`, …) until that series is renumbered the same way (`501`–`599`). Letter suffixes (`1a`, `1b`) stay unused. A fourth digit is not part of the scheme. Inside a renumbered series, the first language pass uses the new number. Other language entrypoints keep their previous filenames until that platform is updated. JavaScript, React, and Vue in **301–306** use the new numbers, including an About tab. The client-SDK portal still uses the old names. Listen ports for 101–107 stay **8110–8170**. AgentControl ports stay **8210–8260**, with the capstone on **8290–8293**. Client SDK ports stay **8310–8362**.
+- Decade series keep that two-digit folder (`10`, `20`, `30`, …). **10-code-control** children are **101–109**. **20-agent-config** children are **201–209**, and the capstone folder is `20-capstone-1`. **30-client-sdk** children are **301–309**. **40-dont-do-this** children are **401** and **402**. **60-observability** children are **601**, **602**, **603**, and **605**. **604** stays free. Other series still use two-digit children (`501`–`506`, …) until that series is renumbered the same way (`501`–`599`). Letter suffixes (`1a`, `1b`) stay unused. A fourth digit is not part of the scheme. Inside a renumbered series, the first language pass uses the new number. Other language entrypoints keep their previous filenames until that platform is updated. JavaScript, React, and Vue in **301–306** use the new numbers, including an About tab. The client-SDK portal still uses the old names. Listen ports for 101–107 stay **8110–8170**. AgentControl ports stay **8210–8260**, with the capstone on **8290–8293**. Client SDK ports stay **8310–8362**.
 - `70-model-demos` and `99-use-cases` already count children inside the folder (`01`, `02`, …). They do not consume `71`–`79` or the next decade. Leave that inner count as it is until the three-digit refactor, if it ever includes them.
 - `00-reference-code` is reserved for the reference grid navigator app and repository conventions. It does **not** include LaunchDarkly integration.
 - `02-reference-client-code` is the same navigator **in the browser** (client JavaScript). It does **not** include LaunchDarkly. Later client-SDK examples (series **30**) build on this shape.
@@ -247,13 +247,13 @@ lunch-marcoly/
 - `40-dont-do-this` groups **anti-pattern** examples (loud do-not-ship). Children are **401** and **402**.
 - `401-no-sdk-singleton` (under `40-dont-do-this/`) will demonstrate a new server SDK client per evaluation instead of one process-wide client.
 - `402-local-if-no-sdk` (under `40-dont-do-this/`) will demonstrate a local `if` / hardcoded boolean instead of `variation()` — flipping the dashboard flag does nothing.
-- `50-mobile` groups **mobile** client-side SDK examples (mobile key, not `LD_SDK_KEY` and not `LD_CLIENT_SIDE_ID`). Children start at **51**. There is no HTTP portal. AgentControl is out of scope.
-- `51-reference` (under `50-mobile/`) is the 2×2 tap navigator baseline. It does **not** include LaunchDarkly. Android (`android/`) and iOS (`ios/`) ship first; `react-native/` comes later.
-- `52-mobile-evaluation` (under `50-mobile/`) adds the Android / iOS mobile SDKs (`LD_MOBILE_KEY`), dedicated flag keys, variation, and flag listeners. Do not reuse 31’s browser flag keys.
-- `53-mobile-experiment` (under `50-mobile/`) runs one boolean control/treatment experiment across Android and iOS. `platform` and `app-version` are context attributes for result analysis, never application-side assignment logic. The optional synthetic simulator uses a server SDK key only on the host.
-- `54-platform-rollout` (under `50-mobile/`) turns one boolean release on for `platform=android`, then a REST script adds `ios` to that clause. Counts come from `mobile_platform_rollout_move`, not from an experiment.
-- `55-automatic-environment-attributes` is a stub. The 2×2 navigator lists environment attributes the mobile SDK attached.
-- `56-mobile-multi-environment` is a stub. Two mobile keys, two environments, and the screen names which one served the flag.
+- `50-mobile` groups **mobile** client-side SDK examples (mobile key, not `LD_SDK_KEY` and not `LD_CLIENT_SIDE_ID`). Children start at **501**. There is no HTTP portal. AgentControl is out of scope.
+- `501-reference` (under `50-mobile/`) is the 2×2 tap navigator baseline. It does **not** include LaunchDarkly. Android (`android/`) and iOS (`ios/`) ship first; `react-native/` comes later.
+- `502-mobile-evaluation` (under `50-mobile/`) adds the Android / iOS mobile SDKs (`LD_MOBILE_KEY`), dedicated flag keys, variation, and flag listeners. Do not reuse 31’s browser flag keys.
+- `503-mobile-experiment` (under `50-mobile/`) runs one boolean control/treatment experiment across Android and iOS. `platform` and `app-version` are context attributes for result analysis, never application-side assignment logic. The optional synthetic simulator uses a server SDK key only on the host.
+- `504-platform-rollout` (under `50-mobile/`) turns one boolean release on for `platform=android`, then a REST script adds `ios` to that clause. Counts come from `mobile_platform_rollout_move`, not from an experiment.
+- `505-automatic-environment-attributes` is a stub. The 2×2 navigator lists environment attributes the mobile SDK attached.
+- `506-mobile-multi-environment` is a stub. Two mobile keys, two environments, and the screen names which one served the flag.
 - `60-observability` groups **server-side observability** examples. Children are **601**, **602**, **603**, and **605**. **604** stays free; Python ships first.
 - `601-reference` (under `60-observability/`) moves the 00 web navigator state into Python APIs without LaunchDarkly (**:8610**).
 - `602-server-traces` adds the Python `ObservabilityPlugin` and manual spans for successful login (`grid.login` with username) and successful moves (`grid.move`) (**:8620**). It evaluates no flags. It does not send errors, logs, or custom metrics.
@@ -262,8 +262,8 @@ lunch-marcoly/
 - `70-model-demos` groups model apps (image check, text origin, guess the animal, and a Terraform code-generator comparison). The series owns global **70**. Children are `01`, `02`, `03`, … inside the folder and may pass ten. **80** stays the next free decade. `01-image-processing`, `02-text-origin`, and `03-guess-the-animal` are stub READMEs. `04-terraform-codegen` is the Python web app on **:8740**: two local models, one Terraform file, `terraform validate`, no apply. These apps may use an AI Config, a judge, or a tool. They are not the equity briefing and not the grid.
 - `99-use-cases` holds focused LaunchDarkly patterns built on the reference app (e.g. A-B-C-D tests, segment targeting, progressive/guarded rollouts, adaptive triggers, SDK fallbacks, and a migration-flags stub).
 - `19-terraform-sentinel` (under `99-use-cases/`) is Sentinel policy for Terraform-managed flags (`temporary`, `sunset` custom property). Pass and fail fixtures only — no grid app and no SDK.
-- `20-multi-arm-bandit` (under `99-use-cases/`) is a stub. A multi-armed bandit on the grid navigator: a metric shifts traffic toward the winning variation. `01-abcd-test` keeps a fixed split. `53-mobile-experiment` stays in `50-mobile`.
-- `21-tenant-datacenters` (under `99-use-cases/`) is a Python web lab on **:8080**. Five datacenters hold 52 generated tenants. Each presence evaluates `tenant-border-palette` and `tenant-box-fill`. Version starts at 0.
+- `20-multi-arm-bandit` (under `99-use-cases/`) is a stub. A multi-armed bandit on the grid navigator: a metric shifts traffic toward the winning variation. `01-abcd-test` keeps a fixed split. `503-mobile-experiment` stays in `50-mobile`.
+- `21-tenant-datacenters` (under `99-use-cases/`) is a Python web lab on **:8080**. Five datacenters hold 502 generated tenants. Each presence evaluates `tenant-border-palette` and `tenant-box-fill`. Version starts at 0.
 - `22-api-progressive-rollout` (under `99-use-cases/`) starts a progressive environment release with the beta API. Flag `api-progressive-grid-highlight`, five steps from 10% to 100%. Web: Python **:8780**, Node **:8781**, Java **:8782**, .NET **:8783**. Consoles re-evaluate that flag in Python, Node, Java, Go, Rust, and C++. Example 14 keeps the UI rollout.
 - `23-api-guarded-rollout` (under `99-use-cases/`) starts a guarded environment release with the same beta API. Flag `api-guarded-grid-highlight`, stages 10% and 20% for 2 minutes, then 30% and 50% for 1 minute. Metrics are example 15's latency, error rate, and movement. The latency slider is the violation. Web: Python **:8784**, Node **:8785**, Java **:8786**, .NET **:8787**. Consoles re-evaluate that flag in Python, Node, Java, Go, Rust, and C++.
 - `24-multitenant-datacenter` (under `99-use-cases/`) is a Python presentation on **:8788**. Six datacenters named after AWS regions run shared replicas named for the region (`usw1-1`, `use1-1`), and `us-east-1` also runs `use1-3`. A stand-in set of named customers is ENZO, ACME, BIGCO, DREX, HUDSON, RHEIN, and KOPI. Large customers have one replica. ENZO in us-west-1 keeps two. Each replica has S, M, and L rows. A rolling deployment walks one datacenter at a time, 1 second between replicas. The customer panel waits for both the roll and the flag. Flag controls are stubs. `eu-central-1` and `eu-west-1` keep data sharing and marketing off.
@@ -296,8 +296,8 @@ Follow the idiomatic naming style of each language:
 | C++      | `cpp/`    | `main.cpp` + Makefile | binary `00-reference-code` |
 | Go       | `go/`     | `main.go` | binary `00-reference-code` |
 | Rust     | `rust/`   | `src/main.rs` | binary `00-reference-code` |
-| Android  | `android/` | Gradle `app/` (Kotlin / Compose) | `51-reference` APK / Studio run |
-| iOS      | `ios/`    | Xcode app (`*.xcodeproj`) | `51-reference` on Simulator |
+| Android  | `android/` | Gradle `app/` (Kotlin / Compose) | `501-reference` APK / Studio run |
+| iOS      | `ios/`    | Xcode app (`*.xcodeproj`) | `501-reference` on Simulator |
 | React Native | `react-native/` | *(later)* | — |
 
 The **runnable artifact name** matches the **example directory name** (e.g. `00-reference-code`, `01-hello-world`). Language READMEs document the exact build and run commands for that folder.
@@ -609,8 +609,8 @@ The Cargo `[bin]` name matches the example directory.
 
 ### Android
 
-Used by [50-mobile](50-mobile/). **Grid behavior is on the device.** 51 has no SDK.
-52 uses `LD_MOBILE_KEY` (never `LD_SDK_KEY`).
+Used by [50-mobile](50-mobile/). **Grid behavior is on the device.** 501 has no SDK.
+502 uses `LD_MOBILE_KEY` (never `LD_SDK_KEY`).
 
 - **Build:** from the `android/` folder (Gradle Wrapper; no system Gradle required):
 

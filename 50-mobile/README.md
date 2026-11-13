@@ -16,12 +16,12 @@ this series.
 
 | Example | Folder | What it teaches |
 |---------|--------|-----------------|
-| **51** | [51-reference/](51-reference/) | Touch 2×2 navigator — **no LaunchDarkly** |
-| **52** | [52-mobile-evaluation/](52-mobile-evaluation/) | `init`, `variation`, listeners — **mobile key** |
-| **53** | [53-mobile-experiment/](53-mobile-experiment/) | One Android+iOS **Experimentation** test; exposure, conversion, platform analysis |
-| **54** | [54-platform-rollout/](54-platform-rollout/) | Staggered release: Android first, then iOS, via one targeting rule |
-| **55** | [55-automatic-environment-attributes/](55-automatic-environment-attributes/) | **Stub.** SDK-supplied environment attributes on the 2×2 navigator |
-| **56** | [56-mobile-multi-environment/](56-mobile-multi-environment/) | **Stub.** Two mobile keys, two environments, one app |
+| **501** | [501-reference/](501-reference/) | Touch 2×2 navigator — **no LaunchDarkly** |
+| **502** | [502-mobile-evaluation/](502-mobile-evaluation/) | `init`, `variation`, listeners — **mobile key** |
+| **503** | [503-mobile-experiment/](503-mobile-experiment/) | One Android+iOS **Experimentation** test; exposure, conversion, platform analysis |
+| **504** | [504-platform-rollout/](504-platform-rollout/) | Staggered release: Android first, then iOS, via one targeting rule |
+| **505** | [505-automatic-environment-attributes/](505-automatic-environment-attributes/) | **Stub.** SDK-supplied environment attributes on the 2×2 navigator |
+| **506** | [506-mobile-multi-environment/](506-mobile-multi-environment/) | **Stub.** Two mobile keys, two environments, one app |
 
 There is no series HTTP portal. Run each app in an emulator or simulator.
 
@@ -29,8 +29,8 @@ There is no series HTTP portal. Run each app in an emulator or simulator.
 
 | Variable | Role |
 |----------|------|
-| `LD_MOBILE_KEY` | Mobile SDK (51 does **not** use this; 52/53/54 do) |
-| `LD_SDK_KEY` | **Never embed in mobile apps**; 53's optional host-side simulator uses one |
+| `LD_MOBILE_KEY` | Mobile SDK (501 does **not** use this; 502/503/504 do) |
+| `LD_SDK_KEY` | **Never embed in mobile apps**; 503's optional host-side simulator uses one |
 | `LD_CLIENT_SIDE_ID` | **Not used** — that is the browser 30-series |
 
 SDK credentials: [environment keys](https://launchdarkly.com/docs/home/account/environment/keys).
@@ -46,8 +46,8 @@ See [client-side and mobile flags](https://launchdarkly.com/docs/home/flags/crea
 
 | Directory | Platform | Status |
 |-----------|----------|--------|
-| `android/` | Kotlin + Jetpack Compose | 51 + 52 + 53 + 54 |
-| `ios/` | Swift + SwiftUI | 51 + 52 + 53 + 54 |
+| `android/` | Kotlin + Jetpack Compose | 501 + 502 + 503 + 504 |
+| `ios/` | Swift + SwiftUI | 501 + 502 + 503 + 504 |
 | `react-native/` | React Native | Later — add after native twins exist |
 
 ## Prerequisites
@@ -57,8 +57,8 @@ See [client-side and mobile flags](https://launchdarkly.com/docs/home/flags/crea
 
 ## Further reading
 
-- [51-reference/application.md](51-reference/application.md) — 2×2 tap navigator spec
-- [52-mobile-evaluation/application.md](52-mobile-evaluation/application.md) — mobile SDK evaluation
-- [53-mobile-experiment/application.md](53-mobile-experiment/application.md) — one experiment, two platforms
-- [54-platform-rollout/application.md](54-platform-rollout/application.md) — Android first, then iOS
+- [501-reference/application.md](501-reference/application.md) — 2×2 tap navigator spec
+- [502-mobile-evaluation/application.md](502-mobile-evaluation/application.md) — mobile SDK evaluation
+- [503-mobile-experiment/application.md](503-mobile-experiment/application.md) — one experiment, two platforms
+- [504-platform-rollout/application.md](504-platform-rollout/application.md) — Android first, then iOS
 - [project.md](../project.md) — `android/`, `ios/`, `react-native/` conventions
