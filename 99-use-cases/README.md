@@ -34,6 +34,7 @@ Each subdirectory demonstrates a specific product pattern (A/B testing, rollouts
 - Baseline behavior inherits from [00-reference-feature/application.md](../00-reference-feature/application.md)
 - Each use case includes its own `application.md`. Grid use cases add provisioning (`terraform/`, `rest/`) and language folders. [19-terraform-sentinel](19-terraform-sentinel/) is policies only: no SDK and no grid app.
 - Experiment utilities (where applicable) live alongside the application in each language folder
+- The running page wears the Feature Management flag: browser tab, and the lab header. [26-agent-adaptive-trigger](26-agent-adaptive-trigger/) wears the Agent Management mark instead. Release Autopilot does not have a mark yet.
 
 ## Further reading
 

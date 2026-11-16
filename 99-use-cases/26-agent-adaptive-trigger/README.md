@@ -10,6 +10,9 @@ says the primary one is in trouble.
 
 Nothing else is settled. Do not build the app from this file alone.
 
+When the page exists, its browser tab and lab header use the agent mark from
+[diagrams/build.py](../../diagrams/build.py). The other 99 pages use the flag.
+
 Keywords: **adaptive triggers** · **Agent Management** · **completion config** ·
 **custom numeric metric** · **safer model**
 

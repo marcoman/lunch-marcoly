@@ -367,7 +367,7 @@ function LoggedInUI({
         </p>
       </section>
       <aside className="ld-rail" aria-label="LaunchDarkly lab">
-        <div className="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+        <div className="ld-rail-header"><h2><svg className="ld-mark" viewBox="0 0 12 12" width="14" height="14" aria-hidden="true" focusable="false" style={{verticalAlign:"-2px",marginRight:".35rem"}}><path d="M 2.6 1.4 L 2.6 10.6 M 2.6 2 L 9.6 2 L 8.1 4.3 L 9.6 6.6 L 2.6 6.6" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>LaunchDarkly · lab</h2></div>
         <div className="ld-tabs" role="tablist">
           <button type="button" role="tab" className={labTab === "segment" ? "ld-tab active" : "ld-tab"} aria-selected={labTab === "segment"} onClick={() => setLabTab("segment")}>Segment</button>
           <button type="button" role="tab" className={labTab === "about" ? "ld-tab active" : "ld-tab"} aria-selected={labTab === "about"} onClick={() => setLabTab("about")}>About</button>

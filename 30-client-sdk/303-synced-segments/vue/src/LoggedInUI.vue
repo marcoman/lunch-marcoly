@@ -171,7 +171,7 @@ watch(
       </p>
     </section>
     <aside class="ld-rail" aria-label="LaunchDarkly lab">
-      <div class="ld-rail-header"><h2>LaunchDarkly · lab</h2></div>
+      <div class="ld-rail-header"><h2><svg class="ld-mark" viewBox="0 0 12 12" width="14" height="14" aria-hidden="true" focusable="false" style="vertical-align:-2px;margin-right:.35rem"><path d="M 2.6 1.4 L 2.6 10.6 M 2.6 2 L 9.6 2 L 8.1 4.3 L 9.6 6.6 L 2.6 6.6" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>LaunchDarkly · lab</h2></div>
       <div class="ld-tabs" role="tablist">
         <button type="button" role="tab" class="ld-tab" :class="{ active: labTab === 'segments' }" :aria-selected="labTab === 'segments'" @click="labTab = 'segments'">Segments</button>
         <button type="button" role="tab" class="ld-tab" :class="{ active: labTab === 'about' }" :aria-selected="labTab === 'about'" @click="labTab = 'about'">About</button>

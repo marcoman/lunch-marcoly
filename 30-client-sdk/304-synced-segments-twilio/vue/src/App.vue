@@ -155,7 +155,7 @@ watch(
   <p v-if="closed">Application closed. You may close this tab.</p>
   <template v-else>
     <section v-if="!authKey" id="login-screen">
-      <div class="app-banner">{{ BANNER }}</div>
+      <div class="app-banner"><svg class="ld-mark" viewBox="0 0 12 12" width="14" height="14" aria-hidden="true" focusable="false" style="vertical-align:-2px;margin-right:.35rem"><path d="M 2.6 1.4 L 2.6 10.6 M 2.6 2 L 9.6 2 L 8.1 4.3 L 9.6 6.6 L 2.6 6.6" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>{{ BANNER }}</div>
       <h1>Login</h1>
       <label for="username">Username</label>
       <input
