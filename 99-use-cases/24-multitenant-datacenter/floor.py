@@ -5,7 +5,8 @@ us-east-1 has three. Everywhere else has two. Named customers are a fixed
 stand-in so the rolling walk can show an empty datacenter and a dedicated
 replica set. Placement rules come later.
 
-The page does not evaluate flags yet. The Flags tab is a local stub.
+The Flags tab writes targeting. The floor paints from those checkboxes, and a
+size-row icon stays faint until that capability has been rolled.
 LaunchDarkly: multi-context, one per size row, when the SDK is wired.
 https://launchdarkly.com/docs/home/flags/multi-contexts
 """

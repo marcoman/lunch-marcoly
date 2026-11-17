@@ -92,7 +92,10 @@
       padding: 0.35rem 0.45rem 0.4rem;
       margin-top: 0.4rem;
     }
-    .replica.filled { background: color-mix(in srgb, var(--accent) 16%, var(--box)); }
+    .replica.filled {
+      background: color-mix(in srgb, var(--accent) 32%, var(--box));
+      border-color: var(--accent);
+    }
     .replica.just-rolled { outline: 1px solid var(--accent); }
     .replica h4 {
       display: flex;
@@ -181,7 +184,10 @@
       padding: 0.55rem 0.7rem;
     }
     .panel-card.has-border { border-width: 2px; }
-    .panel-card.filled { background: color-mix(in srgb, var(--accent) 16%, var(--panel)); }
+    .panel-card.filled {
+      background: color-mix(in srgb, var(--accent) 32%, var(--panel));
+      border-color: var(--accent);
+    }
     .panel-card h3 { display: flex; align-items: center; gap: 0.4rem; margin: 0; font-size: 0.9rem; }
     .panel-card p { margin: 0.15rem 0 0.35rem; color: var(--muted); font-size: 0.75rem; }
     .activity {
@@ -654,8 +660,8 @@
       return rolled[capability].has(replicaKey(datacenter, replica));
     }
 
-    // Stub flag match. GDPR wins for data sharing and marketing.
-    // LaunchDarkly: boolean variation, local stand-in until the SDK is wired.
+    // Local match for the floor. The same checkboxes are written to LaunchDarkly.
+    // A row stays faint until that capability has been rolled.
     // https://launchdarkly.com/docs/home/flags/boolean
     function flagOn(capability, sizeClass, datacenter) {
       const dc = floor.datacenters.find((item) => item.key === datacenter);
@@ -739,7 +745,7 @@
       return states;
     }
 
-    function note(text, changes) {
+    function note(text, changes, hint) {
       trace.unshift({ t: new Date(), text, changes });
       if (trace.length > 40) trace.length = 40;
       const body = document.getElementById("trace");
@@ -756,12 +762,17 @@
         row.append(time, change);
         body.append(row);
       }
-      document.getElementById("now").textContent = changes === undefined
-        ? text
-        : text + ". " + changes + (changes === 1 ? " row changed." : " rows changed.");
+      let line = text;
+      if (changes !== undefined) {
+        line += changes === 0
+          ? ". No size row changed."
+          : ". " + changes + (changes === 1 ? " row changed." : " rows changed.");
+      }
+      if (hint) line += " " + hint;
+      document.getElementById("now").textContent = line;
     }
 
-    function commit(text) {
+    function commit(text, hint) {
       const next = collectStates();
       pulseIds = new Set();
       pulseGain = new Set();
@@ -778,7 +789,7 @@
       const changes = pulseIds.size;
       previousStates = next;
       render();
-      note(text, changes);
+      note(text, changes, hint);
     }
 
     function svgChild(name, attrs) {
@@ -1415,6 +1426,10 @@
       saveFlag(def);
     }
 
+    // One write at a time. A second checkbox used to leave while the first
+    // PATCH was still open, and LaunchDarkly answered 409 conflict.
+    let flagWrite = Promise.resolve();
+
     function saveFlag(def) {
       const body = { key: def.key };
       if (def.kind === "palette") body.palette = flags.border;
@@ -1424,17 +1439,42 @@
         body.sizes = floor.sizes.filter((size) => flag.sizes[size]);
         body.datacenters = floor.datacenters.map((dc) => dc.key).filter((key) => flag.datacenters[key]);
       }
-      fetch("/api/flags", {
+      flagWrite = flagWrite.catch(() => {}).then(() => writeFlag(def, body, 0));
+    }
+
+    function writeFlag(def, body, attempt) {
+      return fetch("/api/flags", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       })
         .then((response) => response.json())
         .then((result) => {
+          const conflict = !result.ok && /conflict/i.test(result.error || "");
+          if (conflict && attempt < 1) return writeFlag(def, body, attempt + 1);
           if (!result.ok) note(def.key + " · " + (result.error || "not saved"));
           else if (selected) evaluateSelected();
         })
         .catch(() => note(def.key + " · not saved"));
+    }
+
+    function sayFlags(text) {
+      const status = document.getElementById("flag-status");
+      if (status && text) status.textContent = text;
+    }
+
+    // The icon color waits on the rollout. Say so on the Flags tab, where the click happened.
+    function capabilityHint(capability) {
+      const flag = flags[capability];
+      if (!flag) return "";
+      const size = floor.sizes.some((item) => flag.sizes[item]);
+      const datacenter = floor.datacenters.some((item) => flag.datacenters[item.key]);
+      if (!size && !datacenter) return (CAP_NAME[capability] || capability) + " has nothing checked.";
+      if (!rolled[capability] || rolled[capability].size === 0) {
+        return (CAP_NAME[capability] || capability) + " is set. Icons stay faint until you roll that capability on Rolling deployments.";
+      }
+      if (size !== datacenter) return "Check a size and a datacenter. Both are required.";
+      return "";
     }
 
     function evaluateSelected() {
@@ -1500,6 +1540,7 @@
         const sameFamily = before && value !== "none";
         flags.border = value;
         commit("mtdc-border-palette · " + value);
+        sayFlags("Border palette is " + value + ".");
         if (sameFamily) playFlagCue("mtdc-border-palette", "phase");
         else hearFlag("mtdc-border-palette", before, value !== "none");
         saveFlag(flagCatalog()[0]);
@@ -1519,6 +1560,7 @@
         const before = flags.fill;
         flags.fill = input.checked;
         commit("mtdc-service-fill · " + (input.checked ? "on" : "off"));
+        sayFlags(input.checked ? "Service fill is on. Every replica is filled." : "Service fill is off.");
         hearFlag("mtdc-service-fill", before, flags.fill);
         saveFlag(flagCatalog()[1]);
       });
@@ -1552,7 +1594,9 @@
       const boxes = floor.sizes.map((size) => checkLabel(size, { cap: capability, size: size }, (checked) => {
         const before = targetingOn(capability);
         flags[capability].sizes[size] = checked;
-        commit(capability + " · " + size + " " + (checked ? "on" : "off"));
+        const hint = capabilityHint(capability);
+        commit(capability + " · " + size + " " + (checked ? "on" : "off"), hint);
+        sayFlags(hint);
         hearFlag("mtdc-" + capability, before, targetingOn(capability), checked ? "up" : "down");
         saveFlag(flagCatalog().find((entry) => entry.capability === capability));
       }));
@@ -1563,7 +1607,9 @@
       const boxes = floor.datacenters.map((dc) => checkLabel(dc.key, { cap: capability, dc: dc.key }, (checked) => {
         const before = targetingOn(capability);
         flags[capability].datacenters[dc.key] = checked;
-        commit(capability + " · " + dc.key + " " + (checked ? "on" : "off"));
+        const hint = capabilityHint(capability);
+        commit(capability + " · " + dc.key + " " + (checked ? "on" : "off"), hint);
+        sayFlags(hint);
         hearFlag("mtdc-" + capability, before, targetingOn(capability), checked ? "up" : "down");
         saveFlag(flagCatalog().find((entry) => entry.capability === capability));
       }));
