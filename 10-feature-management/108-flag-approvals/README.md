@@ -1,44 +1,30 @@
 # 108-flag-approvals
 
-**Status: stub — not implemented yet.**
+Request **approval** to turn the move-count flag on, then apply it from the grid once LaunchDarkly has approved the review.
 
-Request **approval** to turn a flag on from the grid UI. Start with the
-**move-count** flag. The lab environment already requires approvals; this
-lesson sends a request and shows whether it is still pending.
+The flag is `show-navigation-move-count-approval`. [101-flag-enablement](../101-flag-enablement/) keeps `show-navigation-move-count`.
 
-This is not [106-percentage-rollout](../106-percentage-rollout/).
+Python web on **:8180**. Not in the series portal.
 
-Keywords: **approvals** · **feature flags** · **required approval** ·
-**move count**
+Keywords: **approvals** · **feature flags** · **required approval** · **move count**
 
 Docs: [Approvals](https://launchdarkly.com/docs/home/releases/approvals)
 
-## Intended aha
+## Run
 
-The dashboard toggle is not the only way a flag changes. The page asks for
-approval to enable move count. Until that request is approved, the grid keeps
-the current variation. After approval, the next evaluation shows the count.
+See [python/README.md](python/README.md) and [application.md](application.md).
 
-Use a dedicated flag key so [101-flag-enablement](../101-flag-enablement/) keeps
-its own count toggle.
+## What the page does
 
-## Direction
+1. The count stays hidden while the flag is off.
+2. **Request approval** sends `turnFlagOn`. It does not patch targeting.
+3. Approve the request in LaunchDarkly. The page polls.
+4. **Apply** turns the flag on. The next evaluation shows the count.
 
-- One flag, one approval to turn it on.
-- The screen shows the request state (pending, then approved).
-- Environment approvals stay on. The lesson does not teach how to enable that
-  setting.
-- Not in the series portal until the app exists. Intended ports **:8180–:8183**.
-
-## When implementing
-
-1. `application.md` with a flag key that 11 does not use.
-2. Python web first. The rail shows the approval state next to the variation.
-3. REST (or the approvals API) creates the request. Do not bypass approvals
-   with a direct targeting patch.
+The page does not approve its own request. The environment's approval setting stays as it is.
 
 ## Implementation
 
 | Language | Directory | Status |
 |----------|-----------|--------|
-| *(none yet)* | — | Stub |
+| Python | [python/](python/) | Web **:8180** |

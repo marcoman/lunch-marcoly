@@ -40,7 +40,7 @@ lunch-marcoly/
 │   ├── 105-prerequisite-flags/
 │   ├── 106-percentage-rollout/    # Web :8160–:8163 + consoles; static 30/70
 │   ├── 107-scheduled-changes/     # Web :8170–:8173 + consoles; scheduled turn-on
-│   ├── 108-flag-approvals/        # Stub: approval to enable move count
+│   ├── 108-flag-approvals/        # Python :8180; approval to enable move count
 │   ├── 109-evaluation-reasons/    # Stub: four evaluation reason kinds
 │   └── segment-targeting/        # Stub: included targets; still unnumbered
 ├── 20-agent-management/             # Agent Management series (shared setup)
@@ -167,7 +167,7 @@ Each example may include implementations in any of these languages. Every applic
 | 105 | [105-prerequisite-flags](10-feature-management/105-prerequisite-flags/) | Flag prerequisites: highlight must serve `green` before move count can evaluate |
 | 106 | [106-percentage-rollout](10-feature-management/106-percentage-rollout/) | Static 30/70 percentage rollout, sticky context key (web **:8160–:8163** + Python / Node / Java / Go / Rust / C++ consoles) |
 | 107 | [107-scheduled-changes](10-feature-management/107-scheduled-changes/) | Replaceable scheduled flag turn-on with elapsed timer (web **:8170–:8173** + Python / Node / Java / Go / Rust / C++ consoles + REST/Terraform) |
-| 108 | [108-flag-approvals](10-feature-management/108-flag-approvals/) | **Stub:** approval to turn the move-count flag on |
+| 108 | [108-flag-approvals](10-feature-management/108-flag-approvals/) | Python **:8180**. Approval to turn the move-count flag on. Apply after LaunchDarkly approves |
 | 109 | [109-evaluation-reasons](10-feature-management/109-evaluation-reasons/) | **Stub:** on-screen `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, `ERROR` |
 | — | [segment-targeting](10-feature-management/segment-targeting/) | **Stub:** included-targets segment. Unnumbered so it does not take 20. Read before 303 |
 | 20 | [20-agent-management](20-agent-management/) | Agent Management series (shared LLM / AWS / LD setup); [portal](20-agent-management/portal/) Python **:8200** · Node **:8201** · Java **:8202** · .NET **:8203** |
