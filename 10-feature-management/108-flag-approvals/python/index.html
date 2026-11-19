@@ -34,8 +34,17 @@
     .ld-about-p{font-size:.86rem;line-height:1.45}
     .block-title{margin:0 0 .4rem;color:var(--accent);font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
     .status{border:1px solid var(--line);border-radius:8px;background:#1f1f2d;padding:.7rem;font-size:.82rem;line-height:1.45;margin:.4rem 0 .8rem}
+    #approval-status{display:flex;gap:.65rem;align-items:flex-start}
+    .approval-mark{flex:none;width:22px;height:22px;margin-top:.05rem}
+    .approval-mark svg{display:block}
     .actions{display:flex;gap:.5rem;flex-wrap:wrap;margin:0 0 1.15rem}
-    #approval-link{margin:0 0 1.35rem;font-size:.86rem}
+    #approval-link{margin:0 0 1rem;font-size:.86rem}
+    .trace{max-height:11rem;overflow:auto;margin-top:.35rem;font:0.78rem/1.45 ui-monospace,SFMono-Regular,Menlo,monospace}
+    .trace-line{margin:.12rem 0}
+    .trace-where{font-weight:700}
+    .trace-where.ui{color:#c5e1a5}
+    .trace-where.lab{color:#90caf9}
+    .trace-where.ld{color:#ffcc80}
     a{color:#90caf9}
   </style>
 </head>
@@ -71,21 +80,31 @@
       <div class="ld-rail-body">
         <section id="tab-approval" class="ld-section active">
           <p class="block-title">Approval</p>
-          <p class="ld-about-p">Request approval to turn <code>show-navigation-move-count-approval</code> on. Approve it in LaunchDarkly. Apply it here. The count stays hidden until the apply succeeds.</p>
-          <div id="approval-status" class="status">Loading…</div>
+          <p class="ld-about-p">Request approval, approve it in LaunchDarkly, then apply it here. The trace below names where each step happened.</p>
+          <div id="approval-status" class="status"><span id="approval-mark" class="approval-mark hidden"></span><span id="approval-text">Loading…</span></div>
           <div class="actions">
             <button id="request-btn" type="button">Request approval</button>
             <button id="apply-btn" type="button" disabled>Apply</button>
+            <button id="reset-btn" type="button">Reset</button>
           </div>
           <p id="approval-link" class="hidden"><a id="approval-href" href="" target="_blank" rel="noopener">Open in LaunchDarkly</a></p>
           <p id="approval-error" class="error hidden"></p>
+          <p class="block-title">Trace</p>
+          <div id="trace" class="status trace">
+            <p id="trace-empty" class="muted">Actions land here. Repeated polls stay on one line.</p>
+            <div id="trace-lines"></div>
+          </div>
           <p class="block-title">Evaluation</p>
           <div id="eval-status" class="status">Log in to evaluate.</div>
         </section>
         <section id="tab-about" class="ld-section">
           <p class="block-title">About</p>
-          <p class="ld-about-p">One boolean flag controls the move count. The page creates an approval to turn it on. It does not change targeting itself.</p>
-          <p class="ld-about-p">Approve the request in LaunchDarkly. Come back and click Apply. The next evaluation shows Count.</p>
+          <p class="ld-about-p">The number of moves is ordinary application state. It increases when you move on the grid. One boolean flag, <code>show-navigation-move-count-approval</code>, decides whether the Count row is visible. Off hides it. On shows it.</p>
+          <p class="ld-about-p">Turning that flag on is a targeting change. This lab sends the change through an approval so the request, the review, and the apply stay separate.</p>
+          <p class="ld-about-p"><strong>Request approval</strong> asks LaunchDarkly to create a request whose only instruction is <code>turnFlagOn</code>. The request is named <code>Turn on the move count</code> plus a counter kept in this example, so each one is distinct in the Approvals list. Reset leaves that counter where it is. The review starts pending, and Apply on this page stays disabled. This page does not approve the request. A person does that in LaunchDarkly. <strong>Open in LaunchDarkly</strong> goes straight to the request. The Approvals dashboard only lists requests that name you as a reviewer, and this request names none, so the dashboard hides it until you clear that filter.</p>
+          <p class="ld-about-p">The page polls. When LaunchDarkly reports the review as approved, and the change is still unapplied, <strong>Apply</strong> enables. Apply carries out the instruction. The server SDK evaluates the flag again. A true variation shows Count, including moves made while the row was hidden.</p>
+          <p class="ld-about-p">The trace on the Approval tab records those steps and labels where each one happened: <strong>Lab UI</strong> for a click here, <strong>Lab API</strong> for this server, and <strong>LaunchDarkly</strong> for the approval service or the flag evaluation. Repeated polls stay on one line until the state changes.</p>
+          <p class="ld-about-p"><strong>Reset</strong> deletes the approval requests for this flag and turns the flag off with <code>turnFlagOff</code>, then clears the count and returns the marker to the center. The lab is ready to run again.</p>
           <p class="ld-about-p"><a href="https://launchdarkly.com/docs/home/releases/approvals">Approvals</a></p>
         </section>
       </div>
@@ -101,6 +120,119 @@
     let moveCount = 0;
     let showMoveCount = false;
     let approval = null;
+    let traceLines = [];
+    let approvalSeen = null;
+    let evalSeen = null;
+
+    function escapeHtml(text) {
+      return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function whereClass(where) {
+      if (where === "Lab UI") return "ui";
+      if (where === "Lab API") return "lab";
+      return "ld";
+    }
+
+    function renderTrace() {
+      const lines = document.getElementById("trace-lines");
+      const empty = document.getElementById("trace-empty");
+      const box = document.getElementById("trace");
+      empty.classList.toggle("hidden", traceLines.length > 0);
+      lines.innerHTML = traceLines.map((line) =>
+        `<div class="trace-line"><span class="trace-where ${whereClass(line.where)}">${escapeHtml(line.where)}</span> ${escapeHtml(line.text)}</div>`
+      ).join("");
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function pushTrace(where, text) {
+      traceLines.push({ where, text });
+      renderTrace();
+    }
+
+    function showPolling() {
+      const last = traceLines[traceLines.length - 1];
+      if (last && last.poll) return;
+      traceLines.push({ where: "LaunchDarkly", text: "polling", poll: true });
+      renderTrace();
+    }
+
+    function noteChange(text) {
+      const last = traceLines[traceLines.length - 1];
+      if (last && last.poll) {
+        last.text = text;
+        last.poll = false;
+      } else {
+        traceLines.push({ where: "LaunchDarkly", text });
+      }
+      renderTrace();
+    }
+
+    function noteSteps(body) {
+      (body && body.steps || []).forEach((step) => pushTrace(step.where || "LaunchDarkly", step.text || ""));
+    }
+
+    function approvalKey(body) {
+      const request = body && body.request;
+      if (!body || !body.configured) return "unconfigured";
+      if (!request) return "none";
+      return [request.id, request.reviewStatus, request.status, request.applied].join("|");
+    }
+
+    function describeApproval(body) {
+      const request = body && body.request;
+      if (!body || !body.configured) return "approval API is not configured";
+      if (!request) return "no open approval";
+      if (request.reviewStatus === "declined") return "review declined";
+      if (request.applied || request.status === "completed") return "applied · flag instruction completed";
+      if (request.reviewStatus === "approved") return "review approved · not applied · Apply enabled";
+      return "review pending · waiting for a person in LaunchDarkly · Apply disabled";
+    }
+
+    function noteApproval(body) {
+      if (!username) return;
+      const key = approvalKey(body);
+      const text = describeApproval(body);
+      if (approvalSeen === null) {
+        approvalSeen = key;
+        pushTrace("LaunchDarkly", text);
+        return;
+      }
+      if (key === approvalSeen) {
+        showPolling();
+        return;
+      }
+      approvalSeen = key;
+      noteChange(text);
+    }
+
+    function noteEval(body) {
+      if (!username || !body) return;
+      const key = String(body.showMoveCount) + "|" + String(body.reason || "");
+      const text = `evaluation ${body.showMoveCount ? "true" : "false"} · ${body.reason || ""} · ${body.sdk ? "SDK" : "SDK default"}`;
+      if (evalSeen === null) {
+        evalSeen = key;
+        pushTrace("LaunchDarkly", text);
+        return;
+      }
+      if (key === evalSeen) {
+        showPolling();
+        return;
+      }
+      evalSeen = key;
+      noteChange(text);
+    }
+
+    function readBody(response) {
+      return response.text().then((raw) => {
+        try {
+          return JSON.parse(raw || "{}");
+        } catch (error) {
+          const plain = raw.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+          throw new Error("Lab API " + response.status + (plain ? " · " + plain.slice(0, 140) : ""));
+        }
+      });
+    }
 
     function formatPos(r, c) { return ROWS[r] + "/" + COLS[c]; }
 
@@ -150,21 +282,49 @@
       link.classList.add("hidden");
     }
 
+    function approvalMark(kind) {
+      const stroke = kind === "applied" ? "#9838e0" : kind === "declined" ? "#c83850" : "#b7bec6";
+      const label = kind === "applied" ? "Approved and Applied" : kind === "declined" ? "Declined" : "Needs Review";
+      const arrow = `<path d="M13.9 11.6 L16.4 8.7 L18.9 11.6" fill="${stroke}" stroke="none"/>`;
+      const head = kind === "declined"
+        ? `<path d="M14.2 2.9 L18.6 7.3 M18.6 2.9 L14.2 7.3"/>${arrow}`
+        : `<circle cx="16.4" cy="5" r="2.15"/>${arrow}`;
+      const body = kind === "applied"
+        ? `<circle cx="7" cy="5" r="2.15"/><path d="M7 7.15 V16.85"/><circle cx="7" cy="19" r="2.15"/><path d="M7 12 H14.7"/><circle cx="16.9" cy="12" r="2.15"/>`
+        : `<circle cx="6.2" cy="5" r="2.15"/><path d="M6.2 7.15 V16.65"/><circle cx="6.2" cy="18.8" r="2.15"/><path d="M8.35 18.8 H16.4 V12"/>${head}`;
+      return `<svg viewBox="0 0 24 24" width="22" height="22" role="img" aria-label="${label}"><title>${label}</title><g fill="none" stroke="${stroke}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${body}</g></svg>`;
+    }
+
+    function paintStatus(text, kind) {
+      const mark = document.getElementById("approval-mark");
+      document.getElementById("approval-text").textContent = text;
+      if (!kind) {
+        mark.classList.add("hidden");
+        mark.innerHTML = "";
+        mark.removeAttribute("title");
+        return;
+      }
+      mark.classList.remove("hidden");
+      mark.innerHTML = approvalMark(kind);
+      mark.title = mark.querySelector("title").textContent;
+    }
+
     function paintApproval(body) {
       approval = body && body.request ? body.request : null;
       paintLink(body);
-      const status = document.getElementById("approval-status");
       const requestBtn = document.getElementById("request-btn");
       const applyBtn = document.getElementById("apply-btn");
+      const resetBtn = document.getElementById("reset-btn");
+      resetBtn.disabled = !body || !body.configured;
       if (!body || !body.configured) {
         const missing = (body && body.missing) || [];
-        status.textContent = "Approval API is not configured. Set " + missing.join(", ") + ".";
+        paintStatus("Approval API is not configured. Set " + missing.join(", ") + ".");
         requestBtn.disabled = true;
         applyBtn.disabled = true;
         return;
       }
       if (!approval) {
-        status.textContent = "No open request. Request approval to turn the flag on.";
+        paintStatus("No open request. Request approval to turn the flag on.");
         requestBtn.disabled = false;
         applyBtn.disabled = true;
         return;
@@ -172,24 +332,24 @@
       const review = approval.reviewStatus;
       const applied = approval.applied;
       if (review === "declined") {
-        status.textContent = "Declined. Request another approval.";
+        paintStatus("Declined. Request another approval.", "declined");
         requestBtn.disabled = false;
         applyBtn.disabled = true;
         return;
       }
       if (applied || approval.status === "completed") {
-        status.textContent = "Applied. The count shows on the next evaluation.";
+        paintStatus("Applied. The count shows on the next evaluation.", "applied");
         requestBtn.disabled = true;
         applyBtn.disabled = true;
         return;
       }
       if (review === "approved") {
-        status.textContent = "Approved in LaunchDarkly. Apply it to turn the flag on.";
+        paintStatus("Approved in LaunchDarkly. Apply it to turn the flag on.");
         requestBtn.disabled = true;
         applyBtn.disabled = false;
         return;
       }
-      status.textContent = "Pending. Approve it in LaunchDarkly, then come back and Apply. The Approvals list hides this request until a reviewer is named.";
+      paintStatus("Pending. Approve it in LaunchDarkly, then come back and Apply. The Approvals list hides this request until a reviewer is named.", "review");
       requestBtn.disabled = true;
       applyBtn.disabled = true;
     }
@@ -206,6 +366,7 @@
         .then((body) => {
           if (body.error) showError(body.error);
           paintApproval(body);
+          noteApproval(body);
         })
         .catch(() => showError("Could not load the approval."));
     }
@@ -219,6 +380,7 @@
           document.getElementById("eval-status").textContent =
             body.flagKey + "  " + (showMoveCount ? "true" : "false") + "  " + (body.reason || "");
           renderGrid();
+          noteEval(body);
         })
         .catch(() => {
           document.getElementById("eval-status").textContent = "Evaluation failed.";
@@ -240,32 +402,74 @@
 
     document.getElementById("request-btn").addEventListener("click", () => {
       showError("");
+      pushTrace("Lab UI", "clicked Request approval");
+      pushTrace("Lab API", "POST /api/approval");
       document.getElementById("request-btn").disabled = true;
       fetch("/api/approval", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })
-        .then((response) => response.json())
+        .then(readBody)
         .then((body) => {
           if (!body.ok && body.error) showError(body.error);
+          noteSteps(body);
           paintApproval(body);
+          approvalSeen = approvalKey(body);
         })
-        .catch(() => showError("The request was not created."));
+        .catch((error) => showError(error.message || "The request was not created."));
     });
 
     document.getElementById("apply-btn").addEventListener("click", () => {
       if (!approval || !approval.id) return;
       showError("");
+      pushTrace("Lab UI", "clicked Apply");
+      pushTrace("Lab API", "POST /api/approval/apply");
       document.getElementById("apply-btn").disabled = true;
       fetch("/api/approval/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: approval.id }),
       })
-        .then((response) => response.json())
+        .then(readBody)
         .then((body) => {
           if (!body.ok && body.error) showError(body.error);
+          noteSteps(body);
           paintApproval(body);
+          approvalSeen = approvalKey(body);
           return loadFlags();
         })
-        .catch(() => showError("Apply failed."));
+        .catch((error) => showError(error.message || "Apply failed."));
+    });
+
+    document.getElementById("approval-href").addEventListener("click", () => {
+      pushTrace("Lab UI", "opened the approval in LaunchDarkly");
+    });
+
+    function clearDemo() {
+      row = 1;
+      col = 1;
+      previous = null;
+      moveCount = 0;
+      showMoveCount = false;
+      renderGrid();
+    }
+
+    document.getElementById("reset-btn").addEventListener("click", () => {
+      showError("");
+      pushTrace("Lab UI", "clicked Reset");
+      pushTrace("Lab API", "POST /api/approval/reset");
+      document.getElementById("reset-btn").disabled = true;
+      fetch("/api/approval/reset", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })
+        .then(readBody)
+        .then((body) => {
+          noteSteps(body);
+          if (!body.ok && body.error) showError(body.error);
+          if (body.ok) {
+            clearDemo();
+            pushTrace("Lab UI", "count cleared · marker back to m/m");
+          }
+          paintApproval(body.ok ? body : { configured: true, request: approval });
+          approvalSeen = approvalKey(body.ok ? body : { configured: true, request: approval });
+          return loadFlags();
+        })
+        .catch((error) => showError(error.message || "Reset failed."));
     });
 
     function logout() {

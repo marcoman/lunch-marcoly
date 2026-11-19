@@ -1,0 +1,13 @@
+{
+  "name": "flag-approvals",
+  "version": "1.0.0",
+  "private": true,
+  "description": "108-flag-approvals grid navigator web UI",
+  "main": "108-flag-approvals.js",
+  "scripts": {
+    "start": "node 108-flag-approvals.js"
+  },
+  "dependencies": {
+    "@launchdarkly/node-server-sdk": "^9.0.0"
+  }
+}

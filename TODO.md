@@ -14,7 +14,7 @@ Work queue for new lunch-marcoly examples. Ship in this order.
 
 New stubs (README only, not built):
 
-- [108-flag-approvals](10-feature-management/108-flag-approvals/) — Python **:8180**. Request approval to turn the move-count flag on. Approve in LaunchDarkly, apply on the page. Not in the portal.
+- [108-flag-approvals](10-feature-management/108-flag-approvals/) — Web **:8180–:8183** (Python / Node / Java / .NET). Request approval to turn the move-count flag on. Approve in LaunchDarkly, apply on the page. Not in the portal.
 - [109-evaluation-reasons](10-feature-management/109-evaluation-reasons/) — `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, `ERROR` on screen. Ports **:8190–:8193** when built.
 - [segment-targeting](10-feature-management/segment-targeting/) — included-targets segment, server SDK. Still unnumbered. Read this before [303-synced-segments](30-client-sdk/303-synced-segments/).
 - [207-agent-mode](20-agent-management/207-agent-mode/) — agent mode only, one instructions value. Does not roll into the capstone. Ports **:8270–:8273**.

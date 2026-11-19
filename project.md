@@ -101,7 +101,7 @@ lunch-marcoly/
 │   ├── 105-prerequisite-flags/   # Flag prerequisites
 │   ├── 106-percentage-rollout/   # Web :8160–:8163 + consoles; static %, sticky key
 │   ├── 107-scheduled-changes/    # Web :8170–:8173 + consoles; scheduled turn-on
-│   ├── 108-flag-approvals/       # Python :8180; approval to enable move count
+│   ├── 108-flag-approvals/       # Web :8180–:8183; approval to enable move count
 │   ├── 109-evaluation-reasons/   # Stub: four evaluation reason kinds
 │   └── segment-targeting/       # Stub: included targets; still unnumbered
 ├── 20-agent-management/             # Agent Management series (shared setup README)
@@ -232,7 +232,7 @@ lunch-marcoly/
 - `105-prerequisite-flags` demonstrates a child flag that evaluates only when the parent serves `green`.
 - `106-percentage-rollout` (under `10-feature-management/`) demonstrates a **static** percentage rollout with sticky context-key assignment (not progressive); Python / Node / Java / .NET web, consoles (Python / Node / Java / Go / Rust / C++), plus REST/Terraform.
 - `107-scheduled-changes` (under `10-feature-management/`) demonstrates a replaceable scheduled `turnFlagOn` change with an elapsed timer (Python / Node / Java / .NET web **:8170–:8173**, consoles Python / Node / Java / Go / Rust / C++, REST/Terraform).
-- `108-flag-approvals` (under `10-feature-management/`) is the Python web app on **:8180**. An approval request turns `show-navigation-move-count-approval` on. Approve it in LaunchDarkly, then apply it on the page. Not in the portal.
+- `108-flag-approvals` (under `10-feature-management/`) is the web app on **:8180–:8183** (Python, Node, Java, .NET). An approval request turns `show-navigation-move-count-approval` on. Approve it in LaunchDarkly, then apply it on the page. Not in the portal.
 - `109-evaluation-reasons` (under `10-feature-management/`) is a stub. The screen shows `PREREQUISITE_FAILED`, `RULE_MATCH`, `FALLTHROUGH`, and `ERROR`. Intended ports **:8190–:8193**.
 - `segment-targeting` (under `10-feature-management/`) is an unnumbered stub. One included-targets segment on the server SDK, read before `303-synced-segments`. **18** and **19** fill the decade, so this folder does not take **20**.
 - `30-client-sdk` groups **browser** client-side SDK examples (client-side ID, not `LD_SDK_KEY`); series portals live in its `portal/` (JavaScript **:8300** · React **:8301** · Vue **:8302**). The portal still launches the old `31-…` through `36-…` paths.

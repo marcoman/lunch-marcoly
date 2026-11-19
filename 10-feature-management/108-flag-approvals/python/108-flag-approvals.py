@@ -25,10 +25,12 @@ from ldclient.client import LDClient
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from approvals import (  # noqa: E402
     FLAG_KEY,
+    ApprovalError,
     api_config,
     apply_approval,
     approval_state,
     request_approval,
+    reset_demo,
 )
 
 ROOT = Path(__file__).parent
@@ -140,8 +142,14 @@ class Handler(SimpleHTTPRequestHandler):
             if path == "/api/approval/apply":
                 _json(self, 200, apply_approval(str(body.get("id") or "")))
                 return
+            if path == "/api/approval/reset":
+                _json(self, 200, reset_demo())
+                return
         except ValueError as exc:
             _json(self, 400, {"ok": False, "error": str(exc)})
+            return
+        except ApprovalError as exc:
+            _json(self, 502, {"ok": False, "error": str(exc), "steps": exc.steps, "request": None})
             return
         except RuntimeError as exc:
             _json(self, 502, {"ok": False, "error": str(exc)})

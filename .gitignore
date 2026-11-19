@@ -5,6 +5,11 @@
 __pycache__/
 *.py[cod]
 
+# Shared approval-name counter for 108 (Python, Node, Java, .NET)
+10-feature-management/108-flag-approvals/.request-count
+10-feature-management/108-flag-approvals/.request-count.lock
+10-feature-management/108-flag-approvals/.request-count.tmp
+
 # Local company name and logo for the tenant datacenter lab
 99-use-cases/21-tenant-datacenters/customizations.json
 99-use-cases/21-tenant-datacenters/customizations/
